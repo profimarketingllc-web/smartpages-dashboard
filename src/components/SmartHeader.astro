@@ -1,11 +1,24 @@
 ---
+/**
+ * SmartHeader.astro
+ * Fix: Astro 4.x compatible, no hydration directives, fully server-rendered
+ */
 ---
-<header class="smart-header">
-  <div class="smart-header__inner">
-    <img src="/SmartPages_icon_transparent.png" alt="SmartPages Logo" class="smart-header__logo" />
-    <div class="smart-header__text">
-      <h1>SmartPages</h1>
-      <p>Wir bringen Dich in 10 Minuten online – ohne Technik Wissen</p>
-    </div>
+
+<header class="w-full bg-[#0f1a3a] text-white shadow-md sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto flex items-center gap-4 py-3 px-6">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-3">
+      <img 
+        src="/SmartPages_icon_transparent.png" 
+        alt="SmartPages Logo" 
+        class="h-10 w-auto" 
+        loading="lazy" 
+      />
+      <div>
+        <h1 class="text-xl font-semibold leading-tight">SmartPages</h1>
+        <p class="text-sm text-gray-300">Wir bringen Dich in 10 Minuten online – ohne Technik Wissen</p>
+      </div>
+    </a>
   </div>
 </header>
