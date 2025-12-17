@@ -1,1 +1,72 @@
+---
+import "~/styles/global.css";
+import SmartHeader from "~/components/SmartHeader.astro";
+import Sidebar from "~/components/Sidebar.astro";
 
+/* Props für flexible Seitensteuerung:
+   - sidebar: zeigt die Navigationsleiste an (Standard: true)
+   - header: zeigt den Header an (Standard: true)
+*/
+const { sidebar = true, header = true } = Astro.props;
+---
+
+<html lang="de" class="h-full bg-smart-surface">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><slot name="title" /> | SmartPages</title>
+
+    <!-- 🌐 Meta + SEO -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="SmartPages Dashboard — privacy-first and GDPR compliant." />
+    <meta name="theme-color" content="#1E2A45" />
+
+    <!-- 🧩 Favicon & Branding -->
+    <link rel="icon" type="image/x-icon" href="https://smartpages.online/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="192x192" href="https://smartpages.online/favicon-192.png" />
+
+    <!-- 🌀 Global Styles -->
+    <link rel="stylesheet" href="/src/styles/global.css" />
+  </head>
+
+  <body class="min-h-screen flex font-sans text-smart-text bg-smart-surface antialiased">
+    {
+      sidebar ? (
+        <>
+          <!-- 🧭 Sidebar -->
+          <Sidebar client:load />
+
+          <!-- Hauptbereich -->
+          <div class="flex-1 flex flex-col transition-all duration-300 md:ml-64">
+            {header && <SmartHeader client:load />}
+
+            <!-- Inhalt -->
+            <main class="flex-1 p-6 md:p-10">
+              <slot />
+            </main>
+
+            <!-- Footer -->
+            <footer class="text-center text-sm text-gray-500 mt-auto py-6 border-t border-gray-200">
+              © {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant
+            </footer>
+          </div>
+        </>
+      ) : (
+        <!-- 🪶 Layout ohne Sidebar -->
+        <div class="flex-1 flex flex-col min-h-screen bg-white text-smart-text">
+          {header && <SmartHeader client:load />}
+
+          <!-- Inhalt -->
+          <main class="flex-1 p-6 md:p-10">
+            <slot />
+          </main>
+
+          <!-- Footer -->
+          <footer class="text-center text-sm text-gray-500 mt-auto py-6 border-t border-gray-200">
+            © {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant
+          </footer>
+        </div>
+      )
+    }
+  </body>
+</html>
