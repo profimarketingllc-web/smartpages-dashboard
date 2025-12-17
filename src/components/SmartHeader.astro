@@ -1,25 +1,38 @@
 ---
 /**
  * SmartHeader.astro
- * Final version – centered layout, larger logo, balanced proportions
+ * Automatically switches between DE / EN based on URL path.
  */
+
+// Detect language by URL prefix
+const pathname = Astro.url.pathname.toLowerCase();
+const isEnglish = pathname.startsWith("/en/");
+
+// Texts for both languages
+const title = "SmartPages";
+const subtitle = isEnglish
+  ? "Go online in just 10 minutes — privacy-first and GDPR compliant."
+  : "Wir bringen Dich in 10 Minuten online – ohne Technik Wissen";
 ---
 
 <header class="w-full bg-[#0f1a3a] text-white shadow-md sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-3 md:gap-5 py-6 md:py-7 px-6 text-center md:text-left">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6 py-6 md:py-8 px-6 text-center md:text-left">
+    
     <!-- Logo -->
-    <img 
-      src="/SmartPages_icon_transparent.png" 
-      alt="SmartPages Logo" 
-      class="h-16 md:h-20 w-auto" 
+    <img
+      src="/SmartPages_icon_transparent.png"
+      alt="SmartPages Logo"
+      class="h-20 md:h-24 w-auto"
       loading="lazy"
     />
 
     <!-- Text -->
     <div>
-      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">SmartPages</h1>
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">
+        {title}
+      </h1>
       <p class="text-lg md:text-xl text-gray-200 font-medium">
-        Wir bringen Dich in 10 Minuten online – ohne Technik Wissen
+        {subtitle}
       </p>
     </div>
   </div>
