@@ -12,7 +12,7 @@ import "~/styles/global.css";
 </head>
 
 <!-- PAGE CONTENT -->
-<body class="smart-login bg-white text-gray-800">
+<body class="smart-login bg-white text-gray-800 overflow-x-hidden">
 
   <!-- GLOBAL HEADER -->
   <header class="sticky top-0 z-50 shadow-md">
@@ -20,52 +20,52 @@ import "~/styles/global.css";
   </header>
 
   <!-- HERO + FORM -->
-  <section class="smart-login__grid mt-8">
+  <section class="smart-login__grid mt-8 max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
     <!-- LEFT -->
-    <div class="smart-box no-hover">
+    <div class="smart-box no-hover leading-relaxed">
       <h2 class="text-3xl font-bold text-[#F5B400] mb-4">Willkommen bei SmartPages</h2>
-      <p>
+      <p class="mb-3">
         Mit <strong>SmartPages</strong> startest Du in nur wenigen Minuten Dein eigenes digitales Zuhause – ohne technisches Wissen oder komplizierte Einrichtung.
         Alles wird sicher in <strong>Europa</strong> gehostet und ist vollständig <strong>DSGVO-konform</strong>.
       </p>
-      <p>
+      <p class="mb-3">
         Wenn Deine Zielgruppe oder Kunden in der Europäischen Union sitzen, ist Datenschutz nach der DSGVO keine Option – sondern Pflicht.
         SmartPages hilft Dir, diese Anforderungen mühelos zu erfüllen, während Du gleichzeitig Vertrauen und Markenstärke aufbaust.
       </p>
-      <p>
+      <p class="mb-3">
         Gib einfach Deine Basisdaten ein, und wir senden Dir Deinen <strong>persönlichen Magic-Link</strong> für den direkten Zugang zum Dashboard – ohne Passwort, ohne Tracking und ohne versteckte Datenerfassung.
       </p>
     </div>
 
     <!-- RIGHT -->
-    <div class="smart-box no-hover">
-      <form id="magicForm" class="smart-form">
-        <div class="mb-4">
-          <label class="block text-gray-600 text-sm font-medium mb-1">Vorname *</label>
-          <input type="text" name="first_name" required />
+    <div class="smart-box no-hover bg-white border border-gray-200 shadow-md rounded-xl p-6">
+      <form id="magicForm" class="smart-form space-y-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-medium mb-1">Vorname *</label>
+          <input type="text" name="first_name" required class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F5B400]" />
         </div>
 
-        <div class="mb-4">
-          <label class="block text-gray-600 text-sm font-medium mb-1">Nachname</label>
-          <input type="text" name="last_name" />
+        <div>
+          <label class="block text-gray-700 text-sm font-medium mb-1">Nachname</label>
+          <input type="text" name="last_name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F5B400]" />
         </div>
 
-        <div class="mb-4">
-          <label class="block text-gray-600 text-sm font-medium mb-1">E-Mail *</label>
-          <input type="email" name="email" required />
+        <div>
+          <label class="block text-gray-700 text-sm font-medium mb-1">E-Mail *</label>
+          <input type="email" name="email" required class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F5B400]" />
         </div>
 
-        <div class="flex items-center gap-2 mb-4">
+        <div class="flex items-center gap-2">
           <input type="checkbox" id="is_business" name="is_business" class="accent-[#F5B400]" />
-          <label for="is_business" class="text-sm text-gray-600">Das ist ein Firmenkonto (Business)</label>
+          <label for="is_business" class="text-sm text-gray-700">Das ist ein Firmenkonto (Business)</label>
         </div>
 
-        <div id="company_field" class="hidden mb-4">
-          <label class="block text-gray-600 text-sm font-medium mb-1">Firmenname</label>
-          <input type="text" name="company_name" />
+        <div id="company_field" class="hidden">
+          <label class="block text-gray-700 text-sm font-medium mb-1">Firmenname</label>
+          <input type="text" name="company_name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#F5B400]" />
         </div>
 
-        <button type="submit" class="bg-gradient-to-r from-[#F5B400] to-[#f59e0b] text-white font-semibold py-2 px-4 rounded-lg shadow">
+        <button type="submit" class="w-full bg-gradient-to-r from-[#F5B400] to-[#f59e0b] text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg hover:scale-[1.02] transition-transform duration-200">
           Magic-Link senden
         </button>
       </form>
@@ -73,27 +73,27 @@ import "~/styles/global.css";
   </section>
 
   <!-- PRODUKT-KACHELN -->
-  <section class="smart-products mt-12">
-    <div class="smart-tile smart-tile--profile">
-      <span class="badge">DEMNÄCHST</span>
-      <h3>SmartProfile</h3>
-      <p>Dein persönliches Online-Profil – der perfekte Startpunkt für Deine digitale Präsenz.</p>
+  <section class="smart-products mt-12 max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+    <div class="smart-tile smart-tile--profile bg-gradient-to-br from-indigo-500 to-blue-500 text-white p-6 rounded-2xl shadow-lg hover:scale-[1.03] transition-transform duration-300">
+      <span class="badge bg-white/20 text-xs uppercase tracking-wide px-3 py-1 rounded-full mb-2 inline-block">DEMNÄCHST</span>
+      <h3 class="text-xl font-semibold mb-2">SmartProfile</h3>
+      <p class="text-sm leading-relaxed">Dein persönliches Online-Profil – der perfekte Startpunkt für Deine digitale Präsenz.</p>
     </div>
 
-    <div class="smart-tile smart-tile--page">
-      <span class="badge">DEMNÄCHST</span>
-      <h3>SmartPage</h3>
-      <p>Erstelle beeindruckende Seiten mit nur wenigen Klicks – ganz ohne Technikkenntnisse.</p>
+    <div class="smart-tile smart-tile--page bg-gradient-to-br from-yellow-400 to-orange-500 text-white p-6 rounded-2xl shadow-lg hover:scale-[1.03] transition-transform duration-300">
+      <span class="badge bg-white/20 text-xs uppercase tracking-wide px-3 py-1 rounded-full mb-2 inline-block">DEMNÄCHST</span>
+      <h3 class="text-xl font-semibold mb-2">SmartPage</h3>
+      <p class="text-sm leading-relaxed">Erstelle beeindruckende Seiten mit nur wenigen Klicks – ganz ohne Technikkenntnisse.</p>
     </div>
 
-    <div class="smart-tile smart-tile--domain">
-      <span class="badge">DEMNÄCHST</span>
-      <h3>SmartDomain</h3>
-      <p>Sichere Dir Deine eigene Domain und präsentiere Deine Marke professionell.</p>
+    <div class="smart-tile smart-tile--domain bg-gradient-to-br from-purple-500 to-indigo-600 text-white p-6 rounded-2xl shadow-lg hover:scale-[1.03] transition-transform duration-300">
+      <span class="badge bg-white/20 text-xs uppercase tracking-wide px-3 py-1 rounded-full mb-2 inline-block">DEMNÄCHST</span>
+      <h3 class="text-xl font-semibold mb-2">SmartDomain</h3>
+      <p class="text-sm leading-relaxed">Sichere Dir Deine eigene Domain und präsentiere Deine Marke professionell.</p>
     </div>
   </section>
 
-  <footer class="mt-16 text-center text-sm text-gray-500 py-6 border-t">
+  <footer class="mt-12 text-center text-sm text-gray-500 py-6 border-t">
     © 2025 SmartPages · Profi Marketing LLC · DSGVO-konform in Europa gehostet
   </footer>
 
