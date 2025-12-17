@@ -1,0 +1,350 @@
+---
+import "~/styles/global.css";
+---
+
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartPages Login</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <style>
+      :root {
+        --navy: #1E2A45;
+        --yellow: #F5B400;
+        --orange: #E47E00;
+        --blue: #4E6BFF;
+        --blue-light: #657AFF;
+        --violet: #8B5CFF;
+        --violet-light: #A076FF;
+        --shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+      }
+
+      body {
+        margin: 0;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: #ffffff;
+        color: #222;
+      }
+
+      header {
+        background: var(--navy);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        padding: 1.3rem;
+        text-align: center;
+      }
+
+      header img {
+        width: 120px;
+        height: 120px;
+      }
+
+      .header-text h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0 0 0.4rem;
+      }
+
+      .header-text p {
+        margin: 0;
+        font-size: 1rem;
+        opacity: 0.9;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        max-width: 1200px;
+        margin: 4rem auto;
+        gap: 2rem;
+        align-items: start;
+        padding: 0 2rem;
+      }
+
+      @media (max-width: 768px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .form-wrapper {
+        max-width: 540px;
+        margin: 0 auto;
+        background: #f6f8fb;
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+      }
+
+      .welcome {
+        background: #fff;
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        border-radius: 1rem;
+      }
+
+      .welcome h2 {
+        color: var(--yellow);
+        margin: 0 0 0.6rem;
+        font-size: 2.2rem;
+        font-weight: 800;
+      }
+
+      .welcome h3 {
+        margin: 0 0 1.25rem;
+        color: var(--navy);
+        font-size: 1.35rem;
+        font-weight: 700;
+      }
+
+      form {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+
+      label {
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: #6b7280;
+      }
+
+      input[type="text"],
+      input[type="email"] {
+        padding: 0.8rem;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+      }
+
+      .checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      button {
+        background: linear-gradient(135deg, var(--yellow), var(--orange));
+        color: white;
+        font-weight: bold;
+        padding: 0.9rem;
+        border: none;
+        border-radius: 0.6rem;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      button:hover {
+        transform: scale(1.02);
+        box-shadow: var(--shadow);
+      }
+
+      .products {
+        max-width: 1200px;
+        margin: 4rem auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 0 2rem;
+      }
+
+      .card {
+        border-radius: 1rem;
+        color: white;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 0.75rem;
+      }
+
+      .card:hover {
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      }
+
+      .smartprofile { background: linear-gradient(135deg, var(--blue), var(--blue-light)); }
+      .smartpage { background: linear-gradient(135deg, var(--yellow), var(--orange)); }
+      .smartdomain { background: linear-gradient(135deg, var(--violet), var(--violet-light)); }
+
+      footer {
+        text-align: center;
+        padding: 2rem;
+        background: #f5f5f5;
+        font-size: 0.9rem;
+        color: #555;
+      }
+
+      /* === POPUP === */
+      #popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -40%);
+        background: white;
+        padding: 1.2rem 2rem;
+        border-radius: 10px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 600;
+        opacity: 0;
+        transition: all 0.4s ease-in-out;
+        z-index: 9999;
+      }
+
+      #popup.show {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+
+      #popup.success { border-left: 8px solid #22c55e; background: #ecfdf5; color: #14532d; }
+      #popup.warning { border-left: 8px solid #facc15; background: #fefce8; color: #713f12; }
+      #popup.error   { border-left: 8px solid #ef4444; background: #fef2f2; color: #991b1b; }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <img src="/SmartPages_icon_transparent.png" alt="SmartPages Logo" />
+      <div class="header-text">
+        <h1>SmartPages</h1>
+        <p>Wir bringen Dich in 10 Minuten online – ohne Technik Wissen</p>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="welcome">
+        <h2>Herzlich Willkommen</h2>
+        <h3>bei SmartPages</h3>
+        <p>
+          Mit SmartPages startest Du in nur wenigen Minuten Dein eigenes digitales Zuhause.
+          Wir senden Dir Deinen persönlichen <b>Magic-Link</b>, mit dem Du direkt in Dein Dashboard gelangst –
+          ohne Passwort oder komplizierte Registrierung.
+        </p>
+        <p>
+          Gib einfach Deine Basisdaten ein, damit Dein Account korrekt zugeordnet werden kann.
+          Du entscheidest, ob Du SmartPages privat oder geschäftlich nutzt – 
+          der Zugang ist während der Testphase in beiden Fällen <b>kostenlos!</b>
+        </p>
+      </div>
+
+      <div class="form-wrapper">
+        <form id="magicForm">
+          <div class="form-field">
+            <label>Vorname *</label>
+            <input type="text" name="first_name" required />
+          </div>
+
+          <div class="form-field">
+            <label>Nachname</label>
+            <input type="text" name="last_name" />
+          </div>
+
+          <div class="form-field">
+            <label>E-Mail *</label>
+            <input type="email" name="email" required />
+          </div>
+
+          <div class="checkbox">
+            <input type="checkbox" id="is_business" name="is_business" />
+            <label for="is_business">Das ist ein Firmenkonto (Business)</label>
+          </div>
+
+          <div id="company_field" class="form-field" style="display:none;">
+            <label>Firmenname</label>
+            <input type="text" name="company_name" />
+          </div>
+
+          <button type="submit">Magic-Link senden</button>
+        </form>
+      </div>
+    </section>
+
+    <footer>
+      © 2025 SmartPages · Profi Marketing LLC · DSGVO-konform in Europa gehostet
+    </footer>
+
+    <div id="popup"></div>
+
+    <script>
+      const API_URL = "https://api.smartpages.online/api/auth/start";
+
+      document.getElementById("magicForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+          first_name: form.first_name.value.trim(),
+          last_name: form.last_name.value.trim(),
+          email: form.email.value.trim(),
+          company_name: form.company_name?.value.trim() || "",
+          is_business: form.is_business.checked,
+        };
+
+        showPopup(
+          "⏳ Wir senden Dir jetzt Deinen Magic-Link.<br>Bitte hab einen Moment Geduld…",
+          "warning"
+        );
+
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+            mode: "cors"
+          });
+
+          const result = await res.json();
+
+          if (result.ok) {
+            showPopup("✅ Magic-Link gesendet!<br>Bitte prüfe Dein E-Mail-Postfach.", "success");
+            form.reset();
+          } else if (result.error === "rate_limited") {
+            showPopup("⚠️ Bitte warte kurz, bevor Du es erneut versuchst.", "warning");
+          } else if (result.error === "email_bounced") {
+            showPopup("❌ Diese E-Mail konnte zuvor nicht erreicht werden.", "error");
+          } else {
+            showPopup("❌ Fehler beim Versand.<br>Bitte überprüfe Deine Angaben.", "error");
+          }
+        } catch {
+          showPopup("⚠️ Netzwerkfehler – bitte versuche es erneut.", "error");
+        }
+      });
+
+      function showPopup(message, type = "success") {
+        const popup = document.getElementById("popup");
+        popup.innerHTML = message;
+        popup.className = `show ${type}`;
+        setTimeout(() => popup.classList.remove("show"), 8000);
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const cb = document.getElementById("is_business");
+        const field = document.getElementById("company_field");
+        cb.addEventListener("change", () => {
+          field.style.display = cb.checked ? "block" : "none";
+        });
+      });
+    </script>
+  </body>
+</html>

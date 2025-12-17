@@ -1,0 +1,144 @@
+---
+import SmartHeader from "../../components/SmartHeader.astro";
+import "~/styles/global.css";
+---
+
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartPages Login</title>
+  </head>
+
+  <body class="smart-login">
+    <!-- GLOBAL HEADER -->
+    <header class="sticky top-0 z-50">
+      <SmartHeader />
+    </header>
+
+    <!-- HERO + FORM -->
+    <section class="smart-login__grid">
+      <!-- LEFT: Welcome Text -->
+      <div class="smart-box no-hover">
+        <h2>Herzlich Willkommen bei SmartPages</h2>
+        <p>
+          Mit <strong>SmartPages</strong> startest Du in nur wenigen Minuten Dein eigenes digitales Zuhause – ohne technisches Wissen oder komplizierte Einrichtung.
+          Alles wird sicher in Europa gehostet und ist vollständig <strong>DSGVO-konform</strong>.
+        </p>
+        <p>
+          Wenn Deine Zielgruppe oder Kunden in der Europäischen Union sitzen, ist Datenschutz nach der DSGVO keine Option – sondern Pflicht.
+          SmartPages hilft Dir, diese Anforderungen mühelos zu erfüllen, während Du gleichzeitig Vertrauen und Markenstärke aufbaust.
+        </p>
+        <p>
+          Gib einfach Deine Basisdaten ein, und wir senden Dir Deinen <strong>persönlichen Magic-Link</strong> für den direkten Zugang zum Dashboard – ohne Passwort, ohne Tracking und ohne versteckte Datenerfassung.
+        </p>
+      </div>
+
+      <!-- RIGHT: FORM -->
+      <div class="smart-box no-hover">
+        <form id="magicForm" class="smart-form">
+          <div class="mb-4">
+            <label class="block text-gray-600 text-sm font-medium mb-1">Vorname *</label>
+            <input type="text" name="first_name" required />
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-600 text-sm font-medium mb-1">Nachname</label>
+            <input type="text" name="last_name" />
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-600 text-sm font-medium mb-1">E-Mail *</label>
+            <input type="email" name="email" required />
+          </div>
+
+          <div class="flex items-center gap-2 mb-4">
+            <input type="checkbox" id="is_business" name="is_business" class="accent-[#F5B400]" />
+            <label for="is_business" class="text-sm text-gray-600">Das ist ein Firmenkonto (Business)</label>
+          </div>
+
+          <div id="company_field" class="hidden mb-4">
+            <label class="block text-gray-600 text-sm font-medium mb-1">Firmenname</label>
+            <input type="text" name="company_name" />
+          </div>
+
+          <button type="submit">Magic-Link senden</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- PRODUKT-KACHELN -->
+    <section class="smart-products">
+      <div class="smart-tile smart-tile--profile">
+        <span class="badge">DEMNÄCHST</span>
+        <h3>SmartProfile</h3>
+        <p>
+          Dein persönliches Online-Profil – der perfekte Startpunkt für Deine digitale Präsenz.
+          Gehostet in Europa, vollständig DSGVO-konform und optimiert für maximale Sichtbarkeit und Vertrauen.
+        </p>
+      </div>
+
+      <div class="smart-tile smart-tile--page">
+        <span class="badge">DEMNÄCHST</span>
+        <h3>SmartPage</h3>
+        <p>
+          Erstelle beeindruckende Seiten mit nur wenigen Klicks – ganz ohne Technikkenntnisse.
+          Ideal für Selbstständige, Coaches, Freelancer und kleine Unternehmen, die Wert auf professionelles Design legen.
+        </p>
+      </div>
+
+      <div class="smart-tile smart-tile--domain">
+        <span class="badge">DEMNÄCHST</span>
+        <h3>SmartDomain</h3>
+        <p>
+          Sichere Dir Deine eigene Domain und präsentiere Deine Marke professionell.
+          Vollständig DSGVO-konform, in Europa gehostet und perfekt für Dein Branding optimiert.
+        </p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      © 2025 SmartPages · Profi Marketing LLC · DSGVO-konform in Europa gehostet
+    </footer>
+
+    <script>
+      const API_URL = "https://api.smartpages.online/api/auth/start";
+      const popup = document.getElementById("popup");
+
+      document.getElementById("magicForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+          first_name: form.first_name.value.trim(),
+          last_name: form.last_name.value.trim(),
+          email: form.email.value.trim(),
+          company_name: form.company_name?.value.trim() || "",
+          is_business: form.is_business.checked,
+        };
+
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+          const result = await res.json();
+
+          if (result.ok) {
+            alert("✅ Magic-Link gesendet! Bitte prüfe Dein Postfach.");
+            form.reset();
+          } else {
+            alert("❌ Fehler beim Versand. Bitte überprüfe Deine Angaben.");
+          }
+        } catch {
+          alert("⚠️ Netzwerkfehler – bitte versuche es erneut.");
+        }
+      });
+
+      document.getElementById("is_business").addEventListener("change", (e) => {
+        document.getElementById("company_field").classList.toggle("hidden", !e.target.checked);
+      });
+    </script>
+  </body>
+</html>
