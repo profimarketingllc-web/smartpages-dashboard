@@ -6,11 +6,12 @@ import Sidebar from "~/components/Sidebar.astro";
 /* Props für flexible Seitensteuerung:
    - sidebar: zeigt die Navigationsleiste an (Standard: true)
    - header: zeigt den Header an (Standard: true)
+   - lang: Sprachcode (Standard: 'de')
 */
-const { sidebar = true, header = true } = Astro.props;
+const { sidebar = true, header = true, lang = "de" } = Astro.props;
 ---
 
-<html lang="de" class="h-full bg-smart-surface">
+<html lang={lang} class="h-full bg-smart-surface">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,8 +23,8 @@ const { sidebar = true, header = true } = Astro.props;
     <meta name="theme-color" content="#1E2A45" />
 
     <!-- 🧩 Favicon & Branding -->
-    <link rel="icon" type="image/x-icon" href="https://smartpages.online/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="192x192" href="https://smartpages.online/favicon-192.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png" />
 
     <!-- 🌀 Global Styles -->
     <link rel="stylesheet" href="/src/styles/global.css" />
