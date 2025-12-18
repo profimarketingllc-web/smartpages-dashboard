@@ -1,163 +1,179 @@
 ---
-import SmartHeader from "../../components/SmartHeader.astro";
 import "~/styles/global.css";
 ---
 
-<head>
-  <title>SmartPages Login</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
-</head>
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartPages Login</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  </head>
 
-<body class="bg-[#f9fafb] text-gray-800 antialiased">
+  <body class="bg-white text-gray-800 font-inter">
+    <!-- Header -->
+    <header class="bg-[#1E2A45] text-white py-6 px-4 flex flex-col md:flex-row items-center justify-center gap-6 shadow-lg fixed top-0 left-0 right-0 z-50">
+      <img src="/SmartPages_icon_transparent.png" alt="SmartPages Logo" class="w-24 h-24" />
+      <div class="text-center md:text-left">
+        <h1 class="text-3xl font-extrabold">SmartPages</h1>
+        <p class="text-sm opacity-90">Wir bringen Dich in 10 Minuten online – ohne Technik Wissen.</p>
+      </div>
+    </header>
 
-  <!-- GLOBAL HEADER -->
-  <header class="sticky top-0 z-50 shadow-md">
-    <SmartHeader />
-  </header>
+    <!-- Hero + Login -->
+    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 px-6 mt-36 mb-10">
+      <!-- Left -->
+      <div class="bg-white shadow-xl p-8 rounded-2xl border border-gray-100">
+        <h2 class="text-3xl font-extrabold text-[#F5B400] mb-6">Willkommen bei SmartPages</h2>
 
-  <!-- HERO SECTION -->
-  <section class="max-w-6xl mx-auto mt-12 px-6 grid md:grid-cols-2 gap-10 items-start">
-    <!-- LEFT: INTRO -->
-    <div class="bg-white rounded-2xl p-10 shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_40px_rgba(245,180,0,0.25)] transition-all duration-300">
-      <h2 class="text-3xl font-bold text-[#F5B400] mb-5">Willkommen bei SmartPages</h2>
-      <p class="mb-4 leading-relaxed">
-        Mit <strong>SmartPages</strong> startest Du in nur wenigen Minuten Dein eigenes digitales Zuhause – ohne technisches Wissen oder komplizierte Einrichtung.
-        Alles wird sicher in <strong>Europa</strong> gehostet und ist vollständig <strong>DSGVO-konform</strong>.
-      </p>
-      <p class="mb-4 leading-relaxed">
-        Wenn Deine Zielgruppe oder Kunden in der Europäischen Union sitzen, ist Datenschutz nach der DSGVO keine Option – sondern Pflicht.
-        SmartPages hilft Dir, diese Anforderungen mühelos zu erfüllen, während Du gleichzeitig Vertrauen und Markenstärke aufbaust.
-      </p>
-      <p class="leading-relaxed">
-        Gib einfach Deine Basisdaten ein, und wir senden Dir Deinen <strong>persönlichen Magic-Link</strong> für den direkten Zugang zum Dashboard – ohne Passwort, ohne Tracking und ohne versteckte Datenerfassung.
-      </p>
-    </div>
+        <p class="mb-4">
+          Mit <strong>SmartPages</strong> startest Du in nur wenigen Minuten Dein eigenes digitales Zuhause – ohne technisches Wissen oder komplizierte Einrichtung.
+          Alles wird sicher in <strong>Europa</strong> gehostet und ist vollständig <strong>DSGVO-konform</strong>.
+        </p>
 
-    <!-- RIGHT: FORM -->
-    <div class="bg-white rounded-2xl p-10 shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_40px_rgba(245,180,0,0.25)] transition-all duration-300">
-      <form id="magicForm" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-600 mb-1">Vorname *</label>
-          <input type="text" name="first_name" required
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#F5B400] outline-none transition" />
-        </div>
+        <p class="mb-4">
+          Wenn Deine Zielgruppe oder Kunden in der Europäischen Union sitzen, ist Datenschutz nach der DSGVO keine Option – sondern Pflicht.
+          SmartPages hilft Dir, diese Anforderungen mühelos zu erfüllen, während Du gleichzeitig Vertrauen und Markenstärke aufbaust.
+        </p>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-600 mb-1">Nachname</label>
-          <input type="text" name="last_name"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#F5B400] outline-none transition" />
-        </div>
+        <p>
+          Gib einfach Deine Basisdaten ein, und wir senden Dir Deinen persönlichen <strong>Magic-Link</strong> für den direkten Zugang zum Dashboard – ohne Passwort, ohne Tracking und ohne versteckte Datenerfassung.
+        </p>
+      </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-600 mb-1">E-Mail *</label>
-          <input type="email" name="email" required
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#F5B400] outline-none transition" />
-        </div>
+      <!-- Right -->
+      <div class="bg-[#f6f8fb] shadow-xl p-8 rounded-2xl border border-gray-100">
+        <form id="magicForm" class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm">
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Vorname *</label>
+            <input type="text" name="first_name" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+          </div>
 
-        <div class="flex items-center gap-2">
-          <input type="checkbox" id="is_business" name="is_business" class="accent-[#F5B400]" />
-          <label for="is_business" class="text-sm text-gray-600">Das ist ein Firmenkonto (Business)</label>
-        </div>
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">Nachname</label>
+            <input type="text" name="last_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+          </div>
 
-        <div id="company_field" class="hidden">
-          <label class="block text-sm font-medium text-gray-600 mb-1">Firmenname</label>
-          <input type="text" name="company_name"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#F5B400] outline-none transition" />
-        </div>
+          <div>
+            <label class="block text-sm text-gray-600 mb-1">E-Mail *</label>
+            <input type="email" name="email" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+          </div>
 
-        <div class="flex justify-end pt-4">
-          <button type="submit"
-            class="bg-gradient-to-r from-[#F5B400] to-[#f59e0b] text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:shadow-lg hover:shadow-amber-300/40 transition-all">
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="is_business" name="is_business" />
+            <label for="is_business" class="text-sm text-gray-600">Das ist ein Firmenkonto (Business)</label>
+          </div>
+
+          <div id="company_field" class="hidden">
+            <label class="block text-sm text-gray-600 mb-1">Firmenname</label>
+            <input type="text" name="company_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+          </div>
+
+          <!-- Glow Button -->
+          <button
+            type="submit"
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out">
             Magic-Link senden
           </button>
-        </div>
-      </form>
-    </div>
-  </section>
+        </form>
+      </div>
+    </section>
 
-  <!-- PRODUKT-KACHELN -->
-  <section class="max-w-6xl mx-auto mt-16 grid md:grid-cols-3 gap-8 px-6">
-    <div
-      class="relative bg-gradient-to-br from-[#6366f1] to-[#8b5cf6] text-white p-6 rounded-2xl shadow-[0_8px_25px_rgba(99,102,241,0.25)] hover:shadow-[0_10px_40px_rgba(99,102,241,0.45)] hover:scale-[1.02] transition-all duration-300">
-      <span
-        class="absolute top-3 left-3 bg-white/20 border border-white/30 text-white text-xs px-3 py-1 rounded-full backdrop-blur-md">
-        DEMNÄCHST
-      </span>
-      <h3 class="text-xl font-semibold mb-2">SmartProfile</h3>
-      <p class="text-sm opacity-90 leading-relaxed">
-        Dein persönliches Online-Profil – der perfekte Startpunkt für Deine digitale Präsenz.
-      </p>
-    </div>
+    <!-- Product Cards -->
+    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-10">
+      <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white hover:shadow-[0_0_25px_4px_rgba(78,107,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
+        <h3 class="text-2xl font-bold mb-2">
+          SmartProfile
+          <span class="text-sm bg-white text-[#4E6BFF] font-semibold rounded-full px-2 py-0.5 ml-2">DEMNÄCHST</span>
+        </h3>
+        <p class="mt-2 text-[1rem] leading-relaxed">
+          Dein persönliches Online-Profil – der perfekte Startpunkt für Deine digitale Präsenz. Gehostet in Europa und optimiert für Sichtbarkeit, Glaubwürdigkeit und volle DSGVO-Konformität.
+        </p>
+      </div>
 
-    <div
-      class="relative bg-gradient-to-br from-[#F5B400] to-[#f59e0b] text-white p-6 rounded-2xl shadow-[0_8px_25px_rgba(245,180,0,0.25)] hover:shadow-[0_10px_40px_rgba(245,180,0,0.45)] hover:scale-[1.02] transition-all duration-300">
-      <span
-        class="absolute top-3 left-3 bg-white/20 border border-white/30 text-white text-xs px-3 py-1 rounded-full backdrop-blur-md">
-        DEMNÄCHST
-      </span>
-      <h3 class="text-xl font-semibold mb-2">SmartPage</h3>
-      <p class="text-sm opacity-90 leading-relaxed">
-        Erstelle beeindruckende Seiten mit nur wenigen Klicks – ganz ohne Technikkenntnisse.
-      </p>
-    </div>
+      <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:shadow-[0_0_25px_4px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
+        <h3 class="text-2xl font-bold mb-2">
+          SmartPage
+          <span class="text-sm bg-white text-[#E47E00] font-semibold rounded-full px-2 py-0.5 ml-2">DEMNÄCHST</span>
+        </h3>
+        <p class="mt-2 text-[1rem] leading-relaxed">
+          Erstelle beeindruckende Seiten in wenigen Minuten – ganz ohne Code. Für Kreative, Unternehmer und Teams, die elegantes Design und volle Kontrolle ohne Komplexität wollen.
+        </p>
+      </div>
 
-    <div
-      class="relative bg-gradient-to-br from-[#8b5cf6] to-[#6366f1] text-white p-6 rounded-2xl shadow-[0_8px_25px_rgba(139,92,246,0.25)] hover:shadow-[0_10px_40px_rgba(139,92,246,0.45)] hover:scale-[1.02] transition-all duration-300">
-      <span
-        class="absolute top-3 left-3 bg-white/20 border border-white/30 text-white text-xs px-3 py-1 rounded-full backdrop-blur-md">
-        DEMNÄCHST
-      </span>
-      <h3 class="text-xl font-semibold mb-2">SmartDomain</h3>
-      <p class="text-sm opacity-90 leading-relaxed">
-        Sichere Dir Deine eigene Domain und präsentiere Deine Marke professionell.
-      </p>
-    </div>
-  </section>
+      <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white hover:shadow-[0_0_25px_4px_rgba(139,92,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
+        <h3 class="text-2xl font-bold mb-2">
+          SmartDomain
+          <span class="text-sm bg-white text-[#8B5CFF] font-semibold rounded-full px-2 py-0.5 ml-2">DEMNÄCHST</span>
+        </h3>
+        <p class="mt-2 text-[1rem] leading-relaxed">
+          Sichere Deine eigene Domain, schütze Deine Marke und bleibe von Anfang an DSGVO-konform. SmartDomain macht Online-Identität einfach und datenschutzfreundlich.
+        </p>
+      </div>
+    </section>
 
-  <!-- FOOTER -->
-  <footer class="mt-20 text-center text-sm text-gray-500 py-6 border-t">
-    © 2025 SmartPages · Profi Marketing LLC · DSGVO-konform in Europa gehostet
-  </footer>
+    <!-- Footer -->
+    <footer class="text-center text-sm text-gray-600 py-6 bg-[#f5f5f5]">
+      © 2025 SmartPages · Profi Marketing LLC · DSGVO-konform in Europa gehostet
+    </footer>
 
-  <script>
-    const API_URL = "https://api.smartpages.online/api/auth/start";
-    const form = document.getElementById("magicForm");
-    const businessCheckbox = document.getElementById("is_business");
-    const companyField = document.getElementById("company_field");
+    <!-- Pop-up -->
+    <div id="popup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50"></div>
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = {
-        first_name: form.first_name.value.trim(),
-        last_name: form.last_name.value.trim(),
-        email: form.email.value.trim(),
-        company_name: form.company_name?.value.trim() || "",
-        is_business: form.is_business.checked,
-      };
+    <script>
+      const API_URL = "https://api.smartpages.online/api/auth/start";
+      const popup = document.getElementById("popup");
 
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-        const result = await res.json();
-
-        if (result.ok) {
-          alert("✅ Magic-Link gesendet! Bitte prüfe Dein Postfach.");
-          form.reset();
-        } else {
-          alert("❌ Fehler beim Versand. Bitte überprüfe Deine Angaben.");
-        }
-      } catch {
-        alert("⚠️ Netzwerkfehler – bitte versuche es erneut.");
+      function showPopup(message, type = "success") {
+        popup.textContent = message;
+        popup.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 ${
+          type === "success"
+            ? "border-green-500 text-green-700"
+            : type === "warning"
+            ? "border-yellow-400 text-yellow-700"
+            : "border-red-500 text-red-700"
+        }`;
+        popup.classList.remove("hidden");
+        setTimeout(() => popup.classList.add("hidden"), 6000);
       }
-    });
 
-    businessCheckbox.addEventListener("change", (e) => {
-      companyField.classList.toggle("hidden", !e.target.checked);
-    });
-  </script>
-</body>
+      document.getElementById("magicForm")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+          first_name: form.first_name.value.trim(),
+          last_name: form.last_name.value.trim(),
+          email: form.email.value.trim(),
+          company_name: form.company_name?.value.trim() || "",
+          is_business: form.is_business.checked,
+        };
+
+        showPopup("⏳ Magic-Link wird gesendet...", "warning");
+
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+            mode: "cors",
+          });
+          const result = await res.json();
+
+          if (result.ok) showPopup("✅ Magic-Link gesendet! Bitte prüfe Dein Postfach.", "success");
+          else showPopup("❌ Fehler beim Versand. Bitte überprüfe Deine Angaben.", "error");
+        } catch {
+          showPopup("⚠️ Netzwerkfehler – bitte versuche es erneut.", "error");
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const cb = document.getElementById("is_business");
+        const field = document.getElementById("company_field");
+        cb?.addEventListener("change", () => {
+          field.classList.toggle("hidden", !cb.checked);
+        });
+      });
+    </script>
+  </body>
+</html>
