@@ -3,54 +3,88 @@ import "~/styles/global.css";
 import SmartHeader from "~/components/core/SmartHeader.astro";
 import Sidebar from "~/components/core/SmartSidebar.astro";
 
-/* Props für flexible Seitensteuerung:
+/* 🔧 Erweiterte Props für flexible Steuerung:
    - sidebar: zeigt die Navigationsleiste an (Standard: true)
    - header: zeigt den Header an (Standard: true)
+   - sticky: Header bleibt oben fixiert (Standard: true)
+   - headerOffset: legt oberen Abstand fest ("default" oder "compact")
    - lang: Sprachcode (Standard: 'de')
+   - title: Seitentitel (Standard: "SmartPages")
 */
-const { sidebar = true, header = true, lang = "de" } = Astro.props;
+const {
+  sidebar = true,
+  header = true,
+  sticky = true,
+  headerOffset = "default",
+  lang = "de",
+  title = "SmartPages",
+} = Astro.props;
+
+// 🧠 Dynamische CSS-Klassen
+const headerOffsetClass = headerOffset === "compact" ? "mt-16" : "mt-24";
+const stickyClass = sticky ? "sticky top-0 z-50" : "";
 ---
 
 <html lang={lang} class="h-full bg-smart-surface">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><slot name="title" /> | SmartPages</title>
+    <title>{title} | SmartPages</title>
 
     <!-- 🌐 Meta + SEO -->
     <meta name="robots" content="noindex, nofollow" />
-    <meta name="description" content="SmartPages Dashboard — privacy-first and GDPR compliant." />
+    <meta
+      name="description"
+      content="SmartPages Dashboard — privacy-first and GDPR compliant."
+    />
     <meta name="theme-color" content="#1E2A45" />
 
     <!-- 🧩 Favicon & Branding -->
-   <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
-   <link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon" />
-   <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png?v=2" />
-   <meta name="theme-color" content="#1e293b" />
-
+    <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
+    <link
+      rel="shortcut icon"
+      href="/favicon.ico?v=2"
+      type="image/x-icon"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="192x192"
+      href="/favicon-192.png?v=2"
+    />
+    <meta name="theme-color" content="#1e293b" />
 
     <!-- 🌀 Global Styles -->
     <link rel="stylesheet" href="/src/styles/global.css" />
   </head>
 
-  <body class="min-h-screen flex font-sans text-smart-text bg-smart-surface antialiased">
+  <body
+    class="min-h-screen flex font-sans text-smart-text bg-smart-surface antialiased"
+  >
     {
       sidebar ? (
         <>
-          <!-- 🧭 Sidebar -->
-          <Sidebar client:load />
+          <!-- 🧭 Sidebar (später collapsible) -->
+          <Sidebar client:load collapsible />
 
           <!-- Hauptbereich -->
-          <div class="flex-1 flex flex-col transition-all duration-300 md:ml-64">
-            {header && <SmartHeader client:load />}
+          <div
+            class="flex-1 flex flex-col transition-all duration-300 md:ml-64 bg-white"
+          >
+            {header && (
+              <div class={stickyClass}>
+                <SmartHeader client:load />
+              </div>
+            )}
 
-            <!-- Inhalt -->
-            <main class="flex-1 p-6 md:p-10">
+            <!-- 🧱 Hauptinhalt -->
+            <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
               <slot />
             </main>
 
-            <!-- Footer -->
-            <footer class="text-center text-sm text-gray-500 mt-auto py-6 border-t border-gray-200">
+            <!-- ⚙️ Footer -->
+            <footer
+              class="text-center text-sm text-gray-500 mt-auto py-6 border-t border-gray-200"
+            >
               © {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant
             </footer>
           </div>
@@ -58,15 +92,21 @@ const { sidebar = true, header = true, lang = "de" } = Astro.props;
       ) : (
         <!-- 🪶 Layout ohne Sidebar -->
         <div class="flex-1 flex flex-col min-h-screen bg-white text-smart-text">
-          {header && <SmartHeader client:load />}
+          {header && (
+            <div class={stickyClass}>
+              <SmartHeader client:load />
+            </div>
+          )}
 
           <!-- Inhalt -->
-          <main class="flex-1 p-6 md:p-10">
+          <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
             <slot />
           </main>
 
           <!-- Footer -->
-          <footer class="text-center text-sm text-gray-500 mt-auto py-6 border-t border-gray-200">
+          <footer
+            class="text-center text-sm text-gray-500 mt-auto py-6 border-t border-gray-200"
+          >
             © {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant
           </footer>
         </div>
