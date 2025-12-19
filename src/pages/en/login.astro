@@ -2,11 +2,16 @@
 import PageLayout from "~/layouts/PageLayout.astro";
 ---
 
-<PageLayout header={true} sidebar={false} lang="en">
+<PageLayout
+  header={true}
+  sidebar={false}
+  sticky={true}
+  lang="en"
+  title="SmartPages Login"
+  headerOffset="compact"
+>
   <!-- Hero + Login -->
-  <section
-    class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 px-6 mt-24 md:mt-16 mb-6"
-  >
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 px-6 mb-10">
     <!-- Left -->
     <div class="bg-white shadow-xl p-8 rounded-2xl border border-gray-100">
       <h2 class="text-3xl font-extrabold text-[#F5B400] mb-6">
@@ -34,37 +39,20 @@ import PageLayout from "~/layouts/PageLayout.astro";
 
     <!-- Right -->
     <div class="bg-[#f6f8fb] shadow-xl p-8 rounded-2xl border border-gray-100">
-      <form
-        id="magicForm"
-        class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm"
-      >
+      <form id="magicForm" class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm">
         <div>
           <label class="block text-sm text-gray-600 mb-1">First Name *</label>
-          <input
-            type="text"
-            name="first_name"
-            required
-            class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-          />
+          <input type="text" name="first_name" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
         </div>
 
         <div>
           <label class="block text-sm text-gray-600 mb-1">Last Name</label>
-          <input
-            type="text"
-            name="last_name"
-            class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-          />
+          <input type="text" name="last_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
         </div>
 
         <div>
           <label class="block text-sm text-gray-600 mb-1">Email *</label>
-          <input
-            type="email"
-            name="email"
-            required
-            class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-          />
+          <input type="email" name="email" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
         </div>
 
         <div class="flex items-center gap-2">
@@ -76,11 +64,7 @@ import PageLayout from "~/layouts/PageLayout.astro";
 
         <div id="company_field" class="hidden">
           <label class="block text-sm text-gray-600 mb-1">Company Name</label>
-          <input
-            type="text"
-            name="company_name"
-            class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-          />
+          <input type="text" name="company_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
         </div>
 
         <!-- Glow Button -->
@@ -95,66 +79,40 @@ import PageLayout from "~/layouts/PageLayout.astro";
   </section>
 
   <!-- Product Cards -->
-  <section
-    class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-10"
-  >
-    <div
-      class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white hover:shadow-[0_0_25px_4px_rgba(78,107,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out"
-    >
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-10">
+    <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white hover:shadow-[0_0_25px_4px_rgba(78,107,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
       <h3 class="text-2xl font-bold mb-2">
         SmartProfile
-        <span
-          class="text-sm bg-white text-[#4E6BFF] font-semibold rounded-full px-2 py-0.5 ml-2"
-          >COMING SOON</span
-        >
+        <span class="text-sm bg-white text-[#4E6BFF] font-semibold rounded-full px-2 py-0.5 ml-2">COMING SOON</span>
       </h3>
       <p class="mt-2 text-[1rem] leading-relaxed">
-        Your personal online profile that reflects your brand identity —
-        hosted securely in Europe and optimized for visibility, credibility,
-        and full GDPR compliance across all digital channels.
+        Your personal online profile that reflects your brand identity — hosted securely in Europe and optimized for visibility, credibility, and full GDPR compliance across all digital channels.
       </p>
     </div>
 
-    <div
-      class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:shadow-[0_0_25px_4px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out"
-    >
+    <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:shadow-[0_0_25px_4px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
       <h3 class="text-2xl font-bold mb-2">
         SmartPage
-        <span
-          class="text-sm bg-white text-[#E47E00] font-semibold rounded-full px-2 py-0.5 ml-2"
-          >COMING SOON</span
-        >
+        <span class="text-sm bg-white text-[#E47E00] font-semibold rounded-full px-2 py-0.5 ml-2">COMING SOON</span>
       </h3>
       <p class="mt-2 text-[1rem] leading-relaxed">
-        Build stunning, high-converting pages in minutes — with no code.
-        Designed for creators, entrepreneurs, and small teams who want elegant
-        design and full control without complexity.
+        Build stunning, high-converting pages in minutes — with no code. Designed for creators, entrepreneurs, and small teams who want elegant design and full control without complexity.
       </p>
     </div>
 
-    <div
-      class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white hover:shadow-[0_0_25px_4px_rgba(139,92,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out"
-    >
+    <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white hover:shadow-[0_0_25px_4px_rgba(139,92,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
       <h3 class="text-2xl font-bold mb-2">
         SmartDomain
-        <span
-          class="text-sm bg-white text-[#8B5CFF] font-semibold rounded-full px-2 py-0.5 ml-2"
-          >COMING SOON</span
-        >
+        <span class="text-sm bg-white text-[#8B5CFF] font-semibold rounded-full px-2 py-0.5 ml-2">COMING SOON</span>
       </h3>
       <p class="mt-2 text-[1rem] leading-relaxed">
-        Secure your custom domain, protect your brand, and stay GDPR-compliant
-        from the start. SmartDomain makes managing your online identity
-        effortless and fully privacy-first.
+        Secure your custom domain, protect your brand, and stay GDPR-compliant from the start. SmartDomain makes managing your online identity effortless and fully privacy-first.
       </p>
     </div>
   </section>
 
   <!-- Pop-up -->
-  <div
-    id="popup"
-    class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50"
-  ></div>
+  <div id="popup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50"></div>
 
   <script>
     const API_URL = "https://api.smartpages.online/api/auth/start";
@@ -173,41 +131,36 @@ import PageLayout from "~/layouts/PageLayout.astro";
       setTimeout(() => popup.classList.add("hidden"), 6000);
     }
 
-    document
-      .getElementById("magicForm")
-      ?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const data = {
-          first_name: form.first_name.value.trim(),
-          last_name: form.last_name.value.trim(),
-          email: form.email.value.trim(),
-          company_name: form.company_name?.value.trim() || "",
-          is_business: form.is_business.checked,
-        };
+    document.getElementById("magicForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        first_name: form.first_name.value.trim(),
+        last_name: form.last_name.value.trim(),
+        email: form.email.value.trim(),
+        company_name: form.company_name?.value.trim() || "",
+        is_business: form.is_business.checked,
+      };
 
-        showPopup("⏳ Sending your secure Magic Link...", "warning");
+      showPopup("⏳ Sending your secure Magic Link...", "warning");
 
-        try {
-          const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-            mode: "cors",
-          });
-          const result = await res.json();
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+          mode: "cors",
+        });
+        const result = await res.json();
 
-          if (result.ok)
-            showPopup("✅ Magic Link sent! Check your inbox.", "success");
-          else
-            showPopup(
-              "❌ Something went wrong. Please check your details.",
-              "error"
-            );
-        } catch {
-          showPopup("⚠️ Network error — please try again.", "error");
-        }
-      });
+        if (result.ok)
+          showPopup("✅ Magic Link sent! Check your inbox.", "success");
+        else
+          showPopup("❌ Something went wrong. Please check your details.", "error");
+      } catch {
+        showPopup("⚠️ Network error — please try again.", "error");
+      }
+    });
 
     document.addEventListener("DOMContentLoaded", () => {
       const cb = document.getElementById("is_business");
