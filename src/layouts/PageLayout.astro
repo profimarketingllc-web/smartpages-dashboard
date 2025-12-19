@@ -1,7 +1,7 @@
 ---
 import "~/styles/global.css";
 import SmartHeader from "~/components/core/SmartHeader.astro";
-import Sidebar from "~/components/core/SmartSidebar.astro";
+import SmartSidebar from "~/components/core/SmartSidebar.astro";
 
 /* 🔧 Erweiterte Props für flexible Steuerung:
    - sidebar: zeigt die Navigationsleiste an (Standard: true)
@@ -64,7 +64,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
       sidebar ? (
         <>
           <!-- 🧭 Sidebar (später collapsible) -->
-          <Sidebar client:load collapsible />
+          <SmartSidebar client:load collapsible />
 
           <!-- Hauptbereich -->
           <div
