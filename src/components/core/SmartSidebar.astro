@@ -1,35 +1,34 @@
 ---
-const navItems = [
-  { label: "Cockpit", icon: "✈️", link: "/de/dashboard" },
-  { label: "SmartProfile", icon: "👤", link: "/de/dashboard/smartprofile" },
-  { label: "SmartPage", icon: "📄", link: "/de/dashboard/smartpage" },
-  { label: "SmartDomain", icon: "🌐", link: "/de/dashboard/smartdomain" },
-];
+const {
+  title = "SmartCenter",
+  navItems = [
+    { label: "Cockpit", icon: "🛫", link: "/de/dashboard" },
+    { label: "SmartProfile", icon: "👤", link: "/de/dashboard/smartprofile" },
+    { label: "SmartPage", icon: "📄", link: "/de/dashboard/smartpage" },
+    { label: "SmartDomain", icon: "🌐", link: "/de/dashboard/smartdomain" },
+  ],
+} = Astro.props;
 ---
 
+<!-- Sidebar Container -->
 <aside
   id="sidebar"
-  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-2xl flex flex-col transition-all duration-300 ease-in-out z-40"
+  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl flex flex-col transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 md:relative z-50"
 >
-  <!-- Header -->
-  <div class="flex items-center gap-3 p-5 border-b border-white/10">
-    <img
-      src="/SmartPages_icon_transparent.png"
-      alt="SmartPages Logo"
-      class="w-10 h-10 drop-shadow-lg"
-    />
-    <span class="text-lg font-semibold tracking-wide">SmartPages</span>
+  <!-- 🔹 Sidebar Header: Page Title -->
+  <div class="p-5 border-b border-white/10">
+    <h2 class="text-xl font-bold tracking-wide">{title}</h2>
   </div>
 
-  <!-- Navigation -->
-  <nav class="flex-1 mt-8 space-y-5 px-4">
+  <!-- 🔹 Navigation -->
+  <nav class="flex-1 mt-5 space-y-4 overflow-y-auto scrollbar-hide px-3">
     {navItems.map((item) => (
       <a
         href={item.link}
         class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-               bg-gray-100/80 text-[#1E2A45]
-               hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white
-               shadow-md hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]
+               bg-[#f6f8fb] text-[#1E2A45]
+               hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00]
+               hover:text-white shadow-md hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]
                transition-all duration-300 ease-in-out"
       >
         <span class="text-lg">{item.icon}</span>
@@ -37,4 +36,50 @@ const navItems = [
       </a>
     ))}
   </nav>
+
+  <!-- ❌ Kein Footer -->
 </aside>
+
+<!-- 🔸 Overlay (Mobile) -->
+<div
+  id="overlay"
+  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"
+></div>
+
+<!-- 🔸 Hamburger Button (Mobile) -->
+<button
+  id="openSidebar"
+  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50"
+>
+  ☰
+</button>
+
+<script>
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const openBtn = document.getElementById("openSidebar");
+
+  const openSidebar = () => {
+    sidebar.classList.remove("-translate-x-full");
+    overlay.classList.remove("hidden");
+  };
+
+  const closeSidebar = () => {
+    sidebar.classList.add("-translate-x-full");
+    overlay.classList.add("hidden");
+  };
+
+  openBtn?.addEventListener("click", openSidebar);
+  overlay?.addEventListener("click", closeSidebar);
+</script>
+
+<style>
+  /* Hide scrollbar */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
