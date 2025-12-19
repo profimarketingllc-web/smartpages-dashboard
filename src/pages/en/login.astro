@@ -1,146 +1,179 @@
 ---
-import "~/styles/global.css";
+import PageLayout from "~/layouts/PageLayout.astro";
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SmartPages Login</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  </head>
+<PageLayout header={true} sidebar={false} lang="en">
+  <!-- Hero + Login -->
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 px-6 mt-16 mb-6">
+    <!-- Left -->
+    <div class="bg-white shadow-xl p-8 rounded-2xl border border-gray-100">
+      <h2 class="text-3xl font-extrabold text-[#F5B400] mb-6">
+        Welcome to SmartPages
+      </h2>
 
-  <body class="bg-white text-gray-800 font-inter">
-    <!-- Header -->
-    <header class="bg-[#1E2A45] text-white py-6 px-4 flex flex-col md:flex-row items-center justify-center gap-6 shadow-lg fixed top-0 left-0 right-0 z-50">
-      <img src="/SmartPages_icon_transparent.png" alt="SmartPages Logo" class="w-24 h-24" />
-      <div class="text-center md:text-left">
-        <h1 class="text-3xl font-extrabold">SmartPages</h1>
-        <p class="text-sm opacity-90">Go online in just 10 minutes — privacy-first and GDPR compliant.</p>
-      </div>
-    </header>
+      <p class="mb-4">
+        With <strong>SmartPages</strong>, you can build your professional online presence in just
+        <strong>10 minutes</strong> — without technical knowledge or complex setup.
+        Everything is hosted securely in <strong>Europe</strong> and fully compliant
+        with the <strong>General Data Protection Regulation (GDPR)</strong>.
+      </p>
 
-    <!-- Hero + Login -->
-    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 px-6 mt-36 mb-10">
-      <!-- Left -->
-      <div class="bg-white shadow-xl p-8 rounded-2xl border border-gray-100">
-        <h2 class="text-3xl font-extrabold text-[#F5B400] mb-6">Welcome to SmartPages</h2>
+      <p class="mb-4">
+        If your audience or clients are located in the European Union, compliance with GDPR is not optional — it’s a legal requirement.
+        SmartPages helps you meet these standards effortlessly, protecting both your brand and your users’ privacy from the very first click.
+      </p>
 
-        <p class="mb-4">
-          With <strong>SmartPages</strong>, you can build your professional online presence in just
-          <strong>10 minutes</strong> — without technical knowledge or complex setup. Everything is hosted securely
-          in <strong>Europe</strong> and fully compliant with the <strong>General Data Protection Regulation (GDPR)</strong>.
-        </p>
+      <p>
+        Simply enter your contact details below, and we’ll send you a personal
+        <strong>Magic Link</strong> that gives you secure, instant access to your
+        SmartPages dashboard — no password needed, no tracking, and no hidden data collection.
+      </p>
+    </div>
 
-        <p class="mb-4">
-          If your audience or clients are located in the European Union, compliance with GDPR is not optional — it’s a legal requirement.
-          SmartPages helps you meet these standards effortlessly, protecting both your brand and your users’ privacy from the very first click.
-        </p>
+    <!-- Right -->
+    <div class="bg-[#f6f8fb] shadow-xl p-8 rounded-2xl border border-gray-100">
+      <form
+        id="magicForm"
+        class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm"
+      >
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">First Name *</label>
+          <input
+            type="text"
+            name="first_name"
+            required
+            class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+          />
+        </div>
 
-        <p>
-          Simply enter your contact details below, and we’ll send you a personal <strong>Magic Link</strong> that gives you secure, instant access
-          to your SmartPages dashboard — no password needed, no tracking, and no hidden data collection.
-        </p>
-      </div>
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Last Name</label>
+          <input
+            type="text"
+            name="last_name"
+            class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+          />
+        </div>
 
-      <!-- Right -->
-      <div class="bg-[#f6f8fb] shadow-xl p-8 rounded-2xl border border-gray-100">
-        <form id="magicForm" class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm">
-          <div>
-            <label class="block text-sm text-gray-600 mb-1">First Name *</label>
-            <input type="text" name="first_name" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
-          </div>
+        <div>
+          <label class="block text-sm text-gray-600 mb-1">Email *</label>
+          <input
+            type="email"
+            name="email"
+            required
+            class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+          />
+        </div>
 
-          <div>
-            <label class="block text-sm text-gray-600 mb-1">Last Name</label>
-            <input type="text" name="last_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
-          </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="is_business" name="is_business" />
+          <label for="is_business" class="text-sm text-gray-600">
+            This is a business account
+          </label>
+        </div>
 
-          <div>
-            <label class="block text-sm text-gray-600 mb-1">Email *</label>
-            <input type="email" name="email" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
-          </div>
+        <div id="company_field" class="hidden">
+          <label class="block text-sm text-gray-600 mb-1">Company Name</label>
+          <input
+            type="text"
+            name="company_name"
+            class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+          />
+        </div>
 
-          <div class="flex items-center gap-2">
-            <input type="checkbox" id="is_business" name="is_business" />
-            <label for="is_business" class="text-sm text-gray-600">This is a business account</label>
-          </div>
+        <!-- Glow Button -->
+        <button
+          type="submit"
+          class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out"
+        >
+          Send Magic Link
+        </button>
+      </form>
+    </div>
+  </section>
 
-          <div id="company_field" class="hidden">
-            <label class="block text-sm text-gray-600 mb-1">Company Name</label>
-            <input type="text" name="company_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
-          </div>
+  <!-- Product Cards -->
+  <section
+    class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-8"
+  >
+    <div
+      class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white hover:shadow-[0_0_25px_4px_rgba(78,107,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out"
+    >
+      <h3 class="text-2xl font-bold mb-2">
+        SmartProfile
+        <span
+          class="text-sm bg-white text-[#4E6BFF] font-semibold rounded-full px-2 py-0.5 ml-2"
+          >COMING SOON</span
+        >
+      </h3>
+      <p class="mt-2 text-[1rem] leading-relaxed">
+        Your personal online profile that reflects your brand identity —
+        hosted securely in Europe and optimized for visibility, credibility,
+        and full GDPR compliance across all digital channels.
+      </p>
+    </div>
 
-          <!-- Glow Button -->
-          <button
-            type="submit"
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out">
-            Send Magic Link
-          </button>
-        </form>
-      </div>
-    </section>
+    <div
+      class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:shadow-[0_0_25px_4px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out"
+    >
+      <h3 class="text-2xl font-bold mb-2">
+        SmartPage
+        <span
+          class="text-sm bg-white text-[#E47E00] font-semibold rounded-full px-2 py-0.5 ml-2"
+          >COMING SOON</span
+        >
+      </h3>
+      <p class="mt-2 text-[1rem] leading-relaxed">
+        Build stunning, high-converting pages in minutes — with no code.
+        Designed for creators, entrepreneurs, and small teams who want elegant
+        design and full control without complexity.
+      </p>
+    </div>
 
-    <!-- Product Cards -->
-    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-10">
-      <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white hover:shadow-[0_0_25px_4px_rgba(78,107,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
-        <h3 class="text-2xl font-bold mb-2">
-          SmartProfile
-          <span class="text-sm bg-white text-[#4E6BFF] font-semibold rounded-full px-2 py-0.5 ml-2">COMING SOON</span>
-        </h3>
-        <p class="mt-2 text-[1rem] leading-relaxed">
-          Your personal online profile that reflects your brand identity — hosted securely in Europe and optimized for visibility, credibility, and full GDPR compliance across all digital channels.
-        </p>
-      </div>
+    <div
+      class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white hover:shadow-[0_0_25px_4px_rgba(139,92,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out"
+    >
+      <h3 class="text-2xl font-bold mb-2">
+        SmartDomain
+        <span
+          class="text-sm bg-white text-[#8B5CFF] font-semibold rounded-full px-2 py-0.5 ml-2"
+          >COMING SOON</span
+        >
+      </h3>
+      <p class="mt-2 text-[1rem] leading-relaxed">
+        Secure your custom domain, protect your brand, and stay GDPR-compliant
+        from the start. SmartDomain makes managing your online identity
+        effortless and fully privacy-first.
+      </p>
+    </div>
+  </section>
 
-      <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:shadow-[0_0_25px_4px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
-        <h3 class="text-2xl font-bold mb-2">
-          SmartPage
-          <span class="text-sm bg-white text-[#E47E00] font-semibold rounded-full px-2 py-0.5 ml-2">COMING SOON</span>
-        </h3>
-        <p class="mt-2 text-[1rem] leading-relaxed">
-          Build stunning, high-converting pages in minutes — with no code. Designed for creators, entrepreneurs, and small teams who want elegant design and full control without complexity.
-        </p>
-      </div>
+  <!-- Pop-up -->
+  <div
+    id="popup"
+    class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50"
+  ></div>
 
-      <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white hover:shadow-[0_0_25px_4px_rgba(139,92,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
-        <h3 class="text-2xl font-bold mb-2">
-          SmartDomain
-          <span class="text-sm bg-white text-[#8B5CFF] font-semibold rounded-full px-2 py-0.5 ml-2">COMING SOON</span>
-        </h3>
-        <p class="mt-2 text-[1rem] leading-relaxed">
-          Secure your custom domain, protect your brand, and stay GDPR-compliant from the start. SmartDomain makes managing your online identity effortless and fully privacy-first.
-        </p>
-      </div>
-    </section>
+  <script>
+    const API_URL = "https://api.smartpages.online/api/auth/start";
+    const popup = document.getElementById("popup");
 
-    <!-- Footer -->
-    <footer class="text-center text-sm text-gray-600 py-6 bg-[#f5f5f5]">
-      © 2025 SmartPages · Profi Marketing LLC · Hosted in Europe · GDPR Compliant
-    </footer>
+    function showPopup(message, type = "success") {
+      popup.textContent = message;
+      popup.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 ${
+        type === "success"
+          ? "border-green-500 text-green-700"
+          : type === "warning"
+          ? "border-yellow-400 text-yellow-700"
+          : "border-red-500 text-red-700"
+      }`;
+      popup.classList.remove("hidden");
+      setTimeout(() => popup.classList.add("hidden"), 6000);
+    }
 
-    <!-- Pop-up -->
-    <div id="popup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50"></div>
-
-    <script>
-      const API_URL = "https://api.smartpages.online/api/auth/start";
-      const popup = document.getElementById("popup");
-
-      function showPopup(message, type = "success") {
-        popup.textContent = message;
-        popup.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 ${
-          type === "success"
-            ? "border-green-500 text-green-700"
-            : type === "warning"
-            ? "border-yellow-400 text-yellow-700"
-            : "border-red-500 text-red-700"
-        }`;
-        popup.classList.remove("hidden");
-        setTimeout(() => popup.classList.add("hidden"), 6000);
-      }
-
-      document.getElementById("magicForm")?.addEventListener("submit", async (e) => {
+    document
+      .getElementById("magicForm")
+      ?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const form = e.target;
         const data = {
@@ -162,20 +195,24 @@ import "~/styles/global.css";
           });
           const result = await res.json();
 
-          if (result.ok) showPopup("✅ Magic Link sent! Check your inbox.", "success");
-          else showPopup("❌ Something went wrong. Please check your details.", "error");
+          if (result.ok)
+            showPopup("✅ Magic Link sent! Check your inbox.", "success");
+          else
+            showPopup(
+              "❌ Something went wrong. Please check your details.",
+              "error"
+            );
         } catch {
           showPopup("⚠️ Network error — please try again.", "error");
         }
       });
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const cb = document.getElementById("is_business");
-        const field = document.getElementById("company_field");
-        cb?.addEventListener("change", () => {
-          field.classList.toggle("hidden", !cb.checked);
-        });
+    document.addEventListener("DOMContentLoaded", () => {
+      const cb = document.getElementById("is_business");
+      const field = document.getElementById("company_field");
+      cb?.addEventListener("change", () => {
+        field.classList.toggle("hidden", !cb.checked);
       });
-    </script>
-  </body>
-</html>
+    });
+  </script>
+</PageLayout>
