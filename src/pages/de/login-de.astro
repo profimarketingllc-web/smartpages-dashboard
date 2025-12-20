@@ -25,7 +25,7 @@ import "~/styles/global.css";
     </header>
 
     <!-- Hero + Login -->
-	<section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-6 mt-8 md:mt-10 mb-8 md:mb-10">
+    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-6 mt-8 md:mt-10 mb-8 md:mb-10">
       <!-- Left -->
       <div class="bg-white shadow-xl p-8 rounded-2xl border border-gray-100">
         <h2 class="text-3xl font-extrabold text-[#F5B400] mb-6">
@@ -127,4 +127,64 @@ import "~/styles/global.css";
     </footer>
 
     <!-- Pop-up -->
-    <div id="popup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -tra
+    <div id="popup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50"></div>
+
+    <!-- Script -->
+    <script>
+      const API_URL = "https://api.smartpages.online/api/auth/start";
+      const popup = document.getElementById("popup");
+
+      function showPopup(message, type = "success") {
+        popup.textContent = message;
+        popup.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 ${
+          type === "success"
+            ? "border-green-500 text-green-700"
+            : type === "warning"
+            ? "border-yellow-400 text-yellow-700"
+            : "border-red-500 text-red-700"
+        }`;
+        popup.classList.remove("hidden");
+        setTimeout(() => popup.classList.add("hidden"), 6000);
+      }
+
+      document.getElementById("magicForm")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const data = {
+          first_name: form.first_name.value.trim(),
+          last_name: form.last_name.value.trim(),
+          email: form.email.value.trim(),
+          company_name: form.company_name?.value.trim() || "",
+          is_business: form.is_business.checked,
+        };
+
+        showPopup("⏳ Magic-Link wird gesendet...", "warning");
+
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+            mode: "cors",
+          });
+          const result = await res.json();
+
+          if (result.ok)
+            showPopup("✅ Magic-Link gesendet! Bitte prüfe Dein Postfach.", "success");
+          else
+            showPopup("❌ Etwas ist schiefgelaufen. Bitte Eingaben prüfen.", "error");
+        } catch {
+          showPopup("⚠️ Netzwerkfehler — bitte erneut versuchen.", "error");
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const cb = document.getElementById("is_business");
+        const field = document.getElementById("company_field");
+        cb?.addEventListener("change", () => {
+          field.classList.toggle("hidden", !cb.checked);
+        });
+      });
+    </script>
+  </body>
+</html>
