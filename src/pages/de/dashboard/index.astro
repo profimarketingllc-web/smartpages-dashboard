@@ -1,12 +1,12 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 
-// Beispiel-Daten (später dynamisch aus D1)
+// Beispiel-Daten (später aus D1)
 const user = {
   first_name: "Frank",
   last_name: "Hüser",
   email: "frank@smartpages.online",
-  plan: "trial", // trial, smartprofile, smartpage, smartdomain
+  plan: "trial",
   status: "active",
   is_business: true,
   last_login: "2025-12-21 22:14",
@@ -18,10 +18,10 @@ const user = {
 <PageLayout sidebar={true} header={true} lang="de">
   <!-- 🧭 Account Info -->
   <section
-    class="mt-4 mx-8 bg-white shadow-lg rounded-2xl p-6 border border-gray-100"
+    class="mt-2 mx-8 bg-white shadow-lg rounded-2xl p-6 border border-gray-100"
   >
-    <!-- 🔹 Header mit Login-Pill -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+    <!-- Header mit Login-Pill -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
       <h1 class="text-2xl font-bold text-gray-800 mb-2 md:mb-0">
         Willkommen zurück, {user.first_name} 👋
       </h1>
@@ -37,8 +37,8 @@ const user = {
       </span>
     </div>
 
-    <!-- 🧾 Kundendaten -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
+    <!-- Kundendaten -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-1">
       <div>
         <p class="text-gray-500 text-sm">Name</p>
         <p class="font-medium text-gray-800">
@@ -81,10 +81,10 @@ const user = {
       </div>
     </div>
 
-    <!-- 🔹 Daten bearbeiten Button (klein, unten links) -->
-    <div class="mt-5">
+    <!-- Daten bearbeiten Button -->
+    <div class="mt-5 flex justify-center">
       <button
-        class="text-sm px-4 py-1.5 bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white rounded-lg shadow hover:opacity-90 transition"
+        class="text-sm px-5 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg shadow-sm hover:bg-gray-50 transition"
         title="Diese Funktion ist in der Beta-Version noch nicht aktiv"
       >
         Daten bearbeiten (Beta)
@@ -126,28 +126,38 @@ const user = {
   <section
     class="mx-auto text-center mt-4 mb-10 bg-white shadow-md rounded-2xl border border-gray-100 p-6 max-w-3xl"
   >
-    <h2 class="text-xl font-semibold text-gray-800 mb-2">
-      Dein Feedback hilft uns
-    </h2>
-    <p class="text-gray-600 mb-4">
-      Teile Bugs, Wünsche und Ideen. Wir nutzen Dein Feedback, um das Dashboard gezielt weiterzuentwickeln.
-    </p>
-    <div class="flex flex-wrap justify-center gap-4">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800 mb-1">
+          Dein Feedback hilft uns
+        </h2>
+        <p class="text-gray-600 text-sm">
+          Teile Bugs, Wünsche und Ideen – so verbessern wir SmartPages gezielt.
+        </p>
+      </div>
       <button
-        class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-lg shadow transition"
+        class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-lg shadow transition text-sm"
         title="Öffnet das Feedbackformular"
       >
         Feedback-Formular öffnen
       </button>
-      <button
-        class="bg-[#1E2A45] hover:bg-[#2E3A55] text-white font-semibold px-5 py-2 rounded-lg shadow transition"
-        title="E-Mail an das SmartPages-Team"
-      >
-        E-Mail an das Team
-      </button>
     </div>
-    <p class="text-gray-500 text-sm mt-4">
-      Wir lesen alles und melden uns bei Rückfragen – vielen Dank!
-    </p>
   </section>
+
+  <!-- 💬 Floating Support Button -->
+  <button
+    id="supportButton"
+    class="fixed bottom-8 right-8 bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white rounded-full shadow-xl px-6 py-3 font-medium hover:opacity-90 transition-all z-50"
+  >
+    💬 Nachricht an das Team
+  </button>
+
+  <script>
+    const supportBtn = document.getElementById("supportButton");
+    supportBtn?.addEventListener("click", () => {
+      alert(
+        "Der Chatbot ist in dieser Beta-Version noch nicht aktiv. Bitte kontaktiere uns per support@smartpages.online."
+      );
+    });
+  </script>
 </PageLayout>
