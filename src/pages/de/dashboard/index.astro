@@ -1,45 +1,44 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 
-// Beispiel-Daten (später aus D1-API)
+// Beispiel-Daten (später dynamisch aus D1)
 const user = {
   first_name: "Frank",
   last_name: "Hüser",
   email: "frank@smartpages.online",
-  plan: "trial",
+  plan: "trial", // trial, smartprofile, smartpage, smartdomain
   status: "active",
   is_business: true,
   last_login: "2025-12-21 22:14",
   trial_end: "2026-01-15",
+  logged_in: true,
 };
 ---
 
 <PageLayout sidebar={true} header={true} lang="de">
-  <!-- 👤 Account Übersicht – jetzt direkt oben -->
+  <!-- 🧭 Account Info -->
   <section
-    class="mt-6 mx-8 bg-white shadow-md rounded-2xl p-6 border border-gray-100"
+    class="mt-4 mx-8 bg-white shadow-lg rounded-2xl p-6 border border-gray-100"
   >
+    <!-- 🔹 Header mit Login-Pill -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-800 mb-1">
-          Willkommen zurück, {user.first_name} 👋
-        </h1>
-        <p class="text-gray-600">
-          Schön, dass Du wieder da bist. Hier findest Du Deinen aktuellen
-          Account-Status und Deine SmartPages-Produkte.
-        </p>
-      </div>
-      <div class="mt-4 md:mt-0">
-        <button
-          class="px-5 py-2 bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white font-medium rounded-xl shadow hover:opacity-90 transition"
-        >
-          Daten bearbeiten
-        </button>
-      </div>
+      <h1 class="text-2xl font-bold text-gray-800 mb-2 md:mb-0">
+        Willkommen zurück, {user.first_name} 👋
+      </h1>
+
+      <span
+        class={`px-4 py-1.5 rounded-full text-sm font-semibold ${
+          user.logged_in
+            ? "bg-green-100 text-green-700 border border-green-300"
+            : "bg-red-100 text-red-700 border border-red-300"
+        }`}
+      >
+        {user.logged_in ? "Eingeloggt" : "Nicht eingeloggt"}
+      </span>
     </div>
 
     <!-- 🧾 Kundendaten -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
       <div>
         <p class="text-gray-500 text-sm">Name</p>
         <p class="font-medium text-gray-800">
@@ -58,7 +57,19 @@ const user = {
       </div>
       <div>
         <p class="text-gray-500 text-sm">Plan</p>
-        <p class="font-medium text-gray-800 capitalize">{user.plan}</p>
+        <p
+          class={`font-semibold ${
+            user.plan === "smartprofile"
+              ? "text-[#4E6BFF]"
+              : user.plan === "smartpage"
+              ? "text-[#E47E00]"
+              : user.plan === "smartdomain"
+              ? "text-[#8B5CFF]"
+              : "text-gray-600"
+          }`}
+        >
+          {user.plan === "trial" ? "Trial (7 Tage)" : user.plan}
+        </p>
       </div>
       <div>
         <p class="text-gray-500 text-sm">Letztes Login</p>
@@ -69,10 +80,20 @@ const user = {
         <p class="font-medium text-gray-800">{user.trial_end}</p>
       </div>
     </div>
+
+    <!-- 🔹 Daten bearbeiten Button (klein, unten links) -->
+    <div class="mt-5">
+      <button
+        class="text-sm px-4 py-1.5 bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white rounded-lg shadow hover:opacity-90 transition"
+        title="Diese Funktion ist in der Beta-Version noch nicht aktiv"
+      >
+        Daten bearbeiten (Beta)
+      </button>
+    </div>
   </section>
 
   <!-- 💎 Produkt-Kacheln -->
-  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 p-8 mt-8">
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 p-8 mt-4">
     <div
       class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white"
     >
@@ -99,5 +120,34 @@ const user = {
         Sichere Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
       </p>
     </div>
+  </section>
+
+  <!-- 💬 Feedback & Team Kontakt -->
+  <section
+    class="mx-auto text-center mt-4 mb-10 bg-white shadow-md rounded-2xl border border-gray-100 p-6 max-w-3xl"
+  >
+    <h2 class="text-xl font-semibold text-gray-800 mb-2">
+      Dein Feedback hilft uns
+    </h2>
+    <p class="text-gray-600 mb-4">
+      Teile Bugs, Wünsche und Ideen. Wir nutzen Dein Feedback, um das Dashboard gezielt weiterzuentwickeln.
+    </p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <button
+        class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-lg shadow transition"
+        title="Öffnet das Feedbackformular"
+      >
+        Feedback-Formular öffnen
+      </button>
+      <button
+        class="bg-[#1E2A45] hover:bg-[#2E3A55] text-white font-semibold px-5 py-2 rounded-lg shadow transition"
+        title="E-Mail an das SmartPages-Team"
+      >
+        E-Mail an das Team
+      </button>
+    </div>
+    <p class="text-gray-500 text-sm mt-4">
+      Wir lesen alles und melden uns bei Rückfragen – vielen Dank!
+    </p>
   </section>
 </PageLayout>
