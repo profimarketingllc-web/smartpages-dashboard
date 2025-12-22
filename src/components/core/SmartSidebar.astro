@@ -1,83 +1,98 @@
 ---
-import "~/styles/global.css";
-import SmartHeader from "~/components/core/SmartHeader.astro";
-import SmartSidebar from "~/components/core/SmartSidebar.astro";
-
 const {
-  sidebar = true,
-  header = true,
-  sticky = true,
-  headerOffset = "compact",
-  lang = "de",
-  title = "SmartPages",
+  title = "SmartCenter",
+  navItems = [
+    { label: "Cockpit", icon: "🛫", link: "/de/dashboard" },
+    { label: "SmartProfile", icon: "👤", link: "/de/dashboard/smartprofile" },
+    { label: "SmartPage", icon: "📄", link: "/de/dashboard/smartpage" },
+    { label: "SmartDomain", icon: "🌐", link: "/de/dashboard/smartdomain" },
+  ],
 } = Astro.props;
-
-const headerOffsetClass = headerOffset === "compact" ? "mt-6" : "mt-24";
-const stickyClass = sticky ? "sticky top-0 z-50" : "";
 ---
 
-<html lang={lang} class="h-full bg-[#f8fafc]">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
-    <meta name="robots" content="noindex, nofollow" />
-    <meta
-      name="description"
-      content="SmartPages Dashboard — privacy-first and GDPR compliant."
-    />
-    <meta name="theme-color" content="#1E2A45" />
-    <link rel="icon" href="/favicon.ico?v=2" />
-    <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png?v=2" />
-    <link rel="stylesheet" href="/src/styles/global.css" />
-  </head>
+<!-- Sidebar Container -->
+<aside
+  id="sidebar"
+  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl flex flex-col transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 z-50"
+>
+  <!-- 🔹 Sidebar Header -->
+  <div class="h-20 flex items-center justify-center border-b border-white/10">
+    <h2 class="text-xl font-extrabold tracking-wide text-[#F5B400] drop-shadow-[0_0_6px_rgba(245,180,0,0.3)]">
+      {title}
+    </h2>
+  </div>
 
-  <body class="min-h-screen flex font-sans text-smart-text bg-[#f8fafc] antialiased overflow-x-hidden">
-    {
-      sidebar ? (
-        <>
-          <!-- 🧭 Sidebar -->
-          <SmartSidebar />
+  <!-- 🔹 Navigation -->
+  <nav class="flex-1 mt-8 space-y-4 overflow-y-auto scrollbar-hide px-3">
+    {navItems.map((item) => (
+      <a
+        href={item.link}
+        class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
+               bg-[#f6f8fb] text-[#1E2A45]
+               hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00]
+               hover:text-white shadow-md hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]
+               transition-all duration-300 ease-in-out"
+      >
+        <span class="text-lg">{item.icon}</span>
+        <span>{item.label}</span>
+      </a>
+    ))}
+  </nav>
 
-          <!-- Hauptbereich -->
-          <div class="flex-1 flex flex-col transition-all duration-300 md:ml-64 bg-[#f8fafc]">
-            {header && (
-              <div class={stickyClass}>
-                <SmartHeader />
-              </div>
-            )}
+  <!-- 🔹 Kontakt-Button am Fuß -->
+  <div class="p-4 border-t border-white/10">
+    <a
+      href="mailto:support@smartpages.online"
+      class="block w-full text-center rounded-2xl py-3 font-medium
+             bg-[#4F6EF7] text-white
+             hover:bg-white hover:text-[#1E2A45]
+             transition-all duration-300 shadow-md"
+    >
+      💬 Nachricht an das Team
+    </a>
+  </div>
+</aside>
 
-            <!-- 🧱 Hauptinhalt -->
-            <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
-              <slot />
-            </main>
+<!-- 🔸 Overlay (Mobile) -->
+<div
+  id="overlay"
+  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"
+></div>
 
-            <!-- ⚙️ Footer -->
-            <footer class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-[#f8fafc]">
-              © {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant
-            </footer>
-          </div>
-        </>
-      ) : (
-        <!-- 🪶 Layout ohne Sidebar -->
-        <div class="flex-1 flex flex-col min-h-screen bg-[#f8fafc] text-smart-text">
-          {header && (
-            <div class={stickyClass}>
-              <SmartHeader />
-            </div>
-          )}
+<!-- 🔸 Hamburger Button (Mobile) -->
+<button
+  id="openSidebar"
+  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50"
+>
+  ☰
+</button>
 
-          <!-- Inhalt -->
-          <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
-            <slot />
-          </main>
+<script>
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const openBtn = document.getElementById("openSidebar");
 
-          <!-- Footer -->
-          <footer class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-[#f8fafc]">
-            © {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant
-          </footer>
-        </div>
-      )
-    }
-  </body>
-</html>
+  const openSidebar = () => {
+    sidebar.classList.remove("-translate-x-full");
+    overlay.classList.remove("hidden");
+  };
+
+  const closeSidebar = () => {
+    sidebar.classList.add("-translate-x-full");
+    overlay.classList.add("hidden");
+  };
+
+  openBtn?.addEventListener("click", openSidebar);
+  overlay?.addEventListener("click", closeSidebar);
+</script>
+
+<style>
+  /* Hide scrollbar */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
