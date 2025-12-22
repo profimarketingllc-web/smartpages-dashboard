@@ -1,37 +1,45 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 
-// Beispiel-Daten (später dynamisch via API aus D1)
+// Beispiel-Daten (später aus D1-API)
 const user = {
   first_name: "Frank",
   last_name: "Hüser",
   email: "frank@smartpages.online",
   plan: "trial",
   status: "active",
+  is_business: true,
+  last_login: "2025-12-21 22:14",
+  trial_end: "2026-01-15",
 };
 ---
 
 <PageLayout sidebar={true} header={true} lang="de">
-  <!-- 🧭 Begrüßungsbereich -->
-  <section class="mt-6 px-8">
-    <h1 class="text-3xl font-bold text-gray-800 mb-2">
-      Willkommen zurück, {user.first_name} 👋
-    </h1>
-    <p class="text-gray-600">
-      Schön, dass Du wieder da bist. Hier findest Du alle Infos zu Deinem Konto
-      und Deinen SmartPages-Produkten.
-    </p>
-  </section>
-
-  <!-- 👤 Account Übersicht -->
+  <!-- 👤 Account Übersicht – jetzt direkt oben -->
   <section
-    class="mt-8 mx-8 bg-white shadow-lg rounded-2xl p-6 border border-gray-100"
+    class="mt-6 mx-8 bg-white shadow-md rounded-2xl p-6 border border-gray-100"
   >
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">
-      Dein Account & Status
-    </h2>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800 mb-1">
+          Willkommen zurück, {user.first_name} 👋
+        </h1>
+        <p class="text-gray-600">
+          Schön, dass Du wieder da bist. Hier findest Du Deinen aktuellen
+          Account-Status und Deine SmartPages-Produkte.
+        </p>
+      </div>
+      <div class="mt-4 md:mt-0">
+        <button
+          class="px-5 py-2 bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white font-medium rounded-xl shadow hover:opacity-90 transition"
+        >
+          Daten bearbeiten
+        </button>
+      </div>
+    </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- 🧾 Kundendaten -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
       <div>
         <p class="text-gray-500 text-sm">Name</p>
         <p class="font-medium text-gray-800">
@@ -43,32 +51,28 @@ const user = {
         <p class="font-medium text-gray-800">{user.email}</p>
       </div>
       <div>
-        <p class="text-gray-500 text-sm">Aktueller Plan</p>
+        <p class="text-gray-500 text-sm">Status</p>
+        <p class="font-medium text-gray-800">
+          {user.is_business ? "Business" : "Privat"}
+        </p>
+      </div>
+      <div>
+        <p class="text-gray-500 text-sm">Plan</p>
         <p class="font-medium text-gray-800 capitalize">{user.plan}</p>
       </div>
       <div>
-        <p class="text-gray-500 text-sm">Status</p>
-        <p
-          class={`font-medium ${
-            user.status === "active" ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {user.status}
-        </p>
+        <p class="text-gray-500 text-sm">Letztes Login</p>
+        <p class="font-medium text-gray-800">{user.last_login}</p>
       </div>
-    </div>
-
-    <div class="mt-6">
-      <button
-        class="px-5 py-2 bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white font-medium rounded-xl shadow hover:opacity-90 transition"
-      >
-        Daten bearbeiten
-      </button>
+      <div>
+        <p class="text-gray-500 text-sm">Testphase bis</p>
+        <p class="font-medium text-gray-800">{user.trial_end}</p>
+      </div>
     </div>
   </section>
 
   <!-- 💎 Produkt-Kacheln -->
-  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 p-8 mt-6">
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 p-8 mt-8">
     <div
       class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white"
     >
