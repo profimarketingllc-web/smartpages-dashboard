@@ -1,7 +1,7 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 
-// 🔧 Beispiel-Daten (später vom Customer-Worker)
+// 🧠 Beispiel-Daten (werden später vom Customer-Worker geladen)
 const user = {
   first_name: "Frank",
   last_name: "Hüser",
@@ -18,7 +18,7 @@ const user = {
 <PageLayout sidebar={true} header={true} lang="de" headerOffset="compact">
   <!-- 🧭 Account Info -->
   <section
-    class="mt-0 mx-8 bg-white shadow-lg rounded-2xl p-6 border border-gray-100"
+    class="mt-0 mx-8 bg-[#F9FAFB] shadow-lg rounded-2xl p-6 border border-gray-200"
   >
     <!-- Header + Login Status -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-3">
@@ -127,7 +127,7 @@ const user = {
 
   <!-- 💬 Feedback & Kontakt -->
   <section
-    class="mx-auto text-center mt-4 mb-10 bg-white shadow-md rounded-2xl border border-gray-100 p-6 max-w-3xl"
+    class="mx-auto text-center mt-4 mb-10 bg-[#F9FAFB] shadow-md rounded-2xl border border-gray-200 p-6 max-w-3xl"
   >
     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
@@ -139,7 +139,7 @@ const user = {
         </p>
       </div>
       <button
-        class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] hover:opacity-90 text-white font-semibold px-5 py-2 rounded-lg shadow transition text-sm"
+        class="bg-[#D23B3B] hover:bg-[#B83030] text-white font-semibold px-5 py-2 rounded-lg shadow transition text-sm"
         title="Öffnet das Feedbackformular"
       >
         Feedback-Formular öffnen
@@ -150,17 +150,4 @@ const user = {
   <!-- 💬 Floating Support Button -->
   <button
     id="supportButton"
-    class="fixed bottom-8 right-8 bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white rounded-full shadow-xl px-6 py-3 font-medium hover:opacity-90 transition-all z-50"
-  >
-    💬 Nachricht an das Team
-  </button>
-
-  <script>
-    const supportBtn = document.getElementById("supportButton");
-    supportBtn?.addEventListener("click", () => {
-      alert(
-        "Der Chatbot ist in dieser Beta-Version noch nicht aktiv. Bitte kontaktiere uns per support@smartpages.online."
-      );
-    });
-  </script>
-</PageLayout>
+    class="fixed botto
