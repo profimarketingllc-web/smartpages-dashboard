@@ -9,7 +9,7 @@ const {
   sticky = true,
   headerOffset = "compact",
   lang = "de",
-  title = "SmartPages Cockpit",
+  title = "SmartPages",
 } = Astro.props;
 
 const headerOffsetClass = headerOffset === "compact" ? "mt-6" : "mt-24";
@@ -32,38 +32,28 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
     <link rel="stylesheet" href="/src/styles/global.css" />
   </head>
 
-  <body
-    class="min-h-screen flex font-sans text-smart-text bg-[#f8fafc] antialiased overflow-x-hidden"
-  >
+  <body class="min-h-screen flex font-sans text-smart-text bg-[#f8fafc] antialiased overflow-x-hidden">
     {
       sidebar ? (
         <>
           <!-- 🧭 Sidebar -->
-          <SmartSidebar client:load collapsible />
+          <SmartSidebar />
 
           <!-- Hauptbereich -->
-          <div
-            class="flex-1 flex flex-col transition-all duration-300 md:ml-64 bg-[#f8fafc]"
-          >
+          <div class="flex-1 flex flex-col transition-all duration-300 md:ml-64 bg-[#f8fafc]">
             {header && (
               <div class={stickyClass}>
-                <SmartHeader client:load />
+                <SmartHeader />
               </div>
             )}
 
             <!-- 🧱 Hauptinhalt -->
-            <main
-              class={`flex-1 p-6 md:p-10 ${
-                header ? headerOffsetClass : ""
-              }`}
-            >
+            <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
               <slot />
             </main>
 
             <!-- ⚙️ Footer -->
-            <footer
-              class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-[#f8fafc]"
-            >
+            <footer class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-[#f8fafc]">
               © {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant
             </footer>
           </div>
@@ -73,23 +63,17 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
         <div class="flex-1 flex flex-col min-h-screen bg-[#f8fafc] text-smart-text">
           {header && (
             <div class={stickyClass}>
-              <SmartHeader client:load />
+              <SmartHeader />
             </div>
           )}
 
           <!-- Inhalt -->
-          <main
-            class={`flex-1 p-6 md:p-10 ${
-              header ? headerOffsetClass : ""
-            }`}
-          >
+          <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
             <slot />
           </main>
 
           <!-- Footer -->
-          <footer
-            class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-[#f8fafc]"
-          >
+          <footer class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-[#f8fafc]">
             © {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant
           </footer>
         </div>
