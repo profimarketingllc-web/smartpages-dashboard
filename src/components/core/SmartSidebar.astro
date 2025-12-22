@@ -13,33 +13,47 @@ const {
 <!-- Sidebar Container -->
 <aside
   id="sidebar"
-  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl flex flex-col transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 z-50"
+  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl flex flex-col justify-between transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 md:relative z-50"
 >
-<!-- 🔹 Sidebar Header: Vertically Centered Page Title -->
-<div class="h-20 flex items-center justify-center border-b border-white/10">
-  <h2 class="text-xl font-extrabold tracking-wide text-[#F5B400] drop-shadow-[0_0_6px_rgba(245,180,0,0.3)]">
-    {title}
-  </h2>
-</div>
+  <!-- 🔹 Sidebar Header -->
+  <div>
+    <div class="h-20 flex items-center justify-center border-b border-white/10">
+      <h2 class="text-xl font-extrabold tracking-wide text-[#F5B400] drop-shadow-[0_0_6px_rgba(245,180,0,0.3)]">
+        {title}
+      </h2>
+    </div>
 
-  <!-- 🔹 Navigation -->
-  <nav class="flex-1 mt-5 space-y-4 overflow-y-auto scrollbar-hide px-3">
-    {navItems.map((item) => (
-      <a
-        href={item.link}
-        class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-               bg-[#f6f8fb] text-[#1E2A45]
-               hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00]
-               hover:text-white shadow-md hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]
-               transition-all duration-300 ease-in-out"
-      >
-        <span class="text-lg">{item.icon}</span>
-        <span>{item.label}</span>
-      </a>
-    ))}
-  </nav>
+    <!-- 🔹 Navigation -->
+    <nav class="flex-1 mt-8 space-y-4 overflow-y-auto scrollbar-hide px-3">
+      {navItems.map((item) => (
+        <a
+          href={item.link}
+          class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
+                 bg-[#f6f8fb] text-[#1E2A45]
+                 hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00]
+                 hover:text-white shadow-md hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]
+                 transition-all duration-300 ease-in-out"
+        >
+          <span class="text-lg">{item.icon}</span>
+          <span>{item.label}</span>
+        </a>
+      ))}
+    </nav>
+  </div>
 
-  <!-- ❌ Kein Footer -->
+  <!-- 🔸 Nachricht an das Team Button -->
+  <div class="p-5 border-t border-white/10">
+    <button
+      id="teamMessageBtn"
+      class="w-full py-3 px-4 rounded-2xl font-semibold text-sm
+             bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
+             text-white hover:bg-white hover:text-[#1E2A45]
+             hover:shadow-[0_0_15px_rgba(78,107,255,0.5)]
+             transition-all duration-300 ease-in-out"
+    >
+      💬 Nachricht an das Team
+    </button>
+  </div>
 </aside>
 
 <!-- 🔸 Overlay (Mobile) -->
@@ -60,6 +74,7 @@ const {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.getElementById("overlay");
   const openBtn = document.getElementById("openSidebar");
+  const teamBtn = document.getElementById("teamMessageBtn");
 
   const openSidebar = () => {
     sidebar.classList.remove("-translate-x-full");
@@ -73,10 +88,15 @@ const {
 
   openBtn?.addEventListener("click", openSidebar);
   overlay?.addEventListener("click", closeSidebar);
+
+  // 💬 Temporär: Info bis Chatfunktion aktiv
+  teamBtn?.addEventListener("click", () => {
+    alert("In Kürze verfügbar – hier kannst Du bald direkt mit dem Team chatten!");
+  });
 </script>
 
 <style>
-  /* Hide scrollbar */
+  /* Scrollbar ausblenden */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
