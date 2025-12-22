@@ -21,7 +21,7 @@ const {
 } = Astro.props;
 
 // 🧠 Dynamische CSS-Klassen
-const headerOffsetClass = headerOffset === "compact" ? "mt-16" : "mt-24";
+const headerOffsetClass = headerOffset === "compact" ? "mt-6" : "mt-10";
 const stickyClass = sticky ? "sticky top-0 z-50" : "";
 ---
 
@@ -29,7 +29,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title || "SmartPages"}</title>
+    <title>{title || "SmartPages"}</title>
 
     <!-- 🌐 Meta + SEO -->
     <meta name="robots" content="noindex, nofollow" />
@@ -41,16 +41,8 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
 
     <!-- 🧩 Favicon & Branding -->
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
-    <link
-      rel="shortcut icon"
-      href="/favicon.ico?v=2"
-      type="image/x-icon"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="192x192"
-      href="/favicon-192.png?v=2"
-    />
+    <link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png?v=2" />
     <meta name="theme-color" content="#1e293b" />
 
     <!-- 🌀 Global Styles -->
@@ -58,12 +50,12 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
   </head>
 
   <body
-    class="min-h-screen flex font-sans text-smart-text bg-smart-surface antialiased"
+    class="min-h-screen flex font-sans text-smart-text bg-smart-surface antialiased relative"
   >
     {
       sidebar ? (
         <>
-          <!-- 🧭 Sidebar (später collapsible) -->
+          <!-- 🧭 Sidebar -->
           <SmartSidebar client:load collapsible />
 
           <!-- Hauptbereich -->
@@ -77,7 +69,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
             )}
 
             <!-- 🧱 Hauptinhalt -->
-            <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
+            <main class={`flex-1 p-4 md:p-6 ${header ? headerOffsetClass : ""}`}>
               <slot />
             </main>
 
@@ -99,7 +91,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
           )}
 
           <!-- Inhalt -->
-          <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
+          <main class={`flex-1 p-4 md:p-6 ${header ? headerOffsetClass : ""}`}>
             <slot />
           </main>
 
@@ -112,5 +104,20 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
         </div>
       )
     }
+
+    <!-- 💬 Floating Support Button -->
+    <button
+      id="supportButton"
+      class="fixed bottom-6 right-6 bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white rounded-full shadow-xl px-6 py-3 font-medium hover:opacity-90 transition-all"
+    >
+      💬 Nachricht an das Team
+    </button>
+
+    <script>
+      const supportBtn = document.getElementById("supportButton");
+      supportBtn?.addEventListener("click", () => {
+        alert("Der Chatbot ist in dieser Beta-Version noch nicht aktiv. Bitte kontaktiere uns per support@smartpages.online.");
+      });
+    </script>
   </body>
 </html>
