@@ -9,7 +9,7 @@ const {
   sticky = true,
   headerOffset = "compact",
   lang = "de",
-  title = "SmartPages",
+  title = "SmartPages Cockpit",
 } = Astro.props;
 
 const headerOffsetClass = headerOffset === "compact" ? "mt-6" : "mt-24";
@@ -20,17 +20,21 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title || "SmartPages"}</title>
+    <title>{title}</title>
     <meta name="robots" content="noindex, nofollow" />
-    <meta name="description" content="SmartPages Dashboard — privacy-first and GDPR compliant." />
+    <meta
+      name="description"
+      content="SmartPages Dashboard — privacy-first and GDPR compliant."
+    />
     <meta name="theme-color" content="#1E2A45" />
     <link rel="icon" href="/favicon.ico?v=2" />
     <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png?v=2" />
-    <meta name="theme-color" content="#1e293b" />
     <link rel="stylesheet" href="/src/styles/global.css" />
   </head>
 
-  <body class="min-h-screen flex font-sans text-smart-text bg-[#f8fafc] antialiased overflow-x-hidden">
+  <body
+    class="min-h-screen flex font-sans text-smart-text bg-[#f8fafc] antialiased overflow-x-hidden"
+  >
     {
       sidebar ? (
         <>
@@ -47,12 +51,16 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
               </div>
             )}
 
-            <!-- Hauptinhalt -->
-            <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
+            <!-- 🧱 Hauptinhalt -->
+            <main
+              class={`flex-1 p-6 md:p-10 ${
+                header ? headerOffsetClass : ""
+              }`}
+            >
               <slot />
             </main>
 
-            <!-- Footer -->
+            <!-- ⚙️ Footer -->
             <footer
               class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-[#f8fafc]"
             >
@@ -61,7 +69,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
           </div>
         </>
       ) : (
-        <!-- Layout ohne Sidebar -->
+        <!-- 🪶 Layout ohne Sidebar -->
         <div class="flex-1 flex flex-col min-h-screen bg-[#f8fafc] text-smart-text">
           {header && (
             <div class={stickyClass}>
@@ -69,10 +77,16 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
             </div>
           )}
 
-          <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
+          <!-- Inhalt -->
+          <main
+            class={`flex-1 p-6 md:p-10 ${
+              header ? headerOffsetClass : ""
+            }`}
+          >
             <slot />
           </main>
 
+          <!-- Footer -->
           <footer
             class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-[#f8fafc]"
           >
