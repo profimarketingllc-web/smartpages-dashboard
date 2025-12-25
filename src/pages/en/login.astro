@@ -126,28 +126,28 @@ import "~/styles/global.css";
     </footer>
 
     <!-- Pop-up -->
-    <div id="popup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50"></div>
+    <div id="popup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50"></div>
 
+    <!-- Script -->
     <script>
       const API_URL = "https://api.smartpages.online/api/auth/start";
       const popup = document.getElementById("popup");
+      const form = document.getElementById("magicForm");
 
       function showPopup(message, type = "success") {
-        popup.textContent = message;
-        popup.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 ${
-          type === "success"
-            ? "border-green-500 text-green-700"
-            : type === "warning"
-            ? "border-yellow-400 text-yellow-700"
-            : "border-red-500 text-red-700"
-        }`;
+        popup.innerHTML = message;
+        popup.className = \`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 \${ 
+          type === "success" ? "border-green-500 text-green-700" :
+          type === "warning" ? "border-yellow-400 text-yellow-700" :
+          "border-red-500 text-red-700"
+        }\`;
         popup.classList.remove("hidden");
-        setTimeout(() => popup.classList.add("hidden"), 6000);
+        setTimeout(() => popup.classList.add("hidden"), 7000);
       }
 
-      document.getElementById("magicForm")?.addEventListener("submit", async (e) => {
+      form?.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const form = e.target;
+
         const data = {
           first_name: form.first_name.value.trim(),
           last_name: form.last_name.value.trim(),
@@ -156,7 +156,10 @@ import "~/styles/global.css";
           is_business: form.is_business.checked,
         };
 
-        showPopup("⏳ Sende sicheren Magic-Link...", "warning");
+        showPopup(
+          "⏳ We are sending your Magic Link...<br><span class='text-sm opacity-80'>It takes a moment, please wait.</span>",
+          "warning"
+        );
 
         try {
           const res = await fetch(API_URL, {
@@ -167,10 +170,13 @@ import "~/styles/global.css";
           });
           const result = await res.json();
 
-          if (result.ok) showPopup("✅ Magic-Link gesendet! Bitte Postfach prüfen.", "success");
-          else showPopup("❌ Etwas ist schiefgelaufen. Bitte Eingaben prüfen.", "error");
+          if (result.ok) {
+            showPopup("✅ Magic Link sent!<br><span class='text-sm opacity-80'>Please check your inbox.</span>", "success");
+          } else {
+            showPopup("❌ Something went wrong.<br><span class='text-sm opacity-80'>Please check your input.</span>", "error");
+          }
         } catch {
-          showPopup("⚠️ Netzwerkfehler — bitte erneut versuchen.", "error");
+          showPopup("⚠️ Network error.<br><span class='text-sm opacity-80'>Please try again.</span>", "error");
         }
       });
 
