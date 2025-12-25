@@ -1,30 +1,45 @@
 ---
-const {
-  title = "SmartCenter",
-  navItems = [
-    { label: "Cockpit", icon: "🛫", link: "/de/dashboard" },
-    { label: "SmartProfile", icon: "👤", link: "/de/dashboard/smartprofile" },
-    { label: "SmartPage", icon: "📄", link: "/de/dashboard/smartpage" },
-    { label: "SmartDomain", icon: "🌐", link: "/de/dashboard/smartdomain" },
-  ],
-} = Astro.props;
+const currentLang = Astro.url.pathname.startsWith("/en") ? "en" : "de";
+
+// Footer-Button (bilingual)
+const footerLabel =
+  currentLang === "en" ? "💬 Message the Team" : "💬 Nachricht an das Team";
+
+// Basis-Navigationspunkte (international, feste Produktnamen)
+const navItems = [
+  { label: "Cockpit", icon: "🛫", link: "/de/dashboard" },
+  { label: "SmartProfile", icon: "👤", link: "/de/dashboard/smartprofile" },
+  { label: "SmartPage", icon: "📄", link: "/de/dashboard/smartpage" },
+  { label: "SmartDomain", icon: "🌐", link: "/de/dashboard/smartdomain" },
+];
+
+// Sprachabhängige Link-Korrektur (DE/EN)
+const adjustedNavItems = navItems.map((item) => ({
+  ...item,
+  link:
+    currentLang === "en"
+      ? item.link.replace("/de/", "/en/")
+      : item.link.replace("/en/", "/de/"),
+}));
 ---
 
-<!-- Sidebar Container -->
+<!-- 📦 Sidebar Container -->
 <aside
   id="sidebar"
-  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl flex flex-col transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 z-50"
+  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl 
+         flex flex-col justify-between transition-transform duration-300 ease-in-out
+         -translate-x-full md:translate-x-0 z-50"
 >
-  <!-- 🔹 Sidebar Header -->
+  <!-- 🔹 Header -->
   <div class="h-20 flex items-center justify-center border-b border-white/10">
     <h2 class="text-xl font-extrabold tracking-wide text-[#F5B400] drop-shadow-[0_0_6px_rgba(245,180,0,0.3)]">
-      {title}
+      SmartCenter
     </h2>
   </div>
 
   <!-- 🔹 Navigation -->
-  <nav class="flex-1 mt-8 space-y-4 overflow-y-auto scrollbar-hide px-3">
-    {navItems.map((item) => (
+  <nav class="flex-1 mt-20 space-y-4 overflow-y-auto scrollbar-hide px-3 pb-10">
+    {adjustedNavItems.map((item) => (
       <a
         href={item.link}
         class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
@@ -39,7 +54,7 @@ const {
     ))}
   </nav>
 
-  <!-- 🔹 Kontakt-Button am Fuß -->
+  <!-- 🔹 Footer (Kontakt-Button bilingual) -->
   <div class="p-4 border-t border-white/10">
     <a
       href="mailto:support@smartpages.online"
@@ -48,7 +63,7 @@ const {
              hover:bg-white hover:text-[#1E2A45]
              transition-all duration-300 shadow-md"
     >
-      💬 Nachricht an das Team
+      {footerLabel}
     </a>
   </div>
 </aside>
@@ -59,40 +74,7 @@ const {
   class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"
 ></div>
 
-<!-- 🔸 Hamburger Button (Mobile) -->
+<!-- 🔸 Mobile Toggle Button -->
 <button
   id="openSidebar"
-  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50"
->
-  ☰
-</button>
-
-<script>
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-  const openBtn = document.getElementById("openSidebar");
-
-  const openSidebar = () => {
-    sidebar.classList.remove("-translate-x-full");
-    overlay.classList.remove("hidden");
-  };
-
-  const closeSidebar = () => {
-    sidebar.classList.add("-translate-x-full");
-    overlay.classList.add("hidden");
-  };
-
-  openBtn?.addEventListener("click", openSidebar);
-  overlay?.addEventListener("click", closeSidebar);
-</script>
-
-<style>
-  /* Hide scrollbar */
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-</style>
+  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-whit
