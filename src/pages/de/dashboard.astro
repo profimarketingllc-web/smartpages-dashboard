@@ -9,7 +9,7 @@ const user = {
   plan: "Trial (7 Tage)",
   activeUntil: "2026-01-15",
   lastLogin: "2025-12-21 22:14",
-  isLoggedIn: true, // ⬅️ Steuerung für den Login-Status
+  isLoggedIn: true, // ⬅️ Login-Status hier steuern
 };
 
 const products = [
@@ -49,6 +49,7 @@ const products = [
           <p><span class="font-semibold">Letztes Login:</span> {user.lastLogin}</p>
         </div>
 
+        <!-- 🔘 Button zentriert -->
         <div class="flex justify-center mt-4">
           <button
             class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
@@ -60,13 +61,14 @@ const products = [
         </div>
       </div>
 
+      <!-- ✅ Neuer Login-Pill -->
       <div class="mt-4 md:mt-0 md:ml-6">
         <span
           class={`inline-flex items-center justify-center px-4 py-1.5 text-sm font-medium rounded-full shadow-sm ring-1 text-center leading-tight min-w-[110px]
             ${
               user.isLoggedIn
-                ? "text-green-800 bg-green-50 ring-green-200"
-                : "text-red-800 bg-red-50 ring-red-200"
+                ? "text-white bg-green-500 ring-green-500"
+                : "text-white bg-red-500 ring-red-500"
             }`}
         >
           {user.isLoggedIn ? "Eingeloggt" : "Nicht\neingeloggt"}
