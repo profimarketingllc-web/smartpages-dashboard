@@ -44,7 +44,7 @@ import "~/styles/global.css";
 
         <p>
           Gib unten einfach deine Kontaktdaten ein, und wir senden dir einen persönlichen
-          <strong>Magic Link</strong> für den sicheren Sofortzugang zu deinem SmartPages-Dashboard —
+          <strong>Magic Link</strong> für den sicheren Sofortzugang zu deinem SmartPages-Dashboard — 
           ohne Passwort, ohne Tracking und ohne versteckte Datensammlung.
         </p>
       </div>
@@ -102,11 +102,13 @@ import "~/styles/global.css";
 
       function showPopup(message, type = "success") {
         popup.innerHTML = message;
-        popup.className = \`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 \${ 
-          type === "success" ? "border-green-500 text-green-700" :
-          type === "warning" ? "border-yellow-400 text-yellow-700" :
-          "border-red-500 text-red-700"
-        }\`;
+        popup.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 ${
+          type === "success"
+            ? "border-green-500 text-green-700"
+            : type === "warning"
+            ? "border-yellow-400 text-yellow-700"
+            : "border-red-500 text-red-700"
+        }`;
         popup.classList.remove("hidden");
         setTimeout(() => popup.classList.add("hidden"), 7000);
       }
