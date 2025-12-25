@@ -29,7 +29,6 @@ const products = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartPages Login</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta
       name="description"
       content="Login to SmartPages — secure, GDPR-compliant, and hosted in Europe."
@@ -60,9 +59,7 @@ const products = [
       class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-6 mt-8 md:mt-10 mb-8 md:mb-10"
     >
       <!-- Left (Hero) -->
-      <div
-        class="bg-white shadow-xl p-8 rounded-2xl border border-gray-100"
-      >
+      <div class="bg-white shadow-xl p-8 rounded-2xl border border-gray-100">
         <h2 class="text-3xl font-extrabold text-[#F5B400] mb-6">
           Welcome to SmartPages
         </h2>
@@ -91,69 +88,42 @@ const products = [
       </div>
 
       <!-- Right (Login Form) -->
-      <div
-        class="bg-[#f6f8fb] shadow-xl p-8 rounded-2xl border border-gray-100"
-      >
-        <form
-          id="magicForm"
-          class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm"
-        >
+      <div class="bg-[#f6f8fb] shadow-xl p-8 rounded-2xl border border-gray-100">
+        <form id="magicForm" class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm">
           <div>
             <label class="block text-sm text-gray-600 mb-1">First Name *</label>
-            <input
-              type="text"
-              name="first_name"
-              required
-              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-            />
+            <input type="text" name="first_name" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
           </div>
 
           <div>
             <label class="block text-sm text-gray-600 mb-1">Last Name</label>
-            <input
-              type="text"
-              name="last_name"
-              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-            />
+            <input type="text" name="last_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
           </div>
 
           <div>
             <label class="block text-sm text-gray-600 mb-1">Email *</label>
-            <input
-              type="email"
-              name="email"
-              required
-              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-            />
+            <input type="email" name="email" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
           </div>
 
           <div class="flex items-center gap-2">
             <input type="checkbox" id="is_business" name="is_business" />
-            <label for="is_business" class="text-sm text-gray-600"
-              >This is a business account</label
-            >
+            <label for="is_business" class="text-sm text-gray-600">This is a business account</label>
           </div>
 
           <div id="company_field" class="hidden">
             <label class="block text-sm text-gray-600 mb-1">Company Name</label>
-            <input
-              type="text"
-              name="company_name"
-              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-            />
+            <input type="text" name="company_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
           </div>
 
-          <button
-            type="submit"
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out"
-          >
+          <button type="submit"
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out">
             Send Magic Link
           </button>
         </form>
       </div>
     </section>
 
-    <!-- Product Cards (via component) -->
+    <!-- Product Cards -->
     <ProductCardGrid {products} />
 
     <!-- Footer -->
@@ -161,7 +131,9 @@ const products = [
       © 2025 SmartPages · Profi Marketing LLC · Hosted in Europe · GDPR compliant
     </footer>
 
-    <!-- Script -->
+    <!-- Popup -->
+    <div id="popup" class="hidden fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+
     <script>
       const API_URL = "https://api.smartpages.online/api/auth/start";
       const popup = document.getElementById("popup");
@@ -169,11 +141,12 @@ const products = [
 
       function showPopup(message, type = "success") {
         popup.innerHTML = message;
-        popup.className = \`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 \${type === "success"
-          ? "border-green-500 text-green-700"
-          : type === "warning"
-          ? "border-yellow-400 text-yellow-700"
-          : "border-red-500 text-red-700"}\`;
+        popup.className = "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
+          (type === "success"
+            ? "border-green-500 text-green-700"
+            : type === "warning"
+            ? "border-yellow-400 text-yellow-700"
+            : "border-red-500 text-red-700");
         popup.classList.remove("hidden");
         setTimeout(() => popup.classList.add("hidden"), 7000);
       }
@@ -189,10 +162,7 @@ const products = [
           is_business: form.is_business.checked,
         };
 
-        showPopup(
-          "⏳ Sending your Magic Link...<br><span class='text-sm opacity-80'>This may take a moment, please wait.</span>",
-          "warning"
-        );
+        showPopup("⏳ Sending your Magic Link...<br><span class='text-sm opacity-80'>This may take a moment, please wait.</span>", "warning");
 
         try {
           const res = await fetch(API_URL, {
