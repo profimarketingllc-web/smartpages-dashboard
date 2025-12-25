@@ -9,76 +9,75 @@ const user = {
   activeUntil: "2026-01-15",
   lastLogin: "2025-12-21 22:14",
 };
-
-// ✅ Status Pill (dynamisch)
-const isLoggedIn = true; // später dynamisch ersetzen
-const pillText = isLoggedIn ? "Logged in" : "Logged out";
-const pillColor = isLoggedIn
-  ? "bg-emerald-200 border-emerald-400 text-emerald-800 shadow-[0_0_8px_rgba(16,185,129,0.25)]"
-  : "bg-red-200 border-red-400 text-red-800 shadow-[0_0_8px_rgba(239,68,68,0.25)]";
 ---
 
-<!-- 🧱 Produkt-Kacheln -->
-<section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
-  <div class="rounded-2xl p-5 bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white 
-              shadow-[0_6px_16px_rgba(0,0,0,0.12),0_2px_4px_rgba(0,0,0,0.08)]">
-    <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
-    <p class="text-sm">
-      Erstelle dein persönliches Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.
-    </p>
-  </div>
+<PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
+  <!-- 🧭 Welcome -->
+  <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-2">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div class="w-full">
+        <h2 class="text-2xl font-bold mb-4">Welcome back, {user.name} 👋</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-2 text-sm text-gray-700">
+          <p><span class="font-semibold">Name:</span> {user.name}</p>
+          <p><span class="font-semibold">E-mail:</span> {user.email}</p>
+          <p><span class="font-semibold">Status:</span> {user.status}</p>
+          <p><span class="font-semibold">Plan:</span> {user.plan}</p>
+          <p><span class="font-semibold">Active until:</span> {user.activeUntil}</p>
+          <p><span class="font-semibold">Last login:</span> {user.lastLogin}</p>
+        </div>
 
-  <div class="rounded-2xl p-5 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white 
-              shadow-[0_6px_16px_rgba(0,0,0,0.12),0_2px_4px_rgba(0,0,0,0.08)]">
-    <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
-    <p class="text-sm">
-      Baue beeindruckende Seiten mit wenigen Klicks – einfach, schnell und professionell gestaltet.
-    </p>
-  </div>
+        <!-- 🔘 Button -->
+        <div class="flex justify-center mt-4">
+          <button
+            class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
+                   hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white 
+                   transition-all duration-300"
+          >
+            Edit details
+          </button>
+        </div>
+      </div>
 
-  <div class="rounded-2xl p-5 bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white 
-              shadow-[0_6px_16px_rgba(0,0,0,0.12),0_2px_4px_rgba(0,0,0,0.08)]">
-    <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
-    <p class="text-sm">
-      Sichere deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
-    </p>
-  </div>
-</section>
-
-      <!-- 🟢/🔴 Status-Pill -->
       <div class="mt-4 md:mt-0 md:ml-6">
         <span
-          class={`inline-block px-5 py-1.5 text-sm font-semibold rounded-full border 
-                  text-center transition-all duration-300 ease-in-out ${pillColor}`}
+          class="inline-block px-4 py-1.5 text-sm rounded-full border 
+                 bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]
+                 font-medium min-w-[110px] text-center"
         >
-          {pillText}
+          Logged in
         </span>
       </div>
     </div>
   </section>
 
-  <!-- 🧱 Product cards -->
+  <!-- 🧱 Product Tiles -->
   <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
-    <div class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white">
+    <a href="/en/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
+              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+              hover:shadow-[0_10px_25px_rgba(78,107,255,0.3)] hover:-translate-y-1">
       <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
-      <p class="text-sm leading-relaxed">
+      <p class="text-sm">
         Create your personal profile in just a few clicks — perfect for freelancers, coaches, and entrepreneurs.
       </p>
-    </div>
+    </a>
 
-    <div class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white">
+    <a href="/en/smartpage" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
+              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+              hover:shadow-[0_10px_25px_rgba(245,180,0,0.3)] hover:-translate-y-1">
       <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
-      <p class="text-sm leading-relaxed">
-        Build stunning, high-converting pages in minutes — simple, fast, and professional.
+      <p class="text-sm">
+        Build stunning, high-converting pages in minutes — simple, fast, and professionally designed.
       </p>
-    </div>
+    </a>
 
-    <div class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white">
+    <a href="/en/smartdomain" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
+              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+              hover:shadow-[0_10px_25px_rgba(139,92,255,0.3)] hover:-translate-y-1">
       <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
-      <p class="text-sm leading-relaxed">
-        Secure your custom domain directly in SmartPages — professional, simple, and GDPR-compliant.
+      <p class="text-sm">
+        Secure your custom domain directly in SmartPages — professional, simple, and fully GDPR-compliant.
       </p>
-    </div>
+    </a>
   </section>
 
   <!-- 📨 Feedback -->
@@ -87,11 +86,11 @@ const pillColor = isLoggedIn
       <div>
         <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Your feedback helps us improve</h3>
         <p class="text-sm text-gray-600">
-          Share bugs, ideas, or feature requests — your input helps shape SmartPages.
+          Share bugs, ideas, or feature requests — to help us improve SmartPages even more.
         </p>
       </div>
       <a
-        href="/en/feedback"
+        href="/feedback"
         class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
                transition-all duration-300 shadow-md whitespace-nowrap"
       >
