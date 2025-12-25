@@ -5,7 +5,7 @@ const currentLang = Astro.url.pathname.startsWith("/en") ? "en" : "de";
 const footerLabel =
   currentLang === "en" ? "💬 Message the Team" : "💬 Nachricht an das Team";
 
-// Basis-Navigationspunkte (international, feste Produktnamen)
+// Navigationspunkte (Produkte international)
 const navItems = [
   { label: "Cockpit", icon: "🛫", link: "/de/dashboard" },
   { label: "SmartProfile", icon: "👤", link: "/de/dashboard/smartprofile" },
@@ -13,7 +13,7 @@ const navItems = [
   { label: "SmartDomain", icon: "🌐", link: "/de/dashboard/smartdomain" },
 ];
 
-// Sprachabhängige Link-Korrektur (DE/EN)
+// Sprachabhängige Link-Anpassung (de/en)
 const adjustedNavItems = navItems.map((item) => ({
   ...item,
   link:
@@ -39,19 +39,39 @@ const adjustedNavItems = navItems.map((item) => ({
 
   <!-- 🔹 Navigation -->
   <nav class="flex-1 mt-20 space-y-4 overflow-y-auto scrollbar-hide px-3 pb-10">
-    {adjustedNavItems.map((item) => (
-      <a
-        href={item.link}
-        class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-               bg-[#f6f8fb] text-[#1E2A45]
-               hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00]
-               hover:text-white shadow-md hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]
-               transition-all duration-300 ease-in-out"
-      >
-        <span class="text-lg">{item.icon}</span>
-        <span>{item.label}</span>
-      </a>
-    ))}
+    {adjustedNavItems.map((item) => {
+      let gradientClasses = "";
+      switch (item.label) {
+        case "SmartProfile":
+          gradientClasses =
+            "hover:from-[#4E6BFF] hover:to-[#657AFF] hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]";
+          break;
+        case "SmartPage":
+          gradientClasses =
+            "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]";
+          break;
+        case "SmartDomain":
+          gradientClasses =
+            "hover:from-[#8B5CFF] hover:to-[#A076FF] hover:shadow-[0_0_20px_rgba(139,92,255,0.4)]";
+          break;
+        default:
+          gradientClasses =
+            "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]";
+      }
+
+      return (
+        <a
+          href={item.link}
+          class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
+                  bg-[#f6f8fb] text-[#1E2A45]
+                  hover:bg-gradient-to-r hover:text-white shadow-md transition-all duration-300 ease-in-out
+                  ${gradientClasses}`}
+        >
+          <span class="text-lg">{item.icon}</span>
+          <span>{item.label}</span>
+        </a>
+      );
+    })}
   </nav>
 
   <!-- 🔹 Footer (Kontakt-Button bilingual) -->
@@ -77,4 +97,33 @@ const adjustedNavItems = navItems.map((item) => ({
 <!-- 🔸 Mobile Toggle Button -->
 <button
   id="openSidebar"
-  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-whit
+  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50"
+>
+  ☰
+</button>
+
+<script>
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const openBtn = document.getElementById("openSidebar");
+
+  const toggleSidebar = () => {
+    const isHidden = sidebar.classList.contains("-translate-x-full");
+    sidebar.classList.toggle("-translate-x-full", !isHidden);
+    overlay.classList.toggle("hidden", !isHidden);
+  };
+
+  openBtn?.addEventListener("click", toggleSidebar);
+  overlay?.addEventListener("click", toggleSidebar);
+</script>
+
+<style>
+  /* Hide scrollbar */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
