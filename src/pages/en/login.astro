@@ -7,24 +7,23 @@ const products = [
     title: "SmartProfile",
     label: "COMING SOON",
     text: "Your personal online profile that reflects your brand identity — hosted securely in Europe and optimized for visibility, credibility, and full GDPR compliance across all digital channels.",
-    gradient: "from-[#4E6BFF] to-[#657AFF]",
+    gradient: "from-indigo-500 to-blue-500",
   },
   {
     title: "SmartPage",
     label: "COMING SOON",
     text: "Build stunning, high-converting pages in minutes — with no code. Designed for creators, entrepreneurs, and small teams who want elegant design and full control without complexity.",
-    gradient: "from-[#F5B400] to-[#E47E00]",
+    gradient: "from-amber-400 to-orange-500",
   },
   {
     title: "SmartDomain",
     label: "COMING SOON",
     text: "Secure your custom domain, protect your brand, and stay GDPR-compliant from the start. SmartDomain makes managing your online identity effortless and fully privacy-first — all hosted securely in Europe.",
-    gradient: "from-[#8B5CFF] to-[#A076FF]",
+    gradient: "from-purple-500 to-indigo-500",
   },
 ];
 ---
 
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -33,7 +32,7 @@ const products = [
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta
       name="description"
-      content="SmartPages Login – GDPR compliant, secure, and hosted in Europe."
+      content="Login to SmartPages — secure, GDPR-compliant, and hosted in Europe."
     />
   </head>
 
@@ -51,7 +50,7 @@ const products = [
       <div class="text-center md:text-left">
         <h1 class="text-3xl font-extrabold">SmartPages</h1>
         <p class="text-sm md:text-base opacity-90">
-          Go online in just 10&nbsp;minutes — privacy-first and GDPR compliant.
+          Go online in just 10 minutes — privacy-first and GDPR compliant.
         </p>
       </div>
     </header>
@@ -60,40 +59,38 @@ const products = [
     <section
       class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-6 mt-8 md:mt-10 mb-8 md:mb-10"
     >
-      <!-- Left -->
+      <!-- Left (Hero) -->
       <div
         class="bg-white shadow-xl p-8 rounded-2xl border border-gray-100"
       >
-        <h2
-          class="text-3xl font-extrabold text-[#F5B400] mb-6"
-        >
+        <h2 class="text-3xl font-extrabold text-[#F5B400] mb-6">
           Welcome to SmartPages
         </h2>
 
         <p class="mb-4">
-          With <strong>SmartPages</strong>, you can build your professional online
-          presence in just <strong>10 minutes</strong> — without technical knowledge
-          or complex setup. Everything is hosted securely in <strong>Europe</strong>
-          and fully compliant with the
+          With <strong>SmartPages</strong>, you can build your professional
+          online presence in just <strong>10 minutes</strong> — without
+          technical knowledge or complex setup. Everything is hosted securely in
+          <strong>Europe</strong> and fully compliant with the
           <strong>General Data Protection Regulation (GDPR)</strong>.
         </p>
 
         <p class="mb-4">
           If your audience or clients are located in the European Union,
           compliance with GDPR is not optional — it’s a legal requirement.
-          SmartPages helps you meet these standards effortlessly, protecting both
-          your brand and your users’ privacy from the very first click.
+          SmartPages helps you meet these standards effortlessly, protecting
+          both your brand and your users’ privacy from the very first click.
         </p>
 
         <p>
           Simply enter your contact details below, and we’ll send you a personal
-          <strong>Magic Link</strong> that gives you secure, instant access to your
-          SmartPages dashboard — no password needed, no tracking, and no hidden data
-          collection.
+          <strong>Magic Link</strong> that gives you secure, instant access to
+          your SmartPages dashboard — no password needed, no tracking, and no
+          hidden data collection.
         </p>
       </div>
 
-      <!-- Right -->
+      <!-- Right (Login Form) -->
       <div
         class="bg-[#f6f8fb] shadow-xl p-8 rounded-2xl border border-gray-100"
       >
@@ -132,15 +129,13 @@ const products = [
 
           <div class="flex items-center gap-2">
             <input type="checkbox" id="is_business" name="is_business" />
-            <label for="is_business" class="text-sm text-gray-600">
-              This is a business account
-            </label>
+            <label for="is_business" class="text-sm text-gray-600"
+              >This is a business account</label
+            >
           </div>
 
           <div id="company_field" class="hidden">
-            <label class="block text-sm text-gray-600 mb-1">
-              Company Name
-            </label>
+            <label class="block text-sm text-gray-600 mb-1">Company Name</label>
             <input
               type="text"
               name="company_name"
@@ -158,8 +153,8 @@ const products = [
       </div>
     </section>
 
-    <!-- Product Cards -->
-    <ProductCardGrid products={products} />
+    <!-- Product Cards (via component) -->
+    <ProductCardGrid {products} />
 
     <!-- Footer -->
     <footer class="text-center text-sm text-gray-600 py-6 bg-[#f5f5f5]">
@@ -168,12 +163,62 @@ const products = [
 
     <!-- Script -->
     <script>
+      const API_URL = "https://api.smartpages.online/api/auth/start";
+      const popup = document.getElementById("popup");
       const form = document.getElementById("magicForm");
-      const cb = document.getElementById("is_business");
-      const field = document.getElementById("company_field");
 
-      cb?.addEventListener("change", () => {
-        field.classList.toggle("hidden", !cb.checked);
+      function showPopup(message, type = "success") {
+        popup.innerHTML = message;
+        popup.className = \`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 \${type === "success"
+          ? "border-green-500 text-green-700"
+          : type === "warning"
+          ? "border-yellow-400 text-yellow-700"
+          : "border-red-500 text-red-700"}\`;
+        popup.classList.remove("hidden");
+        setTimeout(() => popup.classList.add("hidden"), 7000);
+      }
+
+      form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const data = {
+          first_name: form.first_name.value.trim(),
+          last_name: form.last_name.value.trim(),
+          email: form.email.value.trim(),
+          company_name: form.company_name?.value.trim() || "",
+          is_business: form.is_business.checked,
+        };
+
+        showPopup(
+          "⏳ Sending your Magic Link...<br><span class='text-sm opacity-80'>This may take a moment, please wait.</span>",
+          "warning"
+        );
+
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+            mode: "cors",
+          });
+          const result = await res.json();
+
+          if (result.ok) {
+            showPopup("✅ Magic Link sent! Please check your inbox.", "success");
+          } else {
+            showPopup("❌ Something went wrong. Please check your input.", "error");
+          }
+        } catch {
+          showPopup("⚠️ Network error. Please try again.", "error");
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const cb = document.getElementById("is_business");
+        const field = document.getElementById("company_field");
+        cb?.addEventListener("change", () => {
+          field.classList.toggle("hidden", !cb.checked);
+        });
       });
     </script>
   </body>
