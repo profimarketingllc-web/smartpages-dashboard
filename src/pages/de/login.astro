@@ -1,5 +1,6 @@
 ---
 import "~/styles/global.css";
+import ProductCard from "~/components/ProductCard.astro";
 ---
 
 <!DOCTYPE html>
@@ -12,7 +13,7 @@ import "~/styles/global.css";
     <meta name="description" content="SmartPages Login – DSGVO-konform, sicher und in Europa gehostet." />
   </head>
 
-  <body class="bg-white text-gray-800 font-inter antialiased pt-24 md:pt-28">
+  <body class="bg-white text-gray-800 font-inter pt-24 md:pt-28">
     <!-- Header -->
     <header class="bg-[#1E2A45] text-white py-5 px-4 flex flex-col md:flex-row items-center justify-center gap-4 shadow-lg fixed top-0 left-0 right-0 z-50">
       <img src="/SmartPages_icon_transparent.png" alt="SmartPages Logo" class="w-20 h-20" loading="lazy" />
@@ -25,26 +26,26 @@ import "~/styles/global.css";
     </header>
 
     <!-- Hero + Login -->
-    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-6 mt-6 md:mt-8 mb-8 md:mb-10">
+    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-6 mt-8 md:mt-10 mb-6 md:mb-8">
       <!-- Left -->
       <div class="bg-white shadow-xl p-8 rounded-2xl border border-gray-100">
         <h2 class="text-3xl font-extrabold text-[#F5B400] mb-6">Willkommen bei SmartPages</h2>
 
-        <p class="mb-4 leading-relaxed">
+        <p class="mb-4">
           Mit <strong>SmartPages</strong> kannst du deine professionelle Online-Präsenz in nur
           <strong>10 Minuten</strong> erstellen — ganz ohne technisches Wissen oder komplizierte Einrichtung.
           Alles wird sicher in <strong>Europa</strong> gehostet und entspricht vollständig der
           <strong>Datenschutz-Grundverordnung (DSGVO)</strong>.
         </p>
 
-        <p class="mb-4 leading-relaxed">
+        <p class="mb-4">
           Wenn sich dein Publikum oder deine Kunden in der Europäischen Union befinden, ist DSGVO-Konformität keine Option — sie ist gesetzlich vorgeschrieben.
           SmartPages hilft dir, diese Anforderungen mühelos zu erfüllen und schützt deine Marke sowie die Privatsphäre deiner Nutzer vom ersten Klick an.
         </p>
 
-        <p class="leading-relaxed">
+        <p>
           Gib unten einfach deine Kontaktdaten ein, und wir senden dir einen persönlichen
-          <strong>Magic Link</strong> für den sicheren Sofortzugang zu deinem SmartPages-Dashboard —
+          <strong>Magic Link</strong> für den sicheren Sofortzugang zu deinem SmartPages-Dashboard — 
           ohne Passwort, ohne Tracking und ohne versteckte Datensammlung.
         </p>
       </div>
@@ -86,44 +87,29 @@ import "~/styles/global.css";
       </div>
     </section>
 
-<!-- Produkt-Kacheln -->
-<section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-10">
-  <!-- SmartProfile -->
-  <div class="rounded-2xl p-8 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white hover:shadow-[0_0_25px_4px_rgba(78,107,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
-    <h3 class="text-[1.75rem] font-bold mb-3 tracking-tight">
-      SmartProfile
-      <span class="text-xs bg-white text-[#4E6BFF] font-semibold rounded-full px-2 py-0.5 ml-2">BALD VERFÜGBAR</span>
-    </h3>
-    <p class="mt-3 text-[0.95rem] leading-[1.75rem] tracking-[0.01em]">
-      Dein persönliches Online-Profil, das deine Markenidentität widerspiegelt — sicher in Europa gehostet,
-      optimiert für Sichtbarkeit, Glaubwürdigkeit und vollständige DSGVO-Konformität auf allen digitalen Kanälen.
-    </p>
-  </div>
+    <!-- Produkt-Kacheln -->
+    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-10">
+      <ProductCard
+        title="SmartProfile"
+        label="BALD VERFÜGBAR"
+        text="Dein professionelles Profil für mehr Sichtbarkeit, Vertrauen und Markenstärke – datenschutzkonform und vollständig in Europa gehostet."
+        gradient="from-[#4E6BFF] to-[#657AFF]"
+      />
 
-  <!-- SmartPage -->
-  <div class="rounded-2xl p-8 shadow-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:shadow-[0_0_25px_4px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
-    <h3 class="text-[1.75rem] font-bold mb-3 tracking-tight">
-      SmartPage
-      <span class="text-xs bg-white text-[#E47E00] font-semibold rounded-full px-2 py-0.5 ml-2">BALD VERFÜGBAR</span>
-    </h3>
-    <p class="mt-3 text-[0.95rem] leading-[1.75rem] tracking-[0.01em]">
-      Erstelle beeindruckende, konversionsstarke Seiten in wenigen Minuten — ganz ohne Programmierung.
-      Entwickelt für Kreative, Unternehmer und kleine Teams, die elegantes Design und volle Kontrolle wollen, ohne Komplexität.
-    </p>
-  </div>
+      <ProductCard
+        title="SmartPage"
+        label="BALD VERFÜGBAR"
+        text="Erstelle in wenigen Minuten deine persönliche Seite – ohne Programmierkenntnisse. Einfach, elegant und perfekt auf deine Zielgruppe abgestimmt."
+        gradient="from-[#F5B400] to-[#E47E00]"
+      />
 
-  <!-- SmartDomain -->
-  <div class="rounded-2xl p-8 shadow-xl bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white hover:shadow-[0_0_25px_4px_rgba(139,92,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
-    <h3 class="text-[1.75rem] font-bold mb-3 tracking-tight">
-      SmartDomain
-      <span class="text-xs bg-white text-[#8B5CFF] font-semibold rounded-full px-2 py-0.5 ml-2">BALD VERFÜGBAR</span>
-    </h3>
-    <p class="mt-3 text-[0.95rem] leading-[1.75rem] tracking-[0.01em]">
-      Sichere deine eigene Domain, schütze deine Marke und bleibe von Anfang an DSGVO-konform.
-      SmartDomain macht das Verwalten deiner Online-Identität mühelos — datenschutzorientiert, sicher und in Europa gehostet.
-    </p>
-  </div>
-</section>
+      <ProductCard
+        title="SmartDomain"
+        label="BALD VERFÜGBAR"
+        text="Sichere dir deine eigene Domain – professionell, DSGVO-konform und in Europa gehostet. Ideal für Marken, die Vertrauen schaffen wollen."
+        gradient="from-[#8B5CFF] to-[#A076FF]"
+      />
+    </section>
 
     <!-- Footer -->
     <footer class="text-center text-sm text-gray-600 py-6 bg-[#f5f5f5]">
@@ -141,13 +127,13 @@ import "~/styles/global.css";
 
       function showPopup(message, type = "success") {
         popup.innerHTML = message;
-        popup.className =
-          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
-          (type === "success"
+        popup.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 ${
+          type === "success"
             ? "border-green-500 text-green-700"
             : type === "warning"
             ? "border-yellow-400 text-yellow-700"
-            : "border-red-500 text-red-700");
+            : "border-red-500 text-red-700"
+        }`;
         popup.classList.remove("hidden");
         setTimeout(() => popup.classList.add("hidden"), 7000);
       }
@@ -178,12 +164,12 @@ import "~/styles/global.css";
           const result = await res.json();
 
           if (result.ok) {
-            showPopup("✅ Magic Link gesendet!<br><span class='text-sm opacity-80'>Bitte prüfe dein Postfach.</span>", "success");
+            showPopup("✅ Magic Link gesendet! Bitte prüfe dein Postfach.", "success");
           } else {
-            showPopup("❌ Etwas ist schiefgelaufen.<br><span class='text-sm opacity-80'>Bitte Eingaben prüfen.</span>", "error");
+            showPopup("❌ Etwas ist schiefgelaufen. Bitte Eingaben prüfen.", "error");
           }
         } catch {
-          showPopup("⚠️ Netzwerkfehler.<br><span class='text-sm opacity-80'>Bitte erneut versuchen.</span>", "error");
+          showPopup("⚠️ Netzwerkfehler. Bitte erneut versuchen.", "error");
         }
       });
 
