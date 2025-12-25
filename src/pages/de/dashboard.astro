@@ -9,14 +9,14 @@ const user = {
   plan: "Trial (7 Tage)",
   activeUntil: "2026-01-15",
   lastLogin: "2025-12-21 22:14",
+  isLoggedIn: true, // ⬅️ Steuerung für den Login-Status
 };
 
-// Produktkacheln – zentral definiert (leicht änderbar)
 const products = [
   {
     title: "SmartProfile",
     label: "BALD VERFÜGBAR",
-    text: "Erstelle Dein persönliches Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
+    text: "Erstelle dein persönliches Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
     gradient: "from-[#4E6BFF] to-[#657AFF]",
   },
   {
@@ -28,7 +28,7 @@ const products = [
   {
     title: "SmartDomain",
     label: "BALD VERFÜGBAR",
-    text: "Sichere Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
+    text: "Sichere deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
     gradient: "from-[#8B5CFF] to-[#A076FF]",
   },
 ];
@@ -49,7 +49,6 @@ const products = [
           <p><span class="font-semibold">Letztes Login:</span> {user.lastLogin}</p>
         </div>
 
-        <!-- 🔘 Button -->
         <div class="flex justify-center mt-4">
           <button
             class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
@@ -62,8 +61,15 @@ const products = [
       </div>
 
       <div class="mt-4 md:mt-0 md:ml-6">
-        <span class="inline-block px-4 py-1.5 text-sm bg-green-100 text-green-700 rounded-full border border-green-200">
-          Eingeloggt
+        <span
+          class={`inline-flex items-center justify-center px-4 py-1.5 text-sm font-medium rounded-full shadow-sm ring-1 text-center leading-tight min-w-[110px]
+            ${
+              user.isLoggedIn
+                ? "text-green-800 bg-green-50 ring-green-200"
+                : "text-red-800 bg-red-50 ring-red-200"
+            }`}
+        >
+          {user.isLoggedIn ? "Eingeloggt" : "Nicht\neingeloggt"}
         </span>
       </div>
     </div>
