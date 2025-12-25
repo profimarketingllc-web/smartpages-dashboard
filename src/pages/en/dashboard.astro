@@ -1,103 +1,66 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
-import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
 
 const user = {
   name: "Frank Hüser",
   email: "frank@smartpages.online",
   status: "Business",
-  plan: "Trial (7 days)",
+  plan: "Trial (7 Days)",
   activeUntil: "2026-01-15",
   lastLogin: "2025-12-21 22:14",
-  isLoggedIn: true, // toggle this to false to see "Not logged in"
 };
-
-const products = [
-  {
-    title: "SmartProfile",
-    label: "COMING SOON",
-    text: "Create your personal profile in just a few clicks — perfect for freelancers, coaches, and entrepreneurs.",
-    gradient: "from-[#4E6BFF] to-[#657AFF]",
-  },
-  {
-    title: "SmartPage",
-    label: "COMING SOON",
-    text: "Build stunning, high-converting pages in minutes. Simple, fast, and professionally designed — without coding.",
-    gradient: "from-[#F5B400] to-[#E47E00]",
-  },
-  {
-    title: "SmartDomain",
-    label: "COMING SOON",
-    text: "Secure your custom domain directly in SmartPages — professional, simple, and fully GDPR-compliant.",
-    gradient: "from-[#8B5CFF] to-[#A076FF]",
-  },
-];
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <!-- 🧭 Welcome -->
   <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-2">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
       <div class="w-full">
         <h2 class="text-2xl font-bold mb-4">Welcome back, {user.name} 👋</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-2 text-sm text-gray-700">
           <p><span class="font-semibold">Name:</span> {user.name}</p>
-          <p><span class="font-semibold">E-mail:</span> {user.email}</p>
+          <p><span class="font-semibold">Email:</span> {user.email}</p>
           <p><span class="font-semibold">Status:</span> {user.status}</p>
           <p><span class="font-semibold">Plan:</span> {user.plan}</p>
           <p><span class="font-semibold">Active until:</span> {user.activeUntil}</p>
           <p><span class="font-semibold">Last login:</span> {user.lastLogin}</p>
         </div>
 
-        <!-- 🔘 Centered action button -->
         <div class="flex justify-center mt-4">
           <button
             class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
                    hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white 
-                   transition-all duration-300"
-          >
-            Edit profile
+                   transition-all duration-300">
+            Edit Data
           </button>
         </div>
       </div>
 
-      <!-- ✅ Improved login status pill -->
       <div class="mt-4 md:mt-0 md:ml-6">
-        <span
-          class={`inline-flex items-center justify-center px-4 py-1.5 text-sm font-medium rounded-full shadow-sm ring-1 text-center leading-tight min-w-[110px]
-            ${
-              user.isLoggedIn
-                ? "text-white bg-green-500 ring-green-500"
-                : "text-white bg-red-500 ring-red-500"
-            }`}
-        >
-          {user.isLoggedIn ? "Logged in" : "Not\nlogged in"}
+        <span class="inline-block px-4 py-1.5 text-sm bg-green-100 text-green-700 rounded-full border border-green-200">
+          Logged in
         </span>
       </div>
     </div>
   </section>
 
   <!-- 🧱 Product Cards -->
-  <section class="max-w-6xl mx-auto mt-6">
-    <ProductCardGrid {products} />
-  </section>
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
+    <a href="/en/smartprofile" class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white hover:scale-[1.03] hover:shadow-2xl transition-all duration-300">
+      <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
+      <p class="text-sm">Create your professional profile in minutes — ideal for freelancers, coaches, and entrepreneurs.</p>
+      <span class="mt-3 inline-block bg-white/20 text-xs px-3 py-1 rounded-full">In Development</span>
+    </a>
 
-  <!-- 📨 Feedback Section -->
-  <section class="max-w-6xl mx-auto mt-6 bg-[#f8f9fb] rounded-2xl p-6 text-center md:text-left shadow-md border border-gray-100">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-      <div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Your feedback helps us improve</h3>
-        <p class="text-sm text-gray-600">
-          Share bugs, ideas, and suggestions — to make SmartPages even better for everyone.
-        </p>
-      </div>
-      <a
-        href="/feedback"
-        class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
-               transition-all duration-300 shadow-md whitespace-nowrap"
-      >
-        Open feedback form
-      </a>
-    </div>
+    <a href="/en/smartpage" class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:scale-[1.03] hover:shadow-2xl transition-all duration-300">
+      <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
+      <p class="text-sm">Build stunning, high-converting pages effortlessly — simple, fast, and GDPR compliant.</p>
+      <span class="mt-3 inline-block bg-white/20 text-xs px-3 py-1 rounded-full">In Development</span>
+    </a>
+
+    <a href="/en/smartdomain" class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white hover:scale-[1.03] hover:shadow-2xl transition-all duration-300">
+      <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
+      <p class="text-sm">Secure your own domain directly in SmartPages — professional, simple, and GDPR compliant.</p>
+      <span class="mt-3 inline-block bg-white/20 text-xs px-3 py-1 rounded-full">In Development</span>
+    </a>
   </section>
 </PageLayout>
