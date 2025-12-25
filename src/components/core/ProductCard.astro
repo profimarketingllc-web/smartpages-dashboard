@@ -1,29 +1,20 @@
 ---
-const {
-  title,
-  label,
-  text,
-  gradient = "from-[#4E6BFF] to-[#657AFF]",
-} = Astro.props;
+const { title, label, text, gradient } = Astro.props;
 ---
 
 <div
-  class={`rounded-2xl p-6 shadow-xl bg-gradient-to-r ${gradient} text-white 
-          hover:shadow-[0_0_25px_4px_rgba(0,0,0,0.15)] 
-          hover:scale-[1.03] transition-all duration-300 ease-in-out`}
+  class={`relative flex flex-col justify-between p-6 rounded-2xl shadow-lg border border-gray-100 bg-gradient-to-br ${gradient} text-white transition-all duration-300 transform hover:scale-[1.03] hover:shadow-[0_0_30px_8px_rgba(245,180,0,0.45)]`}
 >
-  <h3 class="text-2xl font-bold mb-2 flex items-center justify-between">
-    <span>{title}</span>
-    {label && (
-      <span
-        class="text-xs bg-white/90 text-[#1E2A45] font-semibold rounded-full px-2 py-[2px]"
-      >
-        {label}
-      </span>
-    )}
-  </h3>
+  <div>
+    <h3 class="text-xl font-extrabold mb-3 drop-shadow-md">{title}</h3>
+    <p class="text-sm leading-relaxed text-white/90">{text}</p>
+  </div>
 
-  <p class="mt-2 text-base leading-relaxed">
-    {text}
-  </p>
+  {label && (
+    <span
+      class="absolute top-4 right-4 text-xs font-semibold uppercase tracking-wide bg-white/90 text-[#1E2A45] px-3 py-1 rounded-full shadow-sm"
+    >
+      {label}
+    </span>
+  )}
 </div>
