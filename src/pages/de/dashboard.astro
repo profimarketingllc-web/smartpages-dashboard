@@ -1,5 +1,6 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
+import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
 
 const user = {
   name: "Frank Hüser",
@@ -9,6 +10,28 @@ const user = {
   activeUntil: "2026-01-15",
   lastLogin: "2025-12-21 22:14",
 };
+
+// Produktkacheln – zentral definiert (leicht änderbar)
+const products = [
+  {
+    title: "SmartProfile",
+    label: "BALD VERFÜGBAR",
+    text: "Erstelle Dein persönliches Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
+    gradient: "from-[#4E6BFF] to-[#657AFF]",
+  },
+  {
+    title: "SmartPage",
+    label: "BALD VERFÜGBAR",
+    text: "Baue beeindruckende Seiten mit wenigen Klicks. Einfach, schnell und professionell gestaltet.",
+    gradient: "from-[#F5B400] to-[#E47E00]",
+  },
+  {
+    title: "SmartDomain",
+    label: "BALD VERFÜGBAR",
+    text: "Sichere Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
+    gradient: "from-[#8B5CFF] to-[#A076FF]",
+  },
+];
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
@@ -26,7 +49,7 @@ const user = {
           <p><span class="font-semibold">Letztes Login:</span> {user.lastLogin}</p>
         </div>
 
-        <!-- 🔘 Button zentriert -->
+        <!-- 🔘 Button -->
         <div class="flex justify-center mt-4">
           <button
             class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
@@ -47,27 +70,8 @@ const user = {
   </section>
 
   <!-- 🧱 Produkt-Kacheln -->
-  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
-    <div class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white">
-      <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
-      <p class="text-sm">
-        Erstelle Dein persönliches Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.
-      </p>
-    </div>
-
-    <div class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white">
-      <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
-      <p class="text-sm">
-        Baue beeindruckende Seiten mit wenigen Klicks. Einfach, schnell und professionell gestaltet.
-      </p>
-    </div>
-
-    <div class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white">
-      <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
-      <p class="text-sm">
-        Sichere Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
-      </p>
-    </div>
+  <section class="max-w-6xl mx-auto mt-6">
+    <ProductCardGrid {products} />
   </section>
 
   <!-- 📨 Feedback -->
