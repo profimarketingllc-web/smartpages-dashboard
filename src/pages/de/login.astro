@@ -103,37 +103,8 @@ import "~/styles/global.css";
 
       function showPopup(message, type = "success") {
         popup.innerHTML = message;
-        popup.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 ${
-          type === "success"
+        popup.className =
+          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
+          (type === "success"
             ? "border-green-500 text-green-700"
-            : type === "warning"
-            ? "border-yellow-400 text-yellow-700"
-            : "border-red-500 text-red-700"
-        }`;
-        popup.classList.remove("hidden");
-        setTimeout(() => popup.classList.add("hidden"), 7000);
-      }
-
-      form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const data = {
-          first_name: form.first_name.value.trim(),
-          last_name: form.last_name.value.trim(),
-          email: form.email.value.trim(),
-          company_name: form.company_name?.value.trim() || "",
-          is_business: form.is_business.checked,
-        };
-
-        // Zweizeiliger Starttext (sofort sichtbar)
-        showPopup(
-          "⏳ Wir senden deinen Magic Link...<br><span class='text-sm opacity-80'>Das dauert einen kleinen Moment, bitte warten.</span>",
-          "warning"
-        );
-
-        try {
-          const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-            mode: "cors",
+            : type === "
