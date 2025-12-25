@@ -1,92 +1,124 @@
 ---
-import PageLayout from "~/layouts/PageLayout.astro";
+const currentLang = Astro.url.pathname.startsWith("/en") ? "en" : "de";
 
-const user = {
-  name: "Frank Hüser",
-  email: "frank@smartpages.online",
-  status: "Business",
-  plan: "Trial (7 Tage)",
-  activeUntil: "2026-01-15",
-  lastLogin: "2025-12-21 22:14",
-};
+// Footer label bilingual
+const footerLabel =
+  currentLang === "en" ? "💬 Message the Team" : "💬 Nachricht an das Team";
+
+// Navigation items (root-level, not dashboard)
+const navItems = [
+  { label: "Cockpit", icon: "🛫", path: "dashboard" },
+  { label: "SmartProfile", icon: "👤", path: "smartprofile" },
+  { label: "SmartPage", icon: "📄", path: "smartpage" },
+  { label: "SmartDomain", icon: "🌐", path: "smartdomain" },
+];
+
+// Add current language prefix
+const adjustedNavItems = navItems.map((item) => ({
+  ...item,
+  link: `/${currentLang}/${item.path}`,
+}));
 ---
 
-<PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <!-- 🧭 Willkommen -->
-  <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-2">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-      <div class="w-full">
-        <h2 class="text-2xl font-bold mb-4">Willkommen zurück, {user.name} 👋</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-2 text-sm text-gray-700">
-          <p><span class="font-semibold">Name:</span> {user.name}</p>
-          <p><span class="font-semibold">E-Mail:</span> {user.email}</p>
-          <p><span class="font-semibold">Status:</span> {user.status}</p>
-          <p><span class="font-semibold">Plan:</span> {user.plan}</p>
-          <p><span class="font-semibold">Freigeschaltet bis:</span> {user.activeUntil}</p>
-          <p><span class="font-semibold">Letztes Login:</span> {user.lastLogin}</p>
-        </div>
+<aside
+  id="sidebar"
+  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl 
+         flex flex-col justify-between transition-transform duration-300 ease-in-out
+         -translate-x-full md:translate-x-0 z-50"
+>
+  <!-- 🔹 Header -->
+  <div class="h-20 flex items-center justify-center border-b border-white/10">
+    <h2 class="text-xl font-extrabold tracking-wide text-[#F5B400] drop-shadow-[0_0_6px_rgba(245,180,0,0.3)]">
+      SmartCenter
+    </h2>
+  </div>
 
-        <!-- 🔘 Button -->
-        <div class="flex justify-center mt-4">
-          <button
-            class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
-                   hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white 
-                   transition-all duration-300">
-            Daten bearbeiten
-          </button>
-        </div>
-      </div>
+  <!-- 🔹 Navigation -->
+  <nav class="flex-1 mt-20 space-y-4 overflow-y-auto scrollbar-hide px-3 pb-10">
+    {adjustedNavItems.map((item) => {
+      let gradientClasses = "";
+      switch (item.label) {
+        case "SmartProfile":
+          gradientClasses =
+            "hover:from-[#4E6BFF] hover:to-[#657AFF] hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]";
+          break;
+        case "SmartPage":
+          gradientClasses =
+            "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]";
+          break;
+        case "SmartDomain":
+          gradientClasses =
+            "hover:from-[#8B5CFF] hover:to-[#A076FF] hover:shadow-[0_0_20px_rgba(139,92,255,0.4)]";
+          break;
+        default:
+          gradientClasses =
+            "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]";
+      }
 
-      <div class="mt-4 md:mt-0 md:ml-6">
-        <span class="inline-block px-4 py-1.5 text-sm bg-green-300 text-green-900 rounded-full border border-green-400 font-medium">
-          Eingeloggt
-        </span>
-      </div>
-    </div>
-  </section>
+      return (
+        <a
+          href={item.link}
+          class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
+                  bg-[#f6f8fb] text-[#1E2A45]
+                  hover:bg-gradient-to-r hover:text-white shadow-md transition-all duration-300 ease-in-out
+                  ${gradientClasses}`}
+        >
+          <span class="text-lg">{item.icon}</span>
+          <span>{item.label}</span>
+        </a>
+      );
+    })}
+  </nav>
 
-  <!-- 🧱 Produkt-Kacheln -->
-  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
-    <a href="/de/smartprofile" class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white hover:scale-[1.03] hover:shadow-2xl transition-all duration-300">
-      <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
-      <p class="text-sm">
-        Erstelle dein persönliches Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.
-      </p>
-      <span class="mt-3 inline-block bg-white/20 text-xs px-3 py-1 rounded-full">In Entwicklung</span>
+  <!-- 🔹 Footer -->
+  <div class="p-4 border-t border-white/10">
+    <a
+      href="mailto:support@smartpages.online"
+      class="block w-full text-center rounded-2xl py-3 font-medium
+             bg-[#4F6EF7] text-white
+             hover:bg-white hover:text-[#1E2A45]
+             transition-all duration-300 shadow-md"
+    >
+      {footerLabel}
     </a>
+  </div>
+</aside>
 
-    <a href="/de/smartpage" class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:scale-[1.03] hover:shadow-2xl transition-all duration-300">
-      <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
-      <p class="text-sm">
-        Baue beeindruckende Seiten mit wenigen Klicks. Einfach, schnell und professionell gestaltet.
-      </p>
-      <span class="mt-3 inline-block bg-white/20 text-xs px-3 py-1 rounded-full">In Entwicklung</span>
-    </a>
+<!-- 🔸 Overlay -->
+<div
+  id="overlay"
+  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"
+></div>
 
-    <a href="/de/smartdomain" class="rounded-2xl p-5 shadow-xl bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white hover:scale-[1.03] hover:shadow-2xl transition-all duration-300">
-      <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
-      <p class="text-sm">
-        Sichere deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
-      </p>
-      <span class="mt-3 inline-block bg-white/20 text-xs px-3 py-1 rounded-full">In Entwicklung</span>
-    </a>
-  </section>
+<!-- 🔸 Mobile Toggle -->
+<button
+  id="openSidebar"
+  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50"
+>
+  ☰
+</button>
 
-  <!-- 📨 Feedback -->
-  <section class="max-w-6xl mx-auto mt-6 bg-[#f8f9fb] rounded-2xl p-6 text-center md:text-left shadow-md border border-gray-100">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-      <div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Dein Feedback hilft uns</h3>
-        <p class="text-sm text-gray-600">
-          Teile Bugs, Wünsche und Ideen – so verbessern wir SmartPages gezielt.
-        </p>
-      </div>
-      <a
-        href="/de/feedback"
-        class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
-               transition-all duration-300 shadow-md whitespace-nowrap">
-        Feedback-Formular öffnen
-      </a>
-    </div>
-  </section>
-</PageLayout>
+<script>
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const openBtn = document.getElementById("openSidebar");
+
+  const toggleSidebar = () => {
+    const isHidden = sidebar.classList.contains("-translate-x-full");
+    sidebar.classList.toggle("-translate-x-full", !isHidden);
+    overlay.classList.toggle("hidden", !isHidden);
+  };
+
+  openBtn?.addEventListener("click", toggleSidebar);
+  overlay?.addEventListener("click", toggleSidebar);
+</script>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
