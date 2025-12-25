@@ -114,3 +114,80 @@ const products = [
           <button type="submit"
             class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out">
             Magic Link senden
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Product Cards -->
+    <section class="mt-6 mb-12 px-4">
+      <ProductCardGrid {products} />
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-sm text-gray-600 py-6 bg-[#f5f5f5]">
+      © 2025 SmartPages · Profi Marketing LLC · Gehostet in Europa · DSGVO-konform
+    </footer>
+
+    <!-- Popup -->
+    <div id="popup" class="hidden fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+
+    <script>
+      const API_URL = "https://api.smartpages.online/api/auth/start";
+      const popup = document.getElementById("popup");
+      const form = document.getElementById("magicForm");
+
+      function showPopup(message, type = "success") {
+        popup.innerHTML = message;
+        popup.className = "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
+          (type === "success"
+            ? "border-green-500 text-green-700"
+            : type === "warning"
+            ? "border-yellow-400 text-yellow-700"
+            : "border-red-500 text-red-700");
+        popup.classList.remove("hidden");
+        setTimeout(() => popup.classList.add("hidden"), 7000);
+      }
+
+      form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const data = {
+          first_name: form.first_name.value.trim(),
+          last_name: form.last_name.value.trim(),
+          email: form.email.value.trim(),
+          company_name: form.company_name?.value.trim() || "",
+          is_business: form.is_business.checked,
+        };
+
+        showPopup("⏳ Sende deinen Magic Link...<br><span class='text-sm opacity-80'>Einen Moment bitte.</span>", "warning");
+
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+            mode: "cors",
+          });
+          const result = await res.json();
+
+          if (result.ok) {
+            showPopup("✅ Magic Link gesendet! Bitte überprüfe dein Postfach.", "success");
+          } else {
+            showPopup("❌ Etwas ist schiefgelaufen. Bitte überprüfe deine Eingabe.", "error");
+          }
+        } catch {
+          showPopup("⚠️ Netzwerkfehler. Bitte versuche es erneut.", "error");
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const cb = document.getElementById("is_business");
+        const field = document.getElementById("company_field");
+        cb?.addEventListener("change", () => {
+          field.classList.toggle("hidden", !cb.checked);
+        });
+      });
+    </script>
+  </body>
+</html>
