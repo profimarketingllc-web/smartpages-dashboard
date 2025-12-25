@@ -87,84 +87,31 @@ import "~/styles/global.css";
       </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="text-center text-sm text-gray-600 py-6 bg-[#f5f5f5]">
-      &copy; 2025 SmartPages &middot; Profi Marketing LLC &middot; Gehostet in Europa &middot; DSGVO-konform
-    </footer>
+    <!-- Product Cards (Hero-Kacheln) -->
+    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-10">
+      <!-- SmartProfile -->
+      <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#4E6BFF] to-[#657AFF] text-white hover:shadow-[0_0_25px_4px_rgba(78,107,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
+        <h3 class="text-2xl font-bold mb-2">
+          SmartProfile
+          <span class="text-sm bg-white text-[#4E6BFF] font-semibold rounded-full px-2 py-0.5 ml-2">BALD VERF&Uuml;GBAR</span>
+        </h3>
+        <p class="mt-2 text-[1rem] leading-relaxed">
+          Dein pers&ouml;nliches Online-Profil, das deine Markenidentit&auml;t widerspiegelt &mdash; sicher in Europa gehostet, optimiert f&uuml;r Sichtbarkeit, Glaubw&uuml;rdigkeit und vollst&auml;ndige DSGVO-Konformit&auml;t auf allen digitalen Kan&auml;len.
+        </p>
+      </div>
 
-    <!-- Pop-up -->
-    <div id="popup" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50"></div>
+      <!-- SmartPage -->
+      <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:shadow-[0_0_25px_4px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
+        <h3 class="text-2xl font-bold mb-2">
+          SmartPage
+          <span class="text-sm bg-white text-[#E47E00] font-semibold rounded-full px-2 py-0.5 ml-2">BALD VERF&Uuml;GBAR</span>
+        </h3>
+        <p class="mt-2 text-[1rem] leading-relaxed">
+          Erstelle beeindruckende, konversionsstarke Seiten in wenigen Minuten &mdash; ganz ohne Programmierung. Entwickelt f&uuml;r Kreative, Unternehmer und kleine Teams, die elegantes Design und volle Kontrolle wollen, ohne Komplexit&auml;t.
+        </p>
+      </div>
 
-    <!-- Script -->
-    <script>
-      const API_URL = "https://api.smartpages.online/api/auth/start";
-      const popup = document.getElementById("popup");
-      const form = document.getElementById("magicForm");
-
-      function showPopup(message, type = "success") {
-        popup.innerHTML = message;
-        popup.className =
-          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
-          (type === "success"
-            ? "border-green-500 text-green-700"
-            : type === "warning"
-            ? "border-yellow-400 text-yellow-700"
-            : "border-red-500 text-red-700");
-        popup.classList.remove("hidden");
-        setTimeout(() => popup.classList.add("hidden"), 7000);
-      }
-
-      form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const data = {
-          first_name: form.first_name.value.trim(),
-          last_name: form.last_name.value.trim(),
-          email: form.email.value.trim(),
-          company_name: form.company_name?.value.trim() || "",
-          is_business: form.is_business.checked,
-        };
-
-        showPopup(
-          "&#9203; Wir senden deinen Magic Link...<br><span class='text-sm opacity-80'>Das dauert einen kleinen Moment, bitte warten.</span>",
-          "warning"
-        );
-
-        try {
-          const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-            mode: "cors",
-          });
-          const result = await res.json();
-
-          if (result.ok) {
-            showPopup(
-              "&#9989; Magic Link gesendet!<br><span class='text-sm opacity-80'>Bitte pr&uuml;fe dein Postfach.</span>",
-              "success"
-            );
-          } else {
-            showPopup(
-              "&#10060; Etwas ist schiefgelaufen.<br><span class='text-sm opacity-80'>Bitte Eingaben pr&uuml;fen.</span>",
-              "error"
-            );
-          }
-        } catch {
-          showPopup(
-            "&#9888;&#65039; Netzwerkfehler.<br><span class='text-sm opacity-80'>Bitte erneut versuchen.</span>",
-            "error"
-          );
-        }
-      });
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const cb = document.getElementById("is_business");
-        const field = document.getElementById("company_field");
-        cb?.addEventListener("change", () => {
-          field.classList.toggle("hidden", !cb.checked);
-        });
-      });
-    </script>
-  </body>
-</html>
+      <!-- SmartDomain -->
+      <div class="rounded-2xl p-6 shadow-xl bg-gradient-to-r from-[#8B5CFF] to-[#A076FF] text-white hover:shadow-[0_0_25px_4px_rgba(139,92,255,0.5)] hover:scale-[1.03] transition-all duration-300 ease-in-out">
+        <h3 class="text-2xl font-bold mb-2">
+          Smart
