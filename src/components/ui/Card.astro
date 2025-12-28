@@ -1,0 +1,8 @@
+---
+const { title, children } = Astro.props;
+---
+
+<div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
+  {title && <h3 class="text-lg font-semibold text-gray-800 mb-4">{title}</h3>}
+  <div>{children}</div>
+</div>

@@ -1,0 +1,15 @@
+---
+const { slug = "demo" } = Astro.props;
+---
+
+<div class="flex justify-center gap-8 mt-8 flex-wrap">
+  <!-- 📱 Mobile -->
+  <div class="bg-white border rounded-[2rem] shadow-lg w-[320px] h-[640px] overflow-hidden">
+    <iframe src={`/preview/${slug}?mode=mobile`} class="w-full h-full"></iframe>
+  </div>
+
+  <!-- 💻 Desktop -->
+  <div class="bg-white border rounded-xl shadow-lg w-[480px] h-[360px] overflow-hidden">
+    <iframe src={`/preview/${slug}?mode=desktop`} class="w-full h-full"></iframe>
+  </div>
+</div>
