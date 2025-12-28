@@ -6,14 +6,15 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        "~": path.resolve("./src"),
+        "~": path.resolve("./src"),  // Für Layouts, Seiten, Utilities
+        "@": path.resolve("./src"),  // Für Komponenten (UI, Core, Editor)
       },
     },
   },
   integrations: [
     tailwind({
-      config: "./tailwind.config.cjs", // oder .js, je nachdem was du nutzt
-      applyBaseStyles: true, // aktiviert base + utilities
+      config: path.resolve("./tailwind.config.cjs"), // Plattformunabhängig (Windows/Linux)
+      applyBaseStyles: true,                         // aktiviert base + utilities
     }),
   ],
 });
