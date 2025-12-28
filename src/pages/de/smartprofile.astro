@@ -1,60 +1,35 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
+import ProductPill from "@/components/core/ProductPill.astro";
 import Card from "@/components/ui/Card.astro";
 import ProductForm from "@/components/editor/ProductForm.astro";
 import ProductPreview from "@/components/editor/ProductPreview.astro";
 
-// Schema definiert, welche Felder im Formular angezeigt werden
 const schema = [
   { key: "name", label: "Name", type: "text" },
-  { key: "claim", label: "Claim / Motto", type: "text" },
-  { key: "bio_short", label: "Kurzbeschreibung", type: "textarea", rows: 2, col: 2 },
-  { key: "bio_long", label: "Langbeschreibung", type: "textarea", rows: 5, col: 2 },
-  { key: "email", label: "E-Mail", type: "email" },
-  { key: "link_1_title", label: "Link 1 Titel", type: "text" },
-  { key: "link_1_url", label: "Link 1 URL", type: "text" },
-  { key: "link_2_title", label: "Link 2 Titel", type: "text" },
-  { key: "link_2_url", label: "Link 2 URL", type: "text" },
+  { key: "bio", label: "Kurzbeschreibung", type: "textarea", rows: 5 },
+  { key: "link_1", label: "Erster Link", type: "text" },
+  { key: "link_2", label: "Zweiter Link", type: "text" },
+  { key: "link_3", label: "Dritter Link (optional)", type: "text" },
 ];
 
-// Beispiel-Daten (später dynamisch vom Worker)
 const profile = {
-  name: "Anna Müller",
-  claim: "Ich helfe Marken, online sichtbar zu werden.",
-  bio_short: "Social Media Expertin & Content Strategin.",
-  bio_long:
-    "Ich unterstütze Coaches, Unternehmer und Kreative dabei, ihre Marke sichtbar zu machen und online Vertrauen aufzubauen. Mein Fokus liegt auf nachhaltiger Sichtbarkeit statt kurzlebigen Trends.",
-  email: "anna@example.com",
-  link_1_title: "Website",
-  link_1_url: "https://example.com",
-  link_2_title: "LinkedIn",
-  link_2_url: "https://linkedin.com/in/anna",
-  slug: "anna",
+  name: "Max Mustermann",
+  bio: "Freelancer & Coach. Ich helfe Menschen, ihre Online-Präsenz zu stärken.",
+  link_1: "https://linkedin.com/in/max",
+  link_2: "https://instagram.com/max",
+  link_3: "",
+  slug: "max-mustermann",
 };
 ---
 
 <PageLayout title="SmartProfile – SmartPages" sidebar={true} header={true}>
-  <!-- 🟦 Produkt-Pill -->
-  <div class="max-w-4xl mx-auto mt-6">
-    <div class="text-center">
-      <span
-        class="inline-block px-6 py-2 rounded-full text-white text-lg font-semibold
-               bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
-               shadow-[0_4px_12px_rgba(78,107,255,0.25)]"
-      >
-        SmartProfile
-      </span>
-    </div>
-  </div>
+  <ProductPill label="SmartProfile" color="blue" />
 
-  <!-- 🧱 Produktbereich -->
   <div class="max-w-4xl mx-auto mt-10 space-y-8">
-    <!-- 📝 Eingabemaske -->
     <Card title="Profil bearbeiten">
       <ProductForm schema={schema} data={profile} />
     </Card>
-
-    <!-- 💻 Vorschau -->
     <Card title="Vorschau">
       <ProductPreview slug={profile.slug} />
     </Card>

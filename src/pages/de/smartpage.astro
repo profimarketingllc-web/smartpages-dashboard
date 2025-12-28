@@ -1,10 +1,10 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
+import ProductPill from "@/components/core/ProductPill.astro";
 import Card from "@/components/ui/Card.astro";
 import ProductForm from "@/components/editor/ProductForm.astro";
 import ProductPreview from "@/components/editor/ProductPreview.astro";
 
-// Beispiel-Schema für die Eingabemaske
 const schema = [
   { key: "title", label: "Seitentitel", type: "text" },
   { key: "subtitle", label: "Untertitel", type: "text" },
@@ -13,7 +13,6 @@ const schema = [
   { key: "cta_url", label: "Button-Link", type: "text" },
 ];
 
-// Beispiel-Daten für die Vorschau
 const page = {
   title: "Meine erste SmartPage",
   subtitle: "Einfach. Schnell. Online.",
@@ -26,27 +25,12 @@ const page = {
 ---
 
 <PageLayout title="SmartPage – SmartPages" sidebar={true} header={true}>
-  <!-- 🟧 Produkt-Pill -->
-  <div class="max-w-4xl mx-auto mt-6">
-    <div class="text-center">
-      <span
-        class="inline-block px-6 py-2 rounded-full text-white text-lg font-semibold
-               bg-gradient-to-r from-[#F5B400] to-[#E47E00]
-               shadow-[0_4px_12px_rgba(245,180,0,0.25)]"
-      >
-        SmartPage
-      </span>
-    </div>
-  </div>
+  <ProductPill label="SmartPage" color="orange" />
 
-  <!-- 🧱 Produktbereich (Formular + Vorschau) -->
   <div class="max-w-4xl mx-auto mt-10 space-y-8">
-    <!-- Eingabeformular -->
     <Card title="Seite bearbeiten">
       <ProductForm schema={schema} data={page} />
     </Card>
-
-    <!-- Vorschau -->
     <Card title="Vorschau">
       <ProductPreview slug={page.slug} />
     </Card>

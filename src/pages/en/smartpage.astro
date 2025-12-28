@@ -1,5 +1,6 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
+import ProductPill from "@/components/core/ProductPill.astro";
 import Card from "@/components/ui/Card.astro";
 import ProductForm from "@/components/editor/ProductForm.astro";
 import ProductPreview from "@/components/editor/ProductPreview.astro";
@@ -15,30 +16,21 @@ const schema = [
 const page = {
   title: "My First SmartPage",
   subtitle: "Simple. Fast. Online.",
-  content: "Build modern landing pages without coding skills. Type, preview, publish – done.",
-  cta_label: "Learn more",
+  content:
+    "Create beautiful landing pages effortlessly – no coding needed. Just write, preview and publish.",
+  cta_label: "Learn More",
   cta_url: "#",
   slug: "landing",
 };
 ---
 
 <PageLayout title="SmartPage – SmartPages" sidebar={true} header={true}>
-  <!-- 🟧 Product Pill -->
-  <div class="max-w-4xl mx-auto mt-6 text-center">
-    <span
-      class="inline-block px-6 py-2 rounded-full text-white text-lg font-semibold
-             bg-gradient-to-r from-[#F5B400] to-[#E47E00]
-             shadow-[0_4px_12px_rgba(245,180,0,0.25)]"
-    >
-      SmartPage
-    </span>
-  </div>
+  <ProductPill label="SmartPage" color="orange" />
 
   <div class="max-w-4xl mx-auto mt-10 space-y-8">
-    <Card title="Edit your page">
+    <Card title="Edit Page">
       <ProductForm schema={schema} data={page} />
     </Card>
-
     <Card title="Preview">
       <ProductPreview slug={page.slug} />
     </Card>

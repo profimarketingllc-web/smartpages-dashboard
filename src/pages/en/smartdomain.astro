@@ -1,5 +1,6 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
+import ProductPill from "@/components/core/ProductPill.astro";
 import Card from "@/components/ui/Card.astro";
 import ProductForm from "@/components/editor/ProductForm.astro";
 import ProductPreview from "@/components/editor/ProductPreview.astro";
@@ -21,22 +22,12 @@ const domain = {
 ---
 
 <PageLayout title="SmartDomain – SmartPages" sidebar={true} header={true}>
-  <!-- 🟪 Product Pill -->
-  <div class="max-w-4xl mx-auto mt-6 text-center">
-    <span
-      class="inline-block px-6 py-2 rounded-full text-white text-lg font-semibold
-             bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
-             shadow-[0_4px_12px_rgba(139,92,255,0.25)]"
-    >
-      SmartDomain
-    </span>
-  </div>
+  <ProductPill label="SmartDomain" color="purple" />
 
   <div class="max-w-4xl mx-auto mt-10 space-y-8">
-    <Card title="Manage your domain">
+    <Card title="Manage Domain">
       <ProductForm schema={schema} data={domain} />
     </Card>
-
     <Card title="Preview">
       <ProductPreview slug={domain.slug} />
     </Card>
