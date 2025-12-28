@@ -1,5 +1,28 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
+import Card from "@/components/ui/Card.astro";
+import ProductForm from "@/components/editor/ProductForm.astro";
+import ProductPreview from "@/components/editor/ProductPreview.astro";
+
+// Beispiel-Schema für die Eingabemaske
+const schema = [
+  { key: "title", label: "Seitentitel", type: "text" },
+  { key: "subtitle", label: "Untertitel", type: "text" },
+  { key: "content", label: "Inhalt", type: "textarea", rows: 6 },
+  { key: "cta_label", label: "Button-Text", type: "text" },
+  { key: "cta_url", label: "Button-Link", type: "text" },
+];
+
+// Beispiel-Daten für die Vorschau
+const page = {
+  title: "Meine erste SmartPage",
+  subtitle: "Einfach. Schnell. Online.",
+  content:
+    "Hier entsteht eine moderne Landingpage – ohne Programmierkenntnisse. Einfach Texte eingeben und veröffentlichen.",
+  cta_label: "Mehr erfahren",
+  cta_url: "#",
+  slug: "start",
+};
 ---
 
 <PageLayout title="SmartPage – SmartPages" sidebar={true} header={true}>
@@ -16,16 +39,16 @@ import PageLayout from "~/layouts/PageLayout.astro";
     </div>
   </div>
 
-  <!-- 🧱 Hero-Bereich -->
-  <section
-    class="max-w-4xl mx-auto mt-10 bg-gray-50 border border-gray-200 
-           shadow-lg rounded-3xl p-10 text-center"
-  >
-    <h2 class="text-2xl font-bold mb-3 text-[#1E2A45]">Demnächst verfügbar 🚀</h2>
-    <p class="text-gray-600 text-base leading-relaxed">
-      Dieses Produkt befindet sich derzeit in Entwicklung.  
-      Schon bald kannst Du beeindruckende Seiten direkt in SmartPages erstellen –  
-      schnell, professionell und ohne technisches Wissen.
-    </p>
-  </section>
+  <!-- 🧱 Produktbereich (Formular + Vorschau) -->
+  <div class="max-w-4xl mx-auto mt-10 space-y-8">
+    <!-- Eingabeformular -->
+    <Card title="Seite bearbeiten">
+      <ProductForm schema={schema} data={page} />
+    </Card>
+
+    <!-- Vorschau -->
+    <Card title="Vorschau">
+      <ProductPreview slug={page.slug} />
+    </Card>
+  </div>
 </PageLayout>
