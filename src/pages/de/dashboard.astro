@@ -1,101 +1,177 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
+import DashboardCardWide from "~/components/DashboardCardWide.astro";
 
-const user = {
-  name: "Frank Hüser",
-  email: "frank@smartpages.online",
-  status: "Business",
-  plan: "Trial (7 Tage)",
-  activeUntil: "2026-01-15",
-  lastLogin: "2025-12-21 22:14",
-};
+let user = null;
+
+// Daten abrufen
+try {
+  const sessionRes = await fetch("https://api.smartpages.online/api/session", {
+    credentials: "include",
+    headers: { Cookie: Astro.request.headers.get("cookie") || "" },
+  });
+  const sessionData = await sessionRes.json();
+
+  if (sessionData.ok && sessionData.authenticated) {
+    const customerRes = await fetch("https://customer.smartpages.online/api/user-data", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionData.session?.email}`,
+      },
+    });
+    const customerData = await customerRes.json();
+    user = customerData.user;
+  }
+} catch (err) {
+  console.error("Fehler beim Laden der Benutzerdaten:", err);
+}
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <!-- 🧭 Willkommen -->
-  <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-2">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-      <div class="w-full">
-        <h2 class="text-2xl font-bold mb-4">Willkommen zurück, {user.name} 👋</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-2 text-sm text-gray-700">
-          <p><span class="font-semibold">Name:</span> {user.name}</p>
-          <p><span class="font-semibold">E-Mail:</span> {user.email}</p>
-          <p><span class="font-semibold">Status:</span> {user.status}</p>
-          <p><span class="font-semibold">Plan:</span> {user.plan}</p>
-          <p><span class="font-semibold">Freigeschaltet bis:</span> {user.activeUntil}</p>
-          <p><span class="font-semibold">Letztes Login:</span> {user.lastLogin}</p>
-        </div>
-
-        <!-- 🔘 Button -->
-        <div class="flex justify-center mt-4">
-          <button
-            class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
-                   hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white 
-                   transition-all duration-300"
-          >
-            Daten bearbeiten
-          </button>
-        </div>
-      </div>
-
-      <div class="mt-4 md:mt-0 md:ml-6">
-        <span
-          class="inline-block px-4 py-1.5 text-sm rounded-full border 
-                 bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]
-                 font-medium min-w-[110px] text-center"
-        >
-          Eingeloggt
-        </span>
-      </div>
-    </div>
-  </section>
-
-  <!-- 🧱 Produkt-Kacheln -->
-  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
-    <a href="/de/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
-              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-              hover:shadow-[0_10px_25px_rgba(78,107,255,0.3)] hover:-translate-y-1">
-      <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
-      <p class="text-sm">
-        Erstelle dein persönliches Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.
-      </p>
-    </a>
-
-    <a href="/de/smartpage" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
-              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-              hover:shadow-[0_10px_25px_rgba(245,180,0,0.3)] hover:-translate-y-1">
-      <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
-      <p class="text-sm">
-        Baue beeindruckende Seiten mit wenigen Klicks. Einfach, schnell und professionell gestaltet.
-      </p>
-    </a>
-
-    <a href="/de/smartdomain" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
-              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-              hover:shadow-[0_10px_25px_rgba(139,92,255,0.3)] hover:-translate-y-1">
-      <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
-      <p class="text-sm">
-        Sichere deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
-      </p>
-    </a>
-  </section>
-
-  <!-- 📨 Feedback -->
-  <section class="max-w-6xl mx-auto mt-6 bg-[#f8f9fb] rounded-2xl p-6 text-center md:text-left shadow-md border border-gray-100">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-      <div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Dein Feedback hilft uns</h3>
-        <p class="text-sm text-gray-600">
-          Teile Bugs, Wünsche und Ideen – so verbessern wir SmartPages gezielt.
-        </p>
-      </div>
-      <a
-        href="/feedback"
-        class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
-               transition-all duration-300 shadow-md whitespace-nowrap"
+  {user ? (
+    <>
+      <!-- 🧭 1️⃣ Kundenprofil -->
+      <DashboardCardWide
+        title={`Willkommen zurück, ${user.first_name || "Unbekannt"} ${user.last_name || ""} 👋`}
+        showStatus={true}
+        status="Eingeloggt"
+        statusColor="green"
       >
-        Feedback-Formular öffnen
+        <form
+          id="form-customer"
+          class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-3 text-sm text-gray-700"
+          on:submit={(e) => handleSubmit(e, 'form-customer')}
+        >
+          <p>
+            <label class="font-semibold">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={`${user.first_name || ""} ${user.last_name || ""}`}
+              class="p-2 border rounded-lg w-full border-gray-300"
+            />
+          </p>
+          <p>
+            <label class="font-semibold">E-Mail</label>
+            <input
+              type="email"
+              name="email"
+              value={user.email}
+              class="p-2 border rounded-lg w-full border-gray-300"
+            />
+          </p>
+          <p>
+            <label class="font-semibold">Kundentyp</label>
+            <input
+              type="text"
+              name="type"
+              value={user.is_business ? "Business" : "Privat"}
+              class="p-2 border rounded-lg w-full border-gray-300 bg-gray-50"
+              readonly
+            />
+          </p>
+
+          <div class="md:col-span-3 flex justify-center mt-4">
+            <button
+              type="submit"
+              class="px-6 py-2 bg-[#1E2A45] text-white rounded-xl hover:bg-[#2B3B60] transition-all"
+            >
+              Kundendaten verarbeiten
+            </button>
+          </div>
+        </form>
+      </DashboardCardWide>
+
+      <!-- 🧾 2️⃣ Impressum & Datenschutz -->
+      <DashboardCardWide
+        title="Impressum & Datenschutz"
+        desc="Diese Angaben werden automatisch für dein Impressum und deine Datenschutzseite verwendet."
+      >
+        <form
+          id="form-legal"
+          class="grid md:grid-cols-2 gap-4"
+          on:submit={(e) => handleSubmit(e, 'form-legal')}
+        >
+          <div>
+            <label class="text-sm font-medium text-gray-700">Firmenname</label>
+            <input
+              type="text"
+              name="company_name"
+              value={user.company_name || ""}
+              class="p-2 border rounded-lg w-full border-gray-300"
+            />
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-gray-700">Ansprechpartner</label>
+            <input
+              type="text"
+              name="contact_person"
+              value={`${user.first_name || ""} ${user.last_name || ""}`.trim()}
+              class="p-2 border rounded-lg w-full border-gray-300"
+            />
+          </div>
+
+          <div>
+            <label class="text-sm font-medium text-gray-700">Kontakt-E-Mail</label>
+            <input
+              type="email"
+              name="email"
+              value={user.email || ""}
+              class="p-2 border rounded-lg w-full border-gray-300"
+            />
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="text-sm font-medium text-gray-700">Adresse</label>
+            <textarea
+              rows="3"
+              name="address"
+              class="p-2 border rounded-lg w-full border-gray-300"
+            >{user.address || ""}</textarea>
+          </div>
+
+          <div class="md:col-span-2 flex justify-center mt-4">
+            <button
+              type="submit"
+              class="px-6 py-2 bg-[#F5B400] text-[#1E2A45] rounded-xl hover:bg-[#E47E00] transition-all"
+            >
+              Impressumsdaten verarbeiten
+            </button>
+          </div>
+        </form>
+      </DashboardCardWide>
+    </>
+  ) : (
+    <div class="max-w-4xl mx-auto mt-20 text-center">
+      <h2 class="text-2xl font-bold text-[#1E2A45]">Anmeldung erforderlich</h2>
+      <p class="text-gray-600 mt-3">Bitte melde dich erneut über deinen Magic Link an.</p>
+      <a
+        href="/de/login"
+        class="inline-block mt-6 px-6 py-3 bg-[#F5B400] text-[#1E2A45] rounded-xl hover:bg-[#E47E00] transition-all"
+      >
+        Zum Login
       </a>
     </div>
-  </section>
+  )}
 </PageLayout>
+
+<script>
+  async function handleSubmit(e, formId) {
+    e.preventDefault();
+    const form = document.getElementById(formId);
+    const data = Object.fromEntries(new FormData(form));
+
+    const res = await fetch("https://customer.smartpages.online/api/user-update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    if (res.ok) {
+      alert("✅ Daten erfolgreich verarbeitet!");
+    } else {
+      alert("❌ Fehler beim Speichern. Bitte erneut versuchen.");
+    }
+  }
+</script>

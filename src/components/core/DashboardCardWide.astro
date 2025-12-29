@@ -1,0 +1,94 @@
+---
+/**
+ * SmartPages – Breite Dashboard-Kachel
+ * 
+ * Props:
+ * - title: string
+ * - desc?: string
+ * - items?: Array<{ label: string, value: string }>
+ * - buttonText?: string
+ * - showButton?: boolean
+ * - showStatus?: boolean
+ * - status?: string
+ * - statusColor?: "green" | "red" | "gray"
+ * - variant?: "default" | "highlight"
+ */
+
+const {
+  title,
+  desc = "",
+  items = [],
+  buttonText = "",
+  showButton = false,
+  showStatus = false,
+  status = "",
+  statusColor = "green",
+  variant = "default",
+} = Astro.props;
+
+const variantClasses = {
+  default: "bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-4 w-full",
+  highlight:
+    "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white shadow-xl rounded-3xl p-8 mt-4 w-full",
+}[variant];
+
+const pillColors = {
+  green: "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]",
+  red: "bg-[#F8D7DA] text-[#8B1A1A] border-[#E6A1A1]",
+  gray: "bg-gray-200 text-gray-700 border-gray-300",
+}[statusColor];
+---
+
+<section class={`max-w-6xl mx-auto ${variantClasses}`}>
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+    <div class="w-full">
+      <!-- Titel -->
+      <h2 class={`text-2xl font-bold mb-4 ${variant === "highlight" ? "text-white" : "text-[#1E2A45]"}`}>
+        {title}
+      </h2>
+
+      <!-- Beschreibung -->
+      {desc && (
+        <p class={`text-sm mb-6 ${variant === "highlight" ? "text-gray-100" : "text-gray-600"}`}>
+          {desc}
+        </p>
+      )}
+
+      <!-- Datenanzeige -->
+      {items.length > 0 && (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 text-sm text-gray-700">
+          {items.map((item) => (
+            <p class={`${variant === "highlight" ? "text-white" : "text-gray-700"}`}>
+              <span class="font-semibold">{item.label}:</span> {item.value || "–"}
+            </p>
+          ))}
+        </div>
+      )}
+
+      <!-- Button -->
+      {showButton && buttonText && (
+        <div class="flex justify-center mt-6">
+          <button
+            type="button"
+            class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
+                   hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white 
+                   transition-all duration-300"
+          >
+            {buttonText}
+          </button>
+        </div>
+      )}
+    </div>
+
+    <!-- Status-Pill -->
+    {showStatus && status && (
+      <div class="mt-4 md:mt-0 md:ml-6">
+        <span
+          class={`inline-block px-4 py-1.5 text-sm rounded-full border font-medium min-w-[110px] text-center ${pillColors}`}
+        >
+          {status}
+        </span>
+      </div>
+    )}
+  </div>
+</section>
