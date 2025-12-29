@@ -78,7 +78,7 @@ const products = [
 
         <p>
           Gib unten einfach deine Kontaktdaten ein, und wir senden dir einen persönlichen
-          <strong>Magic Link</strong> für den sicheren Sofortzugang zu deinem SmartPages-Dashboard –
+          <strong>Magic Link</strong> für den sicheren Sofortzugang zu deinem SmartPages-Dashboard – 
           ohne Passwort, ohne Tracking, ohne Datensammlung.
         </p>
       </div>
@@ -111,8 +111,8 @@ const products = [
             <input type="text" name="company_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
           </div>
 
-          <button type="submit"
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out">
+          <button id="submitBtn" type="submit"
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed">
             Magic Link senden
           </button>
         </form>
@@ -136,10 +136,12 @@ const products = [
       const API_URL = "https://api.smartpages.online/api/auth/start";
       const popup = document.getElementById("popup");
       const form = document.getElementById("magicForm");
+      const submitBtn = document.getElementById("submitBtn");
 
       function showPopup(message, type = "success") {
         popup.innerHTML = message;
-        popup.className = "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
+        popup.className =
+          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
           (type === "success"
             ? "border-green-500 text-green-700"
             : type === "warning"
@@ -160,6 +162,7 @@ const products = [
           is_business: form.is_business.checked,
         };
 
+        submitBtn.disabled = true;
         showPopup("⏳ Sende deinen Magic Link...<br><span class='text-sm opacity-80'>Einen Moment bitte.</span>", "warning");
 
         try {
@@ -174,10 +177,33 @@ const products = [
           if (result.ok) {
             showPopup("✅ Magic Link gesendet! Bitte überprüfe dein Postfach.", "success");
           } else {
-            showPopup("❌ Etwas ist schiefgelaufen. Bitte überprüfe deine Eingabe.", "error");
+            switch (result.error) {
+              case "invalid_email":
+                showPopup("❌ Bitte gib eine gültige E-Mail-Adresse ein.", "error");
+                break;
+              case "email_bounced":
+                showPopup("⚠️ Deine E-Mail konnte zuletzt nicht erreicht werden. Bitte prüfe deine Adresse.", "error");
+                break;
+              case "trial_expired":
+                showPopup("💡 Dein kostenloser Testzeitraum ist abgelaufen. Bitte prüfe deine E-Mails für Upgrade-Optionen.", "warning");
+                break;
+              case "rate_limited":
+                showPopup("⏳ Bitte warte einen Moment, bevor du erneut einen Magic Link anforderst.", "warning");
+                break;
+              case "mailer_unreachable":
+                showPopup("📭 Der Mailserver ist aktuell nicht erreichbar. Bitte versuche es später erneut.", "error");
+                break;
+              case "mailer_error":
+                showPopup("❌ Beim Versand der E-Mail ist ein Fehler aufgetreten. Bitte erneut versuchen.", "error");
+                break;
+              default:
+                showPopup("⚠️ Ein unbekannter Fehler ist aufgetreten. Bitte überprüfe deine Eingaben.", "error");
+            }
           }
         } catch {
-          showPopup("⚠️ Netzwerkfehler. Bitte versuche es erneut.", "error");
+          showPopup("⚠️ Netzwerkfehler. Bitte überprüfe deine Internetverbindung.", "error");
+        } finally {
+          submitBtn.disabled = false;
         }
       });
 

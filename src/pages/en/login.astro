@@ -31,7 +31,7 @@ const products = [
     <title>SmartPages Login</title>
     <meta
       name="description"
-      content="Login to SmartPages — secure, GDPR-compliant, and hosted in Europe."
+      content="Login to SmartPages — secure, privacy-first, and hosted in Europe."
     />
   </head>
 
@@ -65,25 +65,22 @@ const products = [
         </h2>
 
         <p class="mb-4">
-          With <strong>SmartPages</strong>, you can build your professional
-          online presence in just <strong>10 minutes</strong> — without
-          technical knowledge or complex setup. Everything is hosted securely in
-          <strong>Europe</strong> and fully compliant with the
+          With <strong>SmartPages</strong>, you can build your professional online presence in just
+          <strong>10 minutes</strong> — without technical knowledge or complex setup.
+          Everything is hosted securely in <strong>Europe</strong> and fully compliant with the
           <strong>General Data Protection Regulation (GDPR)</strong>.
         </p>
 
         <p class="mb-4">
-          If your audience or clients are located in the European Union,
-          compliance with GDPR is not optional — it’s a legal requirement.
-          SmartPages helps you meet these standards effortlessly, protecting
-          both your brand and your users’ privacy from the very first click.
+          If your audience or clients are in the European Union, GDPR compliance isn’t optional —
+          it’s mandatory. SmartPages helps you meet these standards automatically, protecting both
+          your brand and your users’ privacy from the very first click.
         </p>
 
         <p>
-          Simply enter your contact details below, and we’ll send you a personal
-          <strong>Magic Link</strong> that gives you secure, instant access to
-          your SmartPages dashboard — no password needed, no tracking, and no
-          hidden data collection.
+          Simply enter your contact details below and we’ll send you a personal
+          <strong>Magic Link</strong> for secure, instant access to your SmartPages dashboard —
+          no password, no tracking, no hidden data collection.
         </p>
       </div>
 
@@ -115,8 +112,8 @@ const products = [
             <input type="text" name="company_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
           </div>
 
-          <button type="submit"
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out">
+          <button id="submitBtn" type="submit"
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed">
             Send Magic Link
           </button>
         </form>
@@ -138,10 +135,12 @@ const products = [
       const API_URL = "https://api.smartpages.online/api/auth/start";
       const popup = document.getElementById("popup");
       const form = document.getElementById("magicForm");
+      const submitBtn = document.getElementById("submitBtn");
 
       function showPopup(message, type = "success") {
         popup.innerHTML = message;
-        popup.className = "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
+        popup.className =
+          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
           (type === "success"
             ? "border-green-500 text-green-700"
             : type === "warning"
@@ -162,7 +161,8 @@ const products = [
           is_business: form.is_business.checked,
         };
 
-        showPopup("⏳ Sending your Magic Link...<br><span class='text-sm opacity-80'>This may take a moment, please wait.</span>", "warning");
+        submitBtn.disabled = true;
+        showPopup("⏳ Sending your Magic Link...<br><span class='text-sm opacity-80'>Please wait a moment.</span>", "warning");
 
         try {
           const res = await fetch(API_URL, {
@@ -176,10 +176,33 @@ const products = [
           if (result.ok) {
             showPopup("✅ Magic Link sent! Please check your inbox.", "success");
           } else {
-            showPopup("❌ Something went wrong. Please check your input.", "error");
+            switch (result.error) {
+              case "invalid_email":
+                showPopup("❌ Please enter a valid email address.", "error");
+                break;
+              case "email_bounced":
+                showPopup("⚠️ Your email address could not be reached previously. Please check it and try again.", "error");
+                break;
+              case "trial_expired":
+                showPopup("💡 Your free trial has expired. Please check your email for upgrade options.", "warning");
+                break;
+              case "rate_limited":
+                showPopup("⏳ Please wait a few minutes before requesting another Magic Link.", "warning");
+                break;
+              case "mailer_unreachable":
+                showPopup("📭 Our mail server is temporarily unavailable. Please try again later.", "error");
+                break;
+              case "mailer_error":
+                showPopup("❌ There was an issue sending your email. Please try again.", "error");
+                break;
+              default:
+                showPopup("⚠️ An unknown error occurred. Please review your details and try again.", "error");
+            }
           }
         } catch {
-          showPopup("⚠️ Network error. Please try again.", "error");
+          showPopup("⚠️ Network error. Please check your internet connection and try again.", "error");
+        } finally {
+          submitBtn.disabled = false;
         }
       });
 
