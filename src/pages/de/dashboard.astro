@@ -1,134 +1,84 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
+import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
+import "~/styles/global.css"; // ✅ Styles sicher importieren
+
+let user = null;
+let authenticated = false;
+
+// 🧩 Serverseitiger Session-Fallback (wenn Cookie bereits gesetzt)
+try {
+  const cookie = Astro.request.headers.get("cookie") || "";
+  if (cookie.includes("session=")) {
+    const res = await fetch("https://api.smartpages.online/api/session", {
+      headers: { Cookie: cookie },
+    });
+    const data = await res.json();
+    if (data.ok && data.authenticated) {
+      user = data.user;
+      authenticated = true;
+    }
+  }
+} catch (err) {
+  console.warn("Server-side session check failed:", err);
+}
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <div id="dashboard-content" class="max-w-4xl mx-auto mt-10 text-center text-gray-700">
-    <p class="text-gray-500">🔄 Benutzerinformationen werden geladen...</p>
-  </div>
-
-  <script>
-    async function loadDashboard() {
-      const container = document.getElementById("dashboard-content");
-
-      try {
-        // === 1️⃣ Session abrufen
-        const sessionRes = await fetch("https://api.smartpages.online/api/session", {
-          credentials: "include",
-        });
-        const sessionData = await sessionRes.json();
-
-        if (!sessionData.ok || !sessionData.authenticated) {
-          container.innerHTML =
-            '<h2 class="text-2xl font-bold text-[#1E2A45]">Anmeldung erforderlich</h2>' +
-            '<p class="text-gray-600 mt-3">Bitte melde dich erneut über deinen Magic Link an.</p>' +
-            '<a href="/de/login" class="inline-block mt-6 px-6 py-3 bg-[#F5B400] text-[#1E2A45] rounded-xl hover:bg-[#E47E00] transition-all">Zum Login</a>';
-          return;
-        }
-
-        // === 2️⃣ Customer-Daten abrufen
-        const customerRes = await fetch("https://customer.smartpages.online/api/user-data", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + sessionData.session?.email,
-          },
-          credentials: "include",
-        });
-
-        const customerData = await customerRes.json();
-
-        if (!customerData || !customerData.user) {
-          container.innerHTML =
-            '<h2 class="text-xl font-semibold text-[#1E2A45]">Keine Benutzerdaten gefunden</h2>' +
-            '<p class="text-gray-600 mt-3">Bitte versuche es später erneut.</p>';
-          return;
-        }
-
-        const user = customerData.user;
-
-        // === 3️⃣ Dashboard rendern
-        container.innerHTML =
-          '<div class="space-y-10">' +
-          '<div class="bg-white shadow-md rounded-2xl p-6 text-left">' +
-          '<h2 class="text-xl font-semibold text-[#1E2A45] mb-2">Willkommen zurück, ' +
-          (user.first_name || "Unbekannt") +
-          " " +
-          (user.last_name || "") +
-          ' 👋</h2>' +
-          '<p class="text-sm text-gray-600 mb-4">Status: <span class="text-green-600 font-semibold">Eingeloggt</span></p>' +
-          '<form id="form-customer" class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-3 text-sm text-gray-700">' +
-          '<p><label class="font-semibold">Name</label><input type="text" name="name" value="' +
-          (user.first_name || "") +
-          " " +
-          (user.last_name || "") +
-          '" class="p-2 border rounded-lg w-full border-gray-300" /></p>' +
-          '<p><label class="font-semibold">E-Mail</label><input type="email" name="email" value="' +
-          (user.email || "") +
-          '" class="p-2 border rounded-lg w-full border-gray-300" /></p>' +
-          '<p><label class="font-semibold">Kundentyp</label><input type="text" name="type" value="' +
-          (user.is_business ? "Business" : "Privat") +
-          '" class="p-2 border rounded-lg w-full border-gray-300 bg-gray-50" readonly /></p>' +
-          '<div class="md:col-span-3 flex justify-center mt-4"><button type="submit" class="px-6 py-2 bg-[#1E2A45] text-white rounded-xl hover:bg-[#2B3B60] transition-all">Kundendaten verarbeiten</button></div>' +
-          "</form></div>" +
-          '<div class="bg-white shadow-md rounded-2xl p-6 text-left">' +
-          '<h2 class="text-xl font-semibold text-[#1E2A45] mb-2">Impressum & Datenschutz</h2>' +
-          '<p class="text-gray-600 mb-4">Diese Angaben werden automatisch für dein Impressum und deine Datenschutzseite verwendet.</p>' +
-          '<form id="form-legal" class="grid md:grid-cols-2 gap-4">' +
-          '<div><label class="text-sm font-medium text-gray-700">Firmenname</label><input type="text" name="company_name" value="' +
-          (user.company_name || "") +
-          '" class="p-2 border rounded-lg w-full border-gray-300" /></div>' +
-          '<div><label class="text-sm font-medium text-gray-700">Ansprechpartner</label><input type="text" name="contact_person" value="' +
-          (user.first_name || "") +
-          " " +
-          (user.last_name || "") +
-          '" class="p-2 border rounded-lg w-full border-gray-300" /></div>' +
-          '<div><label class="text-sm font-medium text-gray-700">Kontakt-E-Mail</label><input type="email" name="email" value="' +
-          (user.email || "") +
-          '" class="p-2 border rounded-lg w-full border-gray-300" /></div>' +
-          '<div class="md:col-span-2"><label class="text-sm font-medium text-gray-700">Adresse</label><textarea rows="3" name="address" class="p-2 border rounded-lg w-full border-gray-300">' +
-          (user.address || "") +
-          "</textarea></div>" +
-          '<div class="md:col-span-2 flex justify-center mt-4"><button type="submit" class="px-6 py-2 bg-[#F5B400] text-[#1E2A45] rounded-xl hover:bg-[#E47E00] transition-all">Impressumsdaten verarbeiten</button></div>' +
-          "</form></div></div>";
-
-        // === 4️⃣ Form Handling aktivieren
-        document.getElementById("form-customer").addEventListener("submit", (e) => handleSubmit(e, "form-customer"));
-        document.getElementById("form-legal").addEventListener("submit", (e) => handleSubmit(e, "form-legal"));
-      } catch (err) {
-        console.error("Fehler beim Laden:", err);
-        container.innerHTML =
-          '<h2 class="text-xl font-bold text-red-600">Fehler beim Laden des Dashboards</h2>' +
-          '<p class="text-gray-600 mt-3">' +
-          err.message +
-          "</p>";
-      }
-    }
-
-    async function handleSubmit(e, formId) {
-      e.preventDefault();
-      const form = document.getElementById(formId);
-      const data = Object.fromEntries(new FormData(form));
-
-      const res = await fetch("https://customer.smartpages.online/api/user-update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (res.ok) {
-        alert("✅ Daten erfolgreich verarbeitet!");
-      } else {
-        alert("❌ Fehler beim Speichern. Bitte erneut versuchen.");
-      }
-    }
-
-    loadDashboard();
-  </script>
-
-  <!-- CSS-Fallback -->
-  <link
-    rel="stylesheet"
-    href="/global.css"
-    onerror="this.remove(); console.warn('⚠️ global.css nicht gefunden, Standardstyles verwendet');"
-  />
+  {authenticated ? (
+    <>
+      <!-- 🧭 Dashboard -->
+      <DashboardCardWide
+        title={`Willkommen zurück, ${user?.first_name || "Unbekannt"} 👋`}
+        showStatus={true}
+        status="Eingeloggt"
+        statusColor="green"
+      >
+        <p class="text-gray-700">Du bist erfolgreich angemeldet!</p>
+      </DashboardCardWide>
+    </>
+  ) : (
+    <div class="max-w-4xl mx-auto mt-20 text-center" id="login-status">
+      <h2 class="text-2xl font-bold text-[#1E2A45]">Anmeldung wird geprüft...</h2>
+    </div>
+  )}
 </PageLayout>
+
+<script>
+window.addEventListener("DOMContentLoaded", async () => {
+  try {
+    // 🔍 Clientseitiger Session-Check nach Redirect
+    const res = await fetch("https://api.smartpages.online/api/session", {
+      credentials: "include",
+    });
+    const data = await res.json();
+
+    if (data.ok && data.authenticated) {
+      // Benutzer ist eingeloggt → Seite neuladen mit Userdaten
+      window.location.reload();
+    } else {
+      // Kein Login → Login-Block anzeigen
+      document.getElementById("login-status").innerHTML = `
+        <h2 class='text-2xl font-bold text-[#1E2A45]'>Anmeldung erforderlich</h2>
+        <p class='text-gray-600 mt-3'>Bitte melde dich erneut über deinen Magic Link an.</p>
+        <a href="/de/login"
+           class="inline-block mt-6 px-6 py-3 bg-[#F5B400] text-[#1E2A45] rounded-xl hover:bg-[#E47E00] transition-all">
+           Zum Login
+        </a>`;
+    }
+  } catch (e) {
+    console.error("Client session fetch failed:", e);
+    document.getElementById("login-status").innerHTML = `
+      <h2 class='text-2xl font-bold text-[#1E2A45]'>Verbindungsfehler</h2>
+      <p class='text-gray-600 mt-3'>Bitte versuche es in ein paar Minuten erneut.</p>`;
+  }
+});
+</script>
+
+<style>
+/* 🧾 Fallback für Styles, falls global.css im Build-Pfad fehlt */
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f9fafb;
+}
+</style>
