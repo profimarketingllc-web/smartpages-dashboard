@@ -3,14 +3,6 @@ import "~/styles/global.css";
 import SmartHeader from "~/components/core/SmartHeader.astro";
 import SmartSidebar from "~/components/core/SmartSidebar.astro";
 
-/* 🔧 Erweiterte Props für flexible Steuerung:
-   - sidebar: zeigt die Navigationsleiste an (Standard: true)
-   - header: zeigt den Header an (Standard: true)
-   - sticky: Header bleibt oben fixiert (Standard: true)
-   - headerOffset: legt oberen Abstand fest ("default" oder "compact")
-   - lang: Sprachcode (Standard: 'de')
-   - title: Seitentitel (Standard: "SmartPages")
-*/
 const {
   sidebar = true,
   header = true,
@@ -20,7 +12,6 @@ const {
   title = "SmartPages",
 } = Astro.props;
 
-// 🧠 Dynamische CSS-Klassen
 const headerOffsetClass = headerOffset === "compact" ? "mt-6" : "mt-24";
 const stickyClass = sticky ? "sticky top-0 z-50" : "";
 ---
@@ -39,19 +30,14 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
     />
     <meta name="theme-color" content="#1E2A45" />
 
-    <!-- 🧩 Favicon & Branding -->
+    <!-- 🧩 Favicon -->
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
-    <link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon" />
     <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png?v=2" />
-    <meta name="theme-color" content="#1e293b" />
 
-    <!-- 🌀 Global Styles -->
-    <link rel="stylesheet" href="/src/styles/global.css" />
+    <!-- ✅ Global Styles über Astro-Import (kein 404 mehr) -->
   </head>
 
-  <body
-    class="min-h-screen flex font-sans text-smart-text bg-smart-surface antialiased"
-  >
+  <body class="min-h-screen flex font-sans text-smart-text bg-smart-surface antialiased">
     {
       sidebar ? (
         <>
@@ -59,9 +45,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
           <SmartSidebar client:load collapsible />
 
           <!-- Hauptinhalt -->
-          <div
-            class="flex-1 flex flex-col transition-all duration-300 md:ml-64 bg-white"
-          >
+          <div class="flex-1 flex flex-col transition-all duration-300 md:ml-64 bg-white">
             {header && (
               <div class={stickyClass}>
                 <SmartHeader client:load />
@@ -90,12 +74,10 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
             </div>
           )}
 
-          <!-- Seiteninhalt -->
           <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
             <slot />
           </main>
 
-          <!-- Footer -->
           <footer
             class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-white/80 backdrop-blur-sm"
           >
