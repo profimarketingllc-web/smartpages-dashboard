@@ -44,7 +44,6 @@ try {
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <!-- Main dashboard wrapper -->
   <div id="dashboard-wrapper" class={authenticated ? "" : "hidden"}>
 
     <!-- 🧭 User data -->
@@ -63,9 +62,10 @@ try {
 
           <div class="flex justify-center mt-4">
             <button
-              class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
-                    hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white 
-                    transition-all duration-300"
+              id="editUserBtn"
+              class="px-6 py-2 text-white rounded-xl shadow-md font-medium 
+                     bg-gradient-to-r from-[#F5B400] to-[#E47E00]
+                     hover:opacity-90 transition-all duration-300"
             >
               Edit user data
             </button>
@@ -84,11 +84,11 @@ try {
       </div>
     </section>
 
-    <!-- 🧾 Business details -->
+    <!-- 🧾 Imprint Information -->
     <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-6">
-      <h2 class="text-xl font-semibold mb-4 text-[#1E2A45]">Business Details</h2>
+      <h2 class="text-xl font-semibold mb-4 text-[#1E2A45]">Imprint Information</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 text-sm text-gray-700">
-        <p><span class="font-semibold">Company:</span> {user.company || "–"}</p>
+        <p><span class="font-semibold">Company Name:</span> {user.company || "–"}</p>
         <p><span class="font-semibold">Contact Person:</span> {user.contact_name || "–"}</p>
         <p><span class="font-semibold">Address:</span> {user.address || "–"}</p>
         <p><span class="font-semibold">ZIP / City:</span> {user.zip || "–"} {user.city || ""}</p>
@@ -100,63 +100,34 @@ try {
 
       <div class="flex justify-center mt-6">
         <button
-          class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
-                hover:bg-gradient-to-r hover:from-[#4E6BFF] hover:to-[#657AFF] hover:text-white 
-                transition-all duration-300"
+          id="editImprintBtn"
+          class="px-6 py-2 text-white rounded-xl shadow-md font-medium 
+                 bg-gradient-to-r from-[#F5B400] to-[#E47E00]
+                 hover:opacity-90 transition-all duration-300"
         >
-          Edit Business Details
+          Edit Imprint
         </button>
       </div>
     </section>
 
-    <!-- 🧱 Product cards -->
-    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
-      <a href="/en/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
-                shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_0_25px_rgba(78,107,255,0.6)] hover:scale-[1.02]">
-        <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
-        <p class="text-sm">
-          Create your professional profile with just a few clicks – perfect for freelancers, coaches and entrepreneurs.
-        </p>
-      </a>
-
-      <a href="/en/smartpage" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
-                shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_0_25px_rgba(245,180,0,0.6)] hover:scale-[1.02]">
-        <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
-        <p class="text-sm">
-          Build impressive, conversion-optimized pages in minutes – easy, fast, and professional.
-        </p>
-      </a>
-
-      <a href="/en/smartdomain" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
-                shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_0_25px_rgba(139,92,255,0.6)] hover:scale-[1.02]">
-        <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
-        <p class="text-sm">
-          Secure your own domain directly in SmartPages – professional, simple and GDPR compliant.
-        </p>
-      </a>
-    </section>
-
-    <!-- 📨 Feedback -->
-    <section class="max-w-6xl mx-auto mt-6 bg-[#f8f9fb] rounded-2xl p-6 text-center md:text-left shadow-md border border-gray-100">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Your feedback helps us improve</h3>
-          <p class="text-sm text-gray-600">
-            Share bugs, ideas or suggestions – help us make SmartPages even better.
-          </p>
+    <!-- Modal (hidden by default) -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
+      <div class="bg-white rounded-2xl shadow-lg p-8 w-[90%] max-w-lg">
+        <h3 id="modalTitle" class="text-xl font-semibold mb-4 text-[#1E2A45]">Edit Data</h3>
+        <form id="modalForm" class="space-y-4">
+          <input type="text" placeholder="Name" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+          <input type="email" placeholder="Email" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+        </form>
+        <div class="flex justify-end mt-6 gap-3">
+          <button id="cancelModal"
+            class="px-4 py-2 bg-gray-200 text-[#1E2A45] rounded-lg hover:bg-gray-300">Cancel</button>
+          <button id="saveModal"
+            class="px-4 py-2 text-white rounded-lg bg-gradient-to-r from-[#F5B400] to-[#E47E00] hover:opacity-90">
+            Save
+          </button>
         </div>
-        <a
-          href="/en/feedback"
-          class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
-                 transition-all duration-300 shadow-md whitespace-nowrap"
-        >
-          Send feedback
-        </a>
       </div>
-    </section>
+    </div>
   </div>
 
   <!-- 🕐 Fallback display -->
@@ -165,7 +136,6 @@ try {
   </div>
 </PageLayout>
 
-<!-- ✅ Client-side session activation -->
 <script>
 window.addEventListener("DOMContentLoaded", async () => {
   try {
@@ -174,40 +144,55 @@ window.addEventListener("DOMContentLoaded", async () => {
       credentials: "include",
       headers: { "Accept": "application/json" },
     });
-
     const data = await res.json();
 
     if (data.ok && data.authenticated) {
-      const loginEl = document.getElementById("login-status");
-      const dashEl = document.getElementById("dashboard-wrapper");
-
-      if (loginEl) loginEl.style.display = "none";
-      if (dashEl) {
-        dashEl.style.display = "block";
-        dashEl.classList.remove("hidden");
-      }
-
+      document.getElementById("login-status")?.classList.add("hidden");
+      document.getElementById("dashboard-wrapper")?.classList.remove("hidden");
       console.log("✅ User authenticated, dashboard visible.");
-    } else {
-      const el = document.getElementById("login-status");
-      if (el) {
-        el.innerHTML = `
-          <h2 class='text-2xl font-bold text-[#1E2A45]'>Login required</h2>
-          <p class='text-gray-600 mt-3'>Please log in again using your magic link.</p>
-          <a href="/en/login"
-             class="inline-block mt-6 px-6 py-3 bg-[#F5B400] text-[#1E2A45] rounded-xl hover:bg-[#E47E00] transition-all">
-             Go to Login
-          </a>`;
-      }
     }
+
+    // Modal logic
+    const modal = document.getElementById("modal");
+    const openUser = document.getElementById("editUserBtn");
+    const openImprint = document.getElementById("editImprintBtn");
+    const cancelModal = document.getElementById("cancelModal");
+
+    openUser?.addEventListener("click", () => {
+      modal.classList.remove("hidden");
+      document.getElementById("modalTitle").innerText = "Edit User Data";
+    });
+
+    openImprint?.addEventListener("click", () => {
+      modal.classList.remove("hidden");
+      document.getElementById("modalTitle").innerText = "Edit Imprint";
+    });
+
+    cancelModal?.addEventListener("click", () => {
+      modal.classList.add("hidden");
+    });
   } catch (e) {
-    console.error("Client session fetch failed:", e);
-    const el = document.getElementById("login-status");
-    if (el) {
-      el.innerHTML = `
-        <h2 class='text-2xl font-bold text-[#1E2A45]'>Connection Error</h2>
-        <p class='text-gray-600 mt-3'>Please try again in a few minutes.</p>`;
-    }
+    console.error("Session fetch failed:", e);
   }
 });
 </script>
+
+<style>
+section {
+  scroll-margin-top: 2rem;
+}
+section h2 {
+  line-height: 1.2;
+}
+section p {
+  line-height: 1.4;
+}
+.grid p {
+  margin-bottom: 0.25rem;
+}
+section.max-w-6xl {
+  margin-top: 1.25rem !important;
+  padding-top: 1.75rem;
+  padding-bottom: 1.75rem;
+}
+</style>
