@@ -1,101 +1,171 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 
-const user = {
-  name: "Frank Hüser",
-  email: "frank@smartpages.online",
-  status: "Business",
-  plan: "Trial (7 days)",
-  activeUntil: "2026-01-15",
-  lastLogin: "2025-12-21 22:14",
+// 🧩 Default-Fallback, falls keine Session erkannt wird
+let user = {
+  name: "Guest",
+  email: "unknown",
+  status: "Free",
+  plan: "—",
+  activeUntil: "—",
+  lastLogin: "—",
 };
+let authenticated = false;
+
+// 🧩 Serverseitiger Session-Fallback
+try {
+  const cookie = Astro.request.headers.get("cookie") || "";
+  if (cookie.includes("session=")) {
+    const res = await fetch("https://api.smartpages.online/api/session", {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+        "Cookie": cookie,
+      },
+      credentials: "include",
+    });
+    const data = await res.json();
+    if (data.ok && data.authenticated) {
+      authenticated = true;
+      user = {
+        name: data.user?.first_name || "User",
+        email: data.user?.email || "unknown",
+        status: "Business",
+        plan: "Trial (7 days)",
+        activeUntil: "2026-01-15",
+        lastLogin: new Date().toLocaleString(),
+      };
+    }
+  }
+} catch (err) {
+  console.warn("Server-side session check failed:", err);
+}
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <!-- 🧭 Welcome -->
-  <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-2">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-      <div class="w-full">
-        <h2 class="text-2xl font-bold mb-4">Welcome back, {user.name} 👋</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-2 text-sm text-gray-700">
-          <p><span class="font-semibold">Name:</span> {user.name}</p>
-          <p><span class="font-semibold">E-mail:</span> {user.email}</p>
-          <p><span class="font-semibold">Status:</span> {user.status}</p>
-          <p><span class="font-semibold">Plan:</span> {user.plan}</p>
-          <p><span class="font-semibold">Active until:</span> {user.activeUntil}</p>
-          <p><span class="font-semibold">Last login:</span> {user.lastLogin}</p>
-        </div>
+  {authenticated ? (
+    <>
+      <!-- 🧭 Welcome -->
+      <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-2">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+          <div class="w-full">
+            <h2 class="text-2xl font-bold mb-4">Welcome back, {user.name} 👋</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-2 text-sm text-gray-700">
+              <p><span class="font-semibold">Name:</span> {user.name}</p>
+              <p><span class="font-semibold">E-mail:</span> {user.email}</p>
+              <p><span class="font-semibold">Status:</span> {user.status}</p>
+              <p><span class="font-semibold">Plan:</span> {user.plan}</p>
+              <p><span class="font-semibold">Active until:</span> {user.activeUntil}</p>
+              <p><span class="font-semibold">Last login:</span> {user.lastLogin}</p>
+            </div>
 
-        <!-- 🔘 Button -->
-        <div class="flex justify-center mt-4">
-          <button
-            class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
-                   hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white 
-                   transition-all duration-300"
+            <!-- 🔘 Button -->
+            <div class="flex justify-center mt-4">
+              <button
+                class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
+                      hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white 
+                      transition-all duration-300"
+              >
+                Edit details
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-4 md:mt-0 md:ml-6">
+            <span
+              class="inline-block px-4 py-1.5 text-sm rounded-full border 
+                     bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]
+                     font-medium min-w-[110px] text-center"
+            >
+              Logged in
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 🧱 Product Tiles -->
+      <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
+        <a href="/en/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
+                  shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+                  hover:shadow-[0_10px_25px_rgba(78,107,255,0.3)] hover:-translate-y-1">
+          <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
+          <p class="text-sm">
+            Create your personal profile in just a few clicks — perfect for freelancers, coaches, and entrepreneurs.
+          </p>
+        </a>
+
+        <a href="/en/smartpage" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
+                  shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+                  hover:shadow-[0_10px_25px_rgba(245,180,0,0.3)] hover:-translate-y-1">
+          <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
+          <p class="text-sm">
+            Build stunning, high-converting pages in minutes — simple, fast, and professionally designed.
+          </p>
+        </a>
+
+        <a href="/en/smartdomain" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
+                  shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+                  hover:shadow-[0_10px_25px_rgba(139,92,255,0.3)] hover:-translate-y-1">
+          <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
+          <p class="text-sm">
+            Secure your custom domain directly in SmartPages — professional, simple, and fully GDPR-compliant.
+          </p>
+        </a>
+      </section>
+
+      <!-- 📨 Feedback -->
+      <section class="max-w-6xl mx-auto mt-6 bg-[#f8f9fb] rounded-2xl p-6 text-center md:text-left shadow-md border border-gray-100">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Your feedback helps us improve</h3>
+            <p class="text-sm text-gray-600">
+              Share bugs, ideas, or feature requests — to help us improve SmartPages even more.
+            </p>
+          </div>
+          <a
+            href="/feedback"
+            class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
+                   transition-all duration-300 shadow-md whitespace-nowrap"
           >
-            Edit details
-          </button>
+            Open feedback form
+          </a>
         </div>
-      </div>
-
-      <div class="mt-4 md:mt-0 md:ml-6">
-        <span
-          class="inline-block px-4 py-1.5 text-sm rounded-full border 
-                 bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]
-                 font-medium min-w-[110px] text-center"
-        >
-          Logged in
-        </span>
-      </div>
+      </section>
+    </>
+  ) : (
+    <div class="max-w-4xl mx-auto mt-20 text-center" id="login-status">
+      <h2 class="text-2xl font-bold text-[#1E2A45]">Checking your login...</h2>
     </div>
-  </section>
-
-  <!-- 🧱 Product Tiles -->
-  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
-    <a href="/en/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
-              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-              hover:shadow-[0_10px_25px_rgba(78,107,255,0.3)] hover:-translate-y-1">
-      <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
-      <p class="text-sm">
-        Create your personal profile in just a few clicks — perfect for freelancers, coaches, and entrepreneurs.
-      </p>
-    </a>
-
-    <a href="/en/smartpage" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
-              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-              hover:shadow-[0_10px_25px_rgba(245,180,0,0.3)] hover:-translate-y-1">
-      <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
-      <p class="text-sm">
-        Build stunning, high-converting pages in minutes — simple, fast, and professionally designed.
-      </p>
-    </a>
-
-    <a href="/en/smartdomain" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
-              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-              hover:shadow-[0_10px_25px_rgba(139,92,255,0.3)] hover:-translate-y-1">
-      <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
-      <p class="text-sm">
-        Secure your custom domain directly in SmartPages — professional, simple, and fully GDPR-compliant.
-      </p>
-    </a>
-  </section>
-
-  <!-- 📨 Feedback -->
-  <section class="max-w-6xl mx-auto mt-6 bg-[#f8f9fb] rounded-2xl p-6 text-center md:text-left shadow-md border border-gray-100">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-      <div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Your feedback helps us improve</h3>
-        <p class="text-sm text-gray-600">
-          Share bugs, ideas, or feature requests — to help us improve SmartPages even more.
-        </p>
-      </div>
-      <a
-        href="/feedback"
-        class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
-               transition-all duration-300 shadow-md whitespace-nowrap"
-      >
-        Open feedback form
-      </a>
-    </div>
-  </section>
+  )}
 </PageLayout>
+
+<script>
+window.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const res = await fetch("https://api.smartpages.online/api/session", {
+      method: "GET",
+      credentials: "include",
+      headers: { "Accept": "application/json" },
+    });
+
+    const data = await res.json();
+
+    if (data.ok && data.authenticated) {
+      location.reload();
+    } else {
+      document.getElementById("login-status").innerHTML = `
+        <h2 class='text-2xl font-bold text-[#1E2A45]'>Login required</h2>
+        <p class='text-gray-600 mt-3'>Please sign in again using your Magic Link.</p>
+        <a href="/en/login"
+           class="inline-block mt-6 px-6 py-3 bg-[#F5B400] text-[#1E2A45] rounded-xl hover:bg-[#E47E00] transition-all">
+           Go to Login
+        </a>`;
+    }
+  } catch (e) {
+    console.error("Client session fetch failed:", e);
+    document.getElementById("login-status").innerHTML = `
+      <h2 class='text-2xl font-bold text-[#1E2A45]'>Connection error</h2>
+      <p class='text-gray-600 mt-3'>Please try again in a few minutes.</p>`;
+  }
+});
+</script>

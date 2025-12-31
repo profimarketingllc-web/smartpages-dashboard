@@ -1,23 +1,41 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
-import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
 import "~/styles/global.css";
 
-let user = null;
+let user = {
+  name: "Gastbenutzer",
+  email: "unbekannt",
+  status: "Kostenlos",
+  plan: "—",
+  activeUntil: "—",
+  lastLogin: "—",
+};
 let authenticated = false;
 
+// 🧩 Serverseitiger Session-Fallback
 try {
   const cookie = Astro.request.headers.get("cookie") || "";
   if (cookie.includes("session=")) {
     const res = await fetch("https://api.smartpages.online/api/session", {
       method: "GET",
-      headers: { "Accept": "application/json", "Cookie": cookie },
+      headers: {
+        "Accept": "application/json",
+        "Cookie": cookie,
+      },
       credentials: "include",
     });
+
     const data = await res.json();
     if (data.ok && data.authenticated) {
-      user = data.user;
       authenticated = true;
+      user = {
+        name: data.user?.first_name || "Benutzer",
+        email: data.user?.email || "unbekannt",
+        status: "Business",
+        plan: "Testversion (7 Tage)",
+        activeUntil: "15.01.2026",
+        lastLogin: new Date().toLocaleString("de-DE"),
+      };
     }
   }
 } catch (err) {
@@ -26,39 +44,104 @@ try {
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <div id="dashboard-content" class="max-w-5xl mx-auto mt-16">
-    {authenticated ? (
-      <>
-        <DashboardCardWide
-          title={`Willkommen zurück, ${user?.first_name || "Unbekannt"} 👋`}
-          showStatus={true}
-          status="Eingeloggt"
-          statusColor="green"
-        >
-          <p class="text-gray-700">Du bist erfolgreich angemeldet.</p>
-        </DashboardCardWide>
+  {authenticated ? (
+    <>
+      <!-- 🧭 Willkommen -->
+      <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-2">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+          <div class="w-full">
+            <h2 class="text-2xl font-bold mb-4">Willkommen zurück, {user.name} 👋</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-2 text-sm text-gray-700">
+              <p><span class="font-semibold">Name:</span> {user.name}</p>
+              <p><span class="font-semibold">E-Mail:</span> {user.email}</p>
+              <p><span class="font-semibold">Status:</span> {user.status}</p>
+              <p><span class="font-semibold">Plan:</span> {user.plan}</p>
+              <p><span class="font-semibold">Aktiv bis:</span> {user.activeUntil}</p>
+              <p><span class="font-semibold">Letzter Login:</span> {user.lastLogin}</p>
+            </div>
 
-        <div id="customer-card"
-             class="mt-10 rounded-2xl shadow bg-white p-8 text-center border border-gray-100">
-          <h3 class="text-xl font-bold text-[#1E2A45] mb-2">
-            Kundendaten werden geladen...
-          </h3>
-          <p class="text-gray-500 text-sm">Bitte einen Moment Geduld.</p>
+            <!-- 🔘 Button -->
+            <div class="flex justify-center mt-4">
+              <button
+                class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
+                      hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white 
+                      transition-all duration-300"
+              >
+                Kundendaten bearbeiten
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-4 md:mt-0 md:ml-6">
+            <span
+              class="inline-block px-4 py-1.5 text-sm rounded-full border 
+                     bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]
+                     font-medium min-w-[110px] text-center"
+            >
+              Eingeloggt
+            </span>
+          </div>
         </div>
-      </>
-    ) : (
-      <div class="max-w-4xl mx-auto mt-20 text-center" id="login-status">
-        <h2 class="text-2xl font-bold text-[#1E2A45]">Anmeldung wird geprüft...</h2>
-      </div>
-    )}
-  </div>
+      </section>
+
+      <!-- 🧱 Produkt-Kacheln -->
+      <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
+        <a href="/de/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
+                  shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+                  hover:shadow-[0_10px_25px_rgba(78,107,255,0.3)] hover:-translate-y-1">
+          <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
+          <p class="text-sm">
+            Erstelle dein persönliches Profil in wenigen Klicks – ideal für Freelancer, Coaches und Unternehmer.
+          </p>
+        </a>
+
+        <a href="/de/smartpage" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
+                  shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+                  hover:shadow-[0_10px_25px_rgba(245,180,0,0.3)] hover:-translate-y-1">
+          <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
+          <p class="text-sm">
+            Erstelle beeindruckende, konversionsstarke Seiten in Minuten – einfach, schnell und professionell.
+          </p>
+        </a>
+
+        <a href="/de/smartdomain" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
+                  shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+                  hover:shadow-[0_10px_25px_rgba(139,92,255,0.3)] hover:-translate-y-1">
+          <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
+          <p class="text-sm">
+            Sichere deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
+          </p>
+        </a>
+      </section>
+
+      <!-- 📨 Feedback -->
+      <section class="max-w-6xl mx-auto mt-6 bg-[#f8f9fb] rounded-2xl p-6 text-center md:text-left shadow-md border border-gray-100">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Dein Feedback hilft uns weiter</h3>
+            <p class="text-sm text-gray-600">
+              Teile Fehler, Ideen oder Vorschläge – damit wir SmartPages stetig verbessern können.
+            </p>
+          </div>
+          <a
+            href="/de/feedback"
+            class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
+                   transition-all duration-300 shadow-md whitespace-nowrap"
+          >
+            Feedback senden
+          </a>
+        </div>
+      </section>
+    </>
+  ) : (
+    <div class="max-w-4xl mx-auto mt-20 text-center" id="login-status">
+      <h2 class="text-2xl font-bold text-[#1E2A45]">Anmeldung wird geprüft...</h2>
+    </div>
+  )}
 </PageLayout>
 
 <script>
 window.addEventListener("DOMContentLoaded", async () => {
-  const container = document.getElementById("dashboard-content");
-  const statusBox = document.getElementById("login-status");
-
   try {
     const res = await fetch("https://api.smartpages.online/api/session", {
       method: "GET",
@@ -69,65 +152,21 @@ window.addEventListener("DOMContentLoaded", async () => {
     const data = await res.json();
 
     if (data.ok && data.authenticated) {
-      const user = data.user;
-
-      container.innerHTML = [
-        '<div class="rounded-2xl shadow bg-white p-8 text-center mb-10">',
-        `<h2 class="text-3xl font-bold text-[#1E2A45]">Willkommen zurück, ${user.first_name || "Unbekannt"} 👋</h2>`,
-        '<p class="mt-2 text-gray-600">Du bist erfolgreich angemeldet.</p>',
-        "</div>",
-        '<div id="customer-card" class="rounded-2xl shadow bg-white p-8 text-center border border-gray-100">',
-        '<h3 class="text-xl font-bold text-[#1E2A45] mb-2">Kundendaten werden geladen...</h3>',
-        '<p class="text-gray-500 text-sm">Bitte einen Moment Geduld.</p>',
-        "</div>"
-      ].join("");
-
-      const customerRes = await fetch(
-        `https://customer.smartpages.online/api/customer?email=${encodeURIComponent(user.email)}`,
-        { credentials: "include", headers: { "Accept": "application/json" } }
-      );
-
-      const customerData = await customerRes.json();
-      const card = document.getElementById("customer-card");
-
-      if (customerData.ok && customerData.profile) {
-        const p = customerData.profile;
-        card.innerHTML = [
-          '<h3 class="text-xl font-bold text-[#1E2A45] mb-4">Kundendaten</h3>',
-          '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-2xl mx-auto">',
-          `<div><strong>Name:</strong> ${p.first_name} ${p.last_name || ""}</div>`,
-          `<div><strong>Email:</strong> ${p.email}</div>`,
-          `<div><strong>Kundennummer:</strong> ${p.customer_no || "-"}</div>`,
-          `<div><strong>Firma:</strong> ${p.company_name || "-"}</div>`,
-          `<div><strong>Sprache:</strong> ${p.language || "de"}</div>`,
-          "</div>"
-        ].join("");
-      } else {
-        card.innerHTML = [
-          '<h3 class="text-xl font-bold text-[#1E2A45] mb-2">Keine Kundendaten gefunden</h3>',
-          '<p class="text-gray-500">Bitte überprüfe deine Kontoeinstellungen.</p>'
-        ].join("");
-      }
+      location.reload();
     } else {
-      statusBox.innerHTML = [
-        "<h2 class='text-2xl font-bold text-[#1E2A45]'>Anmeldung erforderlich</h2>",
-        "<p class='text-gray-600 mt-3'>Bitte melde dich erneut über deinen Magic Link an.</p>",
-        "<a href='/de/login' class='inline-block mt-6 px-6 py-3 bg-[#F5B400] text-[#1E2A45] rounded-xl hover:bg-[#E47E00] transition-all'>Zum Login</a>"
-      ].join("");
+      document.getElementById("login-status").innerHTML = `
+        <h2 class='text-2xl font-bold text-[#1E2A45]'>Anmeldung erforderlich</h2>
+        <p class='text-gray-600 mt-3'>Bitte melde dich erneut über deinen Magic Link an.</p>
+        <a href="/de/login"
+           class="inline-block mt-6 px-6 py-3 bg-[#F5B400] text-[#1E2A45] rounded-xl hover:bg-[#E47E00] transition-all">
+           Zum Login
+        </a>`;
     }
   } catch (e) {
     console.error("Client session fetch failed:", e);
-    statusBox.innerHTML = [
-      "<h2 class='text-2xl font-bold text-[#1E2A45]'>Verbindungsfehler</h2>",
-      "<p class='text-gray-600 mt-3'>Bitte versuche es in ein paar Minuten erneut.</p>"
-    ].join("");
+    document.getElementById("login-status").innerHTML = `
+      <h2 class='text-2xl font-bold text-[#1E2A45]'>Verbindungsfehler</h2>
+      <p class='text-gray-600 mt-3'>Bitte versuche es in ein paar Minuten erneut.</p>`;
   }
 });
 </script>
-
-<style>
-body {
-  font-family: "Inter", sans-serif;
-  background-color: #f9fafb;
-}
-</style>
