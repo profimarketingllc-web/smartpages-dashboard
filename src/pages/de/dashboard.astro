@@ -12,10 +12,7 @@ try {
   if (cookie.includes("session=")) {
     const res = await fetch("https://api.smartpages.online/api/session", {
       method: "GET",
-      headers: {
-        "Accept": "application/json",
-        "Cookie": cookie,
-      },
+      headers: { "Accept": "application/json", "Cookie": cookie },
       credentials: "include",
     });
 
@@ -31,18 +28,32 @@ try {
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <div id="dashboard-content" class="max-w-4xl mx-auto mt-20 text-center">
+  <div id="dashboard-content" class="max-w-5xl mx-auto mt-16">
     {authenticated ? (
-      <DashboardCardWide
-        title={`Willkommen zurück, ${user?.first_name || "Unbekannt"} 👋`}
-        showStatus={true}
-        status="Eingeloggt"
-        statusColor="green"
-      >
-        <p class="text-gray-700">Du bist erfolgreich angemeldet!</p>
-      </DashboardCardWide>
+      <>
+        <!-- 🧭 Begrüßung -->
+        <DashboardCardWide
+          title={`Willkommen zurück, ${user?.first_name || "Unbekannt"} 👋`}
+          showStatus={true}
+          status="Eingeloggt"
+          statusColor="green"
+        >
+          <p class="text-gray-700">Du bist erfolgreich angemeldet.</p>
+        </DashboardCardWide>
+
+        <!-- 💼 Kundenkarte -->
+        <div
+          id="customer-card"
+          class="mt-10 rounded-2xl shadow bg-white p-8 text-center border border-gray-100"
+        >
+          <h3 class="text-xl font-bold text-[#1E2A45] mb-2">
+            Kundendaten werden geladen...
+          </h3>
+          <p class="text-gray-500 text-sm">Bitte einen Moment Geduld.</p>
+        </div>
+      </>
     ) : (
-      <div id="login-status">
+      <div class="max-w-4xl mx-auto mt-20 text-center" id="login-status">
         <h2 class="text-2xl font-bold text-[#1E2A45]">Anmeldung wird geprüft...</h2>
       </div>
     )}
@@ -55,26 +66,65 @@ window.addEventListener("DOMContentLoaded", async () => {
   const statusBox = document.getElementById("login-status");
 
   try {
+    // 🔍 Session prüfen
     const res = await fetch("https://api.smartpages.online/api/session", {
       method: "GET",
       credentials: "include",
-      headers: { "Accept": "application/json" },
+      headers: { Accept: "application/json" },
     });
 
     const data = await res.json();
 
     if (data.ok && data.authenticated) {
-      // ✅ Direkt User-Dashboard anzeigen (kein Reload!)
+      const user = data.user;
+
+      // ✅ Begrüßung & Basis-Card anzeigen
       container.innerHTML = `
-        <div class="rounded-2xl shadow bg-white p-8 text-center">
+        <div class="rounded-2xl shadow bg-white p-8 text-center mb-10">
           <h2 class="text-3xl font-bold text-[#1E2A45]">
-            Willkommen zurück, ${data.user.first_name || "Unbekannt"} 👋
+            Willkommen zurück, ${user.first_name || "Unbekannt"} 👋
           </h2>
-          <p class="mt-3 text-gray-700">Du bist erfolgreich angemeldet.</p>
+          <p class="mt-2 text-gray-600">Du bist erfolgreich angemeldet.</p>
+        </div>
+
+        <div id="customer-card"
+             class="rounded-2xl shadow bg-white p-8 text-center border border-gray-100">
+          <h3 class="text-xl font-bold text-[#1E2A45] mb-2">
+            Kundendaten werden geladen...
+          </h3>
+          <p class="text-gray-500 text-sm">Bitte einen Moment Geduld.</p>
         </div>
       `;
+
+      // 🧠 Kunden-API abrufen
+      const customerRes = await fetch(
+        \`https://customer.smartpages.online/api/customer?email=\${encodeURIComponent(user.email)}\`,
+        { credentials: "include", headers: { Accept: "application/json" } }
+      );
+
+      const customerData = await customerRes.json();
+      const card = document.getElementById("customer-card");
+
+      if (customerData.ok && customerData.profile) {
+        const p = customerData.profile;
+        card.innerHTML = `
+          <h3 class="text-xl font-bold text-[#1E2A45] mb-4">Kundendaten</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-2xl mx-auto">
+            <div><strong>Name:</strong> ${p.first_name} ${p.last_name || ""}</div>
+            <div><strong>Email:</strong> ${p.email}</div>
+            <div><strong>Kundennummer:</strong> ${p.customer_no || "-"}</div>
+            <div><strong>Firma:</strong> ${p.company_name || "-"}</div>
+            <div><strong>Sprache:</strong> ${p.language || "de"}</div>
+          </div>
+        `;
+      } else {
+        card.innerHTML = `
+          <h3 class="text-xl font-bold text-[#1E2A45] mb-2">Keine Kundendaten gefunden</h3>
+          <p class="text-gray-500">Bitte überprüfe deine Kontoeinstellungen.</p>
+        `;
+      }
     } else {
-      // ❌ Kein Login → Login auffordern
+      // ❌ Kein Login → Zurück zum Login
       statusBox.innerHTML = `
         <h2 class='text-2xl font-bold text-[#1E2A45]'>Anmeldung erforderlich</h2>
         <p class='text-gray-600 mt-3'>Bitte melde dich erneut über deinen Magic Link an.</p>
