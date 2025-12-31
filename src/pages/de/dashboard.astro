@@ -5,17 +5,27 @@ import "~/styles/global.css";
 let user = {
   name: "Gastbenutzer",
   email: "unbekannt",
-  status: "Kostenlos",
-  plan: "—",
+  status: "inactive",
+  plan: "Trial",
   aktivBis: "—",
   letztesLogin: "—",
+  company: "",
+  contact_name: "",
+  address: "",
+  zip: "",
+  city: "",
+  country: "Deutschland",
+  support_email: "",
+  phone: "",
+  vat_id: ""
 };
+
 let authenticated = false;
 
 try {
   const cookie = Astro.request.headers.get("cookie") || "";
   if (cookie.includes("session=")) {
-    const res = await fetch("https://api.smartpages.online/api/session", {
+    const res = await fetch("https://api.smartpages.online/api/user/profile", {
       method: "GET",
       headers: {
         "Accept": "application/json",
@@ -24,15 +34,25 @@ try {
       credentials: "include",
     });
     const data = await res.json();
-    if (data.ok && data.authenticated) {
+    if (data.ok && data.user) {
       authenticated = true;
+      const u = data.user;
       user = {
-        name: data.user?.first_name || "Benutzer",
-        email: data.user?.email || "unbekannt",
-        status: "Business",
-        plan: "Trial (7 Tage)",
-        aktivBis: "15.01.2026",
+        name: u.first_name || "Benutzer",
+        email: u.email,
+        status: u.status || "inactive",
+        plan: u.plan || "Trial",
+        aktivBis: u.trial_end || "—",
         letztesLogin: new Date().toLocaleString("de-DE"),
+        company: u.company_name || "",
+        contact_name: `${u.first_name || ""} ${u.last_name || ""}`.trim(),
+        address: u.address || "",
+        zip: u.zip || "",
+        city: u.city || "",
+        country: u.country || "Deutschland",
+        support_email: u.support_email || u.email,
+        phone: u.phone || "",
+        vat_id: u.vat_id || ""
       };
     }
   }
@@ -44,8 +64,11 @@ try {
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
   <div id="dashboard-wrapper" class={authenticated ? "" : "hidden"}>
 
+    <!-- 🚦 Trial / Plan Banner -->
+    <section id="plan-banner" class="hidden mt-4 mx-auto max-w-6xl rounded-2xl border shadow-sm text-center px-6 py-4 transition-all duration-300"></section>
+
     <!-- 🧭 Kundendaten -->
-    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-0">
+    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-3">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div class="w-full">
           <h2 class="text-2xl font-bold mb-3">Willkommen zurück, {user.name} 👋</h2>
@@ -88,10 +111,10 @@ try {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-sm text-gray-700">
         <p><span class="font-semibold">Unternehmen:</span> {user.company || "–"}</p>
         <p><span class="font-semibold">Ansprechpartner:</span> {user.contact_name || "–"}</p>
-        <p><span class="font-semibold">Adresse:</span> {user.address || "–"}</p>
+        <p><span class="font-semibold">Straße & Hausnummer:</span> {user.address || "–"}</p>
         <p><span class="font-semibold">PLZ / Ort:</span> {user.zip || "–"} {user.city || ""}</p>
-        <p><span class="font-semibold">Land:</span> {user.country || "Deutschland"}</p>
-        <p><span class="font-semibold">E-Mail (Support):</span> {user.support_email || user.email}</p>
+        <p><span class="font-semibold">Land:</span> {user.country}</p>
+        <p><span class="font-semibold">E-Mail (Support):</span> {user.support_email}</p>
         <p><span class="font-semibold">Telefon:</span> {user.phone || "–"}</p>
         <p><span class="font-semibold">USt-ID:</span> {user.vat_id || "–"}</p>
       </div>
@@ -108,73 +131,6 @@ try {
       </div>
     </section>
 
-    <!-- 🧱 Produkt-Kacheln -->
-    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-5 mt-4">
-      <a href="/de/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
-                shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_0_25px_rgba(78,107,255,0.6)] hover:scale-[1.02]">
-        <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
-        <p class="text-sm">
-          Erstelle dein persönliches Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.
-        </p>
-      </a>
-
-      <a href="/de/smartpage" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
-                shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_0_25px_rgba(245,180,0,0.6)] hover:scale-[1.02]">
-        <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
-        <p class="text-sm">
-          Baue beeindruckende Seiten mit wenigen Klicks. Einfach, schnell und professionell gestaltet.
-        </p>
-      </a>
-
-      <a href="/de/smartdomain" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
-                shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_0_25px_rgba(139,92,255,0.6)] hover:scale-[1.02]">
-        <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
-        <p class="text-sm">
-          Sichere deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
-        </p>
-      </a>
-    </section>
-
-    <!-- 📨 Feedback -->
-    <section class="max-w-6xl mx-auto mt-4 bg-[#f8f9fb] rounded-2xl p-5 text-center md:text-left shadow-md border border-gray-100 mb-8">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-        <div>
-          <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Dein Feedback hilft uns</h3>
-          <p class="text-sm text-gray-600">
-            Teile Bugs, Wünsche und Ideen – so verbessern wir SmartPages gezielt.
-          </p>
-        </div>
-        <a
-          href="/de/feedback"
-          class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
-                 transition-all duration-300 shadow-md whitespace-nowrap"
-        >
-          Feedback-Formular öffnen
-        </a>
-      </div>
-    </section>
-
-    <!-- Modal -->
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
-      <div class="bg-white rounded-2xl shadow-lg p-8 w-[90%] max-w-lg">
-        <h3 id="modalTitle" class="text-xl font-semibold mb-4 text-[#1E2A45]">Daten bearbeiten</h3>
-        <form id="modalForm" class="space-y-4">
-          <input type="text" placeholder="Name" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
-          <input type="email" placeholder="E-Mail" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
-        </form>
-        <div class="flex justify-end mt-6 gap-3">
-          <button id="cancelModal"
-            class="px-4 py-2 bg-gray-200 text-[#1E2A45] rounded-lg hover:bg-gray-300">Abbrechen</button>
-          <button id="saveModal"
-            class="px-4 py-2 text-white rounded-lg bg-gradient-to-r from-[#F5B400] to-[#E47E00] hover:opacity-90">
-            Speichern
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- Fallback -->
@@ -186,58 +142,43 @@ try {
 <script>
 window.addEventListener("DOMContentLoaded", async () => {
   try {
-    const res = await fetch("https://api.smartpages.online/api/session", {
+    const res = await fetch("https://api.smartpages.online/api/user/profile", {
       method: "GET",
       credentials: "include",
       headers: { "Accept": "application/json" },
     });
     const data = await res.json();
 
-    if (data.ok && data.authenticated) {
+    if (data.ok && data.user) {
       document.getElementById("login-status")?.classList.add("hidden");
       document.getElementById("dashboard-wrapper")?.classList.remove("hidden");
+
+      const banner = document.getElementById("plan-banner");
+      const user = data.user;
+      const now = new Date();
+      const trialEnd = user.trial_end ? new Date(user.trial_end) : null;
+
+      if (user.status === "inactive" && trialEnd) {
+        const daysLeft = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
+        if (daysLeft <= 3 && daysLeft > 0) {
+          banner.classList.remove("hidden");
+          banner.className += " bg-[#FFF9E6] border border-[#F5D46B] text-[#6B4F00]";
+          banner.innerHTML = `
+            <p class="font-medium">⚠️ Dein kostenloser Testzeitraum endet in <strong>${daysLeft} Tagen</strong>.</p>
+            <p class="text-sm mt-1">Jetzt upgraden, um SmartPages weiter zu nutzen.</p>
+          `;
+        } else if (daysLeft <= 0 || user.status === "canceled") {
+          banner.classList.remove("hidden");
+          banner.className += " bg-[#FFECEC] border border-[#E88A8A] text-[#7A1F1F]";
+          banner.innerHTML = `
+            <p class="font-medium">❌ Dein Testzeitraum ist abgelaufen.</p>
+            <p class="text-sm mt-1">Upgrade jetzt, um Zugriff auf dein SmartPages-Konto zu behalten.</p>
+          `;
+        }
+      }
     }
-
-    const modal = document.getElementById("modal");
-    const openUser = document.getElementById("editUserBtn");
-    const openImprint = document.getElementById("editImprintBtn");
-    const cancelModal = document.getElementById("cancelModal");
-
-    openUser?.addEventListener("click", () => {
-      modal.classList.remove("hidden");
-      document.getElementById("modalTitle").innerText = "Kundendaten bearbeiten";
-    });
-
-    openImprint?.addEventListener("click", () => {
-      modal.classList.remove("hidden");
-      document.getElementById("modalTitle").innerText = "Impressum bearbeiten";
-    });
-
-    cancelModal?.addEventListener("click", () => {
-      modal.classList.add("hidden");
-    });
   } catch (e) {
     console.error("Session fetch failed:", e);
   }
 });
 </script>
-
-<style>
-section {
-  scroll-margin-top: 1.5rem;
-}
-section h2 {
-  line-height: 1.2;
-}
-section p {
-  line-height: 1.4;
-}
-.grid p {
-  margin-bottom: 0.25rem;
-}
-section.max-w-6xl {
-  margin-top: 1rem !important;
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
-}
-</style>
