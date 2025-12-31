@@ -140,6 +140,7 @@ try {
   )}
 </PageLayout>
 
+<!-- ✅ FIXED SCRIPT BLOCK (keine Reload-Schleife mehr) -->
 <script>
 window.addEventListener("DOMContentLoaded", async () => {
   try {
@@ -152,7 +153,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     const data = await res.json();
 
     if (data.ok && data.authenticated) {
-      location.reload();
+      const statusEl = document.getElementById("login-status");
+      if (statusEl) statusEl.remove(); // nur einmal entfernen
+      console.log("✅ Benutzer ist authentifiziert, Dashboard aktiv.");
     } else {
       document.getElementById("login-status").innerHTML = `
         <h2 class='text-2xl font-bold text-[#1E2A45]'>Anmeldung erforderlich</h2>
