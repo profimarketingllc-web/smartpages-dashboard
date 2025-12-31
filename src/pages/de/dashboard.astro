@@ -6,7 +6,6 @@ import "~/styles/global.css";
 let user = null;
 let authenticated = false;
 
-// 🧩 Serverseitiger Session-Fallback (Cookie aus Request-Header)
 try {
   const cookie = Astro.request.headers.get("cookie") || "";
   if (cookie.includes("session=")) {
@@ -15,7 +14,6 @@ try {
       headers: { "Accept": "application/json", "Cookie": cookie },
       credentials: "include",
     });
-
     const data = await res.json();
     if (data.ok && data.authenticated) {
       user = data.user;
@@ -31,7 +29,6 @@ try {
   <div id="dashboard-content" class="max-w-5xl mx-auto mt-16">
     {authenticated ? (
       <>
-        <!-- 🧭 Begrüßung -->
         <DashboardCardWide
           title={`Willkommen zurück, ${user?.first_name || "Unbekannt"} 👋`}
           showStatus={true}
@@ -41,11 +38,8 @@ try {
           <p class="text-gray-700">Du bist erfolgreich angemeldet.</p>
         </DashboardCardWide>
 
-        <!-- 💼 Kundenkarte -->
-        <div
-          id="customer-card"
-          class="mt-10 rounded-2xl shadow bg-white p-8 text-center border border-gray-100"
-        >
+        <div id="customer-card"
+             class="mt-10 rounded-2xl shadow bg-white p-8 text-center border border-gray-100">
           <h3 class="text-xl font-bold text-[#1E2A45] mb-2">
             Kundendaten werden geladen...
           </h3>
@@ -66,11 +60,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   const statusBox = document.getElementById("login-status");
 
   try {
-    // 🔍 Session prüfen
     const res = await fetch("https://api.smartpages.online/api/session", {
       method: "GET",
       credentials: "include",
-      headers: { Accept: "application/json" },
+      headers: { "Accept": "application/json" },
     });
 
     const data = await res.json();
@@ -78,28 +71,20 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (data.ok && data.authenticated) {
       const user = data.user;
 
-      // ✅ Begrüßung & Basis-Card anzeigen
-      container.innerHTML = `
-        <div class="rounded-2xl shadow bg-white p-8 text-center mb-10">
-          <h2 class="text-3xl font-bold text-[#1E2A45]">
-            Willkommen zurück, ${user.first_name || "Unbekannt"} 👋
-          </h2>
-          <p class="mt-2 text-gray-600">Du bist erfolgreich angemeldet.</p>
-        </div>
+      container.innerHTML = [
+        '<div class="rounded-2xl shadow bg-white p-8 text-center mb-10">',
+        `<h2 class="text-3xl font-bold text-[#1E2A45]">Willkommen zurück, ${user.first_name || "Unbekannt"} 👋</h2>`,
+        '<p class="mt-2 text-gray-600">Du bist erfolgreich angemeldet.</p>',
+        "</div>",
+        '<div id="customer-card" class="rounded-2xl shadow bg-white p-8 text-center border border-gray-100">',
+        '<h3 class="text-xl font-bold text-[#1E2A45] mb-2">Kundendaten werden geladen...</h3>',
+        '<p class="text-gray-500 text-sm">Bitte einen Moment Geduld.</p>',
+        "</div>"
+      ].join("");
 
-        <div id="customer-card"
-             class="rounded-2xl shadow bg-white p-8 text-center border border-gray-100">
-          <h3 class="text-xl font-bold text-[#1E2A45] mb-2">
-            Kundendaten werden geladen...
-          </h3>
-          <p class="text-gray-500 text-sm">Bitte einen Moment Geduld.</p>
-        </div>
-      `;
-
-      // 🧠 Kunden-API abrufen
       const customerRes = await fetch(
-        \`https://customer.smartpages.online/api/customer?email=\${encodeURIComponent(user.email)}\`,
-        { credentials: "include", headers: { Accept: "application/json" } }
+        `https://customer.smartpages.online/api/customer?email=${encodeURIComponent(user.email)}`,
+        { credentials: "include", headers: { "Accept": "application/json" } }
       );
 
       const customerData = await customerRes.json();
@@ -107,37 +92,35 @@ window.addEventListener("DOMContentLoaded", async () => {
 
       if (customerData.ok && customerData.profile) {
         const p = customerData.profile;
-        card.innerHTML = `
-          <h3 class="text-xl font-bold text-[#1E2A45] mb-4">Kundendaten</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-2xl mx-auto">
-            <div><strong>Name:</strong> ${p.first_name} ${p.last_name || ""}</div>
-            <div><strong>Email:</strong> ${p.email}</div>
-            <div><strong>Kundennummer:</strong> ${p.customer_no || "-"}</div>
-            <div><strong>Firma:</strong> ${p.company_name || "-"}</div>
-            <div><strong>Sprache:</strong> ${p.language || "de"}</div>
-          </div>
-        `;
+        card.innerHTML = [
+          '<h3 class="text-xl font-bold text-[#1E2A45] mb-4">Kundendaten</h3>',
+          '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-2xl mx-auto">',
+          `<div><strong>Name:</strong> ${p.first_name} ${p.last_name || ""}</div>`,
+          `<div><strong>Email:</strong> ${p.email}</div>`,
+          `<div><strong>Kundennummer:</strong> ${p.customer_no || "-"}</div>`,
+          `<div><strong>Firma:</strong> ${p.company_name || "-"}</div>`,
+          `<div><strong>Sprache:</strong> ${p.language || "de"}</div>`,
+          "</div>"
+        ].join("");
       } else {
-        card.innerHTML = `
-          <h3 class="text-xl font-bold text-[#1E2A45] mb-2">Keine Kundendaten gefunden</h3>
-          <p class="text-gray-500">Bitte überprüfe deine Kontoeinstellungen.</p>
-        `;
+        card.innerHTML = [
+          '<h3 class="text-xl font-bold text-[#1E2A45] mb-2">Keine Kundendaten gefunden</h3>',
+          '<p class="text-gray-500">Bitte überprüfe deine Kontoeinstellungen.</p>'
+        ].join("");
       }
     } else {
-      // ❌ Kein Login → Zurück zum Login
-      statusBox.innerHTML = `
-        <h2 class='text-2xl font-bold text-[#1E2A45]'>Anmeldung erforderlich</h2>
-        <p class='text-gray-600 mt-3'>Bitte melde dich erneut über deinen Magic Link an.</p>
-        <a href="/de/login"
-           class="inline-block mt-6 px-6 py-3 bg-[#F5B400] text-[#1E2A45] rounded-xl hover:bg-[#E47E00] transition-all">
-           Zum Login
-        </a>`;
+      statusBox.innerHTML = [
+        "<h2 class='text-2xl font-bold text-[#1E2A45]'>Anmeldung erforderlich</h2>",
+        "<p class='text-gray-600 mt-3'>Bitte melde dich erneut über deinen Magic Link an.</p>",
+        "<a href='/de/login' class='inline-block mt-6 px-6 py-3 bg-[#F5B400] text-[#1E2A45] rounded-xl hover:bg-[#E47E00] transition-all'>Zum Login</a>"
+      ].join("");
     }
   } catch (e) {
     console.error("Client session fetch failed:", e);
-    statusBox.innerHTML = `
-      <h2 class='text-2xl font-bold text-[#1E2A45]'>Verbindungsfehler</h2>
-      <p class='text-gray-600 mt-3'>Bitte versuche es in ein paar Minuten erneut.</p>`;
+    statusBox.innerHTML = [
+      "<h2 class='text-2xl font-bold text-[#1E2A45]'>Verbindungsfehler</h2>",
+      "<p class='text-gray-600 mt-3'>Bitte versuche es in ein paar Minuten erneut.</p>"
+    ].join("");
   }
 });
 </script>
