@@ -4,20 +4,20 @@ import "~/styles/global.css";
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <div id="dashboard-wrapper" class="hidden">
+  <div id="dashboard-wrapper">
+
     <!-- 🧭 Kundendaten -->
-    <section id="customer-section"
-      class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-0">
+    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-0">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div class="w-full">
-          <h2 id="welcomeTitle" class="text-2xl font-bold mb-3">Willkommen zurück 👋</h2>
+          <h2 class="text-2xl font-bold mb-3">Willkommen zurück, Gastbenutzer 👋</h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-2 text-sm text-gray-700">
-            <p><span class="font-semibold">Name:</span> <span id="userName">Gastbenutzer</span></p>
-            <p><span class="font-semibold">E-Mail:</span> <span id="userEmail">unbekannt</span></p>
-            <p><span class="font-semibold">Status:</span> <span id="userStatus">Kostenlos</span></p>
-            <p><span class="font-semibold">Plan:</span> <span id="userPlan">—</span></p>
-            <p><span class="font-semibold">Aktiv bis:</span> <span id="userActiveUntil">—</span></p>
-            <p><span class="font-semibold">Letztes Login:</span> <span id="userLastLogin">—</span></p>
+            <p><span class="font-semibold">Name:</span> Gastbenutzer</p>
+            <p><span class="font-semibold">E-Mail:</span> unbekannt</p>
+            <p><span class="font-semibold">Status:</span> inaktiv</p>
+            <p><span class="font-semibold">Plan:</span> Trial</p>
+            <p><span class="font-semibold">Aktiv bis:</span> —</p>
+            <p><span class="font-semibold">Letztes Login:</span> —</p>
           </div>
 
           <div class="flex justify-center mt-3">
@@ -41,14 +41,14 @@ import "~/styles/global.css";
     <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-4">
       <h2 class="text-xl font-semibold mb-3 text-[#1E2A45]">Impressumsdaten</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-sm text-gray-700">
-        <p><span class="font-semibold">Unternehmen:</span> —</p>
-        <p><span class="font-semibold">Ansprechpartner:</span> —</p>
-        <p><span class="font-semibold">Straße & Hausnummer:</span> —</p>
-        <p><span class="font-semibold">PLZ / Ort:</span> —</p>
+        <p><span class="font-semibold">Unternehmen:</span> –</p>
+        <p><span class="font-semibold">Ansprechpartner:</span> –</p>
+        <p><span class="font-semibold">Straße & Hausnummer:</span> –</p>
+        <p><span class="font-semibold">PLZ / Ort:</span> –</p>
         <p><span class="font-semibold">Land:</span> Deutschland</p>
-        <p><span class="font-semibold">E-Mail (Support):</span> —</p>
-        <p><span class="font-semibold">Telefon:</span> —</p>
-        <p><span class="font-semibold">USt-ID:</span> —</p>
+        <p><span class="font-semibold">E-Mail (Support):</span> unbekannt</p>
+        <p><span class="font-semibold">Telefon:</span> –</p>
+        <p><span class="font-semibold">USt-ID:</span> –</p>
       </div>
 
       <div class="flex justify-center mt-4">
@@ -82,43 +82,48 @@ import "~/styles/global.css";
         </p>
       </a>
     </section>
-  </div>
 
-  <!-- 🔒 Loginprüfung -->
-  <div id="login-status" class="max-w-4xl mx-auto mt-20 text-center">
-    <h2 class="text-2xl font-bold text-[#1E2A45]">Anmeldung wird geprüft...</h2>
+    <!-- Modal Fenster -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
+      <div class="bg-white rounded-2xl shadow-lg p-8 w-[90%] max-w-lg">
+        <h3 id="modalTitle" class="text-xl font-semibold mb-4 text-[#1E2A45]">Daten bearbeiten</h3>
+        <form id="modalForm" class="space-y-4">
+          <input type="text" placeholder="Name" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+          <input type="email" placeholder="E-Mail" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
+        </form>
+        <div class="flex justify-end mt-6 gap-3">
+          <button id="cancelModal"
+            class="px-4 py-2 bg-gray-200 text-[#1E2A45] rounded-lg hover:bg-gray-300">Abbrechen</button>
+          <button id="saveModal"
+            class="px-4 py-2 text-white rounded-lg bg-gradient-to-r from-[#F5B400] to-[#E47E00] hover:opacity-90">
+            Speichern
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </PageLayout>
 
-<!-- ✅ Clientseitige Datenübernahme -->
 <script>
-window.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const res = await fetch("https://api.smartpages.online/api/user/profile", {
-      method: "GET",
-      credentials: "include",
-      headers: { "Accept": "application/json" },
-    });
+window.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("modal");
+  const openUser = document.getElementById("editUserBtn");
+  const openImprint = document.getElementById("editImprintBtn");
+  const cancelModal = document.getElementById("cancelModal");
 
-    const data = await res.json();
+  openUser?.addEventListener("click", () => {
+    modal.classList.remove("hidden");
+    document.getElementById("modalTitle").innerText = "Kundendaten bearbeiten";
+  });
 
-    if (data.ok && data.user) {
-      document.getElementById("login-status")?.classList.add("hidden");
-      document.getElementById("dashboard-wrapper")?.classList.remove("hidden");
+  openImprint?.addEventListener("click", () => {
+    modal.classList.remove("hidden");
+    document.getElementById("modalTitle").innerText = "Impressum bearbeiten";
+  });
 
-      // Felder befüllen
-      document.getElementById("welcomeTitle").textContent = `Willkommen zurück, ${data.user.first_name || "Benutzer"} 👋`;
-      document.getElementById("userName").textContent = data.user.first_name || "Gastbenutzer";
-      document.getElementById("userEmail").textContent = data.user.email || "unbekannt";
-      document.getElementById("userStatus").textContent = data.user.status || "inactive";
-      document.getElementById("userPlan").textContent = data.user.plan || "Trial";
-      document.getElementById("userActiveUntil").textContent = data.user.trial_end || "—";
-      document.getElementById("userLastLogin").textContent = data.user.last_login || "—";
-    } else {
-      console.warn("Nicht authentifiziert oder ungültige Daten:", data);
-    }
-  } catch (e) {
-    console.error("Fehler beim Laden des Profils:", e);
-  }
+  cancelModal?.addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
 });
 </script>
