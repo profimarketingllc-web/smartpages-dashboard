@@ -45,11 +45,11 @@ try {
   <div id="dashboard-wrapper" class={authenticated ? "" : "hidden"}>
 
     <!-- 🧭 User Data -->
-    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-2">
+    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-0">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div class="w-full">
-          <h2 class="text-2xl font-bold mb-4">Welcome back, {user.name} 👋</h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-2 text-sm text-gray-700">
+          <h2 class="text-2xl font-bold mb-3">Welcome back, {user.name} 👋</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-2 text-sm text-gray-700">
             <p><span class="font-semibold">Name:</span> {user.name}</p>
             <p><span class="font-semibold">Email:</span> {user.email}</p>
             <p><span class="font-semibold">Status:</span> {user.status}</p>
@@ -58,7 +58,7 @@ try {
             <p><span class="font-semibold">Last login:</span> {user.lastLogin}</p>
           </div>
 
-          <div class="flex justify-center mt-4">
+          <div class="flex justify-center mt-3">
             <button
               id="editUserBtn"
               class="px-6 py-2 text-white rounded-xl shadow-md font-medium 
@@ -70,9 +70,9 @@ try {
           </div>
         </div>
 
-        <div class="mt-4 md:mt-0 md:ml-6">
+        <div class="mt-3 md:mt-0 md:ml-6">
           <span
-            class="inline-block px-4 py-1.5 text-sm rounded-full border 
+            class="inline-block px-4 py-1 text-sm rounded-full border 
                    bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]
                    font-medium min-w-[110px] text-center"
           >
@@ -83,9 +83,9 @@ try {
     </section>
 
     <!-- 🧾 Imprint Information -->
-    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-6">
-      <h2 class="text-xl font-semibold mb-4 text-[#1E2A45]">Imprint Information</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 text-sm text-gray-700">
+    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-4">
+      <h2 class="text-xl font-semibold mb-3 text-[#1E2A45]">Imprint Information</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-sm text-gray-700">
         <p><span class="font-semibold">Company Name:</span> {user.company || "–"}</p>
         <p><span class="font-semibold">Contact Person:</span> {user.contact_name || "–"}</p>
         <p><span class="font-semibold">Address:</span> {user.address || "–"}</p>
@@ -96,7 +96,7 @@ try {
         <p><span class="font-semibold">VAT-ID:</span> {user.vat_id || "–"}</p>
       </div>
 
-      <div class="flex justify-center mt-6">
+      <div class="flex justify-center mt-4">
         <button
           id="editImprintBtn"
           class="px-6 py-2 text-white rounded-xl shadow-md font-medium 
@@ -109,7 +109,7 @@ try {
     </section>
 
     <!-- 🧱 Product cards -->
-    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
+    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-5 mt-4">
       <a href="/en/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
                 shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
                 hover:shadow-[0_0_25px_rgba(78,107,255,0.6)] hover:scale-[1.02]">
@@ -139,7 +139,7 @@ try {
     </section>
 
     <!-- 📨 Feedback -->
-    <section class="max-w-6xl mx-auto mt-6 bg-[#f8f9fb] rounded-2xl p-6 text-center md:text-left shadow-md border border-gray-100">
+    <section class="max-w-6xl mx-auto mt-4 bg-[#f8f9fb] rounded-2xl p-5 text-center md:text-left shadow-md border border-gray-100 mb-8">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Your feedback helps us improve</h3>
@@ -196,10 +196,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (data.ok && data.authenticated) {
       document.getElementById("login-status")?.classList.add("hidden");
       document.getElementById("dashboard-wrapper")?.classList.remove("hidden");
-      console.log("✅ User authenticated, dashboard visible.");
     }
 
-    // Modal logic
     const modal = document.getElementById("modal");
     const openUser = document.getElementById("editUserBtn");
     const openImprint = document.getElementById("editImprintBtn");
@@ -226,7 +224,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 <style>
 section {
-  scroll-margin-top: 2rem;
+  scroll-margin-top: 1.5rem;
 }
 section h2 {
   line-height: 1.2;
@@ -238,8 +236,8 @@ section p {
   margin-bottom: 0.25rem;
 }
 section.max-w-6xl {
-  margin-top: 1.25rem !important;
-  padding-top: 1.75rem;
-  padding-bottom: 1.75rem;
+  margin-top: 1rem !important;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
 }
 </style>
