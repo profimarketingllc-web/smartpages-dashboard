@@ -12,7 +12,7 @@ let user = {
 };
 let authenticated = false;
 
-// 🧩 Serverseitiger Session-Fallback (prüft Cookies im Request)
+// 🧩 Serverseitiger Session-Fallback
 try {
   const cookie = Astro.request.headers.get("cookie") || "";
   if (cookie.includes("session=")) {
@@ -44,9 +44,10 @@ try {
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <!-- Dashboard Wrapper -->
+  <!-- Hauptbereich -->
   <div id="dashboard-wrapper" class={authenticated ? "" : "hidden"}>
-    <!-- 🧭 Willkommen -->
+
+    <!-- 🧭 Kundendaten -->
     <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-2">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div class="w-full">
@@ -83,20 +84,45 @@ try {
       </div>
     </section>
 
+    <!-- 🧾 Impressums-Daten -->
+    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-6">
+      <h2 class="text-xl font-semibold mb-4 text-[#1E2A45]">Impressumsdaten</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 text-sm text-gray-700">
+        <p><span class="font-semibold">Unternehmen:</span> {user.company || "–"}</p>
+        <p><span class="font-semibold">Ansprechpartner:</span> {user.contact_name || "–"}</p>
+        <p><span class="font-semibold">Adresse:</span> {user.address || "–"}</p>
+        <p><span class="font-semibold">PLZ / Ort:</span> {user.zip || "–"} {user.city || ""}</p>
+        <p><span class="font-semibold">Land:</span> {user.country || "Deutschland"}</p>
+        <p><span class="font-semibold">E-Mail (Support):</span> {user.support_email || user.email}</p>
+        <p><span class="font-semibold">Telefon:</span> {user.phone || "–"}</p>
+        <p><span class="font-semibold">USt-ID:</span> {user.vat_id || "–"}</p>
+      </div>
+
+      <div class="flex justify-center mt-6">
+        <button
+          class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
+                hover:bg-gradient-to-r hover:from-[#4E6BFF] hover:to-[#657AFF] hover:text-white 
+                transition-all duration-300"
+        >
+          Impressum bearbeiten
+        </button>
+      </div>
+    </section>
+
     <!-- 🧱 Produkt-Kacheln -->
     <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-6 mt-4">
       <a href="/de/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
                 shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_10px_25px_rgba(78,107,255,0.3)] hover:-translate-y-1">
+                hover:shadow-[0_0_25px_rgba(78,107,255,0.6)] hover:scale-[1.02]">
         <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
         <p class="text-sm">
-          Erstelle dein persönliches Profil in wenigen Klicks – ideal für Freelancer, Coaches und Unternehmer.
+          Erstelle dein persönliches Profil mit wenigen Klicks – ideal für Freelancer, Coaches und Unternehmer.
         </p>
       </a>
 
       <a href="/de/smartpage" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
                 shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_10px_25px_rgba(245,180,0,0.3)] hover:-translate-y-1">
+                hover:shadow-[0_0_25px_rgba(245,180,0,0.6)] hover:scale-[1.02]">
         <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
         <p class="text-sm">
           Erstelle beeindruckende, konversionsstarke Seiten in Minuten – einfach, schnell und professionell.
@@ -105,7 +131,7 @@ try {
 
       <a href="/de/smartdomain" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
                 shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_10px_25px_rgba(139,92,255,0.3)] hover:-translate-y-1">
+                hover:shadow-[0_0_25px_rgba(139,92,255,0.6)] hover:scale-[1.02]">
         <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
         <p class="text-sm">
           Sichere deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
@@ -133,13 +159,13 @@ try {
     </section>
   </div>
 
-  <!-- 🕐 Fallback-Statusanzeige -->
+  <!-- 🕐 Fallback bei nicht authentifiziert -->
   <div id="login-status" class={authenticated ? "hidden" : "max-w-4xl mx-auto mt-20 text-center"}>
     <h2 class="text-2xl font-bold text-[#1E2A45]">Anmeldung wird geprüft...</h2>
   </div>
 </PageLayout>
 
-<!-- ✅ Fix: kein Reload, Dashboard wird clientseitig eingeblendet -->
+<!-- ✅ Kein Loop, sichtbares Dashboard nach Auth -->
 <script>
 window.addEventListener("DOMContentLoaded", async () => {
   try {
@@ -157,7 +183,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
       if (loginEl) loginEl.style.display = "none";
       if (dashEl) {
-        dashEl.style.display = "block"; // 🚀 Sichtbar erzwingen
+        dashEl.style.display = "block";
         dashEl.classList.remove("hidden");
       }
 
