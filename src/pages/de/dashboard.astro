@@ -1,59 +1,39 @@
 ---
-import PageLayout from "~/layouts/PageLayout.astro";
-import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
-import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
-import CustomerCard from "~/components/core/CustomerCard";
-import ImprintCard from "~/components/core/ImprintCard";
+const pathname = Astro.url.pathname.toLowerCase();
+const isEnglish = pathname.startsWith("/en/");
 
-const isChecking = true; // Platzhalter für Tokenprüfung
+const title = "SmartPages";
+const subtitle = isEnglish
+  ? "Go online in just 10 minutes — privacy-first and GDPR compliant."
+  : "Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen";
 ---
 
-<PageLayout title="SmartPages Dashboard" lang="de">
-  <div class="relative flex flex-col gap-8 w-full max-w-6xl mx-auto">
+<header
+  class="w-full bg-[#1E2A45] text-white shadow-md z-50 md:sticky md:top-0 transition-all duration-300"
+>
+  <div
+    class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 py-4 md:py-5 px-4 text-center"
+  >
+    <!-- Logo -->
+    <img
+      src="/SmartPages_icon_transparent.png"
+      alt="SmartPages Logo"
+      class="h-14 md:h-20 w-auto transition-all duration-300"
+      loading="lazy"
+    />
 
-    <!-- 🔹 Popup (zentriert über CustomerCard) -->
-    {isChecking && (
-      <div
-        class="absolute left-1/2 top-12 transform -translate-x-1/2 
-               bg-[#E7A7A2] text-white text-center font-semibold py-3 px-6 
-               rounded-2xl shadow-md z-50"
+    <!-- Textbereich -->
+    <div class="leading-tight md:ml-3">
+      <h1
+        class="text-[1.75rem] md:text-[2rem] font-extrabold tracking-tight leading-snug mb-0 text-center md:text-left"
       >
-        Prüfe Anmeldung...
-      </div>
-    )}
-
-    <!-- 🔹 Kundendaten -->
-    <DashboardCardWide>
-      <CustomerCard client:only="solid" />
-    </DashboardCardWide>
-
-    <!-- 🔹 Impressumsdaten -->
-    <DashboardCardWide>
-      <ImprintCard client:only="solid" />
-    </DashboardCardWide>
-
-    <!-- 🔹 Produktübersicht -->
-    <ProductCardGrid />
-
-    <!-- 🔹 Feedback-Kachel -->
-    <div
-      class="flex justify-between items-center p-6 bg-white rounded-2xl shadow-md 
-             border border-gray-100 mt-4"
-    >
-      <div>
-        <h3 class="text-lg font-semibold text-gray-800">
-          Dein Feedback hilft uns, besser zu werden
-        </h3>
-        <p class="text-sm text-gray-600">
-          Teile Fehler, Ideen oder Vorschläge – hilf uns, SmartPages noch besser zu machen.
-        </p>
-      </div>
-      <button
-        class="px-5 py-3 bg-[#C86B67] text-white font-medium rounded-xl 
-               shadow hover:bg-[#b85a56] transition"
+        {title}
+      </h1>
+      <p
+        class="text-base md:text-lg text-gray-200 font-medium mt-0 text-center md:text-left"
       >
-        Feedback senden
-      </button>
+        {subtitle}
+      </p>
     </div>
   </div>
-</PageLayout>
+</header>
