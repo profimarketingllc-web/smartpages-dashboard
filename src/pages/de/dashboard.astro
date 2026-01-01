@@ -1,73 +1,59 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
-import CustomerCard from "~/components/core/CustomerCard.jsx";
-import ImprintCard from "~/components/core/ImprintCard.jsx";
+import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
+import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
+import CustomerCard from "~/components/core/CustomerCard";
+import ImprintCard from "~/components/core/ImprintCard";
 
-const lang = "de";
-const title = "Dashboard | SmartPages";
+const isChecking = true; // Platzhalter für Tokenprüfung
 ---
 
-<PageLayout {lang} {title}>
+<PageLayout title="SmartPages Dashboard" lang="de">
+  <div class="relative flex flex-col gap-8 w-full max-w-6xl mx-auto">
 
-  <!-- 🧠 Prüfen der Anmeldung -->
-  <div class="relative w-full flex justify-center items-center my-6">
+    <!-- 🔹 Popup (zentriert über CustomerCard) -->
+    {isChecking && (
+      <div
+        class="absolute left-1/2 top-12 transform -translate-x-1/2 
+               bg-[#E7A7A2] text-white text-center font-semibold py-3 px-6 
+               rounded-2xl shadow-md z-50"
+      >
+        Prüfe Anmeldung...
+      </div>
+    )}
+
+    <!-- 🔹 Kundendaten -->
+    <DashboardCardWide>
+      <CustomerCard client:only="solid" />
+    </DashboardCardWide>
+
+    <!-- 🔹 Impressumsdaten -->
+    <DashboardCardWide>
+      <ImprintCard client:only="solid" />
+    </DashboardCardWide>
+
+    <!-- 🔹 Produktübersicht -->
+    <ProductCardGrid />
+
+    <!-- 🔹 Feedback-Kachel -->
     <div
-      class="absolute bg-red-200 text-red-800 font-semibold px-8 py-3 rounded-2xl shadow-md text-center"
-      style="top: 0;"
+      class="flex justify-between items-center p-6 bg-white rounded-2xl shadow-md 
+             border border-gray-100 mt-4"
     >
-      Prüfe Anmeldung...
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">
+          Dein Feedback hilft uns, besser zu werden
+        </h3>
+        <p class="text-sm text-gray-600">
+          Teile Fehler, Ideen oder Vorschläge – hilf uns, SmartPages noch besser zu machen.
+        </p>
+      </div>
+      <button
+        class="px-5 py-3 bg-[#C86B67] text-white font-medium rounded-xl 
+               shadow hover:bg-[#b85a56] transition"
+      >
+        Feedback senden
+      </button>
     </div>
   </div>
-
-  <!-- 🧾 Hauptinhalt -->
-  <section class="max-w-6xl mx-auto space-y-8">
-    <CustomerCard client:only="solid" />
-    <ImprintCard client:only="solid" />
-  </section>
-
-  <!-- 🚀 Produkt-Grid -->
-  <section class="max-w-6xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-    <div class="bg-[#4E6BFF] text-white rounded-2xl shadow-md p-6">
-      <h3 class="text-lg font-extrabold mb-2">SmartProfile</h3>
-      <p>
-        Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.
-      </p>
-    </div>
-
-    <div class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white rounded-2xl shadow-md p-6">
-      <h3 class="text-lg font-extrabold mb-2">SmartPage</h3>
-      <p>
-        Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.
-      </p>
-    </div>
-
-    <div class="bg-[#8B5CFF] text-white rounded-2xl shadow-md p-6">
-      <h3 class="text-lg font-extrabold mb-2">SmartDomain</h3>
-      <p>
-        Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
-      </p>
-    </div>
-  </section>
-
-  <!-- 💬 Feedback -->
-  <section
-    class="max-w-6xl mx-auto mt-8 bg-white shadow-md rounded-2xl p-6 flex flex-col md:flex-row justify-between items-center gap-4 border border-gray-100"
-  >
-    <div>
-      <h4 class="font-semibold text-[#1E2A45] text-lg">
-        Dein Feedback hilft uns, besser zu werden
-      </h4>
-      <p class="text-gray-600 text-sm">
-        Teile Fehler, Ideen oder Vorschläge – hilf uns, SmartPages noch besser zu machen.
-      </p>
-    </div>
-
-    <a
-      href="mailto:support@smartpages.online"
-      class="bg-[#C94D4D] text-white px-6 py-3 rounded-2xl font-semibold shadow-md hover:shadow-lg transition"
-    >
-      Feedback senden
-    </a>
-  </section>
-
 </PageLayout>
