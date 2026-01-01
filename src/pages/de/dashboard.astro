@@ -1,47 +1,55 @@
 ---
 import SmartHeader from "@/components/core/SmartHeader.astro";
 import SmartSidebar from "@/components/core/SmartSidebar.astro";
-import ProductCardGrid from "@/components/core/ProductCardGrid.astro";
 import DashboardCardWide from "@/components/core/DashboardCardWide.astro";
+import ProductCardGrid from "@/components/core/ProductCardGrid.astro";
 import CustomerCard from "@/components/core/CustomerCard.jsx";
 ---
 
 <html lang="de">
   <head>
     <meta charset="utf-8" />
-    <title>Dashboard – SmartPages</title>
+    <title>SmartPages Dashboard</title>
   </head>
 
   <body class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
+    <!-- Kopfzeile -->
     <SmartHeader />
 
+    <!-- Hauptbereich -->
     <div class="flex flex-1 overflow-hidden">
+      <!-- Sidebar -->
       <SmartSidebar />
 
-      <main class="flex-1 flex flex-col p-6 md:p-10 space-y-6 overflow-y-auto">
-        <!-- 🔹 CustomerCard zeigt automatisch den korrekten Zustand -->
+      <!-- Contentbereich -->
+      <main
+        class="flex-1 flex flex-col p-6 md:p-10 space-y-6 overflow-y-auto bg-gray-50"
+      >
+        <!-- 1️⃣ Kundenkarte (SolidJS integriert) -->
         <DashboardCardWide>
           <CustomerCard client:load />
         </DashboardCardWide>
 
-        <!-- 🔹 ImpressumCard bleibt leer -->
+        <!-- 2️⃣ Impressumskarte -->
         <DashboardCardWide>
-          <div class="p-6 text-gray-400 italic">Noch keine Daten vorhanden.</div>
+          <div class="p-6 text-gray-500 italic">
+            Noch keine Impressumsdaten vorhanden.
+          </div>
         </DashboardCardWide>
 
-        <!-- 🔹 ProductGrid bleibt sichtbar -->
+        <!-- 3️⃣ Produktübersicht -->
         <DashboardCardWide>
           <ProductCardGrid />
         </DashboardCardWide>
 
-        <!-- 🔹 FeedbackCard bleibt sichtbar -->
+        <!-- 4️⃣ Feedback -->
         <DashboardCardWide>
           <div class="text-center py-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-2">
-              Feedback geben
+              Dein Feedback zählt!
             </h3>
             <p class="text-gray-600 mb-4">
-              Hilf uns, SmartPages noch besser zu machen!
+              Hilf uns, SmartPages weiter zu verbessern.
             </p>
             <a
               href="mailto:support@smartpages.online"
@@ -54,10 +62,11 @@ import CustomerCard from "@/components/core/CustomerCard.jsx";
       </main>
     </div>
 
+    <!-- Footer -->
     <footer
-      class="bg-gray-50 text-gray-500 text-center py-4 text-sm border-t border-gray-200"
+      class="bg-gray-50 text-gray-500 text-center py-4 text-sm border-t border-gray-200 mt-auto"
     >
-      © 2026 SmartPages · Hosted in Europe · GDPR-compliant
+      © 2026 SmartPages · Hosted in Europe · DSGVO-konform
     </footer>
   </body>
 </html>
