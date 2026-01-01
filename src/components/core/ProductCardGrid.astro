@@ -1,10 +1,31 @@
 ---
 import ProductCard from "./ProductCard.astro";
 const { products } = Astro.props;
----
 
+// ✅ Fallback für statischen Build:
+const items = products || [
+  {
+    title: "SmartProfile",
+    label: "Erstelle Dein Profil",
+    text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
+    gradient: "from-[#4E6BFF] to-[#657AFF]",
+  },
+  {
+    title: "SmartPage",
+    label: "Erstelle Deine Seite",
+    text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
+    gradient: "from-[#F5B400] to-[#E47E00]",
+  },
+  {
+    title: "SmartDomain",
+    label: "Sichere Deine Domain",
+    text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
+    gradient: "from-[#8B5CFF] to-[#A076FF]",
+  },
+];
+---
 <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-10">
-  {products.map((p) => (
+  {items.map((p) => (
     <ProductCard
       title={p.title}
       label={p.label}
