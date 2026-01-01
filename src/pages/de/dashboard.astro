@@ -1,5 +1,6 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
+import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
 import CustomerCard from "~/components/core/CustomerCard.jsx";
 import ImprintCard from "~/components/core/ImprintCard.jsx";
 import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
@@ -7,81 +8,78 @@ import { createSignal, onMount } from "solid-js";
 
 const [showPopup, setShowPopup] = createSignal(true);
 
-// Popup verschwindet nach 2 Sekunden automatisch
+// Popup verschwindet automatisch nach 2 Sekunden
 onMount(() => {
   const timer = setTimeout(() => setShowPopup(false), 2000);
   return () => clearTimeout(timer);
 });
 
-// Produktkarten definieren
+// Produktkarten
 const products = [
   {
     title: "SmartProfile",
     text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
     gradient: "from-[#4E6BFF] to-[#657AFF]",
+    glow: "shadow-[0_0_25px_#4E6BFF60]"
   },
   {
     title: "SmartPage",
     text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
     gradient: "from-[#F5B400] to-[#E47E00]",
+    glow: "shadow-[0_0_25px_#E47E0060]"
   },
   {
     title: "SmartDomain",
     text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
     gradient: "from-[#8B5CFF] to-[#A076FF]",
+    glow: "shadow-[0_0_25px_#8B5CFF60]"
   },
 ];
 ---
 
 <PageLayout title="Dashboard">
-  <!-- 🔐 Popup Prüfung Anmeldung -->
+  <!-- 🔐 Popup -->
   {showPopup() && (
     <div
-      class="absolute top-24 left-1/2 transform -translate-x-1/2
-             bg-[#E57373] text-white text-center px-6 py-3 rounded-2xl shadow-md
-             text-base font-semibold z-50"
-    >
+      class="fixed top-24 left-1/2 transform -translate-x-1/2
+             bg-[#E57373] text-white text-center px-6 py-2.5 rounded-2xl shadow-md
+             text-sm font-semibold z-50">
       Prüfe Anmeldung...
     </div>
   )}
 
   <!-- 🧾 Inhalt -->
-  <main class="flex flex-col gap-8 max-w-6xl mx-auto px-4 mt-12 mb-20">
+  <main class="flex flex-col gap-10 max-w-6xl mx-auto px-6 mt-20 mb-20">
+
     <!-- Kundendaten -->
-    <div class="bg-white/70 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-gray-200">
+    <DashboardCardWide>
       <CustomerCard client:only="solid" />
-    </div>
+    </DashboardCardWide>
 
     <!-- Impressumsdaten -->
-    <div class="bg-white/70 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-gray-200">
+    <DashboardCardWide>
       <ImprintCard client:only="solid" />
-    </div>
+    </DashboardCardWide>
 
     <!-- Produktübersicht -->
-    <div class="mt-4">
+    <DashboardCardWide>
       <ProductCardGrid products={products} />
-    </div>
+    </DashboardCardWide>
 
     <!-- Feedback -->
-    <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-sm text-center border border-gray-200">
-      <h3 class="font-semibold text-gray-800 text-lg mb-1">
-        Dein Feedback hilft uns, besser zu werden
-      </h3>
-      <p class="text-gray-600 text-sm mb-4">
-        Teile Fehler, Ideen oder Vorschläge – hilf uns, SmartPages noch besser zu machen.
-      </p>
-      <button
-        class="bg-[#C94C43] hover:bg-[#B33D35] text-white px-6 py-2 rounded-xl shadow transition-all duration-200"
-      >
-        Feedback senden
-      </button>
-    </div>
+    <DashboardCardWide>
+      <div class="text-center text-gray-700">
+        <h3 class="font-semibold text-lg mb-2">
+          Dein Feedback hilft uns, besser zu werden
+        </h3>
+        <p class="text-gray-600 text-sm mb-4">
+          Teile Fehler, Ideen oder Vorschläge – hilf uns, SmartPages noch besser zu machen.
+        </p>
+        <button
+          class="bg-[#C94C43] hover:bg-[#B33D35] text-white px-6 py-2 rounded-xl shadow transition-all duration-200">
+          Feedback senden
+        </button>
+      </div>
+    </DashboardCardWide>
   </main>
-
-  <!-- ⚙️ Footer -->
-  <footer
-    class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-white/80 backdrop-blur-sm"
-  >
-    © {new Date().getFullYear()} SmartPages · Gehostet in Europa · DSGVO-konform
-  </footer>
 </PageLayout>
