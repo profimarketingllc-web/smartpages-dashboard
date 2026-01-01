@@ -2,18 +2,18 @@
 import PageLayout from "~/layouts/PageLayout.astro";
 import CustomerCard from "@/components/core/CustomerCard.jsx";
 import ImprintCard from "@/components/core/ImprintCard.jsx";
-
-let authenticated = false;
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
   <div id="dashboard-wrapper" class="space-y-6">
 
-    <!-- 🕓 Statusanzeige -->
-    <div id="login-status" class="max-w-6xl mx-auto text-center mt-6 mb-2">
-      <h2 class="text-2xl font-bold text-[#1E2A45] animate-pulse">
-        Prüfe Anmeldung...
-      </h2>
+    <!-- 🕓 Kompakte Statusanzeige -->
+    <div
+      id="login-status"
+      class="max-w-md mx-auto mt-6 flex items-center justify-center rounded-2xl
+             bg-[#E47E7E] text-white text-lg font-semibold shadow-md h-14 animate-pulse"
+    >
+      Prüfe Anmeldung...
     </div>
 
     <!-- 🧩 Solid-Komponenten -->
@@ -85,20 +85,20 @@ let authenticated = false;
         });
         const data = await res.json();
 
+        const statusEl = document.getElementById("login-status");
+
         if (data.ok && data.authenticated) {
-          document.getElementById("login-status")?.classList.add("hidden");
-          document.getElementById("dashboard-wrapper")?.classList.remove("hidden");
+          statusEl.classList.add("hidden");
         } else {
+          // Zeige "Prüfe Anmeldung..." 2 Sekunden, dann Dashboard ohne Daten
           setTimeout(() => {
-            document.getElementById("login-status").classList.add("hidden");
-            document.getElementById("dashboard-wrapper").classList.remove("hidden");
+            statusEl.classList.add("hidden");
           }, 2000);
         }
       } catch (e) {
         console.error("Session fetch failed:", e);
         setTimeout(() => {
           document.getElementById("login-status").classList.add("hidden");
-          document.getElementById("dashboard-wrapper").classList.remove("hidden");
         }, 2000);
       }
     });
@@ -125,13 +125,26 @@ let authenticated = false;
 
     /* Einheitliches Placeholder-Design */
     .placeholder {
-      display: inline-block;
-      background-color: rgba(229, 231, 235, 0.8); /* Tailwind gray-200/80 */
+      background-color: rgb(209 213 219); /* Tailwind gray-300 */
       border-radius: 0.5rem;
-      padding: 0.2rem 0.75rem;
+      padding: 0.25rem 0.75rem;
       color: transparent;
       user-select: none;
+      display: inline-block;
       min-width: 5rem;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.875rem;
+      color: #6b7280;
+      padding: 1rem 0;
+      border-top: 1px solid #e5e7eb;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(6px);
+    }
+    footer::before {
+      content: "© 2026 SmartPages · Gehostet in Europa · DSGVO-konform";
     }
   </style>
 </PageLayout>
