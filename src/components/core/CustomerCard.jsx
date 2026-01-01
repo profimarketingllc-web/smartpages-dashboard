@@ -84,4 +84,20 @@ export function CustomerCard() {
   );
 }
 
+<Show when={user()} fallback={
+  <div class="flex justify-between items-center">
+    <div>
+      <h2 class="text-xl font-semibold text-gray-800">
+        Willkommen zurück, Gast 👋
+      </h2>
+      <p class="text-sm text-gray-600 mt-1">Status: <span class="text-gray-400">inactive</span></p>
+    </div>
+    <div>
+      <span class="bg-red-200 text-red-800 px-4 py-1.5 rounded-full text-sm font-medium">
+        Abgemeldet
+      </span>
+    </div>
+  </div>
+}>
+
 export default CustomerCard;
