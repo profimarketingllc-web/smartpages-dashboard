@@ -83,3 +83,5 @@ export function CustomerCard() {
     </div>
   );
 }
+
+export default CustomerCard;
