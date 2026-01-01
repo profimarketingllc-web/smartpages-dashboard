@@ -1,80 +1,82 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
-import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
 import CustomerCard from "~/components/core/CustomerCard.jsx";
 import ImprintCard from "~/components/core/ImprintCard.jsx";
 import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
 import { createSignal, onMount } from "solid-js";
 
-const [showAuthPopup, setShowAuthPopup] = createSignal(true);
+const [showPopup, setShowPopup] = createSignal(true);
 
-// Popup verschwindet nach 2 Sekunden oder sobald Auth abgeschlossen ist
+// Popup verschwindet nach 2 Sekunden automatisch
 onMount(() => {
-  const timer = setTimeout(() => setShowAuthPopup(false), 2000);
+  const timer = setTimeout(() => setShowPopup(false), 2000);
   return () => clearTimeout(timer);
 });
+
+// Produktkarten definieren
+const products = [
+  {
+    title: "SmartProfile",
+    text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
+    gradient: "from-[#4E6BFF] to-[#657AFF]",
+  },
+  {
+    title: "SmartPage",
+    text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
+    gradient: "from-[#F5B400] to-[#E47E00]",
+  },
+  {
+    title: "SmartDomain",
+    text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
+    gradient: "from-[#8B5CFF] to-[#A076FF]",
+  },
+];
 ---
 
 <PageLayout title="Dashboard">
-  <!-- 🔐 Popup Anmeldung -->
-  {showAuthPopup() && (
+  <!-- 🔐 Popup Prüfung Anmeldung -->
+  {showPopup() && (
     <div
-      class="fixed top-28 left-1/2 transform -translate-x-1/2 z-50
+      class="absolute top-24 left-1/2 transform -translate-x-1/2
              bg-[#E57373] text-white text-center px-6 py-3 rounded-2xl shadow-md
-             border border-red-400/50 text-sm font-semibold w-[90%] max-w-md">
+             text-base font-semibold z-50"
+    >
       Prüfe Anmeldung...
     </div>
   )}
 
-  <!-- 🧭 Benutzerinformationen -->
-  <section
-    class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 mt-20 px-4"
-  >
-    <DashboardCardWide>
+  <!-- 🧾 Inhalt -->
+  <main class="flex flex-col gap-8 max-w-6xl mx-auto px-4 mt-12 mb-20">
+    <!-- Kundendaten -->
+    <div class="bg-white/70 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-gray-200">
       <CustomerCard client:only="solid" />
-    </DashboardCardWide>
+    </div>
 
-    <DashboardCardWide>
+    <!-- Impressumsdaten -->
+    <div class="bg-white/70 backdrop-blur-sm p-6 rounded-2xl shadow-md border border-gray-200">
       <ImprintCard client:only="solid" />
-    </DashboardCardWide>
-  </section>
+    </div>
 
-  <!-- 🧩 Produktübersicht -->
-  <DashboardCardWide>
-    <ProductCardGrid
-      products={[
-        {
-          title: "SmartProfile",
-          label: "",
-          text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
-          gradient: "from-[#4E6BFF] to-[#657AFF]",
-        },
-        {
-          title: "SmartPage",
-          label: "",
-          text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
-          gradient: "from-[#F5B400] to-[#E47E00]",
-        },
-        {
-          title: "SmartDomain",
-          label: "",
-          text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
-          gradient: "from-[#8B5CFF] to-[#A076FF]",
-        },
-      ]}
-    />
-  </DashboardCardWide>
+    <!-- Produktübersicht -->
+    <div class="mt-4">
+      <ProductCardGrid products={products} />
+    </div>
 
-  <!-- 💬 Feedback -->
-  <div class="text-center mt-10 mb-6 text-gray-600 text-sm">
-    📬 Dein Feedback hilft uns, SmartPages zu verbessern —
-    <a
-      href="mailto:support@smartpages.online"
-      class="text-[#4F6EF7] underline hover:text-[#2D46B9]"
-    >
-      support@smartpages.online
-    </a>
-  </div>
+    <!-- Feedback -->
+    <div class="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-sm text-center border border-gray-200">
+      <h3 class="font-semibold text-gray-800 text-lg mb-1">
+        Dein Feedback hilft uns, besser zu werden
+      </h3>
+      <p class="text-gray-600 text-sm mb-4">
+        Teile Fehler, Ideen oder Vorschläge – hilf uns, SmartPages noch besser zu machen.
+      </p>
+      <button
+        class="bg-[#C94C43] hover:bg-[#B33D35] text-white px-6 py-2 rounded-xl shadow transition-all duration-200"
+      >
+        Feedback senden
+      </button>
+    </div>
+  </main>
 
   <!-- ⚙️ Footer -->
   <footer
