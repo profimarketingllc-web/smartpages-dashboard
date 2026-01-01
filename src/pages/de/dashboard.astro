@@ -4,9 +4,16 @@ import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
 import CustomerCard from "~/components/core/CustomerCard.jsx";
 import ImprintCard from "~/components/core/ImprintCard.jsx";
 import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
-import AuthPopup from "~/components/core/AuthPopup.jsx";
+import { createSignal, onMount } from "solid-js";
 
-// 🔹 Produkte definieren (für ProductCardGrid)
+// SolidJS: Popup-Steuerung
+const [showPopup, setShowPopup] = createSignal(true);
+
+onMount(() => {
+  const timer = setTimeout(() => setShowPopup(false), 2000);
+  return () => clearTimeout(timer);
+});
+
 const products = [
   {
     title: "SmartProfile",
@@ -30,28 +37,31 @@ const products = [
 ---
 
 <PageLayout title="Dashboard">
-  <!-- 🔸 Popup für Anmeldung -->
-  <AuthPopup client:load />
+  <!-- Popup -->
+  {showPopup() && (
+    <div
+      class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-[#E57373] text-white text-center px-6 py-2.5 rounded-2xl shadow-md text-sm font-semibold z-50">
+      Prüfe Anmeldung...
+    </div>
+  )}
 
-  <!-- 🔹 Hauptbereich -->
   <main class="flex flex-col gap-10 max-w-6xl mx-auto px-6 mt-20 mb-20">
-
     <!-- Kundendaten -->
     <DashboardCardWide>
-      <CustomerCard client:load />
+      <CustomerCard client:only="solid" />
     </DashboardCardWide>
 
     <!-- Impressumsdaten -->
     <DashboardCardWide>
-      <ImprintCard client:load />
+      <ImprintCard client:only="solid" />
     </DashboardCardWide>
 
-    <!-- Produktkarten -->
+    <!-- Produkte -->
     <DashboardCardWide>
       <ProductCardGrid products={products} />
     </DashboardCardWide>
 
-    <!-- Feedback-Sektion -->
+    <!-- Feedback -->
     <DashboardCardWide>
       <div class="text-center text-gray-700">
         <h3 class="font-semibold text-lg mb-2">
@@ -66,6 +76,5 @@ const products = [
         </button>
       </div>
     </DashboardCardWide>
-
   </main>
 </PageLayout>

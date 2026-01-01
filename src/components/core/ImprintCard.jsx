@@ -2,7 +2,6 @@ export default function ImprintCard() {
   return (
     <div class="w-full">
       <h2 class="text-lg font-bold text-gray-800 mb-4">Impressumsangaben</h2>
-
       <div class="grid grid-cols-2 md:grid-cols-4 gap-y-3 gap-x-6 text-sm text-gray-700">
         <div>
           <span class="font-medium text-gray-800">Unternehmen:</span>
