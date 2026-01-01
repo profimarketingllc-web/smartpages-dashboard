@@ -42,9 +42,15 @@ try {
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <div id="dashboard-wrapper" class={authenticated ? "" : "hidden"}>
+  <!-- 🧭 Dashboard Inhalt -->
+  <div
+    id="dashboard-wrapper"
+    class={`transition-opacity duration-700 ease-in-out ${
+      authenticated ? "opacity-100" : "opacity-0 hidden"
+    }`}
+  >
 
-    <!-- 🧭 Kundendaten -->
+    <!-- Kundenkachel -->
     <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-0">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div class="w-full">
@@ -84,7 +90,7 @@ try {
       </div>
     </section>
 
-    <!-- 🧾 Impressumsangaben -->
+    <!-- Impressum -->
     <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-4">
       <h2 class="text-xl font-semibold mb-3 text-[#1E2A45]">Impressumsangaben</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-sm text-gray-700">
@@ -110,7 +116,7 @@ try {
       </div>
     </section>
 
-    <!-- 🧱 Produktkarten -->
+    <!-- Produktkarten -->
     <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-5 mt-4">
       <a href="/de/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
                 shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
@@ -140,7 +146,7 @@ try {
       </a>
     </section>
 
-    <!-- 📨 Feedback -->
+    <!-- Feedback -->
     <section class="max-w-6xl mx-auto mt-4 bg-[#f8f9fb] rounded-2xl p-5 text-center md:text-left shadow-md border border-gray-100 mb-8">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
@@ -160,14 +166,20 @@ try {
     </section>
   </div>
 
-  <!-- 🔄 Fallback-Screen -->
-  <div id="login-status" class={authenticated ? "hidden" : "max-w-4xl mx-auto mt-20 text-center"}>
-    <h2 class="text-2xl font-bold text-[#1E2A45]">Überprüfe deine Anmeldung …</h2>
+  <!-- Prüf-Screen -->
+  <div
+    id="login-status"
+    class="max-w-4xl mx-auto mt-20 text-center text-[#1E2A45] text-2xl font-bold transition-opacity duration-700 ease-in-out"
+  >
+    Überprüfe deine Anmeldung …
   </div>
 </PageLayout>
 
 <script>
 window.addEventListener("DOMContentLoaded", async () => {
+  const loginStatus = document.getElementById("login-status");
+  const dashboardWrapper = document.getElementById("dashboard-wrapper");
+
   try {
     const res = await fetch("https://api.smartpages.online/api/session", {
       method: "GET",
@@ -177,44 +189,32 @@ window.addEventListener("DOMContentLoaded", async () => {
     const data = await res.json();
 
     if (data.ok && data.authenticated) {
-      document.getElementById("login-status")?.classList.add("hidden");
-      document.getElementById("dashboard-wrapper")?.classList.remove("hidden");
+      loginStatus?.classList.add("opacity-0");
+      setTimeout(() => {
+        loginStatus?.classList.add("hidden");
+        dashboardWrapper?.classList.remove("hidden");
+        dashboardWrapper?.classList.add("opacity-100");
+      }, 700);
+    } else {
+      setTimeout(() => {
+        loginStatus?.classList.add("opacity-0");
+        setTimeout(() => {
+          loginStatus?.classList.add("hidden");
+          dashboardWrapper?.classList.remove("hidden");
+          dashboardWrapper?.classList.add("opacity-100");
+        }, 700);
+      }, 2000);
     }
-
-    const modal = document.getElementById("modal");
-    const openUser = document.getElementById("editUserBtn");
-    const openImprint = document.getElementById("editImprintBtn");
-    const cancelModal = document.getElementById("cancelModal");
-
-    openUser?.addEventListener("click", () => {
-      modal.classList.remove("hidden");
-      document.getElementById("modalTitle").innerText = "Kundendaten bearbeiten";
-    });
-
-    openImprint?.addEventListener("click", () => {
-      modal.classList.remove("hidden");
-      document.getElementById("modalTitle").innerText = "Impressum bearbeiten";
-    });
-
-    cancelModal?.addEventListener("click", () => {
-      modal.classList.add("hidden");
-    });
   } catch (e) {
     console.error("Session fetch failed:", e);
+    setTimeout(() => {
+      loginStatus?.classList.add("opacity-0");
+      setTimeout(() => {
+        loginStatus?.classList.add("hidden");
+        dashboardWrapper?.classList.remove("hidden");
+        dashboardWrapper?.classList.add("opacity-100");
+      }, 700);
+    }, 1500);
   }
 });
 </script>
-
-<style>
-section {
-  scroll-margin-top: 1.5rem;
-}
-section h2 { line-height: 1.2; }
-section p { line-height: 1.4; }
-.grid p { margin-bottom: 0.25rem; }
-section.max-w-6xl {
-  margin-top: 1rem !important;
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
-}
-</style>
