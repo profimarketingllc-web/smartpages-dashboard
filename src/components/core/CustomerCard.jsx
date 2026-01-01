@@ -1,103 +1,117 @@
-import { createSignal, onMount } from "solid-js";
+import { createSignal, onMount, Show } from "solid-js";
 
-export function CustomerCard() {
-  const [loading, setLoading] = createSignal(true);
+export default function CustomerCard() {
   const [user, setUser] = createSignal(null);
+  const [loading, setLoading] = createSignal(true);
   const [authorized, setAuthorized] = createSignal(false);
 
+  // 🔹 Datenabruf vom Worker
   onMount(async () => {
     try {
-      const res = await fetch("https://api.smartpages.online/api/user/profile", {
+      const response = await fetch("https://api.smartpages.online/api/user/profile", {
         credentials: "include",
-        headers: { Accept: "application/json" },
       });
 
-      if (!res.ok) throw new Error("unauthorized");
+      const data = await response.json();
 
-      const data = await res.json();
       if (data.ok && data.user) {
         setUser(data.user);
         setAuthorized(true);
+      } else {
+        setAuthorized(false);
       }
     } catch (err) {
-      console.warn("⚠️ Nicht autorisiert:", err.message);
+      console.error("Fehler beim Laden des Benutzerprofils:", err);
       setAuthorized(false);
     } finally {
       setLoading(false);
-      document.getElementById("loader").classList.add("hidden");
-      document.getElementById("dashboard-content").classList.remove("hidden");
     }
   });
 
+  // 🔹 Anzeigeformat für Datum
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "–";
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString("de-DE", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+      });
+    } catch {
+      return "–";
+    }
+  };
+
   return (
-    <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-3">
-      <Show when={!loading()} fallback={<p>Lade Kundendaten...</p>}>
-        <div class="flex justify-between items-center">
-          <h2 class="text-xl font-bold">
-            Willkommen zurück,{" "}
-            {authorized() && user()?.first_name
-              ? `${user().first_name} ${user().last_name || ""}`
-              : "Gast"}{" "}
-            👋
-          </h2>
-          <span
-            class={`px-4 py-1 rounded-full text-sm font-semibold ${
-              authorized() ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
-            }`}
-          >
-            {authorized() ? "Eingeloggt" : "Abgemeldet"}
-          </span>
-        </div>
-
-        <div class="grid grid-cols-2 gap-x-6 text-sm mt-2">
-          <p>
-            <strong>Name:</strong>{" "}
-            {user()?.first_name || user()?.last_name
-              ? `${user().first_name || ""} ${user().last_name || ""}`
-              : "—"}
-          </p>
-          <p>
-            <strong>Status:</strong> {user()?.status || "inactive"}
-          </p>
-          <p>
-            <strong>Plan:</strong> {user()?.plan || "—"}
-          </p>
-          <p>
-            <strong>Aktiv bis:</strong>{" "}
-            {user()?.trial_end ? new Date(user().trial_end).toLocaleDateString("de-DE") : "—"}
-          </p>
-          <p>
-            <strong>Letztes Login:</strong>{" "}
-            {user()?.last_login
-              ? new Date(user().last_login).toLocaleString("de-DE")
-              : "—"}
-          </p>
-        </div>
-
-        <div class="mt-4">
-          <button class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-5 py-2 rounded-xl shadow hover:scale-105 transition-transform">
-            Kundendaten bearbeiten
-          </button>
-        </div>
+    <div class="p-4 md:p-6">
+      <Show when={!loading()} fallback={<p class="text-center text-gray-600 font-medium">Anmeldung wird geprüft...</p>}>
+        <Show
+          when={authorized() && user()}
+          fallback={
+            <div class="flex justify-between items-center">
+              <div>
+                <h2 class="text-xl font-semibold text-gray-800">
+                  Willkommen zurück, Gast 👋
+                </h2>
+                <p class="text-sm text-gray-600 mt-1">
+                  Status: <span class="text-gray-400">inactive</span>
+                </p>
+              </div>
+              <div>
+                <span class="bg-red-200 text-red-800 px-4 py-1.5 rounded-full text-sm font-medium">
+                  Abgemeldet
+                </span>
+              </div>
+            </div>
+          }
+        >
+          {(user) => (
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+              <div>
+                <h2 class="text-xl font-semibold text-gray-800">
+                  Willkommen zurück, {user().first_name || "Gast"}{" "}
+                  {user().last_name || ""} 👋
+                </h2>
+                <div class="grid grid-cols-2 gap-x-6 gap-y-1 mt-2 text-sm text-gray-700">
+                  <p>
+                    <span class="font-medium text-gray-800">Plan:</span>{" "}
+                    {user().plan || "Trial"}
+                  </p>
+                  <p>
+                    <span class="font-medium text-gray-800">Status:</span>{" "}
+                    {user().status || "inactive"}
+                  </p>
+                  <p>
+                    <span class="font-medium text-gray-800">Aktiv bis:</span>{" "}
+                    {formatDate(user().trial_end)}
+                  </p>
+                  <p>
+                    <span class="font-medium text-gray-800">Letztes Login:</span>{" "}
+                    {formatDate(user().last_login)}
+                  </p>
+                </div>
+              </div>
+              <div class="mt-4 md:mt-0 flex items-center gap-3">
+                <span
+                  class={`${
+                    user().status === "active"
+                      ? "bg-green-200 text-green-800"
+                      : "bg-red-200 text-red-800"
+                  } px-4 py-1.5 rounded-full text-sm font-medium`}
+                >
+                  {user().status === "active" ? "Eingeloggt" : "Abgemeldet"}
+                </span>
+                <button
+                  class="px-5 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-medium shadow hover:opacity-90 transition"
+                >
+                  Kundendaten bearbeiten
+                </button>
+              </div>
+            </div>
+          )}
+        </Show>
       </Show>
     </div>
   );
 }
-
-<Show when={user()} fallback={
-  <div class="flex justify-between items-center">
-    <div>
-      <h2 class="text-xl font-semibold text-gray-800">
-        Willkommen zurück, Gast 👋
-      </h2>
-      <p class="text-sm text-gray-600 mt-1">Status: <span class="text-gray-400">inactive</span></p>
-    </div>
-    <div>
-      <span class="bg-red-200 text-red-800 px-4 py-1.5 rounded-full text-sm font-medium">
-        Abgemeldet
-      </span>
-    </div>
-  </div>
-}>
-
-export default CustomerCard;
