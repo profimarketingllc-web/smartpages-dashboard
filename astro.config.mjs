@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
+import solid from "@astrojs/solid-js"; // ✅ SolidJS-Integration hinzufügen
 import path from "path";
 
 export default defineConfig({
@@ -12,9 +13,11 @@ export default defineConfig({
     },
   },
   integrations: [
+    // ✅ SolidJS aktivieren (muss vor Tailwind stehen, damit Hydration korrekt läuft)
+    solid(),
     tailwind({
-      config: path.resolve("./tailwind.config.cjs"), // Plattformunabhängig (Windows/Linux)
-      applyBaseStyles: true,                         // aktiviert base + utilities
+      config: path.resolve("./tailwind.config.cjs"),
+      applyBaseStyles: true,
     }),
   ],
 });

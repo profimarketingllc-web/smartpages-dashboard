@@ -1,113 +1,62 @@
 ---
-import { onMount } from 'solid-js';
+import { createSignal, onMount, Show } from "solid-js";
+import { CustomerCard } from "../../components/CustomerCard.jsx";
 
-let loading = true;
-let userData = null;
-
-onMount(async () => {
-  const statusPill = document.querySelector('#status-pill');
-  const loader = document.querySelector('#loader-screen');
-  const dashboard = document.querySelector('#dashboard-content');
-
-  try {
-    const res = await fetch('/api/user/profile', {
-      method: 'GET',
-      credentials: 'include',
-      headers: { 'Accept': 'application/json' },
-    });
-
-    const data = await res.json();
-
-    if (data.ok && data.user) {
-      userData = data.user;
-
-      // Felder injizieren
-      document.querySelector('[data-name]').textContent =
-        `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || 'Gast';
-      document.querySelector('[data-plan]').textContent = userData.plan || '—';
-      document.querySelector('[data-status]').textContent = userData.status || 'inactive';
-      document.querySelector('[data-login]').textContent =
-        userData.last_login ? new Date(userData.last_login).toLocaleString() : '—';
-
-      // Status-Pill: Eingeloggt
-      statusPill.textContent = 'Eingeloggt';
-      statusPill.classList.remove('bg-red-200', 'text-red-700');
-      statusPill.classList.add('bg-green-200', 'text-green-700');
-    } else {
-      // Nicht autorisiert → Abgemeldet
-      throw new Error('unauthorized');
-    }
-  } catch (err) {
-    console.warn('User nicht autorisiert oder Fehler beim Abruf:', err);
-
-    // Leere Felder setzen
-    document.querySelectorAll('[data-value]').forEach((el) => (el.textContent = '—'));
-
-    // Status-Pill: Abgemeldet
-    statusPill.textContent = 'Abgemeldet';
-    statusPill.classList.remove('bg-green-200', 'text-green-700');
-    statusPill.classList.add('bg-red-200', 'text-red-700');
-  } finally {
-    // Loader ausblenden, Dashboard zeigen
-    loader.style.display = 'none';
-    dashboard.style.display = 'block';
-    loading = false;
-  }
-});
 ---
 
-<!-- Loader Screen -->
-<div id="loader-screen" class="flex flex-col items-center justify-center h-screen text-center">
-  <h2 class="text-xl font-semibold text-gray-800">Anmeldung wird geprüft...</h2>
-</div>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartPages Dashboard</title>
+  </head>
 
-<!-- Dashboard Content -->
-<div id="dashboard-content" class="hidden p-8 space-y-6">
+  <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+    <header class="bg-[#1b253b] text-white py-4 shadow-md">
+      <div class="container mx-auto flex items-center justify-between px-6">
+        <div class="flex items-center space-x-3">
+          <img src="/assets/logo.svg" alt="SmartPages Logo" class="w-8 h-8" />
+          <div>
+            <h1 class="text-xl font-bold">SmartPages</h1>
+            <p class="text-sm text-gray-300">
+              Wir bringen Dich in 10 Minuten online – ohne Technik Wissen
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
 
-  <!-- Header -->
-  <header class="flex items-center justify-between">
-    <h1 class="text-2xl font-bold text-gray-900">Willkommen zurück, <span data-name>Gast</span> 👋</h1>
-    <span id="status-pill" class="rounded-full px-3 py-1 text-sm bg-red-200 text-red-700">Abgemeldet</span>
-  </header>
+    <main class="flex flex-1">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-[#1b253b] text-white flex flex-col justify-between">
+        <nav class="flex flex-col space-y-3 p-4">
+          <a href="#" class="rounded-2xl px-4 py-3 bg-gradient-to-b from-yellow-400 to-orange-500 text-gray-900 font-semibold">Cockpit</a>
+          <a href="#" class="rounded-2xl px-4 py-3 bg-[#26334f] hover:bg-[#2e3d5c]">SmartProfile</a>
+          <a href="#" class="rounded-2xl px-4 py-3 bg-[#26334f] hover:bg-[#2e3d5c]">SmartPage</a>
+          <a href="#" class="rounded-2xl px-4 py-3 bg-[#26334f] hover:bg-[#2e3d5c]">SmartDomain</a>
+        </nav>
+        <div class="p-4">
+          <button class="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 py-2 px-4 text-white">
+            Nachricht an das Team
+          </button>
+        </div>
+      </aside>
 
-  <!-- Customer Card -->
-  <section class="bg-white rounded-2xl shadow p-6">
-    <h2 class="text-lg font-semibold text-gray-900 mb-4">Kundendaten</h2>
-    <div class="grid grid-cols-2 gap-y-2 text-sm text-gray-700">
-      <div>Name: <span data-value data-name="name">—</span></div>
-      <div>Plan: <span data-value data-plan>—</span></div>
-      <div>Status: <span data-value data-status>—</span></div>
-      <div>Letztes Login: <span data-value data-login>—</span></div>
-    </div>
-    <div class="mt-4 text-center">
-      <button id="editCustomerBtn" class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-5 py-2 rounded-xl shadow hover:opacity-90 transition">
-        Kundendaten bearbeiten
-      </button>
-    </div>
-  </section>
+      <!-- Hauptinhalt -->
+      <section class="flex-1 p-8">
+        <div id="loader" class="flex items-center justify-center h-64 text-xl font-semibold text-gray-700">
+          Anmeldung wird geprüft…
+        </div>
 
-  <!-- Impressum Card -->
-  <section class="bg-white rounded-2xl shadow p-6">
-    <h2 class="text-lg font-semibold text-gray-900 mb-4">Impressumsdaten</h2>
-    <div class="grid grid-cols-2 gap-y-2 text-sm text-gray-700">
-      <div>Unternehmen: <span data-value>—</span></div>
-      <div>Ansprechpartner: <span data-value>—</span></div>
-      <div>Zusatz: <span data-value>—</span></div>
-      <div>Straße & Hausnummer: <span data-value>—</span></div>
-      <div>PLZ / Ort: <span data-value>—</span></div>
-      <div>E-Mail (Support): <span data-value>—</span></div>
-      <div>USt-ID: <span data-value>—</span></div>
-    </div>
-    <div class="mt-4 text-center">
-      <button id="editImpressumBtn" class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-5 py-2 rounded-xl shadow hover:opacity-90 transition">
-        Impressum bearbeiten
-      </button>
-    </div>
-  </section>
+        <div id="dashboard-content" class="hidden space-y-6">
+          <CustomerCard client:load />
+          <!-- <ImpressumCard client:load /> -->
+        </div>
+      </section>
+    </main>
 
-  <!-- Footer -->
-  <footer class="text-center text-sm text-gray-500 mt-10">
-    © 2026 SmartPages · Hosted in Europe · GDPR-compliant
-  </footer>
-
-</div>
+    <footer class="text-center text-gray-500 text-sm py-6">
+      © 2025 SmartPages · Hosted in Europe · DSGVO-konform
+    </footer>
+  </body>
+</html>
