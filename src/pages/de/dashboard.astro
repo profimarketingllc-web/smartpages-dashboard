@@ -1,80 +1,88 @@
 ---
 import SmartHeader from "@/components/core/SmartHeader.astro";
 import SmartSidebar from "@/components/core/SmartSidebar.astro";
-import DashboardCardWide from "@/components/core/DashboardCardWide.astro";
 import ProductCardGrid from "@/components/core/ProductCardGrid.astro";
+import DashboardCardWide from "@/components/core/DashboardCardWide.astro";
 import CustomerCard from "@/components/core/CustomerCard.jsx";
+
+const pageTitle = "Dashboard – SmartPages";
 ---
 
 <html lang="de">
-  <body class="bg-[#f9fafb] text-gray-900 font-sans">
-    <!-- HEADER -->
+  <head>
+    <meta charset="utf-8" />
+    <title>{pageTitle}</title>
+  </head>
+
+  <body class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
+    <!-- 🔹 Header -->
     <SmartHeader />
 
-    <div class="flex min-h-screen relative">
-      <!-- SIDEBAR -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- 🔹 Sidebar -->
       <SmartSidebar />
 
-      <!-- MAIN CONTENT -->
-      <main
-        class="flex-1 ml-[260px] lg:ml-[260px] md:ml-[220px] sm:ml-0 transition-all p-8 space-y-8 overflow-x-hidden bg-[#f9fafb]"
-      >
-        <!-- 🟦 Kundendaten (Solid in Astro-Wrapper) -->
+      <!-- 🔹 Hauptinhalt -->
+      <main class="flex-1 flex flex-col p-6 md:p-10 space-y-6 overflow-y-auto">
+        <!-- 🧩 Customer Info (Solid-Komponente) -->
         <DashboardCardWide>
           <CustomerCard client:load />
         </DashboardCardWide>
 
-        <!-- 🟩 Impressum -->
+        <!-- 🧾 Impressumsdaten -->
         <DashboardCardWide>
-          <h2 class="text-lg font-semibold text-gray-800 mb-2">
-            Impressumsdaten
-          </h2>
-          <div class="grid grid-cols-2 gap-x-6 text-sm">
-            <div>
-              <p><span class="font-medium">Unternehmen:</span> –</p>
-              <p><span class="font-medium">Adresse:</span> –</p>
-              <p><span class="font-medium">Land:</span> Deutschland</p>
+          <div class="p-4 md:p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">
+              Impressumsdaten
+            </h2>
+            <p class="text-gray-600">
+              Unternehmen: – <br />
+              Ansprechpartner: – <br />
+              Adresse: – <br />
+              PLZ / Ort: – <br />
+              E-Mail (Support): – <br />
+              USt-ID: –
+            </p>
+            <div class="mt-4">
+              <button
+                class="px-5 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-medium shadow hover:opacity-90 transition"
+              >
+                Impressum bearbeiten
+              </button>
             </div>
-            <div>
-              <p><span class="font-medium">Ansprechpartner:</span> –</p>
-              <p><span class="font-medium">PLZ / Ort:</span> –</p>
-              <p><span class="font-medium">E-Mail (Support):</span> unbekannt</p>
-              <p><span class="font-medium">USt-ID:</span> –</p>
-            </div>
-          </div>
-          <div class="mt-4 text-right">
-            <button
-              class="px-5 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-medium shadow hover:opacity-90 transition"
-            >
-              Impressum bearbeiten
-            </button>
           </div>
         </DashboardCardWide>
 
-        <!-- 🟨 Product Grid -->
+        <!-- 💡 Produktübersicht -->
         <DashboardCardWide>
           <ProductCardGrid />
         </DashboardCardWide>
 
-        <!-- 🟪 Feedback -->
+        <!-- 💬 Feedbackbereich -->
         <DashboardCardWide>
-          <div class="flex flex-col items-center text-center space-y-4 py-6">
-            <p class="text-gray-700 text-sm">
-              Hast du Feedback oder Fragen? Unser Team hilft dir gerne weiter.
+          <div class="text-center py-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">
+              Feedback geben
+            </h3>
+            <p class="text-gray-600 mb-4">
+              Hilf uns, SmartPages noch besser zu machen! Teile dein Feedback mit unserem Team.
             </p>
-            <button
-              class="px-6 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow hover:opacity-90 transition"
+            <a
+              href="mailto:support@smartpages.online"
+              class="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium shadow hover:opacity-90 transition"
             >
               Nachricht an das Team
-            </button>
+            </a>
           </div>
         </DashboardCardWide>
       </main>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="text-center text-xs text-gray-500 py-6 border-t mt-10">
-      © 2025 SmartPages · Hosted in Europe · GDPR-compliant
+    <!-- 🔹 Footer -->
+    <footer
+      class="bg-gray-50 text-gray-500 text-center py-4 text-sm border-t border-gray-200"
+    >
+      © 2026 SmartPages · Hosted in Europe · GDPR-compliant
     </footer>
   </body>
 </html>
