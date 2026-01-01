@@ -4,25 +4,28 @@ import SmartSidebar from "@/components/core/SmartSidebar.astro";
 import DashboardCardWide from "@/components/core/DashboardCardWide.astro";
 import ProductCardGrid from "@/components/core/ProductCardGrid.astro";
 
-// Solid-Komponente (übernimmt komplette obere Kachel)
+// Solid-Komponente für Kundendaten
 import CustomerCard from "@/components/core/CustomerCard.jsx";
 ---
 
 <html lang="de">
   <body class="bg-[#f9fafb] text-gray-900 font-sans">
-    <!-- Header -->
+    <!-- HEADER -->
     <SmartHeader />
 
     <div class="flex min-h-screen">
-      <!-- Sidebar -->
+      <!-- SIDEBAR -->
       <SmartSidebar />
 
-      <!-- Hauptbereich -->
-      <main class="flex-1 p-8 space-y-8 overflow-x-hidden">
-        <!-- SolidJS-Komponente (komplette Kachel) -->
-        <CustomerCard client:load />
+      <!-- MAIN CONTENT -->
+      <main class="flex-1 p-8 space-y-8 overflow-x-hidden bg-[#f9fafb]">
+        
+        <!-- 🟦 KUNDENDATEN-KACHEL (SolidJS) -->
+        <div class="rounded-3xl bg-white shadow-lg border border-gray-100 p-8">
+          <CustomerCard client:load />
+        </div>
 
-        <!-- Impressumsdaten -->
+        <!-- 🟩 IMPRESSUMSDATEN -->
         <DashboardCardWide>
           <h2 class="text-lg font-semibold text-gray-800 mb-2">
             Impressumsdaten
@@ -49,12 +52,12 @@ import CustomerCard from "@/components/core/CustomerCard.jsx";
           </div>
         </DashboardCardWide>
 
-        <!-- Produkt-Upsell -->
+        <!-- 🟨 PRODUKT-UPSSELL (Product Grid) -->
         <DashboardCardWide>
           <ProductCardGrid />
         </DashboardCardWide>
 
-        <!-- Feedback -->
+        <!-- 🟪 FEEDBACK-KACHEL -->
         <DashboardCardWide>
           <div class="flex flex-col items-center text-center space-y-4 py-6">
             <p class="text-gray-700 text-sm">
@@ -70,7 +73,7 @@ import CustomerCard from "@/components/core/CustomerCard.jsx";
       </main>
     </div>
 
-    <!-- Footer -->
+    <!-- FOOTER -->
     <footer class="text-center text-xs text-gray-500 py-6 border-t mt-10">
       © 2025 SmartPages · Hosted in Europe · GDPR-compliant
     </footer>
