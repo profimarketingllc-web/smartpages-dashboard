@@ -1,116 +1,101 @@
 import { createSignal, onMount, Show } from "solid-js";
 
-export default function CustomerCard() {
-  const [user, setUser] = createSignal(null);
-  const [loading, setLoading] = createSignal(true);
-  const [authorized, setAuthorized] = createSignal(false);
+/**
+ * CustomerCard.jsx
+ * ---------------
+ * Vollständiges Replacement für die Dashboard-Kundenkarte.
+ * Zeigt dynamisch den Status (angemeldet / abgemeldet) an
+ * und lädt automatisch Kundendaten, falls Token vorhanden ist.
+ * Funktioniert auch als Fallback ohne gültige Session.
+ */
 
-  // 🔹 Datenabruf vom Worker
-  onMount(async () => {
+export default function CustomerCard() {
+  // Lokale States für Benutzer- und Authentifizierungsstatus
+  const [user, setUser] = createSignal(null);
+  const [status, setStatus] = createSignal("checking"); // "checking" | "unauthorized" | "active"
+
+  // Prüft Authentifizierung über Core Worker
+  async function checkAuth() {
     try {
-      const response = await fetch("https://api.smartpages.online/api/user/profile", {
+      const res = await fetch("/api/auth/start", {
         credentials: "include",
       });
 
-      const data = await response.json();
+      // Kein gültiger Token vorhanden
+      if (res.status === 401) {
+        setStatus("unauthorized");
+        return;
+      }
 
-      if (data.ok && data.user) {
+      // Gültige Antwort
+      const data = await res.json();
+
+      if (res.ok && data.ok && data.user) {
         setUser(data.user);
-        setAuthorized(true);
+        setStatus("active");
       } else {
-        setAuthorized(false);
+        setStatus("unauthorized");
       }
     } catch (err) {
-      console.error("Fehler beim Laden des Benutzerprofils:", err);
-      setAuthorized(false);
-    } finally {
-      setLoading(false);
+      console.warn("Auth check failed:", err);
+      setStatus("unauthorized");
     }
-  });
+  }
 
-  // 🔹 Anzeigeformat für Datum
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "–";
-    try {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString("de-DE", {
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-      });
-    } catch {
-      return "–";
-    }
-  };
+  // Läuft beim Laden der Komponente automatisch
+  onMount(checkAuth);
 
   return (
-    <div class="p-4 md:p-6">
-      <Show when={!loading()} fallback={<p class="text-center text-gray-600 font-medium">Anmeldung wird geprüft...</p>}>
-        <Show
-          when={authorized() && user()}
-          fallback={
-            <div class="flex justify-between items-center">
-              <div>
-                <h2 class="text-xl font-semibold text-gray-800">
-                  Willkommen zurück, Gast 👋
-                </h2>
-                <p class="text-sm text-gray-600 mt-1">
-                  Status: <span class="text-gray-400">inactive</span>
-                </p>
-              </div>
-              <div>
-                <span class="bg-red-200 text-red-800 px-4 py-1.5 rounded-full text-sm font-medium">
-                  Abgemeldet
-                </span>
-              </div>
-            </div>
-          }
-        >
-          {(user) => (
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-              <div>
-                <h2 class="text-xl font-semibold text-gray-800">
-                  Willkommen zurück, {user().first_name || "Gast"}{" "}
-                  {user().last_name || ""} 👋
-                </h2>
-                <div class="grid grid-cols-2 gap-x-6 gap-y-1 mt-2 text-sm text-gray-700">
-                  <p>
-                    <span class="font-medium text-gray-800">Plan:</span>{" "}
-                    {user().plan || "Trial"}
-                  </p>
-                  <p>
-                    <span class="font-medium text-gray-800">Status:</span>{" "}
-                    {user().status || "inactive"}
-                  </p>
-                  <p>
-                    <span class="font-medium text-gray-800">Aktiv bis:</span>{" "}
-                    {formatDate(user().trial_end)}
-                  </p>
-                  <p>
-                    <span class="font-medium text-gray-800">Letztes Login:</span>{" "}
-                    {formatDate(user().last_login)}
-                  </p>
-                </div>
-              </div>
-              <div class="mt-4 md:mt-0 flex items-center gap-3">
-                <span
-                  class={`${
-                    user().status === "active"
-                      ? "bg-green-200 text-green-800"
-                      : "bg-red-200 text-red-800"
-                  } px-4 py-1.5 rounded-full text-sm font-medium`}
-                >
-                  {user().status === "active" ? "Eingeloggt" : "Abgemeldet"}
-                </span>
-                <button
-                  class="px-5 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-medium shadow hover:opacity-90 transition"
-                >
-                  Kundendaten bearbeiten
-                </button>
-              </div>
-            </div>
-          )}
-        </Show>
+    <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between transition-all duration-300">
+      {/* Status: Prüfen */}
+      <Show when={status() === "checking"}>
+        <div class="flex items-center gap-3 text-gray-500">
+          <div class="animate-spin h-6 w-6 border-2 border-blue-400 rounded-full border-t-transparent" />
+          <span>Prüfe Anmeldestatus…</span>
+        </div>
+      </Show>
+
+      {/* Status: Nicht angemeldet */}
+      <Show when={status() === "unauthorized"}>
+        <div class="flex justify-between w-full items-center">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-800">
+              Willkommen, Gast 👋
+            </h2>
+            <p class="text-sm text-gray-600 mt-1">
+              Du bist aktuell nicht angemeldet.
+            </p>
+          </div>
+          <span class="px-4 py-1 rounded-full bg-red-100 text-red-700 font-medium text-sm shadow-sm">
+            Abgemeldet
+          </span>
+        </div>
+      </Show>
+
+      {/* Status: Angemeldet */}
+      <Show when={status() === "active" && user()}>
+        <div class="flex justify-between w-full items-center">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-800">
+              Willkommen zurück, {user().first_name} {user().last_name} 👋
+            </h2>
+            <p class="text-sm text-gray-600 mt-1">
+              Status:{" "}
+              <strong class="text-green-700">
+                {user().status || "active"}
+              </strong>{" "}
+              · Aktiv bis:{" "}
+              <strong>
+                {user().trial_end
+                  ? new Date(user().trial_end).toLocaleDateString("de-DE")
+                  : "—"}
+              </strong>
+            </p>
+          </div>
+          <span class="px-4 py-1 rounded-full bg-green-100 text-green-700 font-medium text-sm shadow-sm">
+            Angemeldet
+          </span>
+        </div>
       </Show>
     </div>
   );

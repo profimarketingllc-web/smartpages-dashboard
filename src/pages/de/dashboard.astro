@@ -4,25 +4,6 @@ import SmartSidebar from "@/components/core/SmartSidebar.astro";
 import ProductCardGrid from "@/components/core/ProductCardGrid.astro";
 import DashboardCardWide from "@/components/core/DashboardCardWide.astro";
 import CustomerCard from "@/components/core/CustomerCard.jsx";
-
-let user = null;
-let isLoading = true;
-let isAuthorized = false;
-
-try {
-  const res = await fetch("https://api.smartpages.online/api/user/profile", {
-    headers: Astro.request.headers,
-  });
-
-  if (res.ok) {
-    const data = await res.json();
-    user = data.user;
-    isAuthorized = true;
-  }
-} catch (e) {
-  isAuthorized = false;
-}
-isLoading = false;
 ---
 
 <html lang="de">
@@ -38,61 +19,38 @@ isLoading = false;
       <SmartSidebar />
 
       <main class="flex-1 flex flex-col p-6 md:p-10 space-y-6 overflow-y-auto">
-        {isLoading ? (
-          <div class="flex flex-col items-center justify-center h-64 text-gray-600">
-            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
-            <p>In Prüfung…</p>
+        <!-- 🔹 CustomerCard zeigt automatisch den korrekten Zustand -->
+        <DashboardCardWide>
+          <CustomerCard client:load />
+        </DashboardCardWide>
+
+        <!-- 🔹 ImpressumCard bleibt leer -->
+        <DashboardCardWide>
+          <div class="p-6 text-gray-400 italic">Noch keine Daten vorhanden.</div>
+        </DashboardCardWide>
+
+        <!-- 🔹 ProductGrid bleibt sichtbar -->
+        <DashboardCardWide>
+          <ProductCardGrid />
+        </DashboardCardWide>
+
+        <!-- 🔹 FeedbackCard bleibt sichtbar -->
+        <DashboardCardWide>
+          <div class="text-center py-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">
+              Feedback geben
+            </h3>
+            <p class="text-gray-600 mb-4">
+              Hilf uns, SmartPages noch besser zu machen!
+            </p>
+            <a
+              href="mailto:support@smartpages.online"
+              class="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium shadow hover:opacity-90 transition"
+            >
+              Nachricht senden
+            </a>
           </div>
-        ) : (
-          <>
-            <!-- 🧩 Customer Info -->
-            <DashboardCardWide>
-              <CustomerCard client:load />
-            </DashboardCardWide>
-
-            <!-- 🧾 Impressum -->
-            <DashboardCardWide>
-              <div class="p-4 md:p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-2">
-                  Impressumsdaten
-                </h2>
-                {isAuthorized ? (
-                  <p class="text-gray-600">
-                    Unternehmen: {user.company_name ?? "—"} <br />
-                    Ansprechpartner: {user.first_name ?? "—"} {user.last_name ?? ""} <br />
-                    Status: {user.status ?? "—"} <br />
-                    Aktiv bis: {user.trial_end ?? "—"}
-                  </p>
-                ) : (
-                  <p class="text-gray-400 italic">Nicht verfügbar (Abgemeldet)</p>
-                )}
-              </div>
-            </DashboardCardWide>
-
-            <!-- 💡 Produktübersicht -->
-            <DashboardCardWide>
-              <ProductCardGrid />
-            </DashboardCardWide>
-
-            <!-- 💬 Feedback -->
-            <DashboardCardWide>
-              <div class="text-center py-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">
-                  Feedback geben
-                </h3>
-                <p class="text-gray-600 mb-4">
-                  Hilf uns, SmartPages noch besser zu machen! Teile dein Feedback mit unserem Team.
-                </p>
-                <a
-                  href="mailto:support@smartpages.online"
-                  class="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium shadow hover:opacity-90 transition"
-                >
-                  Nachricht an das Team
-                </a>
-              </div>
-            </DashboardCardWide>
-          </>
-        )}
+        </DashboardCardWide>
       </main>
     </div>
 
