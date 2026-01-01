@@ -5,13 +5,14 @@ import ImprintCard from "@/components/core/ImprintCard.jsx";
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <div id="dashboard-wrapper" class="space-y-6">
+  <div id="dashboard-wrapper" class="relative space-y-6">
 
-    <!-- 🕓 Kompakte Statusanzeige -->
+    <!-- 🕓 Pop-up Statusanzeige -->
     <div
       id="login-status"
-      class="max-w-md mx-auto mt-6 flex items-center justify-center rounded-2xl
-             bg-[#E47E7E] text-white text-lg font-semibold shadow-md h-14 animate-pulse"
+      class="absolute left-1/2 transform -translate-x-1/2 top-10
+             bg-[#E47E7E] text-white text-base font-semibold px-6 py-3
+             rounded-2xl shadow-lg opacity-0 pointer-events-none transition-opacity duration-700 z-50"
     >
       Prüfe Anmeldung...
     </div>
@@ -77,6 +78,14 @@ import ImprintCard from "@/components/core/ImprintCard.jsx";
 
   <script>
     window.addEventListener("DOMContentLoaded", async () => {
+      const statusEl = document.getElementById("login-status");
+      if (!statusEl) return;
+
+      // Zeige Popup (sanft)
+      setTimeout(() => {
+        statusEl.classList.add("opacity-100");
+      }, 200);
+
       try {
         const res = await fetch("https://api.smartpages.online/api/session", {
           method: "GET",
@@ -85,44 +94,27 @@ import ImprintCard from "@/components/core/ImprintCard.jsx";
         });
         const data = await res.json();
 
-        const statusEl = document.getElementById("login-status");
-
         if (data.ok && data.authenticated) {
-          statusEl.classList.add("hidden");
-        } else {
-          // Zeige "Prüfe Anmeldung..." 2 Sekunden, dann Dashboard ohne Daten
+          // Erfolgreiche Anmeldung: sofort ausblenden
           setTimeout(() => {
-            statusEl.classList.add("hidden");
+            statusEl.classList.remove("opacity-100");
+          }, 1000);
+        } else {
+          // Kein Token -> nach 2 Sekunden ausblenden
+          setTimeout(() => {
+            statusEl.classList.remove("opacity-100");
           }, 2000);
         }
       } catch (e) {
         console.error("Session fetch failed:", e);
         setTimeout(() => {
-          document.getElementById("login-status").classList.add("hidden");
+          statusEl.classList.remove("opacity-100");
         }, 2000);
       }
     });
   </script>
 
   <style>
-    section {
-      scroll-margin-top: 1.5rem;
-    }
-    section h2 {
-      line-height: 1.2;
-    }
-    section p {
-      line-height: 1.4;
-    }
-    .grid p {
-      margin-bottom: 0.25rem;
-    }
-    section.max-w-6xl {
-      margin-top: 1rem !important;
-      padding-top: 1.25rem;
-      padding-bottom: 1.25rem;
-    }
-
     /* Einheitliches Placeholder-Design */
     .placeholder {
       background-color: rgb(209 213 219); /* Tailwind gray-300 */
