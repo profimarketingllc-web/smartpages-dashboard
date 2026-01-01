@@ -13,49 +13,40 @@ import CustomerCard from "@/components/core/CustomerCard.jsx";
   </head>
 
   <body class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
-    <!-- Kopfzeile -->
+    <!-- Header -->
     <SmartHeader />
 
-    <!-- Hauptbereich -->
+    <!-- Hauptlayout -->
     <div class="flex flex-1 overflow-hidden">
       <!-- Sidebar -->
       <SmartSidebar />
 
-      <!-- Contentbereich -->
-      <main
-        class="flex-1 flex flex-col p-6 md:p-10 space-y-6 overflow-y-auto bg-gray-50"
-      >
-        <!-- 1️⃣ Kundenkarte (SolidJS integriert) -->
+      <!-- Content -->
+      <main class="flex-1 flex flex-col px-8 py-6 space-y-8 overflow-y-auto bg-gray-50">
+        <!-- 1️⃣ CustomerCard mit SolidJS -->
         <DashboardCardWide>
           <CustomerCard client:load />
         </DashboardCardWide>
 
-        <!-- 2️⃣ Impressumskarte -->
-        <DashboardCardWide>
-          <div class="p-6 text-gray-500 italic">
-            Noch keine Impressumsdaten vorhanden.
-          </div>
-        </DashboardCardWide>
-
-        <!-- 3️⃣ Produktübersicht -->
+        <!-- 2️⃣ ProductGrid (statisch) -->
         <DashboardCardWide>
           <ProductCardGrid />
         </DashboardCardWide>
 
-        <!-- 4️⃣ Feedback -->
+        <!-- 3️⃣ Feedback-Karte -->
         <DashboardCardWide>
-          <div class="text-center py-6">
+          <div class="text-center py-8">
             <h3 class="text-lg font-semibold text-gray-800 mb-2">
-              Dein Feedback zählt!
+              Dein Feedback hilft uns weiter
             </h3>
             <p class="text-gray-600 mb-4">
-              Hilf uns, SmartPages weiter zu verbessern.
+              Teile Fehler, Ideen oder Vorschläge – damit wir SmartPages stetig verbessern können.
             </p>
             <a
               href="mailto:support@smartpages.online"
-              class="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium shadow hover:opacity-90 transition"
+              class="px-5 py-2 rounded-xl bg-red-500 text-white font-medium shadow hover:bg-red-600 transition"
             >
-              Nachricht senden
+              Feedback senden
             </a>
           </div>
         </DashboardCardWide>
@@ -63,9 +54,7 @@ import CustomerCard from "@/components/core/CustomerCard.jsx";
     </div>
 
     <!-- Footer -->
-    <footer
-      class="bg-gray-50 text-gray-500 text-center py-4 text-sm border-t border-gray-200 mt-auto"
-    >
+    <footer class="bg-gray-50 text-gray-500 text-center py-4 text-sm border-t border-gray-200 mt-auto">
       © 2026 SmartPages · Hosted in Europe · DSGVO-konform
     </footer>
   </body>
