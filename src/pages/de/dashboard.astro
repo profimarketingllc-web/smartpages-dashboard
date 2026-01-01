@@ -1,61 +1,220 @@
 ---
-import SmartHeader from "@/components/core/SmartHeader.astro";
-import SmartSidebar from "@/components/core/SmartSidebar.astro";
-import DashboardCardWide from "@/components/core/DashboardCardWide.astro";
-import ProductCardGrid from "@/components/core/ProductCardGrid.astro";
-import CustomerCard from "@/components/core/CustomerCard.jsx";
+import PageLayout from "~/layouts/PageLayout.astro";
+import "~/styles/global.css";
+
+let user = {
+  name: "Gastbenutzer",
+  email: "unbekannt",
+  status: "Kostenlos",
+  plan: "—",
+  activeUntil: "—",
+  lastLogin: "—",
+};
+let authenticated = false;
+
+try {
+  const cookie = Astro.request.headers.get("cookie") || "";
+  if (cookie.includes("session=")) {
+    const res = await fetch("https://api.smartpages.online/api/session", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Cookie: cookie,
+      },
+      credentials: "include",
+    });
+    const data = await res.json();
+    if (data.ok && data.authenticated) {
+      authenticated = true;
+      user = {
+        name: data.user?.first_name || "Benutzer",
+        email: data.user?.email || "unbekannt",
+        status: "Aktiv",
+        plan: "Trial (7 Tage)",
+        activeUntil: "15. Jan. 2026",
+        lastLogin: new Date().toLocaleString("de-DE"),
+      };
+    }
+  }
+} catch (err) {
+  console.warn("Server-seitige Sitzungsprüfung fehlgeschlagen:", err);
+}
 ---
 
-<html lang="de">
-  <head>
-    <meta charset="utf-8" />
-    <title>SmartPages Dashboard</title>
-  </head>
+<PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
+  <div id="dashboard-wrapper" class={authenticated ? "" : "hidden"}>
 
-  <body class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
-    <!-- Header -->
-    <SmartHeader />
-
-    <!-- Hauptlayout -->
-    <div class="flex flex-1 overflow-hidden">
-      <!-- Sidebar -->
-      <SmartSidebar />
-
-      <!-- Content -->
-      <main class="flex-1 flex flex-col px-8 py-6 space-y-8 overflow-y-auto bg-gray-50">
-        <!-- 1️⃣ CustomerCard mit SolidJS -->
-        <DashboardCardWide>
-          <CustomerCard client:load />
-        </DashboardCardWide>
-
-        <!-- 2️⃣ ProductGrid (statisch) -->
-        <DashboardCardWide>
-          <ProductCardGrid />
-        </DashboardCardWide>
-
-        <!-- 3️⃣ Feedback-Karte -->
-        <DashboardCardWide>
-          <div class="text-center py-8">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">
-              Dein Feedback hilft uns weiter
-            </h3>
-            <p class="text-gray-600 mb-4">
-              Teile Fehler, Ideen oder Vorschläge – damit wir SmartPages stetig verbessern können.
-            </p>
-            <a
-              href="mailto:support@smartpages.online"
-              class="px-5 py-2 rounded-xl bg-red-500 text-white font-medium shadow hover:bg-red-600 transition"
-            >
-              Feedback senden
-            </a>
+    <!-- 🧭 Kundendaten -->
+    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-0">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div class="w-full">
+          <h2 class="text-2xl font-bold mb-3">Willkommen zurück, {user.name} 👋</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-2 text-sm text-gray-700">
+            <p><span class="font-semibold">Name:</span> {user.name}</p>
+            <p><span class="font-semibold">E-Mail:</span> {user.email}</p>
+            <p><span class="font-semibold">Status:</span> {user.status}</p>
+            <p><span class="font-semibold">Plan:</span> {user.plan}</p>
+            <p><span class="font-semibold">Aktiv bis:</span> {user.activeUntil}</p>
+            <p><span class="font-semibold">Letzter Login:</span> {user.lastLogin}</p>
           </div>
-        </DashboardCardWide>
-      </main>
-    </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-50 text-gray-500 text-center py-4 text-sm border-t border-gray-200 mt-auto">
-      © 2026 SmartPages · Hosted in Europe · DSGVO-konform
-    </footer>
-  </body>
-</html>
+          <div class="flex justify-center mt-3">
+            <button
+              id="editUserBtn"
+              class="px-6 py-2 text-white rounded-xl shadow-md font-medium 
+                     bg-gradient-to-r from-[#F5B400] to-[#E47E00]
+                     hover:opacity-90 transition-all duration-300"
+            >
+              Kundendaten bearbeiten
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-3 md:mt-0 md:ml-6">
+          <span
+            class={`inline-block px-4 py-1 text-sm rounded-full border font-medium min-w-[110px] text-center ${
+              authenticated
+                ? "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]"
+                : "bg-[#F6C1C1] text-[#7A1F1F] border-[#E9A0A0]"
+            }`}
+          >
+            {authenticated ? "Eingeloggt" : "Abgemeldet"}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 🧾 Impressumsangaben -->
+    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-4">
+      <h2 class="text-xl font-semibold mb-3 text-[#1E2A45]">Impressumsangaben</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-sm text-gray-700">
+        <p><span class="font-semibold">Firma:</span> {user.company || "–"}</p>
+        <p><span class="font-semibold">Ansprechpartner:</span> {user.contact_name || "–"}</p>
+        <p><span class="font-semibold">Adresse:</span> {user.address || "–"}</p>
+        <p><span class="font-semibold">PLZ / Ort:</span> {user.zip || "–"} {user.city || ""}</p>
+        <p><span class="font-semibold">Land:</span> {user.country || "Deutschland"}</p>
+        <p><span class="font-semibold">Support-E-Mail:</span> {user.support_email || user.email}</p>
+        <p><span class="font-semibold">Telefon:</span> {user.phone || "–"}</p>
+        <p><span class="font-semibold">USt-ID:</span> {user.vat_id || "–"}</p>
+      </div>
+
+      <div class="flex justify-center mt-4">
+        <button
+          id="editImprintBtn"
+          class="px-6 py-2 text-white rounded-xl shadow-md font-medium 
+                 bg-gradient-to-r from-[#F5B400] to-[#E47E00]
+                 hover:opacity-90 transition-all duration-300"
+        >
+          Impressum bearbeiten
+        </button>
+      </div>
+    </section>
+
+    <!-- 🧱 Produktkarten -->
+    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-5 mt-4">
+      <a href="/de/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
+                shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+                hover:shadow-[0_0_25px_rgba(78,107,255,0.6)] hover:scale-[1.02]">
+        <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
+        <p class="text-sm">
+          Erstelle dein persönliches Profil mit wenigen Klicks – ideal für Freelancer, Coaches und Unternehmer.
+        </p>
+      </a>
+
+      <a href="/de/smartpage" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
+                shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+                hover:shadow-[0_0_25px_rgba(245,180,0,0.6)] hover:scale-[1.02]">
+        <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
+        <p class="text-sm">
+          Erstelle beeindruckende, konversionsstarke Seiten in Minuten – einfach, schnell und professionell.
+        </p>
+      </a>
+
+      <a href="/de/smartdomain" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
+                shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
+                hover:shadow-[0_0_25px_rgba(139,92,255,0.6)] hover:scale-[1.02]">
+        <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
+        <p class="text-sm">
+          Sichere deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
+        </p>
+      </a>
+    </section>
+
+    <!-- 📨 Feedback -->
+    <section class="max-w-6xl mx-auto mt-4 bg-[#f8f9fb] rounded-2xl p-5 text-center md:text-left shadow-md border border-gray-100 mb-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Dein Feedback hilft uns weiter</h3>
+          <p class="text-sm text-gray-600">
+            Teile Fehler, Ideen oder Vorschläge – damit wir SmartPages stetig verbessern können.
+          </p>
+        </div>
+        <a
+          href="/de/feedback"
+          class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
+                 transition-all duration-300 shadow-md whitespace-nowrap"
+        >
+          Feedback senden
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <!-- 🔄 Fallback-Screen -->
+  <div id="login-status" class={authenticated ? "hidden" : "max-w-4xl mx-auto mt-20 text-center"}>
+    <h2 class="text-2xl font-bold text-[#1E2A45]">Überprüfe deine Anmeldung …</h2>
+  </div>
+</PageLayout>
+
+<script>
+window.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const res = await fetch("https://api.smartpages.online/api/session", {
+      method: "GET",
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    });
+    const data = await res.json();
+
+    if (data.ok && data.authenticated) {
+      document.getElementById("login-status")?.classList.add("hidden");
+      document.getElementById("dashboard-wrapper")?.classList.remove("hidden");
+    }
+
+    const modal = document.getElementById("modal");
+    const openUser = document.getElementById("editUserBtn");
+    const openImprint = document.getElementById("editImprintBtn");
+    const cancelModal = document.getElementById("cancelModal");
+
+    openUser?.addEventListener("click", () => {
+      modal.classList.remove("hidden");
+      document.getElementById("modalTitle").innerText = "Kundendaten bearbeiten";
+    });
+
+    openImprint?.addEventListener("click", () => {
+      modal.classList.remove("hidden");
+      document.getElementById("modalTitle").innerText = "Impressum bearbeiten";
+    });
+
+    cancelModal?.addEventListener("click", () => {
+      modal.classList.add("hidden");
+    });
+  } catch (e) {
+    console.error("Session fetch failed:", e);
+  }
+});
+</script>
+
+<style>
+section {
+  scroll-margin-top: 1.5rem;
+}
+section h2 { line-height: 1.2; }
+section p { line-height: 1.4; }
+.grid p { margin-bottom: 0.25rem; }
+section.max-w-6xl {
+  margin-top: 1rem !important;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+</style>
