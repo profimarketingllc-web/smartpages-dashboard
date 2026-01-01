@@ -8,24 +8,28 @@ import { createSignal, onMount } from "solid-js";
 
 const [showAuthPopup, setShowAuthPopup] = createSignal(true);
 
+// Popup verschwindet nach 2 Sekunden oder sobald Auth abgeschlossen ist
 onMount(() => {
-  setTimeout(() => setShowAuthPopup(false), 2000);
+  const timer = setTimeout(() => setShowAuthPopup(false), 2000);
+  return () => clearTimeout(timer);
 });
 ---
 
-<PageLayout title="Dashboard" headerOffset="compact">
-  <!-- 🔔 Popup Anmeldung -->
+<PageLayout title="Dashboard">
+  <!-- 🔐 Popup Anmeldung -->
   {showAuthPopup() && (
     <div
-      class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50
-             bg-[#E53935] text-white text-center px-6 py-3 rounded-xl shadow-lg
-             w-[90%] max-w-md border border-red-700/40">
-      🔐 Prüfe Anmeldung...
+      class="fixed top-28 left-1/2 transform -translate-x-1/2 z-50
+             bg-[#E57373] text-white text-center px-6 py-3 rounded-2xl shadow-md
+             border border-red-400/50 text-sm font-semibold w-[90%] max-w-md">
+      Prüfe Anmeldung...
     </div>
   )}
 
   <!-- 🧭 Benutzerinformationen -->
-  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 mt-20">
+  <section
+    class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 mt-20 px-4"
+  >
     <DashboardCardWide>
       <CustomerCard client:only="solid" />
     </DashboardCardWide>
@@ -41,20 +45,20 @@ onMount(() => {
       products={[
         {
           title: "SmartProfile",
-          label: "Erstelle dein Profil",
-          text: "Erstelle dein professionelles Profil in wenigen Klicks – ideal für Freelancer und Unternehmer.",
+          label: "",
+          text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
           gradient: "from-[#4E6BFF] to-[#657AFF]",
         },
         {
           title: "SmartPage",
-          label: "Erstelle deine Seite",
-          text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – schnell und professionell.",
+          label: "",
+          text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
           gradient: "from-[#F5B400] to-[#E47E00]",
         },
         {
           title: "SmartDomain",
-          label: "Sichere deine Domain",
-          text: "Sichere dir deine eigene Domain direkt in SmartPages – professionell und DSGVO-konform.",
+          label: "",
+          text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
           gradient: "from-[#8B5CFF] to-[#A076FF]",
         },
       ]}
@@ -63,7 +67,7 @@ onMount(() => {
 
   <!-- 💬 Feedback -->
   <div class="text-center mt-10 mb-6 text-gray-600 text-sm">
-    📬 Feedback? Schreib uns an 
+    📬 Dein Feedback hilft uns, SmartPages zu verbessern —
     <a
       href="mailto:support@smartpages.online"
       class="text-[#4F6EF7] underline hover:text-[#2D46B9]"
