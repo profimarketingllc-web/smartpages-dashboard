@@ -1,70 +1,58 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
-import "~/styles/global.css";
 import CustomerCard from "@/components/core/CustomerCard.jsx";
 import ImprintCard from "@/components/core/ImprintCard.jsx";
+
+let authenticated = false;
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <!-- 🌐 Dashboard Wrapper -->
-  <div id="dashboard-wrapper" class="hidden fade-in">
-    <CustomerCard client:load />
-    <ImprintCard client:load />
+  <div id="dashboard-wrapper" class="space-y-6">
 
-    <!-- 🧱 Produkt-Kacheln -->
-    <section
-      class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-5 mt-6"
-    >
-      <a
-        href="/de/smartprofile"
-        class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
+    <!-- 🧩 Solid-Komponenten -->
+    <CustomerCard client:only="solid-js" />
+    <ImprintCard client:only="solid-js" />
+
+    <!-- 🧱 Product Grid -->
+    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-5 mt-4">
+      <a href="/de/smartprofile" 
+         class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
                 shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_0_25px_rgba(78,107,255,0.6)] hover:scale-[1.02]"
-      >
+                hover:shadow-[0_0_25px_rgba(78,107,255,0.6)] hover:scale-[1.02]">
         <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
         <p class="text-sm">
-          Erstellen Sie Ihr professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.
+          Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.
         </p>
       </a>
 
-      <a
-        href="/de/smartpage"
-        class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
+      <a href="/de/smartpage" 
+         class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
                 shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_0_25px_rgba(245,180,0,0.6)] hover:scale-[1.02]"
-      >
+                hover:shadow-[0_0_25px_rgba(245,180,0,0.6)] hover:scale-[1.02]">
         <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
         <p class="text-sm">
-          Erstellen Sie beeindruckende, conversion-optimierte Seiten – einfach, schnell und professionell.
+          Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.
         </p>
       </a>
 
-      <a
-        href="/de/smartdomain"
-        class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
+      <a href="/de/smartdomain" 
+         class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
                 shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-                hover:shadow-[0_0_25px_rgba(139,92,255,0.6)] hover:scale-[1.02]"
-      >
+                hover:shadow-[0_0_25px_rgba(139,92,255,0.6)] hover:scale-[1.02]">
         <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
         <p class="text-sm">
-          Sichern Sie Ihre eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
+          Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.
         </p>
       </a>
     </section>
 
-    <!-- 💬 Feedback-Karte -->
-    <section
-      class="max-w-6xl mx-auto mt-4 bg-[#f8f9fb] rounded-2xl p-5 text-center md:text-left shadow-md border border-gray-100 mb-8"
-    >
-      <div
-        class="flex flex-col md:flex-row items-center justify-between gap-4"
-      >
+    <!-- 💬 Feedback -->
+    <section class="max-w-6xl mx-auto mt-4 bg-[#f8f9fb] rounded-2xl p-5 text-center md:text-left shadow-md border border-gray-100 mb-8">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
-          <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">
-            Ihr Feedback hilft uns, SmartPages zu verbessern
-          </h3>
+          <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Dein Feedback hilft uns, besser zu werden</h3>
           <p class="text-sm text-gray-600">
-            Teilen Sie Fehler, Ideen oder Vorschläge – helfen Sie uns, SmartPages noch besser zu machen.
+            Teile Fehler, Ideen oder Vorschläge – hilf uns, SmartPages noch besser zu machen.
           </p>
         </div>
         <a
@@ -78,57 +66,59 @@ import ImprintCard from "@/components/core/ImprintCard.jsx";
     </section>
   </div>
 
-  <!-- ⏳ Fallback „Prüfung läuft“ -->
-  <div id="login-status" class="max-w-4xl mx-auto mt-20 text-center fade-in">
-    <h2 class="text-2xl font-bold text-[#1E2A45]">Anmeldung wird geprüft...</h2>
+  <!-- 🕓 Statusanzeige bei fehlendem Token -->
+  <div id="login-status" class="max-w-4xl mx-auto mt-20 text-center">
+    <h2 class="text-2xl font-bold text-[#1E2A45] animate-pulse">Prüfe Anmeldung...</h2>
   </div>
 
-  <!-- ⚙️ Deutscher Footer -->
-  <footer
-    class="w-full text-center text-gray-600 py-6 border-t border-gray-200 text-sm bg-gray-50"
-  >
-    © 2026 SmartPages · Gehostet in Europa · DSGVO-konform
-  </footer>
-</PageLayout>
+  <script>
+    window.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const res = await fetch("https://api.smartpages.online/api/session", {
+          method: "GET",
+          credentials: "include",
+          headers: { "Accept": "application/json" },
+        });
+        const data = await res.json();
 
-<!-- 🧠 Script: Authentifizierung + Animation -->
-<script>
-window.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const res = await fetch("https://api.smartpages.online/api/session", {
-      method: "GET",
-      credentials: "include",
-      headers: { Accept: "application/json" },
+        // Wenn der Nutzer eingeloggt ist
+        if (data.ok && data.authenticated) {
+          document.getElementById("login-status")?.classList.add("hidden");
+          document.getElementById("dashboard-wrapper")?.classList.remove("hidden");
+        } else {
+          // Wenn kein Token da ist → nach 2 Sekunden abgemeldet anzeigen
+          setTimeout(() => {
+            document.getElementById("login-status").classList.add("hidden");
+            document.getElementById("dashboard-wrapper").classList.remove("hidden");
+          }, 2000);
+        }
+      } catch (e) {
+        console.error("Session fetch failed:", e);
+        setTimeout(() => {
+          document.getElementById("login-status").classList.add("hidden");
+          document.getElementById("dashboard-wrapper").classList.remove("hidden");
+        }, 2000);
+      }
     });
-    const data = await res.json();
+  </script>
 
-    // Wenn der User eingeloggt ist → Dashboard anzeigen
-    if (data.ok && data.authenticated) {
-      document.getElementById("login-status")?.classList.add("hidden");
-      document.getElementById("dashboard-wrapper")?.classList.remove("hidden");
-    } else {
-      // Nach kurzer Zeit zur "Abgemeldet"-Ansicht wechseln
-      setTimeout(() => {
-        document.getElementById("login-status").innerHTML =
-          '<h2 class="text-2xl font-bold text-[#1E2A45]">Nicht angemeldet</h2>';
-      }, 2000);
+  <style>
+    section {
+      scroll-margin-top: 1.5rem;
     }
-  } catch (e) {
-    console.error("Session fetch failed:", e);
-  }
-});
-</script>
-
-<style>
-.fade-in {
-  animation: fadeIn 0.8s ease-in-out;
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-</style>
+    section h2 {
+      line-height: 1.2;
+    }
+    section p {
+      line-height: 1.4;
+    }
+    .grid p {
+      margin-bottom: 0.25rem;
+    }
+    section.max-w-6xl {
+      margin-top: 1rem !important;
+      padding-top: 1.25rem;
+      padding-bottom: 1.25rem;
+    }
+  </style>
+</PageLayout>
