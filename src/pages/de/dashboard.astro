@@ -4,46 +4,13 @@ import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
 import CustomerCard from "~/components/core/CustomerCard.jsx";
 import ImprintCard from "~/components/core/ImprintCard.jsx";
 import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
-import { createSignal, onMount } from "solid-js";
-
-// SolidJS: Popup-Steuerung
-const [showPopup, setShowPopup] = createSignal(true);
-
-onMount(() => {
-  const timer = setTimeout(() => setShowPopup(false), 2000);
-  return () => clearTimeout(timer);
-});
-
-const products = [
-  {
-    title: "SmartProfile",
-    text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
-    gradient: "from-[#4E6BFF] to-[#657AFF]",
-    glow: "shadow-[0_0_25px_#4E6BFF60]",
-  },
-  {
-    title: "SmartPage",
-    text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
-    gradient: "from-[#F5B400] to-[#E47E00]",
-    glow: "shadow-[0_0_25px_#E47E0060]",
-  },
-  {
-    title: "SmartDomain",
-    text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
-    gradient: "from-[#8B5CFF] to-[#A076FF]",
-    glow: "shadow-[0_0_25px_#8B5CFF60]",
-  },
-];
+import AuthPopup from "~/components/core/AuthPopup.jsx"; // ✅ Popup ausgelagert
 ---
 
 <PageLayout title="Dashboard">
-  <!-- Popup -->
-  {showPopup() && (
-    <div
-      class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-[#E57373] text-white text-center px-6 py-2.5 rounded-2xl shadow-md text-sm font-semibold z-50">
-      Prüfe Anmeldung...
-    </div>
-  )}
+
+  <!-- ✅ Auth Popup (verschwindet automatisch nach 2 Sekunden) -->
+  <AuthPopup client:only="solid" />
 
   <main class="flex flex-col gap-10 max-w-6xl mx-auto px-6 mt-20 mb-20">
     <!-- Kundendaten -->
@@ -58,7 +25,28 @@ const products = [
 
     <!-- Produkte -->
     <DashboardCardWide>
-      <ProductCardGrid products={products} />
+      <ProductCardGrid
+        products={[
+          {
+            title: "SmartProfile",
+            text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
+            gradient: "from-[#4E6BFF] to-[#657AFF]",
+            glow: "shadow-[0_0_25px_#4E6BFF60]",
+          },
+          {
+            title: "SmartPage",
+            text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
+            gradient: "from-[#F5B400] to-[#E47E00]",
+            glow: "shadow-[0_0_25px_#E47E0060]",
+          },
+          {
+            title: "SmartDomain",
+            text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
+            gradient: "from-[#8B5CFF] to-[#A076FF]",
+            glow: "shadow-[0_0_25px_#8B5CFF60]",
+          },
+        ]}
+      />
     </DashboardCardWide>
 
     <!-- Feedback -->
