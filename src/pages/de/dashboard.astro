@@ -1,59 +1,97 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
-import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
-import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
-import CustomerCard from "~/components/core/CustomerCard";
-import ImprintCard from "~/components/core/ImprintCard";
+import DashboardCardWide from "~/components/astro/DashboardCardWide.astro";
+import CustomerCard from "~/components/solid/CustomerCard";
+import ImprintCard from "~/components/solid/ImprintCard";
+import ProductCardGrid from "~/components/astro/ProductCardGrid.astro";
 
-const isChecking = true; // Platzhalter für Tokenprüfung
+const products = [
+  {
+    title: "SmartPage",
+    label: "Deine persönliche Landingpage",
+    text: "Schnell, einfach, professionell — in 10 Minuten online.",
+    gradient: "from-[#F5B400] to-[#E47E00]",
+  },
+  {
+    title: "SmartDomain",
+    label: "Deine eigene Webadresse",
+    text: "Sichere dir deine Wunschdomain und bleibe im Gedächtnis.",
+    gradient: "from-[#8B5CFF] to-[#A076FF]",
+  },
+  {
+    title: "SmartProfile",
+    label: "Online-Visitenkarte",
+    text: "Mach dein Business sichtbar — überall und jederzeit.",
+    gradient: "from-[#4E6BFF] to-[#657AFF]",
+  },
+];
 ---
 
-<PageLayout title="SmartPages Dashboard" lang="de">
-  <div class="relative flex flex-col gap-8 w-full max-w-6xl mx-auto">
+<PageLayout title="Dashboard" headerOffset="compact">
+  <!-- 🔹 Status-Popup -->
+  <div
+    id="authStatus"
+    class="hidden fixed top-24 left-1/2 -translate-x-1/2 
+           bg-[#E53E3E] text-white text-center px-6 py-3 rounded-2xl 
+           shadow-lg z-50 w-[300px] font-semibold"
+  >
+    🔄 Anmeldung wird geprüft ...
+  </div>
 
-    <!-- 🔹 Popup (zentriert über CustomerCard) -->
-    {isChecking && (
-      <div
-        class="absolute left-1/2 top-12 transform -translate-x-1/2 
-               bg-[#E7A7A2] text-white text-center font-semibold py-3 px-6 
-               rounded-2xl shadow-md z-50"
-      >
-        Prüfe Anmeldung...
-      </div>
-    )}
-
-    <!-- 🔹 Kundendaten -->
+  <!-- 🔹 Dashboard-Bereich -->
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
     <DashboardCardWide>
       <CustomerCard client:only="solid" />
     </DashboardCardWide>
 
-    <!-- 🔹 Impressumsdaten -->
     <DashboardCardWide>
       <ImprintCard client:only="solid" />
     </DashboardCardWide>
+  </section>
 
-    <!-- 🔹 Produktübersicht -->
-    <ProductCardGrid />
+  <!-- 🔹 Produktübersicht -->
+  <DashboardCardWide>
+    <ProductCardGrid products={products} />
+  </DashboardCardWide>
 
-    <!-- 🔹 Feedback-Kachel -->
-    <div
-      class="flex justify-between items-center p-6 bg-white rounded-2xl shadow-md 
-             border border-gray-100 mt-4"
-    >
-      <div>
-        <h3 class="text-lg font-semibold text-gray-800">
-          Dein Feedback hilft uns, besser zu werden
-        </h3>
-        <p class="text-sm text-gray-600">
-          Teile Fehler, Ideen oder Vorschläge – hilf uns, SmartPages noch besser zu machen.
-        </p>
-      </div>
-      <button
-        class="px-5 py-3 bg-[#C86B67] text-white font-medium rounded-xl 
-               shadow hover:bg-[#b85a56] transition"
-      >
-        Feedback senden
-      </button>
-    </div>
+  <!-- 🔹 Feedback-Zeile -->
+  <div class="text-center mt-10 mb-6 text-gray-600 text-sm">
+    📬 Feedback? Schreib uns an{" "}
+    <a href="mailto:support@smartpages.online" class="text-[#4F6EF7] underline hover:text-[#2D46B9]">
+      support@smartpages.online
+    </a>
   </div>
+
+  <!-- 🔹 Footer -->
+  <footer class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-white/80 backdrop-blur-sm">
+    © {new Date().getFullYear()} SmartPages · Hosted in Europe · DSGVO-konform
+  </footer>
+
+  <script>
+    // 🔐 Popup-Logik mit Auth-Check
+    const popup = document.getElementById("authStatus");
+
+    function showAuthPopup() {
+      popup.classList.remove("hidden");
+      let authComplete = false;
+
+      // Simulation: Warte auf Auth oder Timeout
+      setTimeout(() => {
+        if (!authComplete) hideAuthPopup();
+      }, 2000);
+
+      // Beispiel: hier könnte ein echter Check stehen
+      window.addEventListener("auth:done", () => {
+        authComplete = true;
+        hideAuthPopup();
+      });
+    }
+
+    function hideAuthPopup() {
+      popup.classList.add("hidden");
+    }
+
+    // Direkt beim Seitenstart anzeigen
+    showAuthPopup();
+  </script>
 </PageLayout>
