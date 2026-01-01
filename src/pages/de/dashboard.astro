@@ -1,39 +1,81 @@
 ---
-const pathname = Astro.url.pathname.toLowerCase();
-const isEnglish = pathname.startsWith("/en/");
+import PageLayout from "~/components/core/PageLayout.astro";
+import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
+import CustomerCard from "~/components/core/CustomerCard.jsx";
+import ImprintCard from "~/components/core/ImprintCard.jsx";
+import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
+import { createSignal, onMount } from "solid-js";
 
-const title = "SmartPages";
-const subtitle = isEnglish
-  ? "Go online in just 10 minutes — privacy-first and GDPR compliant."
-  : "Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen";
+const [showAuthPopup, setShowAuthPopup] = createSignal(true);
+
+onMount(() => {
+  setTimeout(() => setShowAuthPopup(false), 2000);
+});
 ---
 
-<header
-  class="w-full bg-[#1E2A45] text-white shadow-md z-50 md:sticky md:top-0 transition-all duration-300"
->
-  <div
-    class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 py-4 md:py-5 px-4 text-center"
-  >
-    <!-- Logo -->
-    <img
-      src="/SmartPages_icon_transparent.png"
-      alt="SmartPages Logo"
-      class="h-14 md:h-20 w-auto transition-all duration-300"
-      loading="lazy"
-    />
-
-    <!-- Textbereich -->
-    <div class="leading-tight md:ml-3">
-      <h1
-        class="text-[1.75rem] md:text-[2rem] font-extrabold tracking-tight leading-snug mb-0 text-center md:text-left"
-      >
-        {title}
-      </h1>
-      <p
-        class="text-base md:text-lg text-gray-200 font-medium mt-0 text-center md:text-left"
-      >
-        {subtitle}
-      </p>
+<PageLayout title="Dashboard" headerOffset="compact">
+  <!-- 🔔 Popup Anmeldung -->
+  {showAuthPopup() && (
+    <div
+      class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50
+             bg-[#E53935] text-white text-center px-6 py-3 rounded-xl shadow-lg
+             w-[90%] max-w-md border border-red-700/40">
+      🔐 Prüfe Anmeldung...
     </div>
+  )}
+
+  <!-- 🧭 Benutzerinformationen -->
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 mt-20">
+    <DashboardCardWide>
+      <CustomerCard client:only="solid" />
+    </DashboardCardWide>
+
+    <DashboardCardWide>
+      <ImprintCard client:only="solid" />
+    </DashboardCardWide>
+  </section>
+
+  <!-- 🧩 Produktübersicht -->
+  <DashboardCardWide>
+    <ProductCardGrid
+      products={[
+        {
+          title: "SmartProfile",
+          label: "Erstelle dein Profil",
+          text: "Erstelle dein professionelles Profil in wenigen Klicks – ideal für Freelancer und Unternehmer.",
+          gradient: "from-[#4E6BFF] to-[#657AFF]",
+        },
+        {
+          title: "SmartPage",
+          label: "Erstelle deine Seite",
+          text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – schnell und professionell.",
+          gradient: "from-[#F5B400] to-[#E47E00]",
+        },
+        {
+          title: "SmartDomain",
+          label: "Sichere deine Domain",
+          text: "Sichere dir deine eigene Domain direkt in SmartPages – professionell und DSGVO-konform.",
+          gradient: "from-[#8B5CFF] to-[#A076FF]",
+        },
+      ]}
+    />
+  </DashboardCardWide>
+
+  <!-- 💬 Feedback -->
+  <div class="text-center mt-10 mb-6 text-gray-600 text-sm">
+    📬 Feedback? Schreib uns an 
+    <a
+      href="mailto:support@smartpages.online"
+      class="text-[#4F6EF7] underline hover:text-[#2D46B9]"
+    >
+      support@smartpages.online
+    </a>
   </div>
-</header>
+
+  <!-- ⚙️ Footer -->
+  <footer
+    class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-white/80 backdrop-blur-sm"
+  >
+    © {new Date().getFullYear()} SmartPages · Gehostet in Europa · DSGVO-konform
+  </footer>
+</PageLayout>
