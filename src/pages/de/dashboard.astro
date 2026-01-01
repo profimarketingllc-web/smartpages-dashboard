@@ -1,61 +1,66 @@
 ---
-import { createSignal, onMount, Show } from "solid-js";
+import SmartHeader from "@/components/core/SmartHeader.astro";
+import SmartSidebar from "@/components/core/SmartSidebar.astro";
+import DashboardCardWide from "@/components/core/DashboardCardWide.astro";
+import ProductCardGrid from "@/components/core/ProductCardGrid.astro";
+import FeedbackCard from "@/components/core/FeedbackCard.astro";
+
+// Solid-Komponente für Kundendaten
 import CustomerCard from "@/components/core/CustomerCard.jsx";
 ---
 
 <html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SmartPages Dashboard</title>
-  </head>
+  <body class="bg-[#f9fafb] text-gray-900 font-sans">
+    <!-- Header -->
+    <SmartHeader />
 
-  <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
-    <header class="bg-[#1b253b] text-white py-4 shadow-md">
-      <div class="container mx-auto flex items-center justify-between px-6">
-        <div class="flex items-center space-x-3">
-          <img src="/assets/logo.svg" alt="SmartPages Logo" class="w-8 h-8" />
-          <div>
-            <h1 class="text-xl font-bold">SmartPages</h1>
-            <p class="text-sm text-gray-300">
-              Wir bringen Dich in 10 Minuten online – ohne Technik Wissen
-            </p>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <main class="flex flex-1">
+    <div class="flex min-h-screen">
       <!-- Sidebar -->
-      <aside class="w-64 bg-[#1b253b] text-white flex flex-col justify-between">
-        <nav class="flex flex-col space-y-3 p-4">
-          <a href="#" class="rounded-2xl px-4 py-3 bg-gradient-to-b from-yellow-400 to-orange-500 text-gray-900 font-semibold">Cockpit</a>
-          <a href="#" class="rounded-2xl px-4 py-3 bg-[#26334f] hover:bg-[#2e3d5c]">SmartProfile</a>
-          <a href="#" class="rounded-2xl px-4 py-3 bg-[#26334f] hover:bg-[#2e3d5c]">SmartPage</a>
-          <a href="#" class="rounded-2xl px-4 py-3 bg-[#26334f] hover:bg-[#2e3d5c]">SmartDomain</a>
-        </nav>
-        <div class="p-4">
-          <button class="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 py-2 px-4 text-white">
-            Nachricht an das Team
-          </button>
-        </div>
-      </aside>
+      <SmartSidebar />
 
-      <!-- Hauptinhalt -->
-      <section class="flex-1 p-8">
-        <div id="loader" class="flex items-center justify-center h-64 text-xl font-semibold text-gray-700">
-          Anmeldung wird geprüft…
-        </div>
-
-        <div id="dashboard-content" class="hidden space-y-6">
+      <!-- Main Content -->
+      <main class="flex-1 p-8 space-y-8 overflow-x-hidden">
+        <!-- Kundendaten (SolidJS integriert) -->
+        <DashboardCardWide>
           <CustomerCard client:load />
-          <!-- <ImpressumCard client:load /> -->
-        </div>
-      </section>
-    </main>
+        </DashboardCardWide>
 
-    <footer class="text-center text-gray-500 text-sm py-6">
-      © 2025 SmartPages · Hosted in Europe · DSGVO-konform
+        <!-- Impressumsdaten (noch statisch, später SolidJS Stufe 2) -->
+        <DashboardCardWide>
+          <h2 class="text-lg font-semibold text-gray-800 mb-2">Impressumsdaten</h2>
+          <div class="grid grid-cols-2 gap-x-6 text-sm">
+            <div>
+              <p><span class="font-medium">Unternehmen:</span> –</p>
+              <p><span class="font-medium">Adresse:</span> –</p>
+              <p><span class="font-medium">Land:</span> Deutschland</p>
+            </div>
+            <div>
+              <p><span class="font-medium">Ansprechpartner:</span> –</p>
+              <p><span class="font-medium">PLZ / Ort:</span> –</p>
+              <p><span class="font-medium">E-Mail (Support):</span> unbekannt</p>
+              <p><span class="font-medium">USt-ID:</span> –</p>
+            </div>
+          </div>
+          <div class="mt-4 text-right">
+            <button
+              class="px-5 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-medium shadow hover:opacity-90 transition"
+            >
+              Impressum bearbeiten
+            </button>
+          </div>
+        </DashboardCardWide>
+
+        <!-- Produkt-Upsell (statisch, wie bisher) -->
+        <ProductCardGrid />
+
+        <!-- Feedback-Sektion -->
+        <FeedbackCard />
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-gray-500 py-6 border-t mt-10">
+      © 2025 SmartPages · Hosted in Europe · GDPR-compliant
     </footer>
   </body>
 </html>
