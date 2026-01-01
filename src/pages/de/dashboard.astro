@@ -9,11 +9,18 @@ let authenticated = false;
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
   <div id="dashboard-wrapper" class="space-y-6">
 
+    <!-- 🕓 Statusanzeige -->
+    <div id="login-status" class="max-w-6xl mx-auto text-center mt-6 mb-2">
+      <h2 class="text-2xl font-bold text-[#1E2A45] animate-pulse">
+        Prüfe Anmeldung...
+      </h2>
+    </div>
+
     <!-- 🧩 Solid-Komponenten -->
     <CustomerCard client:only="solid-js" />
     <ImprintCard client:only="solid-js" />
 
-    <!-- 🧱 Product Grid -->
+    <!-- 🧱 Produkt-Bereich -->
     <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-5 mt-4">
       <a href="/de/smartprofile" 
          class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
@@ -50,7 +57,9 @@ let authenticated = false;
     <section class="max-w-6xl mx-auto mt-4 bg-[#f8f9fb] rounded-2xl p-5 text-center md:text-left shadow-md border border-gray-100 mb-8">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
-          <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Dein Feedback hilft uns, besser zu werden</h3>
+          <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">
+            Dein Feedback hilft uns, besser zu werden
+          </h3>
           <p class="text-sm text-gray-600">
             Teile Fehler, Ideen oder Vorschläge – hilf uns, SmartPages noch besser zu machen.
           </p>
@@ -66,11 +75,6 @@ let authenticated = false;
     </section>
   </div>
 
-  <!-- 🕓 Statusanzeige bei fehlendem Token -->
-  <div id="login-status" class="max-w-4xl mx-auto mt-20 text-center">
-    <h2 class="text-2xl font-bold text-[#1E2A45] animate-pulse">Prüfe Anmeldung...</h2>
-  </div>
-
   <script>
     window.addEventListener("DOMContentLoaded", async () => {
       try {
@@ -81,12 +85,10 @@ let authenticated = false;
         });
         const data = await res.json();
 
-        // Wenn der Nutzer eingeloggt ist
         if (data.ok && data.authenticated) {
           document.getElementById("login-status")?.classList.add("hidden");
           document.getElementById("dashboard-wrapper")?.classList.remove("hidden");
         } else {
-          // Wenn kein Token da ist → nach 2 Sekunden abgemeldet anzeigen
           setTimeout(() => {
             document.getElementById("login-status").classList.add("hidden");
             document.getElementById("dashboard-wrapper").classList.remove("hidden");
@@ -119,6 +121,17 @@ let authenticated = false;
       margin-top: 1rem !important;
       padding-top: 1.25rem;
       padding-bottom: 1.25rem;
+    }
+
+    /* Einheitliches Placeholder-Design */
+    .placeholder {
+      display: inline-block;
+      background-color: rgba(229, 231, 235, 0.8); /* Tailwind gray-200/80 */
+      border-radius: 0.5rem;
+      padding: 0.2rem 0.75rem;
+      color: transparent;
+      user-select: none;
+      min-width: 5rem;
     }
   </style>
 </PageLayout>
