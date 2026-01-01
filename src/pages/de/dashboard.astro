@@ -1,83 +1,59 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
-import CustomerCard from "~/components/core/CustomerCard.jsx";
-import ImprintCard from "~/components/core/ImprintCard.jsx";
 import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
-import { onMount } from "solid-js";
-import { createSignal } from "solid-js";
+import CustomerCard from "~/components/core/CustomerCard";
+import ImprintCard from "~/components/core/ImprintCard";
 
-const [showAuthPopup, setShowAuthPopup] = createSignal(true);
-
-// Popup nach Auth-Ende oder nach 2 Sekunden ausblenden
-onMount(() => {
-  setTimeout(() => setShowAuthPopup(false), 2000);
-});
+const isChecking = true; // Platzhalter für Tokenprüfung
 ---
 
-<PageLayout title="Dashboard" headerOffset="compact">
-  <!-- 🔔 Auth Popup -->
-  {showAuthPopup() && (
-    <div
-      class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50
-             bg-[#E53935] text-white text-center px-6 py-3 rounded-xl shadow-lg
-             w-[90%] max-w-md border border-red-700/40">
-      🔐 Wir prüfen gerade deine Anmeldung...
-    </div>
-  )}
+<PageLayout title="SmartPages Dashboard" lang="de">
+  <div class="relative flex flex-col gap-8 w-full max-w-6xl mx-auto">
 
-  <!-- 🧭 Benutzerinformationen -->
-  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 mt-20">
+    <!-- 🔹 Popup (zentriert über CustomerCard) -->
+    {isChecking && (
+      <div
+        class="absolute left-1/2 top-12 transform -translate-x-1/2 
+               bg-[#E7A7A2] text-white text-center font-semibold py-3 px-6 
+               rounded-2xl shadow-md z-50"
+      >
+        Prüfe Anmeldung...
+      </div>
+    )}
+
+    <!-- 🔹 Kundendaten -->
     <DashboardCardWide>
       <CustomerCard client:only="solid" />
     </DashboardCardWide>
 
+    <!-- 🔹 Impressumsdaten -->
     <DashboardCardWide>
       <ImprintCard client:only="solid" />
     </DashboardCardWide>
-  </section>
 
-  <!-- 🧩 Produktübersicht -->
-  <DashboardCardWide>
-    <ProductCardGrid
-      products={[
-        {
-          title: "SmartPage",
-          label: "Deine persönliche Landingpage",
-          text: "Schnell, einfach, professionell – in 10 Minuten online.",
-          gradient: "from-[#F5B400] to-[#E47E00]",
-        },
-        {
-          title: "SmartDomain",
-          label: "Deine eigene Webadresse",
-          text: "Sichere dir deine Wunschdomain und bleibe im Gedächtnis.",
-          gradient: "from-[#8B5CFF] to-[#A076FF]",
-        },
-        {
-          title: "SmartProfile",
-          label: "Online-Visitenkarte",
-          text: "Mach dein Business sichtbar – überall und jederzeit.",
-          gradient: "from-[#4E6BFF] to-[#657AFF]",
-        },
-      ]}
-    />
-  </DashboardCardWide>
+    <!-- 🔹 Produktübersicht -->
+    <ProductCardGrid />
 
-  <!-- 💬 Feedback -->
-  <div class="text-center mt-10 mb-6 text-gray-600 text-sm">
-    📬 Feedback? Schreib uns an 
-    <a
-      href="mailto:support@smartpages.online"
-      class="text-[#4F6EF7] underline hover:text-[#2D46B9]"
+    <!-- 🔹 Feedback-Kachel -->
+    <div
+      class="flex justify-between items-center p-6 bg-white rounded-2xl shadow-md 
+             border border-gray-100 mt-4"
     >
-      support@smartpages.online
-    </a>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-800">
+          Dein Feedback hilft uns, besser zu werden
+        </h3>
+        <p class="text-sm text-gray-600">
+          Teile Fehler, Ideen oder Vorschläge – hilf uns, SmartPages noch besser zu machen.
+        </p>
+      </div>
+      <button
+        class="px-5 py-3 bg-[#C86B67] text-white font-medium rounded-xl 
+               shadow hover:bg-[#b85a56] transition"
+      >
+        Feedback senden
+      </button>
+    </div>
   </div>
-
-  <!-- ⚙️ Footer -->
-  <footer
-    class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-white/80 backdrop-blur-sm"
-  >
-    © {new Date().getFullYear()} SmartPages · Hosted in Europe · DSGVO-konform
-  </footer>
 </PageLayout>
