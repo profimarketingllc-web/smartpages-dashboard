@@ -3,15 +3,17 @@ import "~/styles/global.css";
 import SmartHeader from "~/components/core/SmartHeader.astro";
 import SmartSidebar from "~/components/core/SmartSidebar.astro";
 
+// Props, die du beim Einbinden übergeben kannst (Standardwerte inklusive)
 const {
   sidebar = true,
   header = true,
   sticky = true,
   headerOffset = "compact",
-  lang = "de",
+  lang = "de", // "de" oder "en"
   title = "SmartPages",
 } = Astro.props;
 
+// Layout-Logik für Abstände & Sticky Header
 const headerOffsetClass = headerOffset === "compact" ? "mt-6" : "mt-24";
 const stickyClass = sticky ? "sticky top-0 z-50" : "";
 ---
@@ -20,21 +22,23 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title || "SmartPages"}</title>
+    <title>{title}</title>
 
-    <!-- 🌐 Meta + SEO -->
+    <!-- 🌐 SEO & Meta -->
     <meta name="robots" content="noindex, nofollow" />
     <meta
       name="description"
-      content="SmartPages Dashboard — privacy-first and GDPR compliant."
+      content={
+        lang === "de"
+          ? "SmartPages Dashboard — DSGVO-konform und sicher."
+          : "SmartPages Dashboard — GDPR compliant and secure."
+      }
     />
     <meta name="theme-color" content="#1E2A45" />
 
     <!-- 🧩 Favicon -->
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
     <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png?v=2" />
-
-    <!-- ✅ Global Styles über Astro-Import (kein 404 mehr) -->
   </head>
 
   <body class="min-h-screen flex font-sans text-smart-text bg-smart-surface antialiased">
@@ -42,17 +46,17 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
       sidebar ? (
         <>
           <!-- 🧭 Sidebar -->
-          <SmartSidebar client:load collapsible />
+          <SmartSidebar collapsible />
 
-          <!-- Hauptinhalt -->
+          <!-- 🧱 Hauptinhalt -->
           <div class="flex-1 flex flex-col transition-all duration-300 md:ml-64 bg-white">
             {header && (
               <div class={stickyClass}>
-                <SmartHeader client:load />
+                <SmartHeader />
               </div>
             )}
 
-            <!-- 🧱 Seiteninhalt -->
+            <!-- Seiteninhalt -->
             <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
               <slot />
             </main>
@@ -61,7 +65,11 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
             <footer
               class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-white/80 backdrop-blur-sm"
             >
-              © {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant
+              {lang === "de" ? (
+                <>© {new Date().getFullYear()} SmartPages · Gehostet in Europa · DSGVO-konform</>
+              ) : (
+                <>© {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant</>
+              )}
             </footer>
           </div>
         </>
@@ -70,7 +78,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
         <div class="flex-1 flex flex-col min-h-screen bg-white text-smart-text">
           {header && (
             <div class={stickyClass}>
-              <SmartHeader client:load />
+              <SmartHeader />
             </div>
           )}
 
@@ -81,7 +89,11 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
           <footer
             class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-white/80 backdrop-blur-sm"
           >
-            © {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant
+            {lang === "de" ? (
+              <>© {new Date().getFullYear()} SmartPages · Gehostet in Europa · DSGVO-konform</>
+            ) : (
+              <>© {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant</>
+            )}
           </footer>
         </div>
       )

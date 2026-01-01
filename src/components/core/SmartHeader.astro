@@ -5,27 +5,26 @@ const isEnglish = pathname.startsWith("/en/");
 const title = "SmartPages";
 const subtitle = isEnglish
   ? "Go online in just 10 minutes — privacy-first and GDPR compliant."
-  : "Wir bringen Dich in 10 Minuten online – ohne Technik Wissen";
+  : "Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen";
 ---
 
 <header
-  class="w-full bg-[#1E2A45] text-white shadow-md z-50
-         md:sticky md:top-0 transition-all duration-300">
+  class="w-full bg-[#1E2A45] text-white shadow-md z-40 relative md:sticky md:top-0 transition-all duration-300"
+>
   <div
-    class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center 
-           gap-2 md:gap-4 py-4 md:py-5 px-4 text-center md:text-left">
-    
-    <!-- Logo -->
+    class="max-w-6xl mx-auto flex items-center justify-center md:justify-start gap-4 py-4 md:py-5 px-4"
+  >
+    <!-- 🔹 Logo -->
     <img
       src="/SmartPages_icon_transparent.png"
       alt="SmartPages Logo"
-      class="h-14 md:h-20 w-auto transition-all duration-300"
+      class="h-12 md:h-16 w-auto transition-all duration-300"
       loading="lazy"
     />
 
-    <!-- Textbereich (nur Desktop sichtbar) -->
-    <div class="hidden md:block leading-tight">
-      <h1 class="text-[1.75rem] md:text-[2rem] font-extrabold tracking-tight leading-snug mb-0">
+    <!-- 🔹 Textbereich -->
+    <div class="leading-tight text-center md:text-left">
+      <h1 class="text-[1.6rem] md:text-[1.9rem] font-extrabold tracking-tight leading-snug mb-0">
         {title}
       </h1>
       <p class="text-base md:text-lg text-gray-200 font-medium mt-0">
