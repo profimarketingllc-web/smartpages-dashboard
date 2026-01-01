@@ -8,65 +8,56 @@ import { createSignal, onMount } from "solid-js";
 
 const [showPopup, setShowPopup] = createSignal(true);
 
-// Popup verschwindet automatisch nach 2 Sekunden
+// Popup verschwindet nach 2 Sekunden
 onMount(() => {
   const timer = setTimeout(() => setShowPopup(false), 2000);
   return () => clearTimeout(timer);
 });
 
-// Produktkarten
 const products = [
   {
     title: "SmartProfile",
     text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
     gradient: "from-[#4E6BFF] to-[#657AFF]",
-    glow: "shadow-[0_0_25px_#4E6BFF60]"
+    glow: "shadow-[0_0_25px_#4E6BFF60]",
   },
   {
     title: "SmartPage",
     text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
     gradient: "from-[#F5B400] to-[#E47E00]",
-    glow: "shadow-[0_0_25px_#E47E0060]"
+    glow: "shadow-[0_0_25px_#E47E0060]",
   },
   {
     title: "SmartDomain",
     text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
     gradient: "from-[#8B5CFF] to-[#A076FF]",
-    glow: "shadow-[0_0_25px_#8B5CFF60]"
+    glow: "shadow-[0_0_25px_#8B5CFF60]",
   },
 ];
 ---
 
 <PageLayout title="Dashboard">
-  <!-- 🔐 Popup -->
+  <!-- Popup -->
   {showPopup() && (
     <div
-      class="fixed top-24 left-1/2 transform -translate-x-1/2
-             bg-[#E57373] text-white text-center px-6 py-2.5 rounded-2xl shadow-md
-             text-sm font-semibold z-50">
+      class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-[#E57373] text-white text-center px-6 py-2.5 rounded-2xl shadow-md text-sm font-semibold z-50">
       Prüfe Anmeldung...
     </div>
   )}
 
-  <!-- 🧾 Inhalt -->
   <main class="flex flex-col gap-10 max-w-6xl mx-auto px-6 mt-20 mb-20">
-
-    <!-- Kundendaten -->
     <DashboardCardWide>
-      <CustomerCard client:only="solid" />
+      <CustomerCard client:load />
     </DashboardCardWide>
 
-    <!-- Impressumsdaten -->
     <DashboardCardWide>
-      <ImprintCard client:only="solid" />
+      <ImprintCard client:load />
     </DashboardCardWide>
 
-    <!-- Produktübersicht -->
     <DashboardCardWide>
       <ProductCardGrid products={products} />
     </DashboardCardWide>
 
-    <!-- Feedback -->
     <DashboardCardWide>
       <div class="text-center text-gray-700">
         <h3 class="font-semibold text-lg mb-2">
