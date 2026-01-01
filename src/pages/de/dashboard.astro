@@ -4,26 +4,54 @@ import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
 import CustomerCard from "~/components/core/CustomerCard.jsx";
 import ImprintCard from "~/components/core/ImprintCard.jsx";
 import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
-import AuthPopup from "~/components/core/AuthPopup.jsx";  // <—
+import AuthPopup from "~/components/core/AuthPopup.jsx";
+
+// 🔹 Produkte definieren (für ProductCardGrid)
+const products = [
+  {
+    title: "SmartProfile",
+    text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
+    gradient: "from-[#4E6BFF] to-[#657AFF]",
+    glow: "shadow-[0_0_25px_#4E6BFF60]",
+  },
+  {
+    title: "SmartPage",
+    text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
+    gradient: "from-[#F5B400] to-[#E47E00]",
+    glow: "shadow-[0_0_25px_#E47E0060]",
+  },
+  {
+    title: "SmartDomain",
+    text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
+    gradient: "from-[#8B5CFF] to-[#A076FF]",
+    glow: "shadow-[0_0_25px_#8B5CFF60]",
+  },
+];
 ---
 
 <PageLayout title="Dashboard">
-  <!-- Popup als eigene Solid-Komponente -->
+  <!-- 🔸 Popup für Anmeldung -->
   <AuthPopup client:load />
 
+  <!-- 🔹 Hauptbereich -->
   <main class="flex flex-col gap-10 max-w-6xl mx-auto px-6 mt-20 mb-20">
+
+    <!-- Kundendaten -->
     <DashboardCardWide>
       <CustomerCard client:load />
     </DashboardCardWide>
 
+    <!-- Impressumsdaten -->
     <DashboardCardWide>
       <ImprintCard client:load />
     </DashboardCardWide>
 
+    <!-- Produktkarten -->
     <DashboardCardWide>
       <ProductCardGrid products={products} />
     </DashboardCardWide>
 
+    <!-- Feedback-Sektion -->
     <DashboardCardWide>
       <div class="text-center text-gray-700">
         <h3 class="font-semibold text-lg mb-2">
@@ -38,5 +66,6 @@ import AuthPopup from "~/components/core/AuthPopup.jsx";  // <—
         </button>
       </div>
     </DashboardCardWide>
+
   </main>
 </PageLayout>
