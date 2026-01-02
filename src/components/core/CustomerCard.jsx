@@ -1,7 +1,7 @@
 import { createResource } from "solid-js";
 
 export default function CustomerCard() {
-  // Sprache aus URL erkennen (Server + Client)
+  // Sprache aus URL erkennen
   const lang =
     typeof window !== "undefined"
       ? window.location.pathname.startsWith("/en")
@@ -9,7 +9,7 @@ export default function CustomerCard() {
         : "de"
       : "de";
 
-  // Übersetzungen für statische Felder
+  // Übersetzungen
   const t = {
     de: {
       title: "Kundendaten",
@@ -35,7 +35,7 @@ export default function CustomerCard() {
     },
   }[lang];
 
-  // Kundendaten abrufen
+  // Daten abrufen
   const fetchCustomer = async () => {
     try {
       const res = await fetch("https://api.smartpages.online/api/customer", {
@@ -64,9 +64,9 @@ export default function CustomerCard() {
   );
 
   return (
-    <div class="relative p-4 md:p-5 text-sm text-gray-700 flex flex-col items-center text-center">
+    <div class="relative text-sm text-gray-700 flex flex-col items-center text-center w-full max-w-4xl mx-auto">
       {/* 🔹 Login-Pill */}
-      <div class="absolute top-2 right-8">
+      <div class="absolute top-2 right-12 md:right-16 lg:right-20">
         <span
           class={`inline-block px-4 py-1 text-sm font-medium rounded-full border 
                   ${
