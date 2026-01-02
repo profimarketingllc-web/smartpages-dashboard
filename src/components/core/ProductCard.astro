@@ -1,5 +1,14 @@
 ---
 const { title, label, text, gradient } = Astro.props;
+
+// Extrahiere die Hauptfarbe aus dem Gradient für dynamischen Glow
+const glowColor = gradient.includes("#4E6BFF")
+  ? "rgba(78,107,255,0.5)"
+  : gradient.includes("#F5B400")
+  ? "rgba(245,180,0,0.5)"
+  : gradient.includes("#8B5CFF")
+  ? "rgba(139,92,255,0.5)"
+  : "rgba(0,0,0,0.2)";
 ---
 
 <div
