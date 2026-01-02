@@ -1,96 +1,66 @@
----
-import PageLayout from "~/layouts/PageLayout.astro";
-import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
-
-// 🧱 Solid-Komponenten
-import CustomerCard from "~/components/core/CustomerCard.jsx";
-import ImprintCard from "~/components/core/ImprintCard.jsx";
-
-// 🌈 Astro-Komponenten
-import ProductGrid from "~/components/core/ProductGrid.astro";
-import AuthPopup from "~/components/core/AuthPopup.jsx";
-
-// 🧩 System-Komponente
-import SystemMessage from "~/components/core/SystemMessage.astro";
-
-// Beispielhafte Testnachricht (später dynamisch per Solid ersetzbar)
-const systemNotice = {
-  message: "Dein Testzeitraum endet in 3 Tagen. Jetzt upgraden und alle Funktionen behalten!",
-  type: "warning",
-};
----
-
-<PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-
-  <!-- ✅ Auth-Popup -->
-  <AuthPopup client:only="solid" />
-
-  <!-- 🧩 System-Message (Above-the-fold Hinweisbereich) -->
-  <SystemMessage message={systemNotice.message} type={systemNotice.type} />
-
-  <!-- 💠 Hauptinhalt -->
-  <main class="flex flex-col gap-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-10 mt-10 mb-20 transition-all duration-300">
-
-    <!-- 🧭 Kundendaten (Solid) -->
-    <DashboardCardWide>
-      <CustomerCard client:load />
-    </DashboardCardWide>
-
-    <!-- 🏢 Impressumsdaten (Solid) -->
-    <DashboardCardWide>
-      <ImprintCard client:load />
-    </DashboardCardWide>
-
-    <!-- 🧱 Produkte (Astro-Grid) -->
-    <DashboardCardWide>
-      <ProductGrid />
-    </DashboardCardWide>
-
-    <!-- 💬 Feedback -->
-    <DashboardCardWide>
-      <section class="text-center text-gray-700">
-        <h3 class="font-semibold text-lg mb-2">
-          Dein Feedback hilft uns, SmartPages zu verbessern
-        </h3>
-        <p class="text-gray-600 text-sm mb-4">
-          Teile Ideen, Vorschläge oder Fehler direkt mit unserem Team – 
-          wir entwickeln SmartPages aktiv weiter auf Basis deines Feedbacks.
-        </p>
-        <a
-          href="/feedback"
-          class="inline-block bg-[#C94C43] hover:bg-[#B33D35] text-white px-6 py-2 rounded-xl shadow transition-all duration-200"
-        >
-          Feedback senden
-        </a>
-      </section>
-    </DashboardCardWide>
-
-  </main>
-
   <style>
-    /* 🔹 Layout-Optimierungen */
-
+    /* 🔹 Gesamtstruktur */
     main {
-      margin-top: clamp(2rem, 4vw, 4rem);
+      margin-top: clamp(1rem, 3vw, 2.5rem);
       margin-bottom: clamp(3rem, 6vw, 5rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2.5rem;
+      width: 100%;
+      transition: all 0.3s ease-in-out;
     }
 
-    /* 🔸 Responsive Card Spacing */
-    @media (max-width: 1024px) {
+    /* 🔸 SystemMessage Abstand nach Header */
+    section:has(.border-yellow-200),
+    section:has(.border-blue-200),
+    section:has(.border-red-200),
+    section:has(.border-green-200) {
+      margin-top: clamp(1rem, 2vw, 1.8rem);
+      margin-bottom: clamp(0.5rem, 2vw, 1.5rem);
+    }
+
+    /* 🔸 Responsive Anpassungen */
+    @media (max-width: 1280px) {
       main {
         gap: 2rem;
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
+        margin-top: 2rem;
+        padding: 0 1.5rem;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        gap: 1.8rem;
+        margin-top: 1.8rem;
+        padding: 0 1.2rem;
       }
     }
 
     @media (max-width: 768px) {
       main {
         gap: 1.5rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
+        margin-top: 1.5rem;
+        padding: 0 1rem;
+      }
+    }
+
+    /* 🔹 Card Layout */
+    main > * {
+      width: 100%;
+      max-width: 85rem;
+      transition: all 0.3s ease-in-out;
+    }
+
+    @media (max-width: 1024px) {
+      main > * {
+        max-width: 90%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      main > * {
+        max-width: 95%;
       }
     }
   </style>
-
-</PageLayout>
