@@ -2,33 +2,46 @@
 import PageLayout from "~/layouts/PageLayout.astro";
 import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
 
-// 🧱 Solid-Komponenten (mit Hydration)
+// 🧱 Solid-Komponenten
 import CustomerCard from "~/components/core/CustomerCard.jsx";
 import ImprintCard from "~/components/core/ImprintCard.jsx";
 
 // 🌈 Astro-Komponenten
 import ProductGrid from "~/components/core/ProductGrid.astro";
 import AuthPopup from "~/components/core/AuthPopup.jsx";
+
+// 🧩 System-Komponente
+import SystemMessage from "~/components/core/SystemMessage.astro";
+
+// Beispielhafte Testnachricht (später dynamisch per Solid ersetzbar)
+const systemNotice = {
+  message: "Dein Testzeitraum endet in 3 Tagen. Jetzt upgraden und alle Funktionen behalten!",
+  type: "warning",
+};
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
 
-  <!-- ✅ Auth-Popup (wird automatisch ausgeblendet) -->
+  <!-- ✅ Auth-Popup -->
   <AuthPopup client:only="solid" />
 
-  <main class="flex flex-col gap-10 max-w-6xl mx-auto px-6 mt-10 mb-20">
+  <!-- 🧩 System-Message (Above-the-fold Hinweisbereich) -->
+  <SystemMessage message={systemNotice.message} type={systemNotice.type} />
 
-    <!-- 🧭 Kundendaten -->
+  <!-- 💠 Hauptinhalt -->
+  <main class="flex flex-col gap-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-10 mt-10 mb-20 transition-all duration-300">
+
+    <!-- 🧭 Kundendaten (Solid) -->
     <DashboardCardWide>
       <CustomerCard client:load />
     </DashboardCardWide>
 
-    <!-- 🏢 Impressumsdaten -->
+    <!-- 🏢 Impressumsdaten (Solid) -->
     <DashboardCardWide>
       <ImprintCard client:load />
     </DashboardCardWide>
 
-    <!-- 🧱 Produkte (Astro-Grid mit Fallback) -->
+    <!-- 🧱 Produkte (Astro-Grid) -->
     <DashboardCardWide>
       <ProductGrid />
     </DashboardCardWide>
@@ -40,7 +53,7 @@ import AuthPopup from "~/components/core/AuthPopup.jsx";
           Dein Feedback hilft uns, SmartPages zu verbessern
         </h3>
         <p class="text-gray-600 text-sm mb-4">
-          Teile Ideen, Vorschläge oder Fehler direkt mit unserem Team –
+          Teile Ideen, Vorschläge oder Fehler direkt mit unserem Team – 
           wir entwickeln SmartPages aktiv weiter auf Basis deines Feedbacks.
         </p>
         <a
@@ -53,4 +66,31 @@ import AuthPopup from "~/components/core/AuthPopup.jsx";
     </DashboardCardWide>
 
   </main>
+
+  <style>
+    /* 🔹 Layout-Optimierungen */
+
+    main {
+      margin-top: clamp(2rem, 4vw, 4rem);
+      margin-bottom: clamp(3rem, 6vw, 5rem);
+    }
+
+    /* 🔸 Responsive Card Spacing */
+    @media (max-width: 1024px) {
+      main {
+        gap: 2rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        gap: 1.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
+  </style>
+
 </PageLayout>
