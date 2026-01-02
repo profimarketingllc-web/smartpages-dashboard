@@ -2,12 +2,11 @@
 /**
  * ProductCardGrid.astro
  * ---------------------
- * Rendert das Produktgrid.
+ * Rendert das 3er-Produktgrid.
  * Nutzt dynamische Glow-Farben und bietet einen Fallback, falls keine Props übergeben wurden.
  */
 
 import ProductCard from "./ProductCard.astro";
-
 const { products } = Astro.props;
 
 // ✅ Fallback für statischen Build oder lokale Tests
