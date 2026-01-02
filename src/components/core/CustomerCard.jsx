@@ -1,7 +1,7 @@
 import { createResource } from "solid-js";
 
 export default function CustomerCard() {
-  // Sprache aus URL erkennen
+  // Sprache erkennen
   const lang =
     typeof window !== "undefined"
       ? window.location.pathname.startsWith("/en")
@@ -9,7 +9,6 @@ export default function CustomerCard() {
         : "de"
       : "de";
 
-  // Übersetzungen
   const t = {
     de: {
       title: "Kundendaten",
@@ -35,7 +34,7 @@ export default function CustomerCard() {
     },
   }[lang];
 
-  // Daten abrufen
+  // Kundendaten abrufen
   const fetchCustomer = async () => {
     try {
       const res = await fetch("https://api.smartpages.online/api/customer", {
@@ -64,9 +63,9 @@ export default function CustomerCard() {
   );
 
   return (
-    <div class="relative text-sm text-gray-700 flex flex-col items-center text-center w-full max-w-4xl mx-auto">
-      {/* 🔹 Login-Pill */}
-      <div class="absolute top-2 right-12 md:right-16 lg:right-20">
+    <div class="relative w-full text-sm text-gray-700 px-8 md:px-10 py-6 md:py-8">
+      {/* 🔹 Pill – bündig mit Button und Feldern */}
+      <div class="absolute top-5 right-10 md:right-14">
         <span
           class={`inline-block px-4 py-1 text-sm font-medium rounded-full border 
                   ${
@@ -80,12 +79,12 @@ export default function CustomerCard() {
       </div>
 
       {/* 🔹 Überschrift */}
-      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5">
+      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-6 text-center md:text-left">
         {t.title}
       </h2>
 
       {/* 🔹 Erste Zeile */}
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-y-3 gap-x-6 justify-center">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-8">
         <div class="md:col-span-2">
           <span class="font-medium text-gray-800">{t.name}:</span>
           <p>{data().name ?? <Skeleton w="36" />}</p>
@@ -103,20 +102,22 @@ export default function CustomerCard() {
       </div>
 
       {/* 🔹 Zweite Zeile */}
-      <div class="grid grid-cols-3 mt-6 items-center justify-center">
+      <div class="grid grid-cols-3 mt-8 items-center">
         <div>
           <span class="font-medium text-gray-800">{t.status}:</span>
           <p>{data().status ?? <Skeleton w="16" />}</p>
         </div>
-        <div>
+
+        <div class="md:text-center">
           <span class="font-medium text-gray-800">{t.lastLogin}:</span>
           <p class="text-gray-600 text-sm">
             {data().lastLogin ?? <Skeleton w="16" />}
           </p>
         </div>
+
         <div class="flex justify-end">
           <button
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
           >
             {t.button}
           </button>
