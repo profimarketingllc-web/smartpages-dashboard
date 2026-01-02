@@ -1,6 +1,6 @@
 ---
 import "~/styles/global.css";
-import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
+import ProductGrid from "~/components/core/ProductGrid.astro";
 
 const products = [
   {
@@ -121,7 +121,7 @@ const products = [
     </section>
 
     <!-- Product Cards -->
-    <ProductCardGrid {products} />
+    <ProductGrid {products} />
 
     <!-- Footer -->
     <footer class="text-center text-sm text-gray-600 py-6 bg-[#f5f5f5]">

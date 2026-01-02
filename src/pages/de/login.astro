@@ -1,6 +1,6 @@
 ---
 import "~/styles/global.css";
-import ProductCardGrid from "~/components/core/ProductCardGrid.astro";
+import ProductGrid from "~/components/core/ProductGrid.astro";
 
 const products = [
   {
@@ -121,7 +121,7 @@ const products = [
 
     <!-- Product Cards -->
     <section class="mt-6 mb-12 px-4">
-      <ProductCardGrid {products} />
+      <ProductGrid {products} />
     </section>
 
     <!-- Footer -->
