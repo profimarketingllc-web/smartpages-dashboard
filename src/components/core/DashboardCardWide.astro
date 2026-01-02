@@ -1,7 +1,7 @@
 ---
 /**
  * SmartPages – Breite Dashboard-Kachel
- * 
+ *
  * Props:
  * - title: string
  * - desc?: string
@@ -27,7 +27,8 @@ const {
 } = Astro.props;
 
 const variantClasses = {
-  default: "bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-4 w-full",
+  default:
+    "bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-4 w-full",
   highlight:
     "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white shadow-xl rounded-3xl p-8 mt-4 w-full",
 }[variant];
@@ -39,33 +40,54 @@ const pillColors = {
 }[statusColor];
 ---
 
-<section class={`max-w-6xl mx-auto ${variantClasses}`}>
+<!-- 🧱 DashboardCardWide -->
+<section class={`w-full md:pl-64 ${variantClasses}`}>
   <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
     <div class="w-full">
       <!-- Titel -->
-      <h2 class={`text-2xl font-bold mb-4 ${variant === "highlight" ? "text-white" : "text-[#1E2A45]"}`}>
-        {title}
-      </h2>
+      {title && (
+        <h2
+          class={`text-2xl font-bold mb-4 ${
+            variant === "highlight" ? "text-white" : "text-[#1E2A45]"
+          }`}
+        >
+          {title}
+        </h2>
+      )}
 
       <!-- Beschreibung -->
       {desc && (
-        <p class={`text-sm mb-6 ${variant === "highlight" ? "text-gray-100" : "text-gray-600"}`}>
+        <p
+          class={`text-sm mb-6 ${
+            variant === "highlight" ? "text-gray-100" : "text-gray-600"
+          }`}
+        >
           {desc}
         </p>
       )}
 
-      <!-- Datenanzeige -->
+      <!-- Dynamischer Slot-Inhalt (z. B. Solid / Astro-Komponenten) -->
+      <slot />
+
+      <!-- Statische Datenanzeige -->
       {items.length > 0 && (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 text-sm text-gray-700">
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 text-sm"
+        >
           {items.map((item) => (
-            <p class={`${variant === "highlight" ? "text-white" : "text-gray-700"}`}>
-              <span class="font-semibold">{item.label}:</span> {item.value || "–"}
+            <p
+              class={`${
+                variant === "highlight" ? "text-white" : "text-gray-700"
+              }`}
+            >
+              <span class="font-semibold">{item.label}:</span>{" "}
+              {item.value || "–"}
             </p>
           ))}
         </div>
       )}
 
-      <!-- Button -->
+      <!-- Optionaler Button -->
       {showButton && buttonText && (
         <div class="flex justify-center mt-6">
           <button
