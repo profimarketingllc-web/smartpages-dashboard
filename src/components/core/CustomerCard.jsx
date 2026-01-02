@@ -1,6 +1,41 @@
 import { createResource } from "solid-js";
 
 export default function CustomerCard() {
+  // Sprache aus URL erkennen (Server + Client)
+  const lang =
+    typeof window !== "undefined"
+      ? window.location.pathname.startsWith("/en")
+        ? "en"
+        : "de"
+      : "de";
+
+  // Übersetzungen für statische Felder
+  const t = {
+    de: {
+      title: "Kundendaten",
+      name: "Name",
+      plan: "Tarif",
+      activeUntil: "aktiviert bis",
+      status: "Status",
+      lastLogin: "letzter Login",
+      button: "Profil bearbeiten",
+      loggedOut: "Abgemeldet",
+      active: "Aktiv",
+    },
+    en: {
+      title: "Customer Data",
+      name: "Name",
+      plan: "Plan",
+      activeUntil: "active until",
+      status: "Status",
+      lastLogin: "last login",
+      button: "Edit Profile",
+      loggedOut: "Logged out",
+      active: "Active",
+    },
+  }[lang];
+
+  // Kundendaten abrufen
   const fetchCustomer = async () => {
     try {
       const res = await fetch("https://api.smartpages.online/api/customer", {
@@ -12,7 +47,7 @@ export default function CustomerCard() {
       return {
         name: null,
         plan: null,
-        status: "Abgemeldet",
+        status: t.loggedOut,
         activeUntil: null,
         lastLogin: null,
       };
@@ -29,13 +64,13 @@ export default function CustomerCard() {
   );
 
   return (
-    <div class="relative p-4 md:p-5 text-sm text-gray-700">
+    <div class="relative p-4 md:p-5 text-sm text-gray-700 flex flex-col items-center text-center">
       {/* 🔹 Login-Pill */}
-      <div class="absolute top-2 right-2">
+      <div class="absolute top-2 right-8">
         <span
           class={`inline-block px-4 py-1 text-sm font-medium rounded-full border 
                   ${
-                    data().status === "Aktiv"
+                    data().status === t.active
                       ? "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]"
                       : "bg-[#F8D7DA] text-[#8B1A1A] border-[#E6A1A1]"
                   }`}
@@ -46,42 +81,44 @@ export default function CustomerCard() {
 
       {/* 🔹 Überschrift */}
       <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5">
-        Kundendaten
+        {t.title}
       </h2>
 
       {/* 🔹 Erste Zeile */}
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-y-3 gap-x-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-y-3 gap-x-6 justify-center">
         <div class="md:col-span-2">
-          <span class="font-medium text-gray-800">Name:</span>
+          <span class="font-medium text-gray-800">{t.name}:</span>
           <p>{data().name ?? <Skeleton w="36" />}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">Tarif:</span>
+          <span class="font-medium text-gray-800">{t.plan}:</span>
           <p>{data().plan ?? <Skeleton w="24" />}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">aktiviert bis:</span>
+          <span class="font-medium text-gray-800">{t.activeUntil}:</span>
           <p class="text-gray-600 text-sm">
-            {data().activeUntil ?? <Skeleton w="24" />}
+            {data().activeUntil ?? <Skeleton w="20" />}
           </p>
         </div>
       </div>
 
       {/* 🔹 Zweite Zeile */}
-      <div class="grid grid-cols-3 mt-6 items-center">
+      <div class="grid grid-cols-3 mt-6 items-center justify-center">
         <div>
-          <span class="font-medium text-gray-800">status:</span>
-          <p>{data().status ?? <Skeleton w="20" />}</p>
+          <span class="font-medium text-gray-800">{t.status}:</span>
+          <p>{data().status ?? <Skeleton w="16" />}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">letzter Login:</span>
-          <p>{data().lastLogin ?? <Skeleton w="24" />}</p>
+          <span class="font-medium text-gray-800">{t.lastLogin}:</span>
+          <p class="text-gray-600 text-sm">
+            {data().lastLogin ?? <Skeleton w="16" />}
+          </p>
         </div>
         <div class="flex justify-end">
           <button
             class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
           >
-            Profil bearbeiten
+            {t.button}
           </button>
         </div>
       </div>
