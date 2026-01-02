@@ -1,69 +1,55 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
+
+// 🧱 Solid-Komponenten (mit Hydration)
 import CustomerCard from "~/components/core/CustomerCard.jsx";
 import ImprintCard from "~/components/core/ImprintCard.jsx";
-import ProductGrid from "~/components/core/ProductGrid.astro"; // ✅ neuer Import
-import AuthPopup from "~/components/core/AuthPopup.jsx"; // ✅ Popup ausgelagert
+
+// 🌈 Astro-Komponenten
+import ProductGrid from "~/components/core/ProductGrid.astro";
+import AuthPopup from "~/components/core/AuthPopup.jsx";
 ---
 
-<PageLayout title="Dashboard">
+<PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
 
-  <!-- ✅ Auth Popup (verschwindet automatisch nach 2 Sekunden) -->
+  <!-- ✅ Auth-Popup (wird automatisch ausgeblendet) -->
   <AuthPopup client:only="solid" />
 
   <main class="flex flex-col gap-10 max-w-6xl mx-auto px-6 mt-20 mb-20">
 
-    <!-- Kundendaten -->
+    <!-- 🧭 Kundendaten -->
     <DashboardCardWide>
-      <CustomerCard client:only="solid" />
+      <CustomerCard client:load />
     </DashboardCardWide>
 
-    <!-- Impressumsdaten -->
+    <!-- 🏢 Impressumsdaten -->
     <DashboardCardWide>
-      <ImprintCard client:only="solid" />
+      <ImprintCard client:load />
     </DashboardCardWide>
 
-    <!-- Produkte -->
+    <!-- 🧱 Produkte (Astro-Grid mit Fallback) -->
     <DashboardCardWide>
-      <ProductGrid
-        products={[
-          {
-            title: "SmartProfile",
-            text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
-            gradient: "from-[#4E6BFF] to-[#657AFF]",
-            glow: "shadow-[0_0_25px_#4E6BFF60]",
-          },
-          {
-            title: "SmartPage",
-            text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
-            gradient: "from-[#F5B400] to-[#E47E00]",
-            glow: "shadow-[0_0_25px_#E47E0060]",
-          },
-          {
-            title: "SmartDomain",
-            text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
-            gradient: "from-[#8B5CFF] to-[#A076FF]",
-            glow: "shadow-[0_0_25px_#8B5CFF60]",
-          },
-        ]}
-      />
+      <ProductGrid />
     </DashboardCardWide>
 
-    <!-- Feedback -->
+    <!-- 💬 Feedback -->
     <DashboardCardWide>
-      <div class="text-center text-gray-700">
+      <section class="text-center text-gray-700">
         <h3 class="font-semibold text-lg mb-2">
-          Dein Feedback hilft uns, besser zu werden
+          Dein Feedback hilft uns, SmartPages zu verbessern
         </h3>
         <p class="text-gray-600 text-sm mb-4">
-          Teile Fehler, Ideen oder Vorschläge – hilf uns, SmartPages noch besser zu machen.
+          Teile Ideen, Vorschläge oder Fehler direkt mit unserem Team –
+          wir entwickeln SmartPages aktiv weiter auf Basis deines Feedbacks.
         </p>
-        <button
-          class="bg-[#C94C43] hover:bg-[#B33D35] text-white px-6 py-2 rounded-xl shadow transition-all duration-200">
+        <a
+          href="/feedback"
+          class="inline-block bg-[#C94C43] hover:bg-[#B33D35] text-white px-6 py-2 rounded-xl shadow transition-all duration-200"
+        >
           Feedback senden
-        </button>
-      </div>
+        </a>
+      </section>
     </DashboardCardWide>
 
   </main>
