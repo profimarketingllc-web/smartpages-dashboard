@@ -2,37 +2,39 @@
 /**
  * ProductGrid.astro
  * -----------------
- * Rendert ein responsives Produktgrid mit sauberem Fallback.
- * Kein gelber Glow mehr — jede Karte hat Glow in Produktfarbe.
+ * Rendert ein flexibles Grid mit Produktkarten.
+ * Nutzt dynamische Gradient- und Glow-Farben.
  */
-import ProductCard from "./ProductCard.astro";
 
+import ProductCard from "./ProductCard.astro";
 const { products } = Astro.props;
 
-// ✅ Fallback (wenn kein Prop übergeben wird)
-const items = products || [
-  {
-    title: "SmartProfile",
-    label: "Erstelle Dein Profil",
-    text: "Erstelle Dein professionelles Profil in wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
-    gradient: "from-[#4E6BFF] to-[#657AFF]",
-    glow: "hover:shadow-[0_0_25px_#4E6BFF80]",
-  },
-  {
-    title: "SmartPage",
-    label: "Erstelle Deine Seite",
-    text: "Erstelle beeindruckende, konversionsstarke Seiten – schnell, einfach und professionell.",
-    gradient: "from-[#F5B400] to-[#E47E00]",
-    glow: "hover:shadow-[0_0_25px_#E47E0080]",
-  },
-  {
-    title: "SmartDomain",
-    label: "Sichere Deine Domain",
-    text: "Sichere Dir Deine eigene Domain direkt in SmartPages – sicher und DSGVO-konform.",
-    gradient: "from-[#8B5CFF] to-[#A076FF]",
-    glow: "hover:shadow-[0_0_25px_#8B5CFF80]",
-  },
-];
+// ✅ Fallback für statischen Build oder leere Props
+const items = products?.length
+  ? products
+  : [
+      {
+        title: "SmartProfile",
+        label: "Erstelle Dein Profil",
+        text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
+        gradient: "from-[#4E6BFF] to-[#657AFF]",
+        glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
+      },
+      {
+        title: "SmartPage",
+        label: "Erstelle Deine Seite",
+        text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
+        gradient: "from-[#F5B400] to-[#E47E00]",
+        glow: "hover:shadow-[0_0_30px_#F5B40080]",
+      },
+      {
+        title: "SmartDomain",
+        label: "Sichere Deine Domain",
+        text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
+        gradient: "from-[#8B5CFF] to-[#A076FF]",
+        glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
+      },
+    ];
 ---
 
 <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-10">

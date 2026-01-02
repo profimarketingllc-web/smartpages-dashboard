@@ -6,20 +6,23 @@ const products = [
   {
     title: "SmartProfile",
     label: "COMING SOON",
-    text: "Your personal online profile that reflects your brand identity — hosted securely in Europe and optimized for visibility, credibility, and full GDPR compliance across all digital channels.",
+    text: "Your personal online profile that reflects your brand identity — hosted securely in Europe, optimized for visibility, credibility, and full GDPR compliance across all digital channels.",
     gradient: "from-[#3D4CFF] to-[#6A5FFF]",
+    glow: "hover:shadow-[0_0_30px_#3D4CFF80]",
   },
   {
     title: "SmartPage",
     label: "COMING SOON",
-    text: "Build stunning, high-converting pages in minutes — with no code. Designed for creators, entrepreneurs, and small teams who want elegant design and full control without complexity.",
+    text: "Build stunning, high-converting pages in minutes — no coding required. Designed for creators, entrepreneurs, and small teams who want elegant design and full control without complexity.",
     gradient: "from-[#F5B400] to-[#E47E00]",
+    glow: "hover:shadow-[0_0_30px_#F5B40080]",
   },
   {
     title: "SmartDomain",
     label: "COMING SOON",
-    text: "Secure your custom domain, protect your brand, and stay GDPR-compliant from the start. SmartDomain makes managing your online identity effortless and fully privacy-first — all hosted securely in Europe.",
+    text: "Secure your domain, protect your brand, and stay GDPR-compliant from day one. SmartDomain makes managing your online identity effortless — privacy-first and hosted in Europe.",
     gradient: "from-[#9D3DFF] to-[#6A3AFF]",
+    glow: "hover:shadow-[0_0_30px_#9D3DFF80]",
   },
 ];
 ---
@@ -66,21 +69,21 @@ const products = [
 
         <p class="mb-4">
           With <strong>SmartPages</strong>, you can build your professional online presence in just
-          <strong>10 minutes</strong> — without technical knowledge or complex setup.
-          Everything is hosted securely in <strong>Europe</strong> and fully compliant with the
-          <strong>General Data Protection Regulation (GDPR)</strong>.
+          <strong>10 minutes</strong> — without technical knowledge or complicated setup.
+          Everything is hosted securely in <strong>Europe</strong> and fully compliant with
+          <strong>GDPR</strong>.
         </p>
 
         <p class="mb-4">
-          If your audience or clients are in the European Union, GDPR compliance isn’t optional —
-          it’s mandatory. SmartPages helps you meet these standards automatically, protecting both
-          your brand and your users’ privacy from the very first click.
+          If your audience or clients are in the EU, GDPR compliance isn’t optional — it’s required.
+          SmartPages helps you meet these standards automatically, protecting your brand and your
+          users’ privacy from the very first click.
         </p>
 
         <p>
-          Simply enter your contact details below and we’ll send you a personal
-          <strong>Magic Link</strong> for secure, instant access to your SmartPages dashboard —
-          no password, no tracking, no hidden data collection.
+          Simply enter your contact details below, and we’ll send you a personal
+          <strong>Magic Link</strong> for secure instant access to your SmartPages dashboard —
+          no password, no tracking, no data collection.
         </p>
       </div>
 
@@ -121,7 +124,9 @@ const products = [
     </section>
 
     <!-- Product Cards -->
-    <ProductGrid {products} />
+    <section class="mt-6 mb-12 px-4">
+      <ProductGrid {products} />
+    </section>
 
     <!-- Footer -->
     <footer class="text-center text-sm text-gray-600 py-6 bg-[#f5f5f5]">
