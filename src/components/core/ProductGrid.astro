@@ -3,38 +3,85 @@
  * ProductGrid.astro
  * -----------------
  * Rendert ein flexibles Grid mit Produktkarten.
- * Nutzt dynamische Gradient- und Glow-Farben.
+ * Automatische Varianten-Steuerung:
+ *  - "teaser" auf Login-Seiten
+ *  - "upsell" auf Dashboard-Seiten
  */
 
 import ProductCard from "./ProductCard.astro";
-const { products } = Astro.props;
 
-// ✅ Fallback für statischen Build oder leere Props
-const items = products?.length
-  ? products
-  : [
-      {
-        title: "SmartProfile",
-        label: "Erstelle Dein Profil",
-        text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
-        gradient: "from-[#4E6BFF] to-[#657AFF]",
-        glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
-      },
-      {
-        title: "SmartPage",
-        label: "Erstelle Deine Seite",
-        text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
-        gradient: "from-[#F5B400] to-[#E47E00]",
-        glow: "hover:shadow-[0_0_30px_#F5B40080]",
-      },
-      {
-        title: "SmartDomain",
-        label: "Sichere Deine Domain",
-        text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
-        gradient: "from-[#8B5CFF] to-[#A076FF]",
-        glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
-      },
-    ];
+// Aktuelle URL analysieren
+const currentPath = Astro.url.pathname.toLowerCase();
+
+// Automatische Variante anhand der URL
+let detectedVariant = "teaser";
+if (currentPath.includes("/dashboard")) detectedVariant = "upsell";
+else if (currentPath.includes("/login") || currentPath.includes("/signin")) detectedVariant = "teaser";
+
+// Props: manuelle Variante überschreibt Automatik (optional)
+const {
+  products = [],
+  variant = detectedVariant,
+} = Astro.props;
+
+// ✅ Inhalte je nach Variante
+const productSets = {
+  teaser: [
+    {
+      title: "SmartProfile",
+      label: "Neu 🚀",
+      text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
+      gradient: "from-[#4E6BFF] to-[#657AFF]",
+      glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
+      action: null,
+    },
+    {
+      title: "SmartPage",
+      label: "",
+      text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
+      gradient: "from-[#F5B400] to-[#E47E00]",
+      glow: "hover:shadow-[0_0_30px_#F5B40080]",
+      action: null,
+    },
+    {
+      title: "SmartDomain",
+      label: "",
+      text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
+      gradient: "from-[#8B5CFF] to-[#A076FF]",
+      glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
+      action: null,
+    },
+  ],
+  upsell: [
+    {
+      title: "SmartProfile",
+      label: "",
+      text: "Schalte Premium-Funktionen für Dein Profil frei – mehr Reichweite, Branding und Automatisierung.",
+      gradient: "from-[#4E6BFF] to-[#657AFF]",
+      glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
+      action: "/paywall?product=profile",
+    },
+    {
+      title: "SmartPage",
+      label: "",
+      text: "Erstelle unbegrenzt Seiten mit erweiterten Templates, KI-Texten und Conversion-Boostern.",
+      gradient: "from-[#F5B400] to-[#E47E00]",
+      glow: "hover:shadow-[0_0_30px_#F5B40080]",
+      action: "/paywall?product=page",
+    },
+    {
+      title: "SmartDomain",
+      label: "",
+      text: "Profitiere von eigener Domain & SSL-Zertifikat für Dein SmartPages-Setup.",
+      gradient: "from-[#8B5CFF] to-[#A076FF]",
+      glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
+      action: "/paywall?product=domain",
+    },
+  ],
+};
+
+// ✅ Fallback: Props > Automatik > Default
+const items = products.length ? products : productSets[variant];
 ---
 
 <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-10">
@@ -45,6 +92,7 @@ const items = products?.length
       text={p.text}
       gradient={p.gradient}
       glow={p.glow}
+      action={p.action}
     />
   ))}
 </section>
