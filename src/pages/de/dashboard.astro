@@ -1,135 +1,97 @@
 ---
-import PageLayout from "~/layouts/PageLayout.astro";
-import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
-import CustomerCard from "~/components/core/CustomerCard.jsx";
-import ImprintCard from "~/components/core/ImprintCard.jsx";
-import ProductGrid from "~/components/core/ProductGrid.astro";
-import ProductCard from "~/components/core/ProductCard.astro";
+import DashboardCard from "~/components/core/DashboardCard.astro";
+import CustomerCard from "~/components/solid/CustomerCard";
+import ImprintCard from "~/components/solid/ImprintCard";
+import SystemMessage from "~/components/core/SystemMessage.astro";
 
-const systemNotice = {
-  message: "Dein Testzeitraum endet in 3 Tagen. Jetzt upgraden und alle Funktionen behalten!",
-  type: "warning",
-};
-
-// Dezente 80%-Farbintensität
-const gradient =
-  systemNotice.type === "warning"
-    ? "from-[#F5B400]/80 to-[#E47E00]/80"
-    : systemNotice.type === "info"
-    ? "from-[#4E6BFF]/80 to-[#657AFF]/80"
-    : systemNotice.type === "success"
-    ? "from-[#3CB371]/80 to-[#2E8B57]/80"
-    : "from-[#E14D4D]/80 to-[#B83535]/80";
+// Optional: Astro-spezifische Karten, wenn du sie schon angelegt hast
+import AstroCardOne from "~/components/astro/AstroCardOne.astro";
+import AstroCardTwo from "~/components/astro/AstroCardTwo.astro";
 ---
 
-<PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
+<!-- ============================================= -->
+<!-- 🔹 Dashboard Layout -->
+<!-- ============================================= -->
+<main class="w-full flex flex-col gap-10 transition-all duration-300">
 
-  <main
-    class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_340px] gap-8 w-full max-w-[1500px] mx-auto px-4 sm:px-6 md:px-8 mt-1 mb-20 transition-all duration-300"
+  <!-- 🧭 OBERER BEREICH: Kundendaten + Systemnachricht -->
+  <section
+    class="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start"
   >
-    <!-- 📱 SystemMessage (oben bei Mobile) -->
-    <div class="lg:hidden w-full flex justify-center mt-1 mb-2">
-      <ProductCard title="Hinweis" text={systemNotice.message} gradient={gradient} />
+    <!-- Kundendaten -->
+    <DashboardCard>
+      <CustomerCard />
+    </DashboardCard>
+
+    <!-- Hinweis / System Message -->
+    <div class="flex justify-center xl:justify-end">
+      <SystemMessage />
     </div>
+  </section>
 
-    <!-- 🔹 Hauptbereich: DashboardCards -->
-    <div class="flex flex-col gap-10 items-center w-full mx-auto mt-0">
-      <!-- 🧭 Kundendaten -->
-      <DashboardCardWide>
-        <CustomerCard client:load />
-      </DashboardCardWide>
+  <!-- ============================================= -->
+  <!-- 🔹 UNTERER BEREICH: Impressum & Astro-Karten -->
+  <!-- ============================================= -->
+  <section class="mt-2 flex flex-col gap-10">
+    <!-- Impressum -->
+    <DashboardCard>
+      <ImprintCard />
+    </DashboardCard>
 
-      <!-- 🏢 Impressumsdaten -->
-      <DashboardCardWide>
-        <ImprintCard client:load />
-      </DashboardCardWide>
+    <!-- Astro-Karten (falls vorhanden) -->
+    <DashboardCard>
+      <AstroCardOne />
+    </DashboardCard>
 
-      <!-- 🧱 Produkte -->
-      <DashboardCardWide>
-        <ProductGrid />
-      </DashboardCardWide>
+    <DashboardCard>
+      <AstroCardTwo />
+    </DashboardCard>
+  </section>
 
-      <!-- 💬 Feedback -->
-      <DashboardCardWide>
-        <section class="text-center text-gray-700">
-          <h3 class="font-semibold text-lg mb-2">
-            Dein Feedback hilft uns, SmartPages zu verbessern
-          </h3>
-          <p class="text-gray-600 text-sm mb-4">
-            Teile Ideen, Vorschläge oder Fehler direkt mit unserem Team –
-            wir entwickeln SmartPages aktiv weiter auf Basis deines Feedbacks.
-          </p>
-          <a
-            href="/feedback"
-            class="inline-block bg-[#C94C43] hover:bg-[#B33D35] text-white px-6 py-2 rounded-xl shadow transition-all duration-200"
-          >
-            Feedback senden
-          </a>
-        </section>
-      </DashboardCardWide>
-    </div>
+</main>
 
-    <!-- 🔸 Rechte Spalte: SystemMessage -->
-    <aside class="hidden lg:flex flex-col items-start justify-start mt-3">
-      <ProductCard title="Hinweis" text={systemNotice.message} gradient={gradient} />
-    </aside>
-  </main>
+<!-- ============================================= -->
+<!-- 🔧 Styling-Anpassungen -->
+<!-- ============================================= -->
+<style>
+  main {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding-top: 0.5rem; /* Reduziert Weißraum unter Header */
+  }
 
-  <style>
-    /* =======================================
-       🎯 DASHBOARD – SYMMETRIE & DEZENTHEIT
-    ======================================= */
+  section {
+    transition: all 0.3s ease;
+  }
 
-    main {
-      transition: all 0.3s ease-in-out;
-      margin-top: 0.4rem; /* reduziert den Weissraum */
+  /* Oberer Bereich: 2-Spalten-Layout bei großen Bildschirmen */
+  @media (min-width: 1280px) {
+    section:first-of-type {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+  }
+
+  /* Mobile: alles 1-spaltig */
+  @media (max-width: 1279px) {
+    section:first-of-type {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
     }
 
-    /* 🧭 Cards – breiter für optisches Gleichgewicht */
-    main > div > * {
-      width: 100%;
-      max-width: 1220px;
-      transition: all 0.3s ease-in-out;
+    /* Message unterhalb der CustomerCard auf mobilen Screens */
+    section:first-of-type > div {
+      order: 2;
+      display: flex;
+      justify-content: center;
     }
+  }
 
-    /* 🔸 Rechte Spalte */
-    aside > * {
-      width: 100%;
-      max-width: 340px;
-      margin-top: 0.4rem;
-    }
-
-    /* 🔹 Zentrierung & Balance bei kleineren Bildschirmen */
-    @media (max-width: 1440px) {
-      main {
-        max-width: 1350px;
-        gap: 6;
-      }
-      main > div > * {
-        max-width: 1150px;
-      }
-    }
-
-    /* 📱 Mobile Layout */
-    @media (max-width: 1024px) {
-      main {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1.2rem;
-        margin-top: 0.3rem;
-      }
-      aside {
-        display: none !important;
-      }
-    }
-
-    @media (max-width: 768px) {
-      main {
-        gap: 1rem;
-        margin-top: 0.2rem;
-      }
-    }
-  </style>
-
-</PageLayout>
+  /* Allgemeine Harmonisierung */
+  .dashboard-card {
+    transition: all 0.2s ease-in-out;
+  }
+</style>
