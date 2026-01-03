@@ -1,70 +1,41 @@
 ---
-import DashboardCard from "~/components/core/DashboardCard.astro";
-import CustomerCard from "~/components/solid/CustomerCard";
-import ImprintCard from "~/components/solid/ImprintCard";
+import PageLayout from "~/layouts/PageLayout.astro";
+import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
+import CustomerCard from "~/components/core/CustomerCard.jsx";
+import ImprintCard from "~/components/core/ImprintCard.jsx";
+import ProductGrid from "~/components/core/ProductGrid.astro";
 import SystemMessage from "~/components/core/SystemMessage.astro";
-
-// Optional: Astro-spezifische Karten, wenn du sie schon angelegt hast
-import AstroCardOne from "~/components/astro/AstroCardOne.astro";
-import AstroCardTwo from "~/components/astro/AstroCardTwo.astro";
 ---
 
-<!-- ============================================= -->
-<!-- 🔹 Dashboard Layout -->
-<!-- ============================================= -->
-<main class="w-full flex flex-col gap-10 transition-all duration-300">
+<PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
+  <main class="flex flex-col gap-10 max-w-6xl mx-auto px-6 mt-6 mb-20">
 
-  <!-- 🧭 OBERER BEREICH: Kundendaten + Systemnachricht -->
-  <section
-    class="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start"
-  >
-    <!-- Kundendaten -->
-    <DashboardCard>
-      <CustomerCard />
-    </DashboardCard>
+    <!-- 🧭 OBERER BEREICH: Kundendaten + SystemMessage -->
+    <section class="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
+      <DashboardCardWide>
+        <CustomerCard client:load />
+      </DashboardCardWide>
 
-    <!-- Hinweis / System Message -->
-    <div class="flex justify-center xl:justify-end">
-      <SystemMessage />
-    </div>
-  </section>
+      <div class="flex justify-center xl:justify-end">
+        <SystemMessage />
+      </div>
+    </section>
 
-  <!-- ============================================= -->
-  <!-- 🔹 UNTERER BEREICH: Impressum & Astro-Karten -->
-  <!-- ============================================= -->
-  <section class="mt-2 flex flex-col gap-10">
-    <!-- Impressum -->
-    <DashboardCard>
-      <ImprintCard />
-    </DashboardCard>
+    <!-- 🏢 IMPRESSUM -->
+    <DashboardCardWide>
+      <ImprintCard client:load />
+    </DashboardCardWide>
 
-    <!-- Astro-Karten (falls vorhanden) -->
-    <DashboardCard>
-      <AstroCardOne />
-    </DashboardCard>
+    <!-- 💼 PRODUKTGRID -->
+    <DashboardCardWide>
+      <ProductGrid />
+    </DashboardCardWide>
 
-    <DashboardCard>
-      <AstroCardTwo />
-    </DashboardCard>
-  </section>
+  </main>
+</PageLayout>
 
-</main>
-
-<!-- ============================================= -->
-<!-- 🔧 Styling-Anpassungen -->
-<!-- ============================================= -->
 <style>
-  main {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding-top: 0.5rem; /* Reduziert Weißraum unter Header */
-  }
-
-  section {
-    transition: all 0.3s ease;
-  }
-
-  /* Oberer Bereich: 2-Spalten-Layout bei großen Bildschirmen */
+  /* Oberer Bereich zweispaltig ab XL */
   @media (min-width: 1280px) {
     section:first-of-type {
       display: grid;
@@ -74,7 +45,7 @@ import AstroCardTwo from "~/components/astro/AstroCardTwo.astro";
     }
   }
 
-  /* Mobile: alles 1-spaltig */
+  /* Mobile Ansicht (1 Spalte) */
   @media (max-width: 1279px) {
     section:first-of-type {
       display: flex;
@@ -82,7 +53,6 @@ import AstroCardTwo from "~/components/astro/AstroCardTwo.astro";
       gap: 1.5rem;
     }
 
-    /* Message unterhalb der CustomerCard auf mobilen Screens */
     section:first-of-type > div {
       order: 2;
       display: flex;
@@ -90,8 +60,7 @@ import AstroCardTwo from "~/components/astro/AstroCardTwo.astro";
     }
   }
 
-  /* Allgemeine Harmonisierung */
-  .dashboard-card {
-    transition: all 0.2s ease-in-out;
+  main {
+    padding-top: 0.5rem; /* Weißraum reduziert */
   }
 </style>
