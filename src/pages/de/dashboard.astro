@@ -8,14 +8,16 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
-  <main class="flex flex-col gap-10 max-w-6xl mx-auto px-6 mt-6 mb-20">
+  <main class="flex flex-col gap-10 max-w-6xl mx-auto px-6 mt-4 md:mt-6 mb-16 md:mb-20">
 
     <!-- 🧭 OBERER BEREICH: Kundendaten + SystemMessage -->
     <section class="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
+      <!-- Kundendaten -->
       <DashboardCardWide>
         <CustomerCard client:load />
       </DashboardCardWide>
 
+      <!-- Systemnachricht -->
       <div class="flex justify-center xl:justify-end">
         <SystemMessage />
       </div>
@@ -35,7 +37,7 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
 </PageLayout>
 
 <style>
-  /* Oberer Bereich zweispaltig ab XL */
+  /* 🧩 Oberer Bereich zweispaltig ab XL */
   @media (min-width: 1280px) {
     section:first-of-type {
       display: grid;
@@ -45,7 +47,7 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     }
   }
 
-  /* Mobile Ansicht (1 Spalte) */
+  /* 📱 Mobile Ansicht (1 Spalte) */
   @media (max-width: 1279px) {
     section:first-of-type {
       display: flex;
@@ -60,7 +62,8 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     }
   }
 
+  /* 📏 Weißraum */
   main {
-    padding-top: 0.5rem; /* Weißraum reduziert */
+    padding-top: 0.5rem; /* weniger Luft nach Header */
   }
 </style>
