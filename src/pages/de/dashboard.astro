@@ -7,7 +7,7 @@ import ProductGrid from "~/components/core/ProductGrid.astro";
 import AuthPopup from "~/components/core/AuthPopup.jsx";
 import SystemMessage from "~/components/core/SystemMessage.astro";
 
-// Beispiel-Systemnachricht (später dynamisch ersetzt)
+// Beispiel-Systemnachricht
 const systemNotice = {
   message: "Dein Testzeitraum endet in 3 Tagen. Jetzt upgraden und alle Funktionen behalten!",
   type: "warning",
@@ -19,101 +19,96 @@ const systemNotice = {
   <!-- ✅ Auth-Popup -->
   <AuthPopup client:only="solid" />
 
-  <!-- 🧩 System-Message (kompakt rechts unter Header) -->
-  <section
-    class="w-full flex justify-end mt-4 mb-2 px-4 sm:px-6 md:px-10 max-w-[1400px] mx-auto transition-all duration-300"
-  >
-    <SystemMessage message={systemNotice.message} type={systemNotice.type} />
-  </section>
-
-  <!-- 💠 Hauptinhalt -->
+  <!-- 💠 Hauptinhalt als 2-Spalten-Grid -->
   <main
-    class="flex flex-col items-center justify-center gap-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 mt-4 mb-20 transition-all duration-300"
+    class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6 w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 mt-6 mb-20 transition-all duration-300"
   >
-    <!-- 🧭 Kundendaten -->
-    <DashboardCardWide>
-      <CustomerCard client:load />
-    </DashboardCardWide>
+    <!-- 🔹 Linke Spalte: DashboardCards -->
+    <div class="flex flex-col gap-8 items-center w-full">
+      <!-- 🧭 Kundendaten -->
+      <DashboardCardWide>
+        <CustomerCard client:load />
+      </DashboardCardWide>
 
-    <!-- 🏢 Impressumsdaten -->
-    <DashboardCardWide>
-      <ImprintCard client:load />
-    </DashboardCardWide>
+      <!-- 🏢 Impressumsdaten -->
+      <DashboardCardWide>
+        <ImprintCard client:load />
+      </DashboardCardWide>
 
-    <!-- 🧱 Produkte -->
-    <DashboardCardWide>
-      <ProductGrid />
-    </DashboardCardWide>
+      <!-- 🧱 Produkte -->
+      <DashboardCardWide>
+        <ProductGrid />
+      </DashboardCardWide>
 
-    <!-- 💬 Feedback -->
-    <DashboardCardWide>
-      <section class="text-center text-gray-700">
-        <h3 class="font-semibold text-lg mb-2">
-          Dein Feedback hilft uns, SmartPages zu verbessern
-        </h3>
-        <p class="text-gray-600 text-sm mb-4">
-          Teile Ideen, Vorschläge oder Fehler direkt mit unserem Team – 
-          wir entwickeln SmartPages aktiv weiter auf Basis deines Feedbacks.
-        </p>
-        <a
-          href="/feedback"
-          class="inline-block bg-[#C94C43] hover:bg-[#B33D35] text-white px-6 py-2 rounded-xl shadow transition-all duration-200"
-        >
-          Feedback senden
-        </a>
-      </section>
-    </DashboardCardWide>
+      <!-- 💬 Feedback -->
+      <DashboardCardWide>
+        <section class="text-center text-gray-700">
+          <h3 class="font-semibold text-lg mb-2">
+            Dein Feedback hilft uns, SmartPages zu verbessern
+          </h3>
+          <p class="text-gray-600 text-sm mb-4">
+            Teile Ideen, Vorschläge oder Fehler direkt mit unserem Team – 
+            wir entwickeln SmartPages aktiv weiter auf Basis deines Feedbacks.
+          </p>
+          <a
+            href="/feedback"
+            class="inline-block bg-[#C94C43] hover:bg-[#B33D35] text-white px-6 py-2 rounded-xl shadow transition-all duration-200"
+          >
+            Feedback senden
+          </a>
+        </section>
+      </DashboardCardWide>
+    </div>
+
+    <!-- 🔸 Rechte Spalte: SystemMessage -->
+    <aside
+      class="hidden lg:flex flex-col items-start justify-start mt-2"
+    >
+      <SystemMessage message={systemNotice.message} type={systemNotice.type} />
+    </aside>
   </main>
 
   <style>
     /* =======================================
-       ✅ GLOBAL LAYOUT FIX – SMARTPAGES DASHBOARD
+       🎯 RESPONSIVE & LAYOUT FIX
     ======================================= */
 
     main {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
       transition: all 0.3s ease-in-out;
     }
 
-    /* 🧭 Zentrierung der Cards */
-    main > * {
+    /* 🔹 Cards */
+    main > div > * {
       width: 100%;
       max-width: 1200px;
       transition: all 0.3s ease-in-out;
     }
 
-    /* 🔸 Responsive Layout-Anpassungen */
-    @media (max-width: 1280px) {
-      main {
-        gap: 2rem;
-        padding: 0 1.5rem;
-      }
+    /* 🔸 SystemMessage rechts */
+    aside .SystemMessage {
+      width: 100%;
+      max-width: 320px;
     }
 
+    /* 🧭 Mobile Ansicht – SystemMessage unterhalb der Cards */
     @media (max-width: 1024px) {
       main {
-        gap: 1.6rem;
-        padding: 0 1.2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
       }
-
-      section {
-        justify-content: center !important;
+      aside {
+        display: flex !important;
+        justify-content: center;
+        width: 100%;
+        margin-top: 1rem;
       }
-    }
-
-    @media (max-width: 768px) {
-      main {
-        gap: 1.4rem;
-        padding: 0 1rem;
-      }
-
-      section {
-        justify-content: center !important;
-        margin-top: 0.5rem !important;
+      aside .SystemMessage {
+        max-width: 95%;
+        text-align: center;
       }
     }
   </style>
+
 </PageLayout>
