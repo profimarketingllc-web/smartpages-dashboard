@@ -3,7 +3,6 @@ import "~/styles/global.css";
 import SmartHeader from "~/components/core/SmartHeader.astro";
 import SmartSidebar from "~/components/core/SmartSidebar.astro";
 
-// Props, die du beim Einbinden übergeben kannst (Standardwerte inklusive)
 const {
   sidebar = true,
   header = true,
@@ -13,8 +12,11 @@ const {
   title = "SmartPages",
 } = Astro.props;
 
-// Layout-Logik für Abstände & Sticky Header
-const headerOffsetClass = headerOffset === "compact" ? "mt-6" : "mt-24";
+// ⚙️ Kompaktere Abstände für Cockpit-Design
+const headerOffsetClass =
+  headerOffset === "compact"
+    ? "mt-2 md:mt-3" // früher mt-6 → kompakter
+    : "mt-12"; // statt mt-24 halbiert
 const stickyClass = sticky ? "sticky top-0 z-50" : "";
 ---
 
@@ -24,7 +26,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
 
-    <!-- 🌐 SEO & Meta -->
+    <!-- 🌐 SEO -->
     <meta name="robots" content="noindex, nofollow" />
     <meta
       name="description"
@@ -36,7 +38,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
     />
     <meta name="theme-color" content="#1E2A45" />
 
-    <!-- 🧩 Favicon -->
+    <!-- 🧩 Icons -->
     <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
     <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png?v=2" />
   </head>
@@ -56,8 +58,10 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
               </div>
             )}
 
-            <!-- Seiteninhalt -->
-            <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
+            <!-- 📄 Seiteninhalt -->
+            <main
+              class={`flex-1 px-3 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-4 md:py-6 ${header ? headerOffsetClass : ""}`}
+            >
               <slot />
             </main>
 
@@ -82,7 +86,9 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
             </div>
           )}
 
-          <main class={`flex-1 p-6 md:p-10 ${header ? headerOffsetClass : ""}`}>
+          <main
+            class={`flex-1 px-4 md:px-8 lg:px-10 py-4 md:py-6 ${header ? headerOffsetClass : ""}`}
+          >
             <slot />
           </main>
 
@@ -99,4 +105,52 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
       )
     }
   </body>
+
+  <style>
+    /* =======================================
+       🎯 PAGE LAYOUT OPTIMIERUNG
+    ======================================= */
+
+    main {
+      max-width: 1600px;
+      margin: 0 auto;
+      transition: all 0.3s ease-in-out;
+    }
+
+    /* Große Bildschirme */
+    @media (min-width: 1280px) {
+      main {
+        padding-left: 3rem;
+        padding-right: 2rem;
+        padding-top: 0.5rem;
+      }
+    }
+
+    /* Mittelgroß */
+    @media (min-width: 1024px) and (max-width: 1279px) {
+      main {
+        padding-left: 2rem;
+        padding-right: 2rem;
+        padding-top: 0.4rem;
+      }
+    }
+
+    /* Mobile Ansicht */
+    @media (max-width: 1023px) {
+      main {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 0.3rem;
+      }
+    }
+
+    /* Kleinere Screens: Sidebar-Overlay */
+    @media (max-width: 768px) {
+      main {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        padding-top: 0.25rem;
+      }
+    }
+  </style>
 </html>
