@@ -4,7 +4,6 @@ import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
 import CustomerCard from "~/components/core/CustomerCard.jsx";
 import ImprintCard from "~/components/core/ImprintCard.jsx";
 import ProductGrid from "~/components/core/ProductGrid.astro";
-import AuthPopup from "~/components/core/AuthPopup.jsx";
 import SystemMessage from "~/components/core/SystemMessage.astro";
 
 // Beispiel-Systemnachricht
@@ -16,15 +15,12 @@ const systemNotice = {
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
 
-  <!-- ✅ Auth-Popup -->
-  <AuthPopup client:only="solid" />
-
   <!-- 💠 Hauptinhalt als 2-Spalten-Grid -->
   <main
     class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6 w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 mt-6 mb-20 transition-all duration-300"
   >
     <!-- 🔹 Linke Spalte: DashboardCards -->
-    <div class="flex flex-col gap-8 items-center w-full">
+    <div class="flex flex-col gap-8 items-center w-full mx-auto">
       <!-- 🧭 Kundendaten -->
       <DashboardCardWide>
         <CustomerCard client:load />
@@ -61,42 +57,55 @@ const systemNotice = {
     </div>
 
     <!-- 🔸 Rechte Spalte: SystemMessage -->
-    <aside
-      class="hidden lg:flex flex-col items-start justify-start mt-2"
-    >
+    <aside class="hidden lg:flex flex-col items-start justify-start mt-2">
       <SystemMessage message={systemNotice.message} type={systemNotice.type} />
     </aside>
   </main>
 
   <style>
     /* =======================================
-       🎯 RESPONSIVE & LAYOUT FIX
+       🎯 SMARTPAGES DASHBOARD – LAYOUT FIX
     ======================================= */
 
     main {
       transition: all 0.3s ease-in-out;
+      margin-top: 2rem; /* kleiner Abstand unter Header */
     }
 
-    /* 🔹 Cards */
+    /* 🧭 Zentrierung der Cards */
     main > div > * {
       width: 100%;
-      max-width: 1200px;
+      max-width: 1150px;
       transition: all 0.3s ease-in-out;
     }
 
-    /* 🔸 SystemMessage rechts */
+    /* 🔸 Rechte Spalte */
     aside .SystemMessage {
       width: 100%;
       max-width: 320px;
     }
 
-    /* 🧭 Mobile Ansicht – SystemMessage unterhalb der Cards */
+    /* 🔹 Mittelzentrierung bei kleineren Displays */
+    @media (max-width: 1280px) {
+      main {
+        justify-content: center;
+        padding: 0 1.5rem;
+      }
+      main > div {
+        align-items: center;
+      }
+      main > div > * {
+        max-width: 1000px;
+      }
+    }
+
     @media (max-width: 1024px) {
       main {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 2rem;
+        margin-top: 1.5rem;
       }
       aside {
         display: flex !important;
@@ -109,6 +118,12 @@ const systemNotice = {
         text-align: center;
       }
     }
-  </style>
 
+    @media (max-width: 768px) {
+      main {
+        gap: 1.4rem;
+        margin-top: 1.2rem;
+      }
+    }
+  </style>
 </PageLayout>
