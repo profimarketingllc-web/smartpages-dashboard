@@ -4,127 +4,155 @@ import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
 import CustomerCard from "~/components/core/CustomerCard.jsx";
 import ImprintCard from "~/components/core/ImprintCard.jsx";
 import ProductGrid from "~/components/core/ProductGrid.astro";
-import SystemMessage from "~/components/core/SystemMessage.astro";
+import ProductCard from "~/components/core/ProductCard.astro";
 
 // Beispiel-Systemnachricht
 const systemNotice = {
   message: "Dein Testzeitraum endet in 3 Tagen. Jetzt upgraden und alle Funktionen behalten!",
   type: "warning",
 };
+
+// Farbzuordnung für Message
+const gradient =
+  systemNotice.type === "warning"
+    ? "from-[#F5B400] to-[#E47E00]"
+    : systemNotice.type === "info"
+    ? "from-[#4E6BFF] to-[#657AFF]"
+    : systemNotice.type === "success"
+    ? "from-[#3CB371] to-[#2E8B57]"
+    : "from-[#E14D4D] to-[#B83535]";
+
+const glow =
+  systemNotice.type === "warning"
+    ? "hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]"
+    : systemNotice.type === "info"
+    ? "hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]"
+    : systemNotice.type === "success"
+    ? "hover:shadow-[0_0_20px_rgba(60,179,113,0.4)]"
+    : "hover:shadow-[0_0_20px_rgba(225,77,77,0.4)]";
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
 
-<!-- 💠 Hauptinhalt als 2-Spalten-Grid -->
-<main
-  class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6 w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 mt-4 mb-20 transition-all duration-300"
->
-  <!-- 🔹 Linke Spalte: DashboardCards -->
-  <div class="flex flex-col gap-8 items-center w-full mx-auto mt-0">
-    <!-- 🧭 Kundendaten -->
-    <DashboardCardWide>
-      <CustomerCard client:load />
-    </DashboardCardWide>
+  <main
+    class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6 w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 mt-1 mb-20 transition-all duration-300"
+  >
+    <!-- 🧩 SystemMessage (oben bei Mobile, rechts bei Desktop) -->
+    <div class="lg:hidden w-full flex justify-center mt-1 mb-2">
+      <ProductCard
+        title="Hinweis"
+        text={systemNotice.message}
+        gradient={gradient}
+        glow={glow}
+      />
+    </div>
 
-    <!-- 🏢 Impressumsdaten -->
-    <DashboardCardWide>
-      <ImprintCard client:load />
-    </DashboardCardWide>
+    <!-- 🔹 Linke Spalte: DashboardCards -->
+    <div class="flex flex-col gap-8 items-center w-full mx-auto mt-0">
+      <!-- 🧭 Kundendaten -->
+      <DashboardCardWide>
+        <CustomerCard client:load />
+      </DashboardCardWide>
 
-    <!-- 🧱 Produkte -->
-    <DashboardCardWide>
-      <ProductGrid />
-    </DashboardCardWide>
+      <!-- 🏢 Impressumsdaten -->
+      <DashboardCardWide>
+        <ImprintCard client:load />
+      </DashboardCardWide>
 
-    <!-- 💬 Feedback -->
-    <DashboardCardWide>
-      <section class="text-center text-gray-700">
-        <h3 class="font-semibold text-lg mb-2">
-          Dein Feedback hilft uns, SmartPages zu verbessern
-        </h3>
-        <p class="text-gray-600 text-sm mb-4">
-          Teile Ideen, Vorschläge oder Fehler direkt mit unserem Team – 
-          wir entwickeln SmartPages aktiv weiter auf Basis deines Feedbacks.
-        </p>
-        <a
-          href="/feedback"
-          class="inline-block bg-[#C94C43] hover:bg-[#B33D35] text-white px-6 py-2 rounded-xl shadow transition-all duration-200"
-        >
-          Feedback senden
-        </a>
-      </section>
-    </DashboardCardWide>
-  </div>
+      <!-- 🧱 Produkte -->
+      <DashboardCardWide>
+        <ProductGrid />
+      </DashboardCardWide>
 
-  <!-- 🔸 Rechte Spalte: SystemMessage -->
-  <aside class="hidden lg:flex flex-col items-start justify-start mt-2">
-    <SystemMessage message={systemNotice.message} type={systemNotice.type} />
-  </aside>
-</main>
+      <!-- 💬 Feedback -->
+      <DashboardCardWide>
+        <section class="text-center text-gray-700">
+          <h3 class="font-semibold text-lg mb-2">
+            Dein Feedback hilft uns, SmartPages zu verbessern
+          </h3>
+          <p class="text-gray-600 text-sm mb-4">
+            Teile Ideen, Vorschläge oder Fehler direkt mit unserem Team –
+            wir entwickeln SmartPages aktiv weiter auf Basis deines Feedbacks.
+          </p>
+          <a
+            href="/feedback"
+            class="inline-block bg-[#C94C43] hover:bg-[#B33D35] text-white px-6 py-2 rounded-xl shadow transition-all duration-200"
+          >
+            Feedback senden
+          </a>
+        </section>
+      </DashboardCardWide>
+    </div>
 
-<style>
-  /* =======================================
-     🎯 SMARTPAGES DASHBOARD – FINAL SPACING FIX
-  ======================================= */
+    <!-- 🔸 Rechte Spalte: SystemMessage -->
+    <aside class="hidden lg:flex flex-col items-start justify-start mt-2">
+      <ProductCard
+        title="Hinweis"
+        text={systemNotice.message}
+        gradient={gradient}
+        glow={glow}
+      />
+    </aside>
+  </main>
 
-  main {
-    transition: all 0.3s ease-in-out;
-    margin-top: 1.2rem; /* 🔧 Minimaler Abstand unter Header (~1 cm) */
-  }
+  <style>
+    /* =======================================
+       🎯 DASHBOARD – FINAL DESIGN FIX
+    ======================================= */
 
-  /* 🧭 Cards */
-  main > div > * {
-    width: 100%;
-    max-width: 1150px;
-    transition: all 0.3s ease-in-out;
-  }
-
-  /* 🔸 Rechte Spalte */
-  aside .SystemMessage {
-    width: 100%;
-    max-width: 320px;
-  }
-
-  /* 🔹 Mittelzentrierung bei kleineren Displays */
-  @media (max-width: 1280px) {
     main {
-      justify-content: center;
-      padding: 0 1.5rem;
-      margin-top: 1rem; /* Weniger Platz bei kleineren Screens */
+      transition: all 0.3s ease-in-out;
+      margin-top: 0.5rem; /* Weniger Abstand unter Header (~1 cm) */
     }
-    main > div {
-      align-items: center;
-    }
+
+    /* 🧭 Cards */
     main > div > * {
-      max-width: 1000px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    main {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.6rem;
-      margin-top: 0.8rem;
-    }
-    aside {
-      display: flex !important;
-      justify-content: center;
       width: 100%;
-      margin-top: 0.6rem;
+      max-width: 1150px;
+      transition: all 0.3s ease-in-out;
     }
-    aside .SystemMessage {
-      max-width: 95%;
-      text-align: center;
-    }
-  }
 
-  @media (max-width: 768px) {
-    main {
-      gap: 1.2rem;
-      margin-top: 0.6rem; /* Sehr kompakt auf Mobile */
+    /* 🔸 Rechte Spalte */
+    aside > * {
+      width: 100%;
+      max-width: 320px;
     }
-  }
-</style>
+
+    /* 🔹 Zentrierung & kompaktere Darstellung */
+    @media (max-width: 1280px) {
+      main {
+        justify-content: center;
+        padding: 0 1rem;
+        margin-top: 0.3rem;
+      }
+      main > div {
+        align-items: center;
+      }
+      main > div > * {
+        max-width: 1000px;
+      }
+    }
+
+    /* 📱 Mobile Layout */
+    @media (max-width: 1024px) {
+      main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.2rem;
+        margin-top: 0.3rem;
+      }
+      aside {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        gap: 1rem;
+        margin-top: 0.2rem;
+      }
+    }
+  </style>
+
 </PageLayout>

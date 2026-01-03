@@ -1,37 +1,31 @@
 ---
-/**
- * Kompakte System-Message (rechts unter Header)
- * Props:
- * - message: string | null
- * - type: "info" | "warning" | "success" | "error"
- */
-const { message = null, type = "info" } = Astro.props;
+const { message, type = "info" } = Astro.props;
 
-if (!message) return null;
-
-const colorClasses = {
-  info: "bg-blue-50 text-blue-800 border-blue-200",
-  success: "bg-green-50 text-green-800 border-green-200",
-  warning: "bg-yellow-50 text-yellow-800 border-yellow-200",
-  error: "bg-red-50 text-red-800 border-red-200",
+// Gradient & Glow je nach Nachrichtentyp
+const styleMap = {
+  info: {
+    gradient: "from-[#4E6BFF] to-[#657AFF]",
+    glow: "hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]",
+  },
+  success: {
+    gradient: "from-[#3CB371] to-[#2E8B57]",
+    glow: "hover:shadow-[0_0_20px_rgba(60,179,113,0.4)]",
+  },
+  warning: {
+    gradient: "from-[#F5B400] to-[#E47E00]",
+    glow: "hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]",
+  },
+  error: {
+    gradient: "from-[#E14D4D] to-[#B83535]",
+    glow: "hover:shadow-[0_0_20px_rgba(225,77,77,0.4)]",
+  },
 }[type];
 ---
 
 <div
-  class={`SystemMessage border ${colorClasses} rounded-xl shadow-sm py-2 px-4 text-sm font-medium text-right max-w-md`}
+  class={`relative flex flex-col justify-center p-5 rounded-2xl shadow-lg border border-white/20 bg-gradient-to-br ${styleMap.gradient} text-white transition-all duration-300 ${styleMap.glow}`}
 >
-  {message}
+  <p class="text-sm leading-relaxed text-white/90 text-center font-medium">
+    {message}
+  </p>
 </div>
-
-<style>
-  .SystemMessage {
-    transition: all 0.3s ease-in-out;
-  }
-
-  @media (max-width: 768px) {
-    .SystemMessage {
-      text-align: center;
-      max-width: 95%;
-    }
-  }
-</style>
