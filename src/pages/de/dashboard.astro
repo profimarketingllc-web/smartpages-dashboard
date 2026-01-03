@@ -6,49 +6,34 @@ import ImprintCard from "~/components/core/ImprintCard.jsx";
 import ProductGrid from "~/components/core/ProductGrid.astro";
 import ProductCard from "~/components/core/ProductCard.astro";
 
-// Beispiel-Systemnachricht
 const systemNotice = {
   message: "Dein Testzeitraum endet in 3 Tagen. Jetzt upgraden und alle Funktionen behalten!",
   type: "warning",
 };
 
-// Farbzuordnung für Message
+// Dezente 80%-Farbintensität
 const gradient =
   systemNotice.type === "warning"
-    ? "from-[#F5B400] to-[#E47E00]"
+    ? "from-[#F5B400]/80 to-[#E47E00]/80"
     : systemNotice.type === "info"
-    ? "from-[#4E6BFF] to-[#657AFF]"
+    ? "from-[#4E6BFF]/80 to-[#657AFF]/80"
     : systemNotice.type === "success"
-    ? "from-[#3CB371] to-[#2E8B57]"
-    : "from-[#E14D4D] to-[#B83535]";
-
-const glow =
-  systemNotice.type === "warning"
-    ? "hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]"
-    : systemNotice.type === "info"
-    ? "hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]"
-    : systemNotice.type === "success"
-    ? "hover:shadow-[0_0_20px_rgba(60,179,113,0.4)]"
-    : "hover:shadow-[0_0_20px_rgba(225,77,77,0.4)]";
+    ? "from-[#3CB371]/80 to-[#2E8B57]/80"
+    : "from-[#E14D4D]/80 to-[#B83535]/80";
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
 
   <main
-    class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-6 w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8 mt-1 mb-20 transition-all duration-300"
+    class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_340px] gap-8 w-full max-w-[1500px] mx-auto px-4 sm:px-6 md:px-8 mt-1 mb-20 transition-all duration-300"
   >
-    <!-- 🧩 SystemMessage (oben bei Mobile, rechts bei Desktop) -->
+    <!-- 📱 SystemMessage (oben bei Mobile) -->
     <div class="lg:hidden w-full flex justify-center mt-1 mb-2">
-      <ProductCard
-        title="Hinweis"
-        text={systemNotice.message}
-        gradient={gradient}
-        glow={glow}
-      />
+      <ProductCard title="Hinweis" text={systemNotice.message} gradient={gradient} />
     </div>
 
-    <!-- 🔹 Linke Spalte: DashboardCards -->
-    <div class="flex flex-col gap-8 items-center w-full mx-auto mt-0">
+    <!-- 🔹 Hauptbereich: DashboardCards -->
+    <div class="flex flex-col gap-10 items-center w-full mx-auto mt-0">
       <!-- 🧭 Kundendaten -->
       <DashboardCardWide>
         <CustomerCard client:load />
@@ -85,51 +70,43 @@ const glow =
     </div>
 
     <!-- 🔸 Rechte Spalte: SystemMessage -->
-    <aside class="hidden lg:flex flex-col items-start justify-start mt-2">
-      <ProductCard
-        title="Hinweis"
-        text={systemNotice.message}
-        gradient={gradient}
-        glow={glow}
-      />
+    <aside class="hidden lg:flex flex-col items-start justify-start mt-3">
+      <ProductCard title="Hinweis" text={systemNotice.message} gradient={gradient} />
     </aside>
   </main>
 
   <style>
     /* =======================================
-       🎯 DASHBOARD – FINAL DESIGN FIX
+       🎯 DASHBOARD – SYMMETRIE & DEZENTHEIT
     ======================================= */
 
     main {
       transition: all 0.3s ease-in-out;
-      margin-top: 0.5rem; /* Weniger Abstand unter Header (~1 cm) */
+      margin-top: 0.4rem; /* reduziert den Weissraum */
     }
 
-    /* 🧭 Cards */
+    /* 🧭 Cards – breiter für optisches Gleichgewicht */
     main > div > * {
       width: 100%;
-      max-width: 1150px;
+      max-width: 1220px;
       transition: all 0.3s ease-in-out;
     }
 
     /* 🔸 Rechte Spalte */
     aside > * {
       width: 100%;
-      max-width: 320px;
+      max-width: 340px;
+      margin-top: 0.4rem;
     }
 
-    /* 🔹 Zentrierung & kompaktere Darstellung */
-    @media (max-width: 1280px) {
+    /* 🔹 Zentrierung & Balance bei kleineren Bildschirmen */
+    @media (max-width: 1440px) {
       main {
-        justify-content: center;
-        padding: 0 1rem;
-        margin-top: 0.3rem;
-      }
-      main > div {
-        align-items: center;
+        max-width: 1350px;
+        gap: 6;
       }
       main > div > * {
-        max-width: 1000px;
+        max-width: 1150px;
       }
     }
 
