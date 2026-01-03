@@ -1,10 +1,15 @@
+
 ---
 /**
- * SmartPages – Breite Dashboard-Kachel (Premium-Version)
- * Kombiniert Funktionalität + modernes Layout
- *
+ * SmartPages – DashboardCardWide (Final Premium Version)
+ * 
+ * Einheitliches Layout für breite Dashboard-Karten:
+ * - Saubere Integration mit PageLayout (keine doppelten Paddings)
+ * - Premium-Optik mit sanften Schatten, abgerundeten Ecken
+ * - Responsive Verhalten (volle Breite auf mobilen Geräten)
+ * 
  * Props:
- * - title: string
+ * - title?: string
  * - desc?: string
  * - items?: Array<{ label: string, value: string }>
  * - buttonText?: string
@@ -16,115 +21,109 @@
  */
 
 const {
-  title,
+  title = "",
   desc = "",
   items = [],
   buttonText = "",
   showButton = false,
   showStatus = false,
   status = "",
-  statusColor = "green",
+  statusColor = "gray",
   variant = "default",
 } = Astro.props;
 
-// 🧱 Style-Varianten
 const variantClasses = {
   default:
-    "bg-white border border-gray-100 shadow-md rounded-3xl px-6 md:px-10 py-6 md:py-8 w-full max-w-[1400px] mx-auto mb-6 md:mb-8 flex flex-col transition-all duration-300 hover:shadow-lg hover:-translate-y-[2px]",
+    "bg-white border border-gray-100 shadow-[0_4px_12px_rgba(0,0,0,0.04)] rounded-3xl w-full transition-all duration-300 hover:shadow-[0_6px_16px_rgba(0,0,0,0.08)]",
   highlight:
-    "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white shadow-xl rounded-3xl px-6 md:px-10 py-6 md:py-8 w-full max-w-[1400px] mx-auto mb-6 md:mb-8 flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-[2px]",
+    "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white shadow-lg rounded-3xl w-full transition-all duration-300 hover:shadow-[0_8px_20px_rgba(0,0,0,0.15)]",
 }[variant];
 
-// 🟢 Farbvarianten für Status-Pill
 const pillColors = {
-  green: "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]",
+  green: "bg-[#C8F3C1] text-[#1E2A45] border-[#A7E1A0]",
   red: "bg-[#F8D7DA] text-[#8B1A1A] border-[#E6A1A1]",
   gray: "bg-gray-200 text-gray-700 border-gray-300",
 }[statusColor];
 ---
 
-<!-- 🧱 DashboardCard Container -->
-<section class={variantClasses}>
-  <!-- Kopfbereich -->
-  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
+<section class={`w-full flex justify-center`}>
+  <div class={`${variantClasses} p-6 sm:p-8 md:p-10 lg:p-12 max-w-6xl`}>
     {title && (
       <h2
-        class={`text-2xl font-semibold leading-snug tracking-tight ${
+        class={`text-2xl font-semibold mb-4 ${
           variant === "highlight" ? "text-white" : "text-[#1E2A45]"
         }`}
       >
         {title}
       </h2>
     )}
-    {showStatus && status && (
-      <span
-        class={`inline-block px-4 py-1.5 text-sm rounded-full border font-medium min-w-[110px] text-center ${pillColors}`}
-      >
-        {status}
-      </span>
-    )}
-  </header>
 
-  <!-- Beschreibung -->
-  {desc && (
-    <p
-      class={`text-sm mb-4 ${
-        variant === "highlight" ? "text-white/90" : "text-gray-600"
-      }`}
-    >
-      {desc}
-    </p>
-  )}
-
-  <!-- 📦 Hauptinhalt -->
-  <div
-    class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4 md:gap-y-6 text-gray-700 text-sm md:text-base"
-  >
-    <slot />
-  </div>
-
-  <!-- 🔹 Items -->
-  {items.length > 0 && (
-    <div
-      class={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mt-6 text-sm ${
-        variant === "highlight" ? "text-white" : "text-gray-700"
-      }`}
-    >
-      {items.map((item) => (
-        <p>
-          <span class="font-semibold">{item.label}:</span>{" "}
-          {item.value || "–"}
-        </p>
-      ))}
-    </div>
-  )}
-
-  <!-- 🔸 Button -->
-  {showButton && buttonText && (
-    <div class="flex justify-center mt-6">
-      <button
-        type="button"
-        class={`px-6 py-2 rounded-xl shadow-sm transition-all duration-300 border ${
-          variant === "highlight"
-            ? "bg-white text-[#1E2A45] hover:bg-gray-100"
-            : "bg-white text-[#1E2A45] border-gray-300 hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white"
+    {desc && (
+      <p
+        class={`text-base mb-6 leading-relaxed ${
+          variant === "highlight" ? "text-gray-100" : "text-gray-600"
         }`}
       >
-        {buttonText}
-      </button>
-    </div>
-  )}
+        {desc}
+      </p>
+    )}
 
-  <!-- 🌈 Subtiler Lichtverlauf für Tiefe -->
-  <div
-    class="absolute inset-0 rounded-3xl pointer-events-none bg-gradient-to-br from-white/0 via-white/20 to-[#F8FAFB]/40 opacity-80"
-  ></div>
+    <div class="flex flex-col gap-4">
+      <slot />
+    </div>
+
+    {items.length > 0 && (
+      <div
+        class={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mt-6 ${
+          variant === "highlight" ? "text-white" : "text-gray-700"
+        }`}
+      >
+        {items.map((item) => (
+          <p>
+            <span class="font-semibold">{item.label}:</span>{" "}
+            {item.value || "—"}
+          </p>
+        ))}
+      </div>
+    )}
+
+    {showButton && buttonText && (
+      <div class="flex justify-center mt-8">
+        <button
+          type="button"
+          class="px-6 py-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+        >
+          {buttonText}
+        </button>
+      </div>
+    )}
+
+    {showStatus && status && (
+      <div class="mt-6 flex justify-end">
+        <span
+          class={`inline-block px-4 py-1.5 text-sm rounded-full border font-medium min-w-[110px] text-center ${pillColors}`}
+        >
+          {status}
+        </span>
+      </div>
+    )}
+  </div>
 </section>
 
 <style>
-  @media (min-width: 1536px) {
-    section {
-      max-width: 1600px !important;
+  section {
+    transition: all 0.3s ease-in-out;
+  }
+
+  /* Visuell angenehmere Abstände */
+  @media (max-width: 768px) {
+    section > div {
+      padding: 1.25rem;
     }
+  }
+
+  /* Sicherstellen, dass die Card sich der Gesamtbreite anpasst */
+  section > div {
+    width: 100%;
   }
 </style>
