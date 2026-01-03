@@ -1,6 +1,7 @@
 ---
 /**
- * SmartPages – Breite Dashboard-Kachel
+ * SmartPages – Breite Dashboard-Kachel (Premium-Version)
+ * Kombiniert Funktionalität + modernes Layout
  *
  * Props:
  * - title: string
@@ -26,13 +27,15 @@ const {
   variant = "default",
 } = Astro.props;
 
+// 🧱 Style-Varianten
 const variantClasses = {
   default:
-    "bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-8 mt-4 w-full flex justify-center",
+    "bg-white border border-gray-100 shadow-md rounded-3xl px-6 md:px-10 py-6 md:py-8 w-full max-w-[1400px] mx-auto mb-6 md:mb-8 flex flex-col transition-all duration-300 hover:shadow-lg hover:-translate-y-[2px]",
   highlight:
-    "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white shadow-xl rounded-3xl p-8 mt-4 w-full flex justify-center",
+    "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white shadow-xl rounded-3xl px-6 md:px-10 py-6 md:py-8 w-full max-w-[1400px] mx-auto mb-6 md:mb-8 flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-[2px]",
 }[variant];
 
+// 🟢 Farbvarianten für Status-Pill
 const pillColors = {
   green: "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]",
   red: "bg-[#F8D7DA] text-[#8B1A1A] border-[#E6A1A1]",
@@ -40,73 +43,88 @@ const pillColors = {
 }[statusColor];
 ---
 
-<!-- 🧱 Äußerer Wrapper: zentriert Inhalt horizontal -->
-<section class={`max-w-6xl mx-auto ${variantClasses}`}>
-  <!-- 📦 Innerer Container: begrenzt Breite des Inhalts (z. B. CustomerCard oder ProductGrid) -->
-  <div class="w-full max-w-4xl">
-    <!-- Titel (optional) -->
+<!-- 🧱 DashboardCard Container -->
+<section class={variantClasses}>
+  <!-- Kopfbereich -->
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
     {title && (
       <h2
-        class={`text-2xl font-bold mb-4 ${
+        class={`text-2xl font-semibold leading-snug tracking-tight ${
           variant === "highlight" ? "text-white" : "text-[#1E2A45]"
         }`}
       >
         {title}
       </h2>
     )}
+    {showStatus && status && (
+      <span
+        class={`inline-block px-4 py-1.5 text-sm rounded-full border font-medium min-w-[110px] text-center ${pillColors}`}
+      >
+        {status}
+      </span>
+    )}
+  </header>
 
-    <!-- Beschreibung (optional) -->
-    {desc && (
-      <p
-        class={`text-sm mb-6 ${
-          variant === "highlight" ? "text-gray-100" : "text-gray-600"
+  <!-- Beschreibung -->
+  {desc && (
+    <p
+      class={`text-sm mb-4 ${
+        variant === "highlight" ? "text-white/90" : "text-gray-600"
+      }`}
+    >
+      {desc}
+    </p>
+  )}
+
+  <!-- 📦 Hauptinhalt -->
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4 md:gap-y-6 text-gray-700 text-sm md:text-base"
+  >
+    <slot />
+  </div>
+
+  <!-- 🔹 Items -->
+  {items.length > 0 && (
+    <div
+      class={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mt-6 text-sm ${
+        variant === "highlight" ? "text-white" : "text-gray-700"
+      }`}
+    >
+      {items.map((item) => (
+        <p>
+          <span class="font-semibold">{item.label}:</span>{" "}
+          {item.value || "–"}
+        </p>
+      ))}
+    </div>
+  )}
+
+  <!-- 🔸 Button -->
+  {showButton && buttonText && (
+    <div class="flex justify-center mt-6">
+      <button
+        type="button"
+        class={`px-6 py-2 rounded-xl shadow-sm transition-all duration-300 border ${
+          variant === "highlight"
+            ? "bg-white text-[#1E2A45] hover:bg-gray-100"
+            : "bg-white text-[#1E2A45] border-gray-300 hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white"
         }`}
       >
-        {desc}
-      </p>
-    )}
+        {buttonText}
+      </button>
+    </div>
+  )}
 
-    <!-- Hauptinhalt -->
-    <slot />
-
-    <!-- Items-Liste (optional, z. B. für Textwerte oder Metadaten) -->
-    {items.length > 0 && (
-      <div
-        class={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 text-sm ${
-          variant === "highlight" ? "text-white" : "text-gray-700"
-        } mt-6`}
-      >
-        {items.map((item) => (
-          <p>
-            <span class="font-semibold">{item.label}:</span> {item.value || "–"}
-          </p>
-        ))}
-      </div>
-    )}
-
-    <!-- Button (optional) -->
-    {showButton && buttonText && (
-      <div class="flex justify-center mt-6">
-        <button
-          type="button"
-          class="px-6 py-2 bg-white text-[#1E2A45] border border-gray-300 rounded-xl shadow-sm 
-                 hover:bg-gradient-to-r hover:from-[#F5B400] hover:to-[#E47E00] hover:text-white 
-                 transition-all duration-300"
-        >
-          {buttonText}
-        </button>
-      </div>
-    )}
-
-    <!-- Status-Pill (optional, falls benötigt) -->
-    {showStatus && status && (
-      <div class="mt-4 flex justify-end">
-        <span
-          class={`inline-block px-4 py-1.5 text-sm rounded-full border font-medium min-w-[110px] text-center ${pillColors}`}
-        >
-          {status}
-        </span>
-      </div>
-    )}
-  </div>
+  <!-- 🌈 Subtiler Lichtverlauf für Tiefe -->
+  <div
+    class="absolute inset-0 rounded-3xl pointer-events-none bg-gradient-to-br from-white/0 via-white/20 to-[#F8FAFB]/40 opacity-80"
+  ></div>
 </section>
+
+<style>
+  @media (min-width: 1536px) {
+    section {
+      max-width: 1600px !important;
+    }
+  }
+</style>
