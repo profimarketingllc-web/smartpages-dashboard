@@ -1,7 +1,7 @@
 import { createResource } from "solid-js";
 
 export default function ImprintCard() {
-  // 🌍 Sprache erkennen (wie in CustomerCard)
+  // 🌍 Sprache erkennen
   const lang =
     typeof window !== "undefined"
       ? window.location.pathname.startsWith("/en")
@@ -39,7 +39,7 @@ export default function ImprintCard() {
     },
   }[lang];
 
-  // 📡 Daten abrufen
+  // 📡 Datenabruf
   const fetchImprint = async () => {
     try {
       const res = await fetch("https://api.smartpages.online/api/imprint", {
@@ -65,18 +65,11 @@ export default function ImprintCard() {
   const [imprint] = createResource(fetchImprint);
   const data = () => imprint() || {};
 
-  // 💠 Platzhalter-Element
-  const Skeleton = (props) => (
-    <span
-      class={`block h-3 w-${props.w || "24"} bg-gray-300/70 rounded-md`}
-    ></span>
-  );
-
-  // 💎 Layout
+  // ✨ Layout
   return (
-    <div class="relative w-full text-sm text-gray-700 px-8 md:px-10 py-6 md:py-8">
-      {/* 🟠 Button oben rechts */}
-      <div class="absolute top-5 right-10 md:right-14">
+    <div class="relative w-full text-sm text-gray-700 px-8 md:px-10 py-7 md:py-9">
+      {/* 🔸 Button oben rechts – leicht nach unten versetzt */}
+      <div class="absolute top-7 right-10 md:right-14">
         <button
           class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
         >
@@ -84,56 +77,63 @@ export default function ImprintCard() {
         </button>
       </div>
 
-      {/* 🔹 Titel */}
-      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-6 text-center md:text-left">
+      {/* 🔹 Titel – minimal tiefer gesetzt */}
+      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-8 text-center md:text-left">
         {t.title}
       </h2>
 
-      {/* 📋 Grid-Struktur */}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-10 text-sm text-gray-700">
-
+      {/* 📋 Inhalt */}
+      <div class="space-y-6">
         {/* 1️⃣ Firma & Ansprechpartner */}
-        <div>
-          <span class="font-medium text-gray-800">{t.company}:</span>
-          <p>{data().company ?? <Skeleton w="36" />}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t.contact}:</span>
-          <p>{data().contact ?? <Skeleton w="36" />}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3">
+          <div>
+            <span class="font-medium text-gray-800">{t.company}:</span>
+            <p>{data().company || "—"}</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-800">{t.contact}:</span>
+            <p>{data().contact || "—"}</p>
+          </div>
         </div>
 
         {/* 2️⃣ Straße & Hausnummer */}
-        <div>
-          <span class="font-medium text-gray-800">{t.street}:</span>
-          <p>{data().street ?? <Skeleton w="36" />}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t.houseNumber}:</span>
-          <p>{data().houseNumber ?? <Skeleton w="12" />}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3">
+          <div>
+            <span class="font-medium text-gray-800">{t.street}:</span>
+            <p>{data().street || "—"}</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-800">{t.houseNumber}:</span>
+            <p>{data().houseNumber || "—"}</p>
+          </div>
         </div>
 
         {/* 3️⃣ PLZ & Ort */}
-        <div>
-          <span class="font-medium text-gray-800">{t.zip}:</span>
-          <p>{data().zip ?? <Skeleton w="12" />}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t.city}:</span>
-          <p>{data().city ?? <Skeleton w="24" />}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3">
+          <div>
+            <span class="font-medium text-gray-800">{t.zip}:</span>
+            <p>{data().zip || "—"}</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-800">{t.city}:</span>
+            <p>{data().city || "—"}</p>
+          </div>
         </div>
 
-        {/* 4️⃣ Telefon, E-Mail, USt-ID */}
-        <div>
-          <span class="font-medium text-gray-800">{t.phone}:</span>
-          <p>{data().phone ?? <Skeleton w="24" />}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t.email}:</span>
-          <p>{data().email ?? <Skeleton w="36" />}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t.vat}:</span>
-          <p>{data().vat ?? <Skeleton w="16" />}</p>
+        {/* 4️⃣ Telefon · E-Mail · USt-ID */}
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-10 gap-y-3">
+          <div>
+            <span class="font-medium text-gray-800">{t.phone}:</span>
+            <p>{data().phone || "—"}</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-800">{t.email}:</span>
+            <p>{data().email || "—"}</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-800">{t.vat}:</span>
+            <p>{data().vat || "—"}</p>
+          </div>
         </div>
       </div>
     </div>
