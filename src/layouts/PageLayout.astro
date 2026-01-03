@@ -47,7 +47,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
 
           <!-- 🧱 Hauptinhalt -->
           <div
-            class="flex-1 flex flex-col transition-all duration-300 bg-white md:ml-64"
+            class="flex-1 flex flex-col transition-all duration-300 bg-white md:ml-60 lg:ml-64"
           >
             {header && (
               <div class={stickyClass}>
@@ -57,9 +57,9 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
 
             <!-- 📄 Seiteninhalt -->
             <main
-              class={`flex-1 px-3 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-3 md:py-4 
+              class={`flex-1 px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-3 md:py-4 
                       ${header ? headerOffsetClass : ""} 
-                      max-w-[1400px] w-full mx-auto transition-all duration-300`}
+                      max-w-[1500px] w-full mx-auto transition-all duration-300`}
             >
               <slot />
             </main>
@@ -106,40 +106,50 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
 
   <style>
     /* ================================
-       🎯 Optimierung: Premium Layout
+       🎯 PREMIUM LAYOUT VERBESSERUNG
     ================================ */
 
     main {
       margin: 0 auto;
-      padding-top: 0.5rem;
+      padding-top: 0.4rem;
       transition: all 0.3s ease-in-out;
     }
 
-    /* 📐 Großbildschirme */
-    @media (min-width: 1280px) {
+    /* 📏 Extra-breite Bildschirme (≥1536px) */
+    @media (min-width: 1536px) {
       main {
+        max-width: 1500px; /* vorher 1400px */
         padding-left: 2rem;
         padding-right: 2rem;
       }
     }
 
-    /* Mittelgroße Bildschirme */
-    @media (min-width: 1024px) and (max-width: 1279px) {
+    /* 💻 Große Laptops (1280–1535px) */
+    @media (min-width: 1280px) and (max-width: 1535px) {
       main {
+        max-width: 1400px;
         padding-left: 1.5rem;
         padding-right: 1.5rem;
       }
     }
 
-    /* Tablets / kleinere Laptops */
-    @media (max-width: 1023px) {
+    /* 📱 Tablets & kleinere Screens */
+    @media (max-width: 1279px) {
       main {
+        max-width: 100%;
         padding-left: 1rem;
         padding-right: 1rem;
       }
     }
 
-    /* Smartphones */
+    /* 🧱 Sidebar-Kompensation */
+    @media (min-width: 1024px) {
+      main {
+        margin-left: 0.25rem; /* kompaktere Einrückung */
+      }
+    }
+
+    /* 📲 Mobile Optimierung */
     @media (max-width: 768px) {
       main {
         padding-left: 0.75rem;
