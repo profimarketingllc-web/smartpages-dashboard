@@ -1,6 +1,40 @@
 /* ======================================================
-   🪶 Fine Tuning – Hero Boxes & Product Tiles
+   🌐 GLOBAL.CSS – SmartPages Design System
+   Einheitliche UI-Grundlagen, Shadows & Glows
    ====================================================== */
+
+/* ----------------------------
+   🧱 Base Layout
+-----------------------------*/
+
+:root {
+  --shadow-soft: 0 3px 10px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.08);
+  --shadow-strong: 0 10px 28px rgba(0, 0, 0, 0.12);
+
+  --color-text: #1E2A45;
+  --color-bg: #f9fafc;
+}
+
+/* ----------------------------
+   🌤️ Global Defaults
+-----------------------------*/
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ----------------------------
+   🪶 Fine Tuning – Hero Boxes & Product Tiles
+-----------------------------*/
 
 .no-hover:hover {
   transform: none;
@@ -13,6 +47,8 @@
   flex-direction: column;
   justify-content: space-between;
   text-align: left;
+  border-radius: 1.5rem;
+  transition: all 0.3s ease-in-out;
 }
 
 .smart-tile .badge {
@@ -41,4 +77,67 @@
 .smart-products p {
   font-size: 0.9rem;
   line-height: 1.5;
+}
+
+/* ======================================================
+   ✨ Glow & Shadow System – SmartPages Premium Edition
+   ====================================================== */
+
+/* Neutraler DashboardCard-Shadow (Paper Look) */
+.smart-shadow {
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.04),
+              0 8px 25px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.smart-shadow:hover {
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08),
+              0 10px 35px rgba(0, 0, 0, 0.12);
+}
+
+/* ======================================================
+   ✨ SmartPages Glow System – Intensivierte Premium Version
+   ====================================================== */
+
+/* 💙 SmartProfile – Blau */
+.smart-glow-blue {
+  box-shadow: 0 0 25px rgba(78, 107, 255, 0.55),
+              0 0 45px rgba(78, 107, 255, 0.35);
+  transition: box-shadow 0.4s ease, transform 0.3s ease;
+}
+.smart-glow-blue:hover {
+  box-shadow: 0 0 35px rgba(78, 107, 255, 0.75),
+              0 0 65px rgba(78, 107, 255, 0.55);
+  transform: translateY(-2px);
+}
+
+/* 🟧 SmartPage – Orange */
+.smart-glow-orange {
+  box-shadow: 0 0 25px rgba(245, 180, 0, 0.55),
+              0 0 45px rgba(245, 180, 0, 0.35);
+  transition: box-shadow 0.4s ease, transform 0.3s ease;
+}
+.smart-glow-orange:hover {
+  box-shadow: 0 0 35px rgba(245, 180, 0, 0.75),
+              0 0 65px rgba(245, 180, 0, 0.55);
+  transform: translateY(-2px);
+}
+
+/* 💜 SmartDomain – Lila */
+.smart-glow-purple {
+  box-shadow: 0 0 25px rgba(139, 92, 255, 0.55),
+              0 0 45px rgba(139, 92, 255, 0.35);
+  transition: box-shadow 0.4s ease, transform 0.3s ease;
+}
+.smart-glow-purple:hover {
+  box-shadow: 0 0 35px rgba(139, 92, 255, 0.75),
+              0 0 65px rgba(139, 92, 255, 0.55);
+  transform: translateY(-2px);
+}
+
+/* 🌈 Einheitliche Übergänge */
+.smart-glow-blue,
+.smart-glow-orange,
+.smart-glow-purple {
+  transition: all 0.35s ease-in-out;
 }
