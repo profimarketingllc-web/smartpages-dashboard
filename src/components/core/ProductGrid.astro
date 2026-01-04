@@ -1,11 +1,10 @@
 ---
 /**
- * ProductGrid.astro
- * -----------------
- * Rendert ein flexibles Grid mit Produktkarten.
- * Automatische Varianten-Steuerung:
- *  - "teaser" auf Login-Seiten
- *  - "upsell" auf Dashboard-Seiten
+ * ProductGrid.astro (Smart Adaptive Edition)
+ * ------------------------------------------
+ * - Erkennt automatisch Umgebung (DashboardCardWide vs. Login)
+ * - Passt Padding, Margin und Layout automatisch an
+ * - Ideal für Teaser auf Login-Seiten & Upsells im Dashboard
  */
 
 import ProductCard from "./ProductCard.astro";
@@ -13,18 +12,18 @@ import ProductCard from "./ProductCard.astro";
 // Aktuelle URL analysieren
 const currentPath = Astro.url.pathname.toLowerCase();
 
-// Automatische Variante anhand der URL
+// Automatische Variante bestimmen
 let detectedVariant = "teaser";
 if (currentPath.includes("/dashboard")) detectedVariant = "upsell";
 else if (currentPath.includes("/login") || currentPath.includes("/signin")) detectedVariant = "teaser";
 
-// Props: manuelle Variante überschreibt Automatik (optional)
+// Props (manuelle Variante überschreibt Automatik)
 const {
   products = [],
   variant = detectedVariant,
 } = Astro.props;
 
-// ✅ Inhalte je nach Variante
+// Inhalte je nach Variante
 const productSets = {
   teaser: [
     {
@@ -33,7 +32,7 @@ const productSets = {
       text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
       gradient: "from-[#4E6BFF] to-[#657AFF]",
       glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
-      action: null,
+      action: "/register",
     },
     {
       title: "SmartPage",
@@ -41,7 +40,7 @@ const productSets = {
       text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
       gradient: "from-[#F5B400] to-[#E47E00]",
       glow: "hover:shadow-[0_0_30px_#F5B40080]",
-      action: null,
+      action: "/register",
     },
     {
       title: "SmartDomain",
@@ -49,7 +48,7 @@ const productSets = {
       text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
       gradient: "from-[#8B5CFF] to-[#A076FF]",
       glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
-      action: null,
+      action: "/register",
     },
   ],
   upsell: [
@@ -80,19 +79,53 @@ const productSets = {
   ],
 };
 
-// ✅ Fallback: Props > Automatik > Default
+// Fallback: Props > Automatik > Default
 const items = products.length ? products : productSets[variant];
+
+// Dynamisch Layout bestimmen anhand der Umgebung
+// (DashboardCards haben meist einen parent mit 'rounded-3xl' oder 'border-gray-100')
+let isInDashboardCard = false;
+if (Astro.slots && Astro.locals?.componentMetadata) {
+  // heuristische Prüfung: bei eingebetteter Komponente in DashboardCardWide
+  isInDashboardCard = true;
+} else if (currentPath.includes("/dashboard")) {
+  isInDashboardCard = true;
+}
 ---
 
-<section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mb-10">
-  {items.map((p) => (
-    <ProductCard
-      title={p.title}
-      label={p.label}
-      text={p.text}
-      gradient={p.gradient}
-      glow={p.glow}
-      action={p.action}
-    />
-  ))}
+<section
+  class={`w-full flex justify-center ${
+    isInDashboardCard ? "my-1" : "my-10"
+  }`}
+>
+  <div
+    class={`max-w-6xl w-full grid grid-cols-1 md:grid-cols-3 gap-6 
+      ${isInDashboardCard ? "px-2 sm:px-3 py-2 md:py-3" : "px-6 sm:px-10 py-8 md:py-10"}
+      place-items-center`}
+  >
+    {items.map((p) => (
+      <ProductCard
+        title={p.title}
+        label={p.label}
+        text={p.text}
+        gradient={p.gradient}
+        glow={p.glow}
+        action={p.action}
+      />
+    ))}
+  </div>
 </section>
+
+<style>
+  section {
+    transition: all 0.25s ease-in-out;
+  }
+
+  /* Kompaktes Layout für mobile Geräte */
+  @media (max-width: 768px) {
+    div {
+      gap: 1.25rem;
+      padding: 0.75rem 0.5rem !important;
+    }
+  }
+</style>
