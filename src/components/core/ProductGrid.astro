@@ -83,25 +83,13 @@ const productSets = {
 const items = products.length ? products : productSets[variant];
 
 // Dynamisch Layout bestimmen anhand der Umgebung
-// (DashboardCards haben meist einen parent mit 'rounded-3xl' oder 'border-gray-100')
-let isInDashboardCard = false;
-if (Astro.slots && Astro.locals?.componentMetadata) {
-  // heuristische Prüfung: bei eingebetteter Komponente in DashboardCardWide
-  isInDashboardCard = true;
-} else if (currentPath.includes("/dashboard")) {
-  isInDashboardCard = true;
-}
+let isInDashboardCard = currentPath.includes("/dashboard");
 ---
 
 <section
   class={`w-full flex justify-center ${
     isInDashboardCard ? "my-1" : "my-10"
   }`}
->
-<div
-  class={`relative flex flex-col justify-between rounded-2xl text-white shadow-md 
-          ${gradient} ${glow} transition-all duration-300 
-          hover:scale-[1.02] min-h-[170px] md:min-h-[190px]`}
 >
   <div
     class={`max-w-6xl w-full grid grid-cols-1 md:grid-cols-3 gap-6 
@@ -126,7 +114,6 @@ if (Astro.slots && Astro.locals?.componentMetadata) {
     transition: all 0.25s ease-in-out;
   }
 
-  /* Kompaktes Layout für mobile Geräte */
   @media (max-width: 768px) {
     div {
       gap: 1.25rem;
