@@ -98,6 +98,11 @@ if (Astro.slots && Astro.locals?.componentMetadata) {
     isInDashboardCard ? "my-1" : "my-10"
   }`}
 >
+<div
+  class={`relative flex flex-col justify-between rounded-2xl text-white shadow-md 
+          ${gradient} ${glow} transition-all duration-300 
+          hover:scale-[1.02] min-h-[170px] md:min-h-[190px]`}
+>
   <div
     class={`max-w-6xl w-full grid grid-cols-1 md:grid-cols-3 gap-6 
       ${isInDashboardCard ? "px-2 sm:px-3 py-2 md:py-3" : "px-6 sm:px-10 py-8 md:py-10"}

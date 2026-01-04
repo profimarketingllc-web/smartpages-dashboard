@@ -1,11 +1,11 @@
 ---
 /**
- * SmartPages – DashboardCardWide (Balanced Padding Edition)
+ * SmartPages – DashboardCardWide (Above Fold Optimized)
  *
  * Ziel:
- * - Gleiches Padding oben & unten
- * - Zentrierter Content
- * - Perfekter Look für ProductGrid, CustomerCard, ImprintCard
+ * - Kompaktes, symmetrisches Padding
+ * - Perfekte Balance für Above-the-Fold-Präsentation
+ * - Besseres Zusammenspiel mit ProductGrid
  */
 
 const {
@@ -22,9 +22,9 @@ const {
 
 const variantClasses = {
   default:
-    "bg-white border border-gray-100 shadow-[0_4px_10px_rgba(0,0,0,0.04)] rounded-3xl w-full transition-all duration-300 hover:shadow-[0_6px_14px_rgba(0,0,0,0.08)]",
+    "bg-white border border-gray-100 shadow-[0_3px_10px_rgba(0,0,0,0.04)] rounded-3xl w-full transition-all duration-300 hover:shadow-[0_5px_14px_rgba(0,0,0,0.07)]",
   highlight:
-    "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white shadow-lg rounded-3xl w-full transition-all duration-300 hover:shadow-[0_8px_16px_rgba(0,0,0,0.12)]",
+    "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white shadow-lg rounded-3xl w-full transition-all duration-300 hover:shadow-[0_7px_18px_rgba(0,0,0,0.10)]",
 }[variant];
 
 const pillColors = {
@@ -37,7 +37,7 @@ const pillColors = {
 <section class="w-full flex justify-center my-1">
   <div
     class={`mx-auto w-[92%] xl:w-[95%] ${variantClasses} 
-            px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-5 flex flex-col items-center`}
+            px-4 sm:px-6 md:px-8 py-3 sm:py-3.5 md:py-4 flex flex-col items-center`}
   >
     {title && (
       <h2
@@ -59,7 +59,7 @@ const pillColors = {
       </p>
     )}
 
-    <!-- 📦 Slot Content -->
+    <!-- 📦 Inhalt -->
     <div class="flex justify-center w-full my-1">
       <slot />
     </div>
@@ -107,14 +107,10 @@ const pillColors = {
     transition: all 0.3s ease-in-out;
   }
 
-  section + section {
-    margin-top: 0.75rem;
-  }
-
-  /* Kompakt & ausbalanciert */
+  /* Kompakteres Padding für Mobile */
   @media (max-width: 768px) {
     section > div {
-      padding: 0.9rem 1rem !important;
+      padding: 0.75rem 1rem !important;
     }
   }
 </style>
