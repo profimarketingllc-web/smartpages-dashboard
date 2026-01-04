@@ -1,14 +1,6 @@
 import { createResource } from "solid-js";
 
 export default function CustomerCard() {
-  // Sprache erkennen
-  const lang =
-    typeof window !== "undefined"
-      ? window.location.pathname.startsWith("/en")
-        ? "en"
-        : "de"
-      : "de";
-
   const t = {
     de: {
       title: "Kundendaten",
@@ -19,53 +11,39 @@ export default function CustomerCard() {
       lastLogin: "letzter Login",
       button: "Profil bearbeiten",
       loggedOut: "Abgemeldet",
-      active: "Aktiv",
     },
-    en: {
-      title: "Customer Data",
-      name: "Name",
-      plan: "Plan",
-      activeUntil: "active until",
-      status: "Status",
-      lastLogin: "last login",
-      button: "Edit Profile",
-      loggedOut: "Logged out",
-      active: "Active",
-    },
-  }[lang];
+  }.de;
 
-  // Kundendaten abrufen
   const fetchCustomer = async () => {
     try {
       const res = await fetch("https://api.smartpages.online/api/customer", {
         credentials: "include",
       });
-      if (!res.ok) throw new Error("No customer data");
+      if (!res.ok) throw new Error();
       return await res.json();
     } catch {
       return {
-        name: null,
-        plan: null,
+        name: "—",
+        plan: "—",
+        activeUntil: "—",
         status: t.loggedOut,
-        activeUntil: null,
-        lastLogin: null,
+        lastLogin: "—",
       };
     }
   };
 
   const [customer] = createResource(fetchCustomer);
   const data = () => customer() || {};
-
   const displayValue = (val) => (val ? val : "—");
 
   return (
     <div class="relative w-full text-sm text-gray-700 px-8 md:px-10 py-5 md:py-6">
-      {/* 🔹 Status-Pill */}
-      <div class="absolute top-4 right-10 md:right-14">
+      {/* 🔹 Status rechts oben */}
+      <div class="absolute top-4 right-8">
         <span
           class={`inline-block px-4 py-1 text-sm font-medium rounded-full border 
                   ${
-                    data().status === t.active
+                    data().status === "Aktiv"
                       ? "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]"
                       : "bg-[#F8D7DA] text-[#8B1A1A] border-[#E6A1A1]"
                   }`}
@@ -74,14 +52,14 @@ export default function CustomerCard() {
         </span>
       </div>
 
-      {/* 🔹 Überschrift */}
-      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-6 text-center md:text-left">
+      {/* 🔹 Titel */}
+      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-6">
         {t.title}
       </h2>
 
-      {/* 🔹 Erste Zeile */}
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-8">
-        <div class="md:col-span-2">
+      {/* 🔹 Felder */}
+      <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-y-4 gap-x-8 text-left">
+        <div>
           <span class="font-medium text-gray-800">{t.name}:</span>
           <p>{displayValue(data().name)}</p>
         </div>
@@ -91,29 +69,19 @@ export default function CustomerCard() {
         </div>
         <div>
           <span class="font-medium text-gray-800">{t.activeUntil}:</span>
-          <p class="text-gray-600 text-sm">{displayValue(data().activeUntil)}</p>
+          <p>{displayValue(data().activeUntil)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">{t.lastLogin}:</span>
+          <p>{displayValue(data().lastLogin)}</p>
         </div>
       </div>
 
-      {/* 🔹 Zweite Zeile */}
-      <div class="grid grid-cols-3 mt-8 items-center">
-        <div>
-          <span class="font-medium text-gray-800">{t.status}:</span>
-          <p>{displayValue(data().status)}</p>
-        </div>
-
-        <div class="md:text-center">
-          <span class="font-medium text-gray-800">{t.lastLogin}:</span>
-          <p class="text-gray-600 text-sm">{displayValue(data().lastLogin)}</p>
-        </div>
-
-        <div class="flex justify-end">
-          <button
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
-          >
-            {t.button}
-          </button>
-        </div>
+      {/* 🔹 Button */}
+      <div class="mt-6 flex justify-end">
+        <button class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200">
+          {t.button}
+        </button>
       </div>
     </div>
   );
