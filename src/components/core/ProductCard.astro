@@ -1,9 +1,11 @@
 ---
 /**
- * ProductCard.astro (Unified Height Edition)
- * ------------------------------------------
- * Einheitliche Kartenhöhe für sauberes Layout.
- * Responsive, dynamisch und visuell ausbalanciert.
+ * ProductCard.astro – SmartPages Premium Edition
+ * ----------------------------------------------
+ * ✓ Harmonisiert mit LoginPage (Gradient-Style)
+ * ✓ Produktfarbiger Glow beim Hover
+ * ✓ Edle Badges mit verbesserter Lesbarkeit
+ * ✓ Kompakter, gleichmäßiger Aufbau (Above the Fold optimiert)
  */
 
 const { title, label, text, gradient, glow, action } = Astro.props;
@@ -12,27 +14,62 @@ const { title, label, text, gradient, glow, action } = Astro.props;
 <a
   href={action || "#"}
   class={`relative flex flex-col justify-between rounded-2xl text-white 
-          bg-gradient-to-r ${gradient} shadow-md ${glow} transition-all duration-300 
-          hover:scale-[1.02] hover:shadow-lg min-h-[180px] md:min-h-[200px] p-6`}
+          bg-gradient-to-r ${gradient} shadow-md transition-all duration-300 
+          hover:scale-[1.02] hover:shadow-[0_0_35px_rgba(0,0,0,0.15)] min-h-[150px] md:min-h-[165px] p-5 md:p-6`}
 >
   <div>
+    <!-- Titel -->
     <h3 class="text-lg md:text-xl font-bold mb-2">{title}</h3>
+
+    <!-- Badge -->
     {label && (
-      <span class="absolute top-3 right-4 text-xs bg-white/20 px-3 py-0.5 rounded-full">
+      <span
+        class={`absolute top-3 right-4 text-[11px] tracking-wide font-medium 
+                px-3 py-0.5 rounded-full uppercase
+                bg-white/25 text-white/90 shadow-[inset_0_0_4px_rgba(255,255,255,0.4)]
+                backdrop-blur-sm transition-all duration-300`}
+      >
         {label}
       </span>
     )}
+
+    <!-- Text -->
     <p class="text-sm leading-snug text-white/90">{text}</p>
   </div>
+
+  <!-- Soft Glow Effekt -->
+  <div
+    class={`absolute inset-0 rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none ${glow}`}
+  ></div>
 </a>
 
 <style>
   a {
     text-decoration: none;
     display: flex;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
   }
 
   a:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+  }
+
+  /* Sanfter Hover-Glow */
+  .hover\:shadow-[0_0_35px_rgba\(0,0,0,0\.15\)]:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    a {
+      min-height: 140px !important;
+      padding: 1rem 1.25rem !important;
+    }
+
+    span {
+      top: 0.75rem;
+      right: 1rem;
+    }
   }
 </style>

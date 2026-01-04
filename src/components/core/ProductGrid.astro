@@ -1,10 +1,11 @@
 ---
 /**
- * ProductGrid.astro (Smart Adaptive Edition)
- * ------------------------------------------
- * - Erkennt automatisch Umgebung (DashboardCardWide vs. Login)
- * - Passt Padding, Margin und Layout automatisch an
- * - Ideal für Teaser auf Login-Seiten & Upsells im Dashboard
+ * ProductGrid.astro – Premium Harmony Edition
+ * -------------------------------------------
+ * ✓ Gleichmäßige Höhe der ProductCards
+ * ✓ Sanftes Fade-In beim Laden
+ * ✓ Zentrierte Darstellung (in DashboardCard)
+ * ✓ Optimiertes Padding für "Above the Fold"
  */
 
 import ProductCard from "./ProductCard.astro";
@@ -17,38 +18,38 @@ let detectedVariant = "teaser";
 if (currentPath.includes("/dashboard")) detectedVariant = "upsell";
 else if (currentPath.includes("/login") || currentPath.includes("/signin")) detectedVariant = "teaser";
 
-// Props (manuelle Variante überschreibt Automatik)
+// Props
 const {
   products = [],
   variant = detectedVariant,
 } = Astro.props;
 
-// Inhalte je nach Variante
+// Produktsets
 const productSets = {
   teaser: [
     {
       title: "SmartProfile",
-      label: "Neu 🚀",
+      label: "Bald verfügbar",
       text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
       gradient: "from-[#4E6BFF] to-[#657AFF]",
       glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
-      action: "/register",
+      action: null,
     },
     {
       title: "SmartPage",
-      label: "",
+      label: "Bald verfügbar",
       text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
       gradient: "from-[#F5B400] to-[#E47E00]",
       glow: "hover:shadow-[0_0_30px_#F5B40080]",
-      action: "/register",
+      action: null,
     },
     {
       title: "SmartDomain",
-      label: "",
+      label: "Bald verfügbar",
       text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
       gradient: "from-[#8B5CFF] to-[#A076FF]",
       glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
-      action: "/register",
+      action: null,
     },
   ],
   upsell: [
@@ -79,24 +80,15 @@ const productSets = {
   ],
 };
 
-// Fallback: Props > Automatik > Default
 const items = products.length ? products : productSets[variant];
-
-// Dynamisch Layout bestimmen anhand der Umgebung
-let isInDashboardCard = currentPath.includes("/dashboard");
 ---
 
 <section
-  class={`w-full flex justify-center ${
-    isInDashboardCard ? "my-1" : "my-10"
-  }`}
+  class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-6 py-4 md:py-5 
+         items-stretch justify-items-center animate-fadeIn"
 >
-  <div
-    class={`max-w-6xl w-full grid grid-cols-1 md:grid-cols-3 gap-6 
-      ${isInDashboardCard ? "px-2 sm:px-3 py-2 md:py-3" : "px-6 sm:px-10 py-8 md:py-10"}
-      place-items-center`}
-  >
-    {items.map((p) => (
+  {items.map((p) => (
+    <div class="w-full flex justify-center">
       <ProductCard
         title={p.title}
         label={p.label}
@@ -105,19 +97,46 @@ let isInDashboardCard = currentPath.includes("/dashboard");
         glow={p.glow}
         action={p.action}
       />
-    ))}
-  </div>
+    </div>
+  ))}
 </section>
 
 <style>
+  /* 🪶 Sanftes Fade-In beim Laden */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-out both;
+  }
+
+  /* 🧩 Einheitliche Höhe erzwingen */
   section {
-    transition: all 0.25s ease-in-out;
+    align-items: stretch;
+  }
+
+  section > div {
+    display: flex;
+  }
+
+  /* 📏 Leicht kompakter für bessere Above-the-Fold-Darstellung */
+  section {
+    padding-top: 0.5rem;
+    padding-bottom: 0.75rem;
   }
 
   @media (max-width: 768px) {
-    div {
-      gap: 1.25rem;
-      padding: 0.75rem 0.5rem !important;
+    section {
+      gap: 1rem;
+      padding: 0.75rem 1rem;
     }
   }
 </style>
