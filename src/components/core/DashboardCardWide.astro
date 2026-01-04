@@ -1,23 +1,11 @@
-
 ---
 /**
- * SmartPages – DashboardCardWide (Final Premium Version)
- * 
- * Einheitliches Layout für breite Dashboard-Karten:
- * - Saubere Integration mit PageLayout (keine doppelten Paddings)
- * - Premium-Optik mit sanften Schatten, abgerundeten Ecken
- * - Responsive Verhalten (volle Breite auf mobilen Geräten)
- * 
- * Props:
- * - title?: string
- * - desc?: string
- * - items?: Array<{ label: string, value: string }>
- * - buttonText?: string
- * - showButton?: boolean
- * - showStatus?: boolean
- * - status?: string
- * - statusColor?: "green" | "red" | "gray"
- * - variant?: "default" | "highlight"
+ * SmartPages – DashboardCardWide (Optimized Premium Version)
+ *
+ * Verbesserte Innenabstände für gleichmäßige Darstellung aller Komponenten.
+ * - Harmonischer Raum nach oben & unten
+ * - Keine Layout-Verschiebung für bestehende Inhalte
+ * - Bessere Integration für ProductGrid, CustomerCard, etc.
  */
 
 const {
@@ -46,9 +34,11 @@ const pillColors = {
 }[statusColor];
 ---
 
-<section class={`w-full flex justify-center`}>
-  <section class={`mx-auto w-[92%] xl:w-[95%] ${variantClasses}`}>
-   {title && (
+<section class="w-full flex justify-center">
+  <!-- 📦 Außencontainer -->
+  <div class={`mx-auto w-[92%] xl:w-[95%] ${variantClasses} p-8 md:p-10 flex flex-col`}>
+    <!-- 🔹 Titel -->
+    {title && (
       <h2
         class={`text-2xl font-semibold mb-4 ${
           variant === "highlight" ? "text-white" : "text-[#1E2A45]"
@@ -58,6 +48,7 @@ const pillColors = {
       </h2>
     )}
 
+    <!-- 🔹 Beschreibung -->
     {desc && (
       <p
         class={`text-base mb-6 leading-relaxed ${
@@ -68,10 +59,12 @@ const pillColors = {
       </p>
     )}
 
-    <div class="flex flex-col gap-4">
+    <!-- 📍 Slot-Inhalt – jetzt mit zentriertem Layout -->
+    <div class="flex justify-center w-full mt-2 mb-2">
       <slot />
     </div>
 
+    <!-- 🔸 Optional: Info-Items -->
     {items.length > 0 && (
       <div
         class={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mt-6 ${
@@ -87,6 +80,7 @@ const pillColors = {
       </div>
     )}
 
+    <!-- 🔸 Optional: Button -->
     {showButton && buttonText && (
       <div class="flex justify-center mt-8">
         <button
@@ -98,6 +92,7 @@ const pillColors = {
       </div>
     )}
 
+    <!-- 🔸 Optional: Status-Pill -->
     {showStatus && status && (
       <div class="mt-6 flex justify-end">
         <span
@@ -111,19 +106,14 @@ const pillColors = {
 </section>
 
 <style>
-  section {
-    transition: all 0.3s ease-in-out;
-  }
-
-  /* Visuell angenehmere Abstände */
+  /* 🎯 Verbesserte Innenabstände */
   @media (max-width: 768px) {
     section > div {
-      padding: 1.25rem;
+      padding: 1.5rem;
     }
   }
 
-  /* Sicherstellen, dass die Card sich der Gesamtbreite anpasst */
-  section > div {
-    width: 100%;
+  section {
+    transition: all 0.3s ease-in-out;
   }
 </style>
