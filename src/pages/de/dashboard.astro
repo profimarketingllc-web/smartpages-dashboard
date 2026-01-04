@@ -8,17 +8,21 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
-  <main class="flex flex-col gap-10 max-w-6xl mx-auto px-6 mt-4 md:mt-6 mb-16 md:mb-20">
+  <main
+    class="flex flex-col gap-10 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
+  >
 
     <!-- 🧭 OBERER BEREICH: Kundendaten + SystemMessage -->
-    <section class="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
-      <!-- Kundendaten -->
+    <section
+      class="grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start"
+    >
+      <!-- 🪪 Kundendaten -->
       <DashboardCardWide>
         <CustomerCard client:load />
       </DashboardCardWide>
 
-      <!-- Systemnachricht -->
-      <div class="flex justify-center xl:justify-end">
+      <!-- 💬 Systemnachricht -->
+      <div class="system-message flex justify-center xl:justify-end transition-all duration-300">
         <SystemMessage />
       </div>
     </section>
@@ -37,7 +41,11 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
 </PageLayout>
 
 <style>
-  /* 🧩 Oberer Bereich zweispaltig ab XL */
+  /* ===============================
+     🎯 PREMIUM DASHBOARD LAYOUT
+     =============================== */
+
+  /* 🧩 Oberer Bereich ab XL zweispaltig */
   @media (min-width: 1280px) {
     section:first-of-type {
       display: grid;
@@ -55,15 +63,23 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
       gap: 1.5rem;
     }
 
-    section:first-of-type > div {
+    /* 💬 SystemMessage mittig auf kleinen Screens */
+    section:first-of-type > .system-message {
       order: 2;
       display: flex;
-      justify-content: center;
+      justify-content: center !important;
+      text-align: center;
     }
   }
 
-  /* 📏 Weißraum */
+  /* 🧘‍♂️ Harmonisches Spacing zum Header */
   main {
-    padding-top: 0.5rem; /* weniger Luft nach Header */
+    padding-top: 0.5rem;
+  }
+
+  /* 🪄 Dezenter Übergang bei Größenänderung */
+  section,
+  main {
+    transition: all 0.3s ease-in-out;
   }
 </style>

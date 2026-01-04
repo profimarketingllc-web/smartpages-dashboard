@@ -1,11 +1,11 @@
 ---
 /**
- * SmartPages – DashboardCardWide (Optimized Premium Version)
+ * SmartPages – DashboardCardWide (Optimized Compact Premium)
  *
- * Verbesserte Innenabstände für gleichmäßige Darstellung aller Komponenten.
- * - Harmonischer Raum nach oben & unten
- * - Keine Layout-Verschiebung für bestehende Inhalte
- * - Bessere Integration für ProductGrid, CustomerCard, etc.
+ * Verbesserte Version:
+ * - Kompakteres Padding (Premium, aber dichter)
+ * - Harmonische Zentrierung von Grid-/Slot-Inhalten
+ * - Responsive SystemMessage (zentriert bei kleiner Breite)
  */
 
 const {
@@ -35,12 +35,12 @@ const pillColors = {
 ---
 
 <section class="w-full flex justify-center">
-  <!-- 📦 Außencontainer -->
-  <div class={`mx-auto w-[92%] xl:w-[95%] ${variantClasses} p-8 md:p-10 flex flex-col`}>
-    <!-- 🔹 Titel -->
+  <div
+    class={`mx-auto w-[92%] xl:w-[95%] ${variantClasses} p-5 md:p-7 lg:p-8 flex flex-col`}
+  >
     {title && (
       <h2
-        class={`text-2xl font-semibold mb-4 ${
+        class={`text-2xl font-semibold mb-3 ${
           variant === "highlight" ? "text-white" : "text-[#1E2A45]"
         }`}
       >
@@ -48,10 +48,9 @@ const pillColors = {
       </h2>
     )}
 
-    <!-- 🔹 Beschreibung -->
     {desc && (
       <p
-        class={`text-base mb-6 leading-relaxed ${
+        class={`text-base mb-5 leading-relaxed ${
           variant === "highlight" ? "text-gray-100" : "text-gray-600"
         }`}
       >
@@ -59,15 +58,14 @@ const pillColors = {
       </p>
     )}
 
-    <!-- 📍 Slot-Inhalt – jetzt mit zentriertem Layout -->
-    <div class="flex justify-center w-full mt-2 mb-2">
+    <!-- Slot-Inhalt -->
+    <div class="flex justify-center w-full mt-1 mb-1">
       <slot />
     </div>
 
-    <!-- 🔸 Optional: Info-Items -->
     {items.length > 0 && (
       <div
-        class={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mt-6 ${
+        class={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mt-4 ${
           variant === "highlight" ? "text-white" : "text-gray-700"
         }`}
       >
@@ -80,9 +78,8 @@ const pillColors = {
       </div>
     )}
 
-    <!-- 🔸 Optional: Button -->
     {showButton && buttonText && (
-      <div class="flex justify-center mt-8">
+      <div class="flex justify-center mt-6">
         <button
           type="button"
           class="px-6 py-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
@@ -92,7 +89,6 @@ const pillColors = {
       </div>
     )}
 
-    <!-- 🔸 Optional: Status-Pill -->
     {showStatus && status && (
       <div class="mt-6 flex justify-end">
         <span
@@ -106,14 +102,22 @@ const pillColors = {
 </section>
 
 <style>
-  /* 🎯 Verbesserte Innenabstände */
-  @media (max-width: 768px) {
-    section > div {
-      padding: 1.5rem;
+  section {
+    transition: all 0.3s ease-in-out;
+  }
+
+  /* SystemMessage: zentrieren bei kleiner Bildschirmbreite */
+  @media (max-width: 1024px) {
+    .system-message {
+      display: flex;
+      justify-content: center !important;
     }
   }
 
-  section {
-    transition: all 0.3s ease-in-out;
+  /* Kompaktere Innenabstände auf kleineren Screens */
+  @media (max-width: 768px) {
+    section > div {
+      padding: 1.25rem !important;
+    }
   }
 </style>
