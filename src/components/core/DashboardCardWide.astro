@@ -1,11 +1,11 @@
 ---
 /**
- * SmartPages – DashboardCardWide (Compact Height Edition)
+ * SmartPages – DashboardCardWide (Ultra Compact Version)
  * 
- * Fokus:
- * - Weniger vertikales Padding (oben/unten)
- * - Leicht reduzierter Außenabstand
- * - Gleiche Premium-Optik und Animation
+ * Anpassungen:
+ * - Hintergrund bleibt Weiß (Kontrast zum hellgrauen Body)
+ * - Vertikale Abstände reduziert (oben/unten)
+ * - Gleichmäßige Außenränder für sauberes Grid
  */
 
 const {
@@ -22,7 +22,7 @@ const {
 
 const variantClasses = {
   default:
-    "bg-white border border-gray-100 shadow-[0_4px_12px_rgba(0,0,0,0.04)] rounded-3xl w-full transition-all duration-300 hover:shadow-[0_6px_12px_rgba(0,0,0,0.08)]",
+    "bg-white border border-gray-100 shadow-[0_4px_10px_rgba(0,0,0,0.04)] rounded-3xl w-full transition-all duration-300 hover:shadow-[0_6px_14px_rgba(0,0,0,0.08)]",
   highlight:
     "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white shadow-lg rounded-3xl w-full transition-all duration-300 hover:shadow-[0_8px_16px_rgba(0,0,0,0.12)]",
 }[variant];
@@ -34,9 +34,9 @@ const pillColors = {
 }[statusColor];
 ---
 
-<section class="w-full flex justify-center my-2">
+<section class="w-full flex justify-center my-1">
   <div
-    class={`mx-auto w-[92%] xl:w-[95%] ${variantClasses} p-3 sm:p-4 md:p-5 lg:p-5 flex flex-col`}
+    class={`mx-auto w-[92%] xl:w-[95%] ${variantClasses} p-3 sm:p-4 md:px-6 md:py-4 lg:px-6 lg:py-4 flex flex-col`}
   >
     {title && (
       <h2
@@ -50,7 +50,7 @@ const pillColors = {
 
     {desc && (
       <p
-        class={`text-base mb-4 leading-relaxed ${
+        class={`text-base mb-3 leading-relaxed ${
           variant === "highlight" ? "text-gray-100" : "text-gray-600"
         }`}
       >
@@ -59,13 +59,13 @@ const pillColors = {
     )}
 
     <!-- 📦 Slot Content -->
-    <div class="flex justify-center w-full mt-1 mb-1">
+    <div class="flex justify-center w-full mt-1 mb-0.5">
       <slot />
     </div>
 
     {items.length > 0 && (
       <div
-        class={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mt-3 ${
+        class={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mt-2 ${
           variant === "highlight" ? "text-white" : "text-gray-700"
         }`}
       >
@@ -79,7 +79,7 @@ const pillColors = {
     )}
 
     {showButton && buttonText && (
-      <div class="flex justify-center mt-4">
+      <div class="flex justify-center mt-3 mb-1">
         <button
           type="button"
           class="px-6 py-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
@@ -106,14 +106,13 @@ const pillColors = {
     transition: all 0.3s ease-in-out;
   }
 
-  /* Etwas kompaktere Weißräume */
   section + section {
     margin-top: 0.75rem;
   }
 
   @media (max-width: 768px) {
     section > div {
-      padding: 0.9rem !important;
+      padding: 0.8rem !important;
     }
   }
 </style>
