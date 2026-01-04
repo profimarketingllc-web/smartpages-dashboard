@@ -96,6 +96,16 @@ a {
 }
 
 /* ======================================================
+   🧩 DashboardCard – Neutral ohne Hover Glow
+   ====================================================== */
+.smart-shadow,
+.smart-shadow:hover {
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.04),
+              0 8px 25px rgba(0, 0, 0, 0.06);
+  transform: none;
+}
+
+/* ======================================================
    ✨ SmartPages Glow System – Intensivierte Premium Version
    ====================================================== */
 

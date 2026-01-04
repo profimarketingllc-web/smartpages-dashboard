@@ -46,7 +46,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
           <SmartSidebar collapsible />
 
           <!-- 🧱 Hauptinhalt -->
-            <div class="flex-1 flex flex-col transition-all duration-300 bg-[#F7F8FA] md:ml-64">
+          <div class="flex-1 flex flex-col transition-all duration-300 bg-[#F7F8FA] md:ml-64">
             {header && (
               <div class={stickyClass}>
                 <SmartHeader />
@@ -116,7 +116,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
     /* 📏 Extra-breite Bildschirme (≥1536px) */
     @media (min-width: 1536px) {
       main {
-        max-width: 1500px; /* vorher 1400px */
+        max-width: 1500px;
         padding-left: 2rem;
         padding-right: 2rem;
       }
@@ -143,7 +143,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
     /* 🧱 Sidebar-Kompensation */
     @media (min-width: 1024px) {
       main {
-        margin-left: 0.25rem; /* kompaktere Einrückung */
+        margin-left: 0.25rem;
       }
     }
 
@@ -153,6 +153,32 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
         padding-left: 0.75rem;
         padding-right: 0.75rem;
       }
+    }
+
+    /* ======================================================
+       🧱 Above-the-Fold Optimization
+    ====================================================== */
+
+    main {
+      padding-top: 1.25rem !important; /* vorher 2rem+ */
+      padding-bottom: 3rem !important; /* kompakter */
+    }
+
+    /* DashboardCard kompakter (weniger vertical padding) */
+    .dashboard-card {
+      padding-top: 1.25rem !important;
+      padding-bottom: 1.25rem !important;
+    }
+
+    /* Fallback – falls DashboardCard kein eigenes padding hat */
+    section.w-full > section {
+      padding-top: 1.25rem;
+      padding-bottom: 1.25rem;
+    }
+
+    /* Sichtbarer Rand für das untere ProductGrid */
+    main > section:last-of-type {
+      margin-bottom: 2rem;
     }
   </style>
 </html>
