@@ -1,55 +1,120 @@
-/**
- * CustomerCard.jsx (SolidJS-Version)
- * ---------------------------------
- * - Einheitliche Höhe & Padding
- * - "—" als Platzhalter anstelle von Skeleton
- * - Perfekt abgestimmt mit der ImprintCard
- */
+import { createResource } from "solid-js";
 
-export default function CustomerCard({ customer }) {
-  const displayValue = (value) => (value && value.trim() !== "" ? value : "—");
+export default function CustomerCard() {
+  // Sprache erkennen
+  const lang =
+    typeof window !== "undefined"
+      ? window.location.pathname.startsWith("/en")
+        ? "en"
+        : "de"
+      : "de";
+
+  const t = {
+    de: {
+      title: "Kundendaten",
+      name: "Name",
+      plan: "Tarif",
+      activeUntil: "aktiviert bis",
+      status: "Status",
+      lastLogin: "letzter Login",
+      button: "Profil bearbeiten",
+      loggedOut: "Abgemeldet",
+      active: "Aktiv",
+    },
+    en: {
+      title: "Customer Data",
+      name: "Name",
+      plan: "Plan",
+      activeUntil: "active until",
+      status: "Status",
+      lastLogin: "last login",
+      button: "Edit Profile",
+      loggedOut: "Logged out",
+      active: "Active",
+    },
+  }[lang];
+
+  // Kundendaten abrufen
+  const fetchCustomer = async () => {
+    try {
+      const res = await fetch("https://api.smartpages.online/api/customer", {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("No customer data");
+      return await res.json();
+    } catch {
+      return {
+        name: null,
+        plan: null,
+        status: t.loggedOut,
+        activeUntil: null,
+        lastLogin: null,
+      };
+    }
+  };
+
+  const [customer] = createResource(fetchCustomer);
+  const data = () => customer() || {};
+
+  const displayValue = (val) => (val ? val : "—");
 
   return (
-    <section class="dashboard-card bg-white rounded-2xl shadow-sm p-5 md:p-6">
-      <h2 class="text-xl font-semibold text-smart-text mb-4">Kundendaten</h2>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-smart-text">
-        <div>
-          <strong>Name:</strong> {displayValue(customer?.name)}
-        </div>
-        <div>
-          <strong>Tarif:</strong> {displayValue(customer?.tariff)}
-        </div>
-        <div>
-          <strong>aktiviert bis:</strong> {displayValue(customer?.activeUntil)}
-        </div>
-
-        <div>
-          <strong>Status:</strong> {displayValue(customer?.status)}
-        </div>
-        <div>
-          <strong>letzter Login:</strong> {displayValue(customer?.lastLogin)}
-        </div>
-      </div>
-
-      <div class="flex justify-end items-center mt-5">
+    <div class="relative w-full text-sm text-gray-700 px-8 md:px-10 py-5 md:py-6">
+      {/* 🔹 Status-Pill */}
+      <div class="absolute top-4 right-10 md:right-14">
         <span
-          class={`text-xs font-semibold px-3 py-1.5 rounded-full ${
-            customer?.status === "active"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-700"
-          }`}
+          class={`inline-block px-4 py-1 text-sm font-medium rounded-full border 
+                  ${
+                    data().status === t.active
+                      ? "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]"
+                      : "bg-[#F8D7DA] text-[#8B1A1A] border-[#E6A1A1]"
+                  }`}
         >
-          {displayValue(customer?.statusText)}
+          {data().status ?? "—"}
         </span>
-
-        <a
-          href="/dashboard/profile"
-          class="ml-3 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-semibold text-sm px-5 py-2 shadow-[0_0_15px_rgba(228,126,0,0.25)] hover:shadow-[0_0_25px_rgba(228,126,0,0.35)] transition-all duration-300"
-        >
-          Profil bearbeiten
-        </a>
       </div>
-    </section>
+
+      {/* 🔹 Überschrift */}
+      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-6 text-center md:text-left">
+        {t.title}
+      </h2>
+
+      {/* 🔹 Erste Zeile */}
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-8">
+        <div class="md:col-span-2">
+          <span class="font-medium text-gray-800">{t.name}:</span>
+          <p>{displayValue(data().name)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">{t.plan}:</span>
+          <p>{displayValue(data().plan)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">{t.activeUntil}:</span>
+          <p class="text-gray-600 text-sm">{displayValue(data().activeUntil)}</p>
+        </div>
+      </div>
+
+      {/* 🔹 Zweite Zeile */}
+      <div class="grid grid-cols-3 mt-8 items-center">
+        <div>
+          <span class="font-medium text-gray-800">{t.status}:</span>
+          <p>{displayValue(data().status)}</p>
+        </div>
+
+        <div class="md:text-center">
+          <span class="font-medium text-gray-800">{t.lastLogin}:</span>
+          <p class="text-gray-600 text-sm">{displayValue(data().lastLogin)}</p>
+        </div>
+
+        <div class="flex justify-end">
+          <button
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
+          >
+            {t.button}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

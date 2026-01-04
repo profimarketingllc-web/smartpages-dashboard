@@ -1,55 +1,80 @@
-/**
- * CustomerCard.jsx (SolidJS-Version)
- * ---------------------------------
- * - Einheitliche Höhe & Padding
- * - "—" als Platzhalter anstelle von Skeleton
- * - Perfekt abgestimmt mit der ImprintCard
- */
+import { createResource } from "solid-js";
 
-export default function CustomerCard({ customer }) {
-  const displayValue = (value) => (value && value.trim() !== "" ? value : "—");
+export default function ImprintCard() {
+  const fetchImprint = async () => {
+    try {
+      const res = await fetch("https://api.smartpages.online/api/imprint", {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("No imprint data");
+      return await res.json();
+    } catch {
+      return {
+        company: "—",
+        contact: "—",
+        address: "—",
+        zip: "—",
+        city: "—",
+        email: "—",
+        phone: "—",
+        vat: "—",
+      };
+    }
+  };
+
+  const [imprint] = createResource(fetchImprint);
+  const data = () => imprint() || {};
+
+  const displayValue = (val) => (val ? val : "—");
 
   return (
-    <section class="dashboard-card bg-white rounded-2xl shadow-sm p-5 md:p-6">
-      <h2 class="text-xl font-semibold text-smart-text mb-4">Kundendaten</h2>
+    <div class="w-full text-sm text-gray-700 px-8 md:px-10 py-5 md:py-6">
+      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-6 text-center md:text-left">
+        Impressumsdaten
+      </h2>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-smart-text">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
         <div>
-          <strong>Name:</strong> {displayValue(customer?.name)}
+          <span class="font-medium text-gray-800">Firma:</span>
+          <p class="text-gray-500">{displayValue(data().company)}</p>
         </div>
         <div>
-          <strong>Tarif:</strong> {displayValue(customer?.tariff)}
+          <span class="font-medium text-gray-800">Ansprechpartner:</span>
+          <p class="text-gray-500">{displayValue(data().contact)}</p>
         </div>
         <div>
-          <strong>aktiviert bis:</strong> {displayValue(customer?.activeUntil)}
-        </div>
-
-        <div>
-          <strong>Status:</strong> {displayValue(customer?.status)}
+          <span class="font-medium text-gray-800">Straße:</span>
+          <p class="text-gray-500">{displayValue(data().address)}</p>
         </div>
         <div>
-          <strong>letzter Login:</strong> {displayValue(customer?.lastLogin)}
+          <span class="font-medium text-gray-800">PLZ:</span>
+          <p class="text-gray-500">{displayValue(data().zip)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">Ort:</span>
+          <p class="text-gray-500">{displayValue(data().city)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">E-Mail:</span>
+          <p class="text-gray-500">{displayValue(data().email)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">Telefon:</span>
+          <p class="text-gray-500">{displayValue(data().phone)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">USt-ID:</span>
+          <p class="text-gray-500">{displayValue(data().vat)}</p>
         </div>
       </div>
 
-      <div class="flex justify-end items-center mt-5">
-        <span
-          class={`text-xs font-semibold px-3 py-1.5 rounded-full ${
-            customer?.status === "active"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-700"
-          }`}
+      <div class="mt-6 flex justify-center">
+        <button
+          class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
         >
-          {displayValue(customer?.statusText)}
-        </span>
-
-        <a
-          href="/dashboard/profile"
-          class="ml-3 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-semibold text-sm px-5 py-2 shadow-[0_0_15px_rgba(228,126,0,0.25)] hover:shadow-[0_0_25px_rgba(228,126,0,0.35)] transition-all duration-300"
-        >
-          Profil bearbeiten
-        </a>
+          Impressum bearbeiten
+        </button>
       </div>
-    </section>
+    </div>
   );
 }
