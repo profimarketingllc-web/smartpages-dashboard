@@ -2,14 +2,12 @@
 import PageLayout from "~/layouts/PageLayout.astro";
 import "~/styles/global.css";
 
-let user = {
-  name: "Guest User",
-  email: "unknown",
-  status: "Free",
-  plan: "—",
-  activeUntil: "—",
-  lastLogin: "—",
-};
+// ⚙️ Solid Components
+import CustomerCard from "@/components/solid/CustomerCard.jsx";
+import ImprintCard from "@/components/solid/ImprintCard.jsx";
+
+// 🧭 Session Handling
+let user = { name: "Guest User" };
 let authenticated = false;
 
 try {
@@ -17,123 +15,59 @@ try {
   if (cookie.includes("session=")) {
     const res = await fetch("https://api.smartpages.online/api/session", {
       method: "GET",
-      headers: {
-        "Accept": "application/json",
-        "Cookie": cookie,
-      },
+      headers: { "Accept": "application/json", "Cookie": cookie },
       credentials: "include",
     });
     const data = await res.json();
-    if (data.ok && data.authenticated) {
-      authenticated = true;
-      user = {
-        name: data.user?.first_name || "User",
-        email: data.user?.email || "unknown",
-        status: "Business",
-        plan: "Trial (7 days)",
-        activeUntil: "2026",
-        lastLogin: new Date().toLocaleString("en-GB"),
-      };
-    }
+    if (data.ok && data.authenticated) authenticated = true;
   }
 } catch (err) {
-  console.warn("Server-side session check failed:", err);
+  console.warn("Session check failed:", err);
 }
 ---
 
 <PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
   <div id="dashboard-wrapper" class={authenticated ? "" : "hidden"}>
 
-    <!-- 🧭 User Data -->
+    <!-- 🧭 Customer Data -->
     <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-0">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-        <div class="w-full">
-          <h2 class="text-2xl font-bold mb-3">Welcome back, {user.name} 👋</h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-2 text-sm text-gray-700">
-            <p><span class="font-semibold">Name:</span> {user.name}</p>
-            <p><span class="font-semibold">Email:</span> {user.email}</p>
-            <p><span class="font-semibold">Status:</span> {user.status}</p>
-            <p><span class="font-semibold">Plan:</span> {user.plan}</p>
-            <p><span class="font-semibold">Active until:</span> {user.activeUntil}</p>
-            <p><span class="font-semibold">Last login:</span> {user.lastLogin}</p>
-          </div>
-
-          <div class="flex justify-center mt-3">
-            <button
-              id="editUserBtn"
-              class="px-6 py-2 text-white rounded-xl shadow-md font-medium 
-                     bg-gradient-to-r from-[#F5B400] to-[#E47E00]
-                     hover:opacity-90 transition-all duration-300"
-            >
-              Edit user data
-            </button>
-          </div>
-        </div>
-
-        <div class="mt-3 md:mt-0 md:ml-6">
-          <span
-            class="inline-block px-4 py-1 text-sm rounded-full border 
-                   bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]
-                   font-medium min-w-[110px] text-center"
-          >
-            Logged in
-          </span>
-        </div>
-      </div>
+      <CustomerCard />
     </section>
 
-    <!-- 🧾 Imprint Information -->
+    <!-- 🧾 Imprint Data -->
     <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-4">
-      <h2 class="text-xl font-semibold mb-3 text-[#1E2A45]">Imprint Information</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 text-sm text-gray-700">
-        <p><span class="font-semibold">Company Name:</span> {user.company || "–"}</p>
-        <p><span class="font-semibold">Contact Person:</span> {user.contact_name || "–"}</p>
-        <p><span class="font-semibold">Address:</span> {user.address || "–"}</p>
-        <p><span class="font-semibold">ZIP / City:</span> {user.zip || "–"} {user.city || ""}</p>
-        <p><span class="font-semibold">Country:</span> {user.country || "Germany"}</p>
-        <p><span class="font-semibold">Support Email:</span> {user.support_email || user.email}</p>
-        <p><span class="font-semibold">Phone:</span> {user.phone || "–"}</p>
-        <p><span class="font-semibold">VAT-ID:</span> {user.vat_id || "–"}</p>
-      </div>
-
-      <div class="flex justify-center mt-4">
-        <button
-          id="editImprintBtn"
-          class="px-6 py-2 text-white rounded-xl shadow-md font-medium 
-                 bg-gradient-to-r from-[#F5B400] to-[#E47E00]
-                 hover:opacity-90 transition-all duration-300"
-        >
-          Edit Imprint
-        </button>
-      </div>
+      <ImprintCard />
     </section>
 
-    <!-- 🧱 Product cards -->
+    <!-- 🧱 Product Cards -->
     <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-5 mt-4">
-      <a href="/en/smartprofile" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
+      <a href="/en/smartprofile"
+         class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
                 shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
                 hover:shadow-[0_0_25px_rgba(78,107,255,0.6)] hover:scale-[1.02]">
         <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
         <p class="text-sm">
-          Create your professional profile with just a few clicks – perfect for freelancers, coaches and entrepreneurs.
+          Create your professional profile in minutes – perfect for freelancers, coaches and entrepreneurs.
         </p>
       </a>
 
-      <a href="/en/smartpage" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
+      <a href="/en/smartpage"
+         class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
                 shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
                 hover:shadow-[0_0_25px_rgba(245,180,0,0.6)] hover:scale-[1.02]">
         <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
         <p class="text-sm">
-          Build impressive, conversion-optimized pages in minutes – easy, fast, and professional.
+          Build stunning pages fast – conversion-ready, mobile-optimized, and easy to edit.
         </p>
       </a>
 
-      <a href="/en/smartdomain" class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
+      <a href="/en/smartdomain"
+         class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
                 shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
                 hover:shadow-[0_0_25px_rgba(139,92,255,0.6)] hover:scale-[1.02]">
         <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
         <p class="text-sm">
-          Secure your own domain directly in SmartPages – professional, simple and GDPR compliant.
+          Secure your domain directly with SmartPages – professional, simple, and GDPR compliant.
         </p>
       </a>
     </section>
@@ -144,7 +78,7 @@ try {
         <div>
           <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Your feedback helps us improve</h3>
           <p class="text-sm text-gray-600">
-            Share bugs, ideas or suggestions – help us make SmartPages even better.
+            Share bugs, ideas, or suggestions – help us make SmartPages even better.
           </p>
         </div>
         <a
@@ -152,92 +86,14 @@ try {
           class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
                  transition-all duration-300 shadow-md whitespace-nowrap"
         >
-          Send feedback
+          Send Feedback
         </a>
       </div>
     </section>
-
-    <!-- Modal -->
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
-      <div class="bg-white rounded-2xl shadow-lg p-8 w-[90%] max-w-lg">
-        <h3 id="modalTitle" class="text-xl font-semibold mb-4 text-[#1E2A45]">Edit Data</h3>
-        <form id="modalForm" class="space-y-4">
-          <input type="text" placeholder="Name" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
-          <input type="email" placeholder="Email" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
-        </form>
-        <div class="flex justify-end mt-6 gap-3">
-          <button id="cancelModal"
-            class="px-4 py-2 bg-gray-200 text-[#1E2A45] rounded-lg hover:bg-gray-300">Cancel</button>
-          <button id="saveModal"
-            class="px-4 py-2 text-white rounded-lg bg-gradient-to-r from-[#F5B400] to-[#E47E00] hover:opacity-90">
-            Save
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 
-  <!-- Fallback -->
+  <!-- 🔒 Fallback -->
   <div id="login-status" class={authenticated ? "hidden" : "max-w-4xl mx-auto mt-20 text-center"}>
     <h2 class="text-2xl font-bold text-[#1E2A45]">Checking your login...</h2>
   </div>
 </PageLayout>
-
-<script>
-window.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const res = await fetch("https://api.smartpages.online/api/session", {
-      method: "GET",
-      credentials: "include",
-      headers: { "Accept": "application/json" },
-    });
-    const data = await res.json();
-
-    if (data.ok && data.authenticated) {
-      document.getElementById("login-status")?.classList.add("hidden");
-      document.getElementById("dashboard-wrapper")?.classList.remove("hidden");
-    }
-
-    const modal = document.getElementById("modal");
-    const openUser = document.getElementById("editUserBtn");
-    const openImprint = document.getElementById("editImprintBtn");
-    const cancelModal = document.getElementById("cancelModal");
-
-    openUser?.addEventListener("click", () => {
-      modal.classList.remove("hidden");
-      document.getElementById("modalTitle").innerText = "Edit User Data";
-    });
-
-    openImprint?.addEventListener("click", () => {
-      modal.classList.remove("hidden");
-      document.getElementById("modalTitle").innerText = "Edit Imprint";
-    });
-
-    cancelModal?.addEventListener("click", () => {
-      modal.classList.add("hidden");
-    });
-  } catch (e) {
-    console.error("Session fetch failed:", e);
-  }
-});
-</script>
-
-<style>
-section {
-  scroll-margin-top: 1.5rem;
-}
-section h2 {
-  line-height: 1.2;
-}
-section p {
-  line-height: 1.4;
-}
-.grid p {
-  margin-bottom: 0.25rem;
-}
-section.max-w-6xl {
-  margin-top: 1rem !important;
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
-}
-</style>
