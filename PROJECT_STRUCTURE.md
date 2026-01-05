@@ -13,9 +13,7 @@ SmartPages/
 ├── public/                    # Statische Dateien (Bilder, Icons, etc.)
 ├── src/
 │   ├── components/            # Alle UI-Komponenten
-│   │   ├── core/              # Zentrale Dashboard-Komponenten
-│   │   │   ├── CustomerCard.jsx
-│   │   │   ├── ImprintCard.jsx
+│   │   ├── core/              # Astro-Komponenten für das Dashboard-Grundlayout
 │   │   │   ├── DashboardCardWide.astro
 │   │   │   ├── ProductGrid.astro
 │   │   │   ├── ProductCard.astro
@@ -23,23 +21,54 @@ SmartPages/
 │   │   │   ├── SmartSidebar.astro
 │   │   │   ├── SystemMessage.astro
 │   │   │   └── README.md
-│   │   ├── layout/            # Globale Layout-Komponenten (z. B. PageLayout)
-│   │   └── shared/            # Für zukünftige gemeinsame UI-Elemente
+│   │   ├── solid/             # Interaktive SolidJS-Komponenten (Reactive + API)
+│   │   │   ├── CustomerCard.jsx
+│   │   │   ├── ImprintCard.jsx
+│   │   │   ├── EditCustomerModal.jsx
+│   │   │   ├── EditImprintModal.jsx
+│   │   │   └── ModalWrapper.jsx
+│   │   ├── ui/                # Kleine UI-Bausteine und Wiederverwendungen
+│   │   └── admin/             # Admin-spezifische UI-Elemente (in Arbeit)
 │   │
-│   ├── layouts/               # Seitenlayouts (z. B. PageLayout.astro)
-│   ├── pages/                 # Seitenstruktur
+│   ├── layouts/               # Globale Layouts für Seiten
+│   │   └── PageLayout.astro
+│   │
+│   ├── styles/                # Zentrale Stylesheets (Tailwind + global.css)
+│   │   └── global.css
+│   │
+│   ├── pages/                 # Seitenstruktur (mehrsprachig)
 │   │   ├── de/                # Deutsche Seiten (Dashboard, Login, etc.)
 │   │   └── en/                # Englische Seiten
-│   ├── styles/                # Globale Stylesheets (Tailwind, Variablen etc.)
-│   └── utils/                 # Hilfsfunktionen, Datenabruf etc.
+│   │
+│   └── data/                  # (optional) statische Inhalte oder JSONs
 │
 ├── package.json               # Projektabhängigkeiten
-├── astro.config.mjs           # Astro Konfiguration
-├── tailwind.config.mjs        # Tailwind Konfiguration
-├── tsconfig.json              # TypeScript/JSX Unterstützung
-├── README.md                  # Projekteinleitung (optional für das Repo)
-├── PROJECT_STRUCTURE.md       # Diese Datei
-└── LICENSE                    # Rechtliches, falls vorhanden
+├── astro.config.mjs           # Astro-Konfiguration (mit Alias-Regeln)
+├── tailwind.config.mjs        # Tailwind-Konfiguration
+├── tsconfig.json              # TypeScript-/JSX-Unterstützung
+├── README.md                  # Projekteinleitung
+└── PROJECT_STRUCTURE.md       # Diese Datei
+```
+
+---
+
+## 🧭 Alias-Konfiguration (`astro.config.mjs`)
+
+```js
+alias: {
+  "~": path.resolve("./src"),   // Für Layouts, Seiten, Utilities
+  "@": path.resolve("./src"),   // Für Komponenten (UI, Core, Editor, Solid)
+}
+```
+
+Diese Alias-Struktur erlaubt eine klare Trennung:
+- `~` für allgemeine Projektstruktur (Layouts, Styles, Pages)
+- `@` speziell für Komponentenimporte
+
+Beispiel:
+```js
+import PageLayout from "~/layouts/PageLayout.astro";
+import CustomerCard from "@/components/solid/CustomerCard.jsx";
 ```
 
 ---
@@ -47,77 +76,53 @@ SmartPages/
 ## 🧩 Technologie-Stack
 
 | Ebene | Technologie | Zweck |
-|-------|--------------|-------|
-| Frontend | **Astro** | SSR Framework für Seitenaufbau |
-| Client-Interaktivität | **SolidJS** | Reaktive Komponenten für Live-Daten |
-| Styling | **TailwindCSS** | Utility-basiertes Styling |
-| Authentifizierung | **Magic Link** (Planung) | Token-basierte User-Verifizierung |
-| Backend | **Cloudflare Workers + D1** | Serverless API und Datenbank |
-| Deployment | **Cloudflare Pages** | Hosting und CI/CD |
-| Storage | **R2** (geplant) | File Storage für Medieninhalte |
+|-------|--------------|--------|
+| Framework | **Astro** | Server-Side Rendering, Layout-Struktur |
+| Reactive Layer | **SolidJS** | Interaktive Komponenten (z. B. Kundendaten, Modals) |
+| Styling | **TailwindCSS** | Utility-basiertes CSS-Designsystem |
+| API / Datenbank | **Cloudflare Workers + D1** | Backend und Datenspeicherung |
+| Hosting | **Cloudflare Pages** | Build & Deployment |
+| Authentifizierung | **Magic Link Login** | Tokenbasierte Verifizierung |
+| Speicherung | **R2** *(in Planung)* | Dateispeicher für Medieninhalte |
 
 ---
 
-## 🧱 Branch-Architektur
+## 🚀 Build- & Deployment-Prozess
 
-| Branch | Zweck |
-|--------|-------|
-| **main** | Produktionsumgebung (aktiver Build) |
-| **dev** | Entwicklungs- und Testumgebung |
-| **admin** *(optional)* | zukünftiger Admin-Bereich |
-| *(preview)* | Vorschau-Deployments durch Cloudflare |
-
----
-
-## 🚀 Build- und Deployment-Prozess
-
-1. Änderungen lokal committen  
+1. Änderungen committen:
    ```bash
    git add .
-   git commit -m "Feature: Neue Komponente hinzugefügt"
+   git commit -m "Feature: Neue Solid-Komponente hinzugefügt"
    git push origin dev
    ```
 
-2. Cloudflare erkennt automatisch den Push auf den Branch  
-   → baut das Projekt  
-   → und erstellt eine Vorschau (`dev.smartpages.online`)
-
-3. Nach erfolgreicher Prüfung Merge in `main`  
+2. Cloudflare erkennt den Push → erstellt Preview (z. B. `dev.smartpages.online`)  
+3. Nach Review Merge in `main`:
    ```bash
    git checkout main
    git merge dev
    git push origin main
    ```
 
-4. Cloudflare deployt automatisch auf **Production**
+4. Cloudflare baut automatisch den **Production Build**
 
 ---
 
 ## ⚙️ Projektkonventionen
 
 - **Dateibenennung:** `PascalCase` für Komponenten, `kebab-case` für Seiten  
-- **Sprache:** Alle Variablen, Kommentare und Benennungen in Englisch  
-- **Framework-Klarheit:** Solid-Komponenten immer als `.jsx`  
-- **Pfad-Importe:** Immer mit `~`-Alias (z. B. `~/components/core/CustomerCard.jsx`)
-- **Keine Inline-Styles** — ausschließlich TailwindCSS  
-- **Responsive Design:** Alle Seiten sind mobile-first aufgebaut
-
----
-
-## 🧭 Verantwortlichkeiten (Stand: Januar 2026)
-
-| Bereich | Verantwortlich |
-|----------|----------------|
-| Projektleitung | Frank Hüser |
-| Architektur & Entwicklung | SmartPages GPT |
-| Deployment & Infrastruktur | Cloudflare Pages / Workers |
-| UI/UX Design | Tailwind + SmartPages Layout-Team |
-| API & Datenanbindung | SmartPages D1 / Data Worker |
+- **Sprache:** Variablen, Kommentare & Funktionen auf Englisch  
+- **Framework-Klarheit:** Solid-Komponenten = `.jsx`  
+- **Styling:** ausschließlich mit TailwindCSS, keine Inline-Styles  
+- **Responsive Design:** Mobile-first Aufbau  
+- **Aliasing:** `~` für Struktur / `@` für Komponenten  
+- **Dokumentation:** `.md` Dateien in Root oder Unterordnern
 
 ---
 
 ## 📅 Letzte Aktualisierung
-- **Datum:** 03. Januar 2026  
+
+- **Datum:** 05. Januar 2026  
 - **Autor:** Frank Hüser  
-- **Version:** 1.0  
-- **Status:** Aktiv (DEV und MAIN synchronisiert)
+- **Version:** 1.2  
+- **Status:** Aktiv (aktuelle Code-Struktur reflektiert)
