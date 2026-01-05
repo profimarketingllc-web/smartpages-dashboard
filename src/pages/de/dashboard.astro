@@ -40,38 +40,36 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
 
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ Dashboard script initialized");
+    console.log("✅ Dashboard scripts aktiv");
 
-    // Funktion zum Anbinden der Buttons
     const attachButtonListeners = () => {
-      const customerBtn = document.querySelector("button[data-action='edit-customer']");
-      const imprintBtn = document.querySelector("button[data-action='edit-imprint']");
+      // 🔹 Button mit Text "Profil bearbeiten"
+      document.querySelectorAll("button").forEach((btn) => {
+        const text = btn.innerText.trim();
 
-      if (customerBtn && !customerBtn.dataset.bound) {
-        customerBtn.dataset.bound = "true";
-        customerBtn.addEventListener("click", () => {
-          console.log("🟢 Öffne Customer Modal");
-          window.dispatchEvent(new CustomEvent("open-customer-modal"));
-        });
-        console.log("✅ CustomerButton verbunden");
-      }
+        if (text === "Profil bearbeiten" && !btn.dataset.bound) {
+          btn.dataset.bound = "true";
+          btn.addEventListener("click", () => {
+            console.log("🟢 Öffne Customer Modal");
+            window.dispatchEvent(new CustomEvent("open-customer-modal"));
+          });
+        }
 
-      if (imprintBtn && !imprintBtn.dataset.bound) {
-        imprintBtn.dataset.bound = "true";
-        imprintBtn.addEventListener("click", () => {
-          console.log("🟢 Öffne Imprint Modal");
-          window.dispatchEvent(new CustomEvent("open-imprint-modal"));
-        });
-        console.log("✅ ImprintButton verbunden");
-      }
+        if (text === "Impressum bearbeiten" && !btn.dataset.bound) {
+          btn.dataset.bound = "true";
+          btn.addEventListener("click", () => {
+            console.log("🟢 Öffne Imprint Modal");
+            window.dispatchEvent(new CustomEvent("open-imprint-modal"));
+          });
+        }
+      });
     };
 
-    // Direkt versuchen, falls Komponenten schon da sind
     attachButtonListeners();
 
-    // Fallback: MutationObserver für nachträgliche DOM-Änderungen
-    const observer = new MutationObserver(() => attachButtonListeners());
-    observer.observe(document.body, { childList: true, subtree: true });
+    // Fallback für Solid client:load Verzögerung
+    setTimeout(attachButtonListeners, 1000);
+    setTimeout(attachButtonListeners, 3000);
   });
 </script>
 

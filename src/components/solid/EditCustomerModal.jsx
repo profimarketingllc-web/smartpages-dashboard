@@ -1,67 +1,49 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import ModalWrapper from "./ModalWrapper";
 
-export default function EditCustomerModal(props) {
-  // Sprache erkennen
+export default function EditCustomerModal() {
+  const [showModal, setShowModal] = createSignal(false);
+
+  // 🔍 Sprache erkennen
   const lang =
     typeof window !== "undefined" && window.location.pathname.startsWith("/en")
       ? "en"
       : "de";
 
+  // 🌐 Übersetzungen
   const t = {
     de: {
       title: "Kundendaten bearbeiten",
       name: "Name",
-      plan: "Tarif",
-      activeUntil: "Aktiv bis",
       cancel: "Abbrechen",
       save: "Speichern",
     },
     en: {
       title: "Edit Customer Data",
       name: "Name",
-      plan: "Plan",
-      activeUntil: "Active until",
       cancel: "Cancel",
       save: "Save",
     },
   }[lang];
 
-  // Lokaler Sichtbarkeitsstatus (global steuerbar)
-  const [show, setShow] = createSignal(false);
-  const [name, setName] = createSignal(props.data?.name || "");
-
-  // Event-Handler für globales Öffnen
-  const openHandler = () => setShow(true);
-  const closeHandler = () => setShow(false);
-
-  // Event-Listener registrieren
+  // 🧭 Eventlistener für Dashboard-Signale
   onMount(() => {
+    const openHandler = () => {
+      console.log("🟢 open-customer-modal empfangen");
+      setShowModal(true);
+    };
     window.addEventListener("open-customer-modal", openHandler);
+    onCleanup(() => window.removeEventListener("open-customer-modal", openHandler));
   });
 
-  // Event-Listener beim Entfernen wieder abbauen
-  onCleanup(() => {
-    window.removeEventListener("open-customer-modal", openHandler);
-  });
-
-  const handleSave = async () => {
-    try {
-      await fetch("https://api.smartpages.online/api/customer/update", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name() }),
-      });
-      props.onSave?.({ name: name() });
-      closeHandler();
-    } catch (err) {
-      console.error("❌ Fehler beim Speichern der Kundendaten:", err);
-    }
+  const handleClose = () => setShowModal(false);
+  const handleSave = () => {
+    console.log("💾 Kundendaten gespeichert!");
+    setShowModal(false);
   };
 
   return (
-    <ModalWrapper show={show()} onClose={closeHandler}>
+    <ModalWrapper show={showModal()} onClose={handleClose}>
       <h2 class="text-xl font-bold text-[#1E2A45] mb-4">{t.title}</h2>
 
       <div class="space-y-4">
@@ -69,29 +51,8 @@ export default function EditCustomerModal(props) {
           <label class="block text-sm font-medium text-gray-700 mb-1">{t.name}</label>
           <input
             type="text"
-            value={name()}
-            onInput={(e) => setName(e.target.value)}
+            placeholder={t.name}
             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-400 mb-1">{t.plan}</label>
-          <input
-            type="text"
-            value={props.data?.plan || "—"}
-            disabled
-            class="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-500"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-400 mb-1">{t.activeUntil}</label>
-          <input
-            type="text"
-            value={props.data?.activeUntil || "—"}
-            disabled
-            class="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-500"
           />
         </div>
       </div>
@@ -99,7 +60,7 @@ export default function EditCustomerModal(props) {
       <div class="mt-6 flex justify-end gap-3">
         <button
           class="px-4 py-2 bg-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-300 transition"
-          onClick={closeHandler}
+          onClick={handleClose}
         >
           {t.cancel}
         </button>
