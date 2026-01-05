@@ -1,4 +1,4 @@
-import { createResource } from "solid-js";
+import { createSignal, onMount } from "solid-js";
 
 export default function ImprintCard() {
   // 🌍 Sprache automatisch erkennen
@@ -12,122 +12,75 @@ export default function ImprintCard() {
   // 🌐 Übersetzungen
   const t = {
     de: {
-      title: "Impressumsdaten",
+      title: "Impressum",
       company: "Firma",
-      contact: "Ansprechpartner",
-      street: "Straße",
-      number: "Hausnummer",
-      zip: "PLZ",
-      city: "Ort",
-      phone: "Telefon",
-      email: "E-Mail",
-      vat: "USt-ID",
-      button: "Impressum bearbeiten",
+      address: "Adresse",
+      contact: "Kontakt",
+      website: "Webseite",
+      edit: "Impressum bearbeiten",
     },
     en: {
-      title: "Imprint Information",
+      title: "Imprint",
       company: "Company",
-      contact: "Contact Person",
-      street: "Street",
-      number: "Number",
-      zip: "ZIP",
-      city: "City",
-      phone: "Phone",
-      email: "Email",
-      vat: "VAT-ID",
-      button: "Edit Imprint",
+      address: "Address",
+      contact: "Contact",
+      website: "Website",
+      edit: "Edit Imprint",
     },
   }[lang];
 
-  // 🔗 Imprint-Daten abrufen
-  const fetchImprint = async () => {
-    try {
-      const res = await fetch("https://api.smartpages.online/api/imprint", {
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("No imprint data");
-      return await res.json();
-    } catch {
-      return {
-        company: "—",
-        contact: "—",
-        street: "—",
-        number: "—",
-        zip: "—",
-        city: "—",
-        email: "—",
-        phone: "—",
-        vat: "—",
-      };
-    }
-  };
-
-  const [imprint] = createResource(fetchImprint);
-  const data = () => imprint() || {};
-  const displayValue = (val) => (val ? val : "—");
+  const [imprint, setImprint] = createSignal({
+    company: "SmartPages GmbH",
+    address: "Musterstraße 12, 12345 Berlin",
+    contact: "info@smartpages.online",
+    website: "https://smartpages.online",
+  });
 
   // 🧱 Layout
   return (
-    <div class="w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5">
-      {/* 🔹 Überschrift */}
+    <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5">
       <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5 text-center md:text-left">
         {t.title}
       </h2>
 
-      {/* 🔹 Felder im Raster */}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
-        {/* 1️⃣ Reihe */}
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
         <div>
           <span class="font-medium text-gray-800">{t.company}:</span>
-          <p class="text-gray-500">{displayValue(data().company)}</p>
+          <p class="text-gray-600">{imprint().company}</p>
         </div>
+
+        <div>
+          <span class="font-medium text-gray-800">{t.address}:</span>
+          <p class="text-gray-600">{imprint().address}</p>
+        </div>
+
         <div>
           <span class="font-medium text-gray-800">{t.contact}:</span>
-          <p class="text-gray-500">{displayValue(data().contact)}</p>
+          <p class="text-gray-600">{imprint().contact}</p>
         </div>
-        <div class="flex justify-end lg:justify-start items-start">
+
+        <div>
+          <span class="font-medium text-gray-800">{t.website}:</span>
+          <p class="text-gray-600">
+            <a
+              href={imprint().website}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-blue-600 hover:underline"
+            >
+              {imprint().website}
+            </a>
+          </p>
+        </div>
+
+        {/* 🟧 Bearbeiten-Button (signalbasiert) */}
+        <div class="flex justify-end items-center sm:justify-end col-span-2">
           <button
             data-signal="open-imprint-modal"
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
           >
-            {t.button}
+            {t.edit}
           </button>
-        </div>
-
-        {/* 2️⃣ Reihe */}
-        <div>
-          <span class="font-medium text-gray-800">{t.street}:</span>
-          <p class="text-gray-500">{displayValue(data().street)}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t.number}:</span>
-          <p class="text-gray-500">{displayValue(data().number)}</p>
-        </div>
-        <div></div>
-
-        {/* 3️⃣ Reihe */}
-        <div>
-          <span class="font-medium text-gray-800">{t.zip}:</span>
-          <p class="text-gray-500">{displayValue(data().zip)}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t.city}:</span>
-          <p class="text-gray-500">{displayValue(data().city)}</p>
-        </div>
-        <div></div>
-
-        {/* 4️⃣ Reihe */}
-        <div>
-          <span class="font-medium text-gray-800">{t.phone}:</span>
-          <p class="text-gray-500">{displayValue(data().phone)}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t.email}:</span>
-          <p class="text-gray-500">{displayValue(data().email)}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t.vat}:</span>
-          <p class="text-gray-500">{displayValue(data().vat)}</p>
         </div>
       </div>
     </div>

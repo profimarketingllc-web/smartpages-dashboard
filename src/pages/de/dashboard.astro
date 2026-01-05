@@ -13,7 +13,6 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
   <main
     class="flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
   >
-
     <!-- 🧭 OBERER BEREICH: Kundendaten + SystemMessage -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
       <!-- 🪪 Kundendaten -->
@@ -40,44 +39,57 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
     <!-- 🧩 Modals (werden per Signal geöffnet) -->
     <EditCustomerModal client:load />
     <EditImprintModal client:load />
-
   </main>
 </PageLayout>
 
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ Dashboard scripts aktiv (signalbasiert)");
+    console.log("✅ Dashboard scripts aktiv (signalbasiert mit MutationObserver)");
 
     const attachButtonListeners = () => {
-      // Customer Modal öffnen
+      let found = false;
+
+      // 🟩 Customer Modal öffnen
       const customerBtn = document.querySelector("button[data-signal='open-customer-modal']");
       if (customerBtn && !customerBtn.dataset.bound) {
         customerBtn.dataset.bound = "true";
+        found = true;
         customerBtn.addEventListener("click", () => {
           console.log("🟢 Öffne Customer Modal");
           window.dispatchEvent(new CustomEvent("open-customer-modal"));
         });
-      } else if (!customerBtn) {
-        console.warn("⚠️ Kein Button mit data-signal='open-customer-modal' gefunden.");
       }
 
-      // Imprint Modal öffnen
+      // 🟧 Imprint Modal öffnen
       const imprintBtn = document.querySelector("button[data-signal='open-imprint-modal']");
       if (imprintBtn && !imprintBtn.dataset.bound) {
         imprintBtn.dataset.bound = "true";
+        found = true;
         imprintBtn.addEventListener("click", () => {
           console.log("🟢 Öffne Imprint Modal");
           window.dispatchEvent(new CustomEvent("open-imprint-modal"));
         });
-      } else if (!imprintBtn) {
-        console.warn("⚠️ Kein Button mit data-signal='open-imprint-modal' gefunden.");
+      }
+
+      if (!found) {
+        console.warn("⚠️ Noch keine Buttons mit data-signal gefunden – warte auf Solid Hydration …");
       }
     };
 
-    // Initial versuchen
+    // 🕓 1️⃣ Sofort versuchen
     attachButtonListeners();
 
-    // Fallbacks, falls Solid erst nachträglich rendert
+    // 🧩 2️⃣ DOM-Änderungen beobachten (wenn Solid die Buttons rendert)
+    const observer = new MutationObserver(() => attachButtonListeners());
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // 🧹 3️⃣ Nach 10 Sekunden automatisch beenden (Performance)
+    setTimeout(() => {
+      observer.disconnect();
+      console.log("🧹 MutationObserver deaktiviert (nach 10s)");
+    }, 10000);
+
+    // 🪄 4️⃣ Sicherheitshalber Fallback-Checks
     setTimeout(attachButtonListeners, 1000);
     setTimeout(attachButtonListeners, 3000);
   });
