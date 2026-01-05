@@ -8,9 +8,11 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
-  <main class="flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300">
-    
-    <!-- 🧭 OBERER BEREICH: Kundendaten + Systemnachricht -->
+  <main
+    class="flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
+  >
+
+    <!-- 🧭 OBERER BEREICH: Kundendaten + SystemMessage -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
       <!-- 🪪 Kundendaten -->
       <DashboardCardWide>
@@ -32,35 +34,46 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     <DashboardCardWide>
       <ProductGrid />
     </DashboardCardWide>
+
   </main>
-
-  <!-- ⚙️ Modal-Steuerung -->
-  <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      // Knöpfe selektieren
-      const customerBtn = document.querySelector("button:has-text('Profil bearbeiten')");
-      const imprintBtn = document.querySelector("button:has-text('Impressum bearbeiten')");
-
-      if (customerBtn) {
-        customerBtn.addEventListener("click", () => {
-          window.dispatchEvent(new CustomEvent("open-customer-modal"));
-        });
-      }
-
-      if (imprintBtn) {
-        imprintBtn.addEventListener("click", () => {
-          window.dispatchEvent(new CustomEvent("open-imprint-modal"));
-        });
-      }
-    });
-  </script>
 </PageLayout>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    console.log("✅ Dashboard scripts loaded");
+
+    // 🔹 Buttons in den Solid-Komponenten finden
+    const customerBtn = document.querySelector("button[data-action='edit-customer']");
+    const imprintBtn = document.querySelector("button[data-action='edit-imprint']");
+
+    // 🔹 Klick-Event für Customer Modal
+    if (customerBtn) {
+      customerBtn.addEventListener("click", () => {
+        console.log("🟢 Öffne Customer Modal");
+        window.dispatchEvent(new CustomEvent("open-customer-modal"));
+      });
+    } else {
+      console.warn("⚠️ Kein Button [data-action='edit-customer'] gefunden!");
+    }
+
+    // 🔹 Klick-Event für Imprint Modal
+    if (imprintBtn) {
+      imprintBtn.addEventListener("click", () => {
+        console.log("🟢 Öffne Imprint Modal");
+        window.dispatchEvent(new CustomEvent("open-imprint-modal"));
+      });
+    } else {
+      console.warn("⚠️ Kein Button [data-action='edit-imprint'] gefunden!");
+    }
+  });
+</script>
 
 <style>
   /* ===============================
      🎯 PREMIUM DASHBOARD LAYOUT FIX
      =============================== */
 
+  /* 🧩 Desktop-Layout (ab XL) → 2 Spalten */
   @media (min-width: 1280px) {
     .dashboard-top {
       display: grid;
@@ -74,6 +87,7 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     }
   }
 
+  /* 💻 Mittlere Screens (z. B. 900–1279px) → zentriert */
   @media (min-width: 768px) and (max-width: 1279px) {
     .dashboard-top {
       display: flex;
@@ -91,6 +105,7 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     }
   }
 
+  /* 📱 Kleine Screens (unter 768px) → 1 Spalte, zentriert */
   @media (max-width: 767px) {
     .dashboard-top {
       display: flex;
@@ -107,6 +122,7 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     }
   }
 
+  /* 🎨 Allgemeines Spacing */
   main {
     padding-top: 0.5rem;
     transition: all 0.3s ease-in-out;
