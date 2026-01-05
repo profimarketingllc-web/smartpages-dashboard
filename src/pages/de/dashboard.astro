@@ -10,27 +10,29 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
-  <main class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300">
+  <main
+    class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
+  >
 
-    <!-- 🧭 OBERER BEREICH: Kundendaten + Systemnachricht -->
+    <!-- 🧭 TOP SECTION: Customer Data + System Message -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
-      <!-- 🪪 Kundendaten -->
+      <!-- 🪪 Customer Data -->
       <DashboardCardWide>
         <CustomerCard client:load />
       </DashboardCardWide>
 
-      <!-- 💬 Systemnachricht -->
-      <div class="system-message flex justify-end items-center transition-all duration-300">
+      <!-- 💬 System Message -->
+      <div class="system-message">
         <SystemMessage />
       </div>
     </section>
 
-    <!-- 🏢 IMPRESSUM -->
+    <!-- 🏢 IMPRINT -->
     <DashboardCardWide>
       <ImprintCard client:load />
     </DashboardCardWide>
 
-    <!-- 💼 PRODUKTGRID (ohne Card) -->
+    <!-- 💼 PRODUCT GRID (no DashboardCard wrapper) -->
     <section class="mt-4 md:mt-6">
       <ProductGrid />
     </section>
@@ -43,90 +45,81 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ Dashboard scripts aktiv (signalbasiert mit MutationObserver)");
+    console.log("✅ English Dashboard scripts active (signal-based + MutationObserver)");
 
     const attachButtonListeners = () => {
       let found = false;
 
-      // Customer Modal
       const customerBtn = document.querySelector("button[data-signal='open-customer-modal']");
       if (customerBtn && !customerBtn.dataset.bound) {
         customerBtn.dataset.bound = "true";
         found = true;
         customerBtn.addEventListener("click", () => {
-          console.log("🟢 Öffne Customer Modal");
+          console.log("🟢 Opening Customer Modal");
           window.dispatchEvent(new CustomEvent("open-customer-modal"));
         });
       }
 
-      // Imprint Modal
       const imprintBtn = document.querySelector("button[data-signal='open-imprint-modal']");
       if (imprintBtn && !imprintBtn.dataset.bound) {
         imprintBtn.dataset.bound = "true";
         found = true;
         imprintBtn.addEventListener("click", () => {
-          console.log("🟢 Öffne Imprint Modal");
+          console.log("🟢 Opening Imprint Modal");
           window.dispatchEvent(new CustomEvent("open-imprint-modal"));
         });
       }
 
       if (!found) {
-        console.warn("⚠️ Noch keine Buttons gefunden – warte auf Solid Hydration …");
+        console.warn("⚠️ Waiting for Solid hydration – no buttons found yet…");
       }
     };
 
-    // Sofort versuchen
     attachButtonListeners();
 
-    // DOM-Änderungen beobachten
     const observer = new MutationObserver(() => attachButtonListeners());
     observer.observe(document.body, { childList: true, subtree: true });
 
-    // Nach 10s beenden (Performance)
     setTimeout(() => {
       observer.disconnect();
-      console.log("🧹 MutationObserver deaktiviert (nach 10s)");
+      console.log("🧹 MutationObserver disabled (after 10s)");
     }, 10000);
 
-    // Fallbacks
     setTimeout(attachButtonListeners, 1000);
     setTimeout(attachButtonListeners, 3000);
   });
 </script>
 
 <style>
+  /* ===============================
+     🧩 Layout Core
+     =============================== */
   .dashboard-top {
     align-items: flex-start;
   }
 
+  /* 💬 SystemMessage responsive + bündig rechts */
   .system-message {
     display: flex;
     justify-content: flex-end;
-    align-items: center;
-    margin-top: 4px;
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 0.25rem;
   }
 
   @media (min-width: 1280px) {
-    .dashboard-top {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 2rem;
+    .system-message {
+      justify-content: flex-end;
+      padding-right: 0.75rem; /* bündig mit Cards */
     }
   }
 
-  @media (min-width: 768px) and (max-width: 1279px) {
-    .dashboard-top {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      align-items: center;
-    }
+  @media (max-width: 1279px) {
     .system-message {
-      order: 2;
-      justify-content: center !important;
+      justify-content: center;
       text-align: center;
       width: 100%;
-      display: flex;
+      margin-top: 1rem;
     }
   }
 
@@ -138,10 +131,10 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       align-items: center;
     }
     .system-message {
-      order: 2;
-      justify-content: center !important;
+      justify-content: center;
       text-align: center;
       width: 100%;
+      margin-top: 1rem;
     }
   }
 

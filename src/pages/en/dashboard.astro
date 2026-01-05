@@ -10,7 +10,9 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
-  <main class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300">
+  <main
+    class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
+  >
 
     <!-- 🧭 TOP SECTION: Customer Data + System Message -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
@@ -20,7 +22,7 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       </DashboardCardWide>
 
       <!-- 💬 System Message -->
-      <div class="system-message flex justify-end items-center transition-all duration-300">
+      <div class="system-message">
         <SystemMessage />
       </div>
     </section>
@@ -89,38 +91,35 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 </script>
 
 <style>
+  /* ===============================
+     🧩 Layout Core
+     =============================== */
   .dashboard-top {
     align-items: flex-start;
   }
 
+  /* 💬 SystemMessage responsive + bündig rechts */
   .system-message {
     display: flex;
     justify-content: flex-end;
-    align-items: center;
-    margin-top: 4px;
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 0.25rem;
   }
 
   @media (min-width: 1280px) {
-    .dashboard-top {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 2rem;
+    .system-message {
+      justify-content: flex-end;
+      padding-right: 0.75rem; /* bündig mit Cards */
     }
   }
 
-  @media (min-width: 768px) and (max-width: 1279px) {
-    .dashboard-top {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      align-items: center;
-    }
+  @media (max-width: 1279px) {
     .system-message {
-      order: 2;
-      justify-content: center !important;
+      justify-content: center;
       text-align: center;
       width: 100%;
-      display: flex;
+      margin-top: 1rem;
     }
   }
 
@@ -132,10 +131,10 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       align-items: center;
     }
     .system-message {
-      order: 2;
-      justify-content: center !important;
+      justify-content: center;
       text-align: center;
       width: 100%;
+      margin-top: 1rem;
     }
   }
 

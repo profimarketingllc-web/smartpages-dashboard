@@ -12,12 +12,13 @@ const { title, label, text, gradient, glow, action } = Astro.props;
   class={`smart-tile relative block rounded-3xl text-white p-6 md:p-7 transition-all duration-300 
           bg-gradient-to-r ${gradient} ${glow} hover:translate-y-[-3px]`}
 >
-  {label && (
-    <span class="badge uppercase tracking-wide">{label}</span>
-  )}
+  {label && <span class="badge uppercase tracking-wide">{label}</span>}
 
-  <h3 class="text-xl font-bold mb-3">{title}</h3>
-  <p class="text-sm leading-relaxed opacity-95">{text}</p>
+  <!-- 🔧 Kompakter Titel-Abstand -->
+  <h3 class="text-xl font-bold mb-2 leading-tight">{title}</h3>
+
+  <!-- 🔧 Engere Zeilenhöhe, leicht erhöhte Lesbarkeit -->
+  <p class="text-sm leading-snug opacity-95">{text}</p>
 </a>
 
 <style>
