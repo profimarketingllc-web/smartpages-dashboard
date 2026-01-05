@@ -1,6 +1,7 @@
-import { Show } from "solid-js";
+import { Show, createMemo } from "solid-js";
 
 export default function ModalWrapper(props) {
+  // 🔍 Sprachlogik
   const lang =
     typeof window !== "undefined" && window.location.pathname.startsWith("/en")
       ? "en"
@@ -8,13 +9,19 @@ export default function ModalWrapper(props) {
 
   const closeLabel = lang === "de" ? "Schließen" : "Close";
 
-  // 🧩 Hier liegt der Trick:
-  // Wenn props.show eine Funktion ist (Signal), rufe sie auf.
-  // Wenn nicht (SSR oder Boolean), nutze sie direkt.
-  const visible = typeof props.show === "function" ? props.show() : props.show;
+  // 🧠 Reaktiver, SSR-sicherer Wrapper:
+  // - Funktioniert mit Signals UND mit normalen Booleans
+  // - verhindert SSR-Fehler ("props.show is not a function")
+  const isVisible = createMemo(() => {
+    try {
+      return typeof props.show === "function" ? props.show() : !!props.show;
+    } catch {
+      return false;
+    }
+  });
 
   return (
-    <Show when={visible}>
+    <Show when={isVisible()}>
       <div class="fixed inset-0 z-50 flex items-center justify-center">
         <div
           class="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm transition-opacity"
