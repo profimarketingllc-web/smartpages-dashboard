@@ -1,4 +1,5 @@
-import { createResource } from "solid-js";
+import { createSignal, createResource, Show } from "solid-js";
+import EditCustomerModal from "./EditCustomerModal";
 
 export default function CustomerCard() {
   const lang =
@@ -33,6 +34,7 @@ export default function CustomerCard() {
     },
   }[lang];
 
+  // Daten laden
   const fetchCustomer = async () => {
     try {
       const res = await fetch("https://api.smartpages.online/api/customer", {
@@ -51,9 +53,15 @@ export default function CustomerCard() {
     }
   };
 
-  const [customer] = createResource(fetchCustomer);
+  const [customer, { mutate }] = createResource(fetchCustomer);
+  const [showModal, setShowModal] = createSignal(false);
+
   const data = () => customer() || {};
   const displayValue = (val) => (val ? val : "—");
+
+  const handleSave = (updatedData) => {
+    mutate({ ...data(), ...updatedData });
+  };
 
   return (
     <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5">
@@ -76,7 +84,7 @@ export default function CustomerCard() {
         {t.title}
       </h2>
 
-      {/* 🔹 Felder im 3-Spalten-Raster */}
+      {/* 🔹 3-Spalten-Raster (bleibt exakt wie vorher) */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8">
         <div>
           <span class="font-medium text-gray-800">{t.name}:</span>
@@ -101,11 +109,24 @@ export default function CustomerCard() {
         </div>
 
         <div class="flex justify-end items-center sm:justify-end">
-          <button class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200">
+          <button
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
+            onClick={() => setShowModal(true)}
+          >
             {t.button}
           </button>
         </div>
       </div>
+
+      {/* 🔸 Modal-Komponente (Funktionalität, kein Style-Eingriff) */}
+      <Show when={showModal()}>
+        <EditCustomerModal
+          show={showModal}
+          onClose={() => setShowModal(false)}
+          data={data()}
+          onSave={handleSave}
+        />
+      </Show>
     </div>
   );
 }
