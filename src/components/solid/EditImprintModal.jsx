@@ -1,7 +1,7 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import ModalWrapper from "./ModalWrapper";
 
-export default function EditCustomerModal() {
+export default function EditImprintModal() {
   const [showModal, setShowModal] = createSignal(false);
 
   // 🔍 Sprache erkennen
@@ -13,32 +13,32 @@ export default function EditCustomerModal() {
   // 🌐 Übersetzungen
   const t = {
     de: {
-      title: "Kundendaten bearbeiten",
-      name: "Name",
+      title: "Impressum bearbeiten",
+      company: "Firma",
       cancel: "Abbrechen",
       save: "Speichern",
     },
     en: {
-      title: "Edit Customer Data",
-      name: "Name",
+      title: "Edit Imprint",
+      company: "Company",
       cancel: "Cancel",
       save: "Save",
     },
   }[lang];
 
-  // 🧭 Eventlistener für Dashboard-Signale
+  // 🧭 Eventlistener für Dashboard-Signal
   onMount(() => {
     const openHandler = () => {
-      console.log("🟢 open-customer-modal empfangen");
+      console.log("🟢 open-imprint-modal empfangen");
       setShowModal(true);
     };
-    window.addEventListener("open-customer-modal", openHandler);
-    onCleanup(() => window.removeEventListener("open-customer-modal", openHandler));
+    window.addEventListener("open-imprint-modal", openHandler);
+    onCleanup(() => window.removeEventListener("open-imprint-modal", openHandler));
   });
 
   const handleClose = () => setShowModal(false);
   const handleSave = () => {
-    console.log("💾 Kundendaten gespeichert!");
+    console.log("💾 Impressumsdaten gespeichert!");
     setShowModal(false);
   };
 
@@ -48,10 +48,10 @@ export default function EditCustomerModal() {
 
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">{t.name}</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{t.company}</label>
           <input
             type="text"
-            placeholder={t.name}
+            placeholder={t.company}
             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
           />
         </div>
