@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, onMount, onCleanup } from "solid-js";
 import ModalWrapper from "./ModalWrapper";
 
 export default function EditCustomerModal(props) {
@@ -27,7 +27,23 @@ export default function EditCustomerModal(props) {
     },
   }[lang];
 
-  const [name, setName] = createSignal(props.data.name || "");
+  // Lokaler Sichtbarkeitsstatus (global steuerbar)
+  const [show, setShow] = createSignal(false);
+  const [name, setName] = createSignal(props.data?.name || "");
+
+  // Event-Handler für globales Öffnen
+  const openHandler = () => setShow(true);
+  const closeHandler = () => setShow(false);
+
+  // Event-Listener registrieren
+  onMount(() => {
+    window.addEventListener("open-customer-modal", openHandler);
+  });
+
+  // Event-Listener beim Entfernen wieder abbauen
+  onCleanup(() => {
+    window.removeEventListener("open-customer-modal", openHandler);
+  });
 
   const handleSave = async () => {
     try {
@@ -37,15 +53,15 @@ export default function EditCustomerModal(props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name() }),
       });
-      props.onSave({ name: name() });
-      props.onClose();
+      props.onSave?.({ name: name() });
+      closeHandler();
     } catch (err) {
       console.error("❌ Fehler beim Speichern der Kundendaten:", err);
     }
   };
 
   return (
-    <ModalWrapper show={props.show} onClose={props.onClose}>
+    <ModalWrapper show={show()} onClose={closeHandler}>
       <h2 class="text-xl font-bold text-[#1E2A45] mb-4">{t.title}</h2>
 
       <div class="space-y-4">
@@ -63,7 +79,7 @@ export default function EditCustomerModal(props) {
           <label class="block text-sm font-medium text-gray-400 mb-1">{t.plan}</label>
           <input
             type="text"
-            value={props.data.plan || "—"}
+            value={props.data?.plan || "—"}
             disabled
             class="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-500"
           />
@@ -73,7 +89,7 @@ export default function EditCustomerModal(props) {
           <label class="block text-sm font-medium text-gray-400 mb-1">{t.activeUntil}</label>
           <input
             type="text"
-            value={props.data.activeUntil || "—"}
+            value={props.data?.activeUntil || "—"}
             disabled
             class="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-500"
           />
@@ -83,7 +99,7 @@ export default function EditCustomerModal(props) {
       <div class="mt-6 flex justify-end gap-3">
         <button
           class="px-4 py-2 bg-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-300 transition"
-          onClick={props.onClose}
+          onClick={closeHandler}
         >
           {t.cancel}
         </button>
