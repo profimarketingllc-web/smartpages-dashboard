@@ -1,7 +1,7 @@
 import { createResource } from "solid-js";
 
 export default function ImprintCard() {
-  // 🔍 Detect language from URL
+  // 🌍 Sprache automatisch erkennen
   const lang =
     typeof window !== "undefined"
       ? window.location.pathname.startsWith("/en")
@@ -9,14 +9,14 @@ export default function ImprintCard() {
         : "de"
       : "de";
 
-  // 🌐 Translations
+  // 🌐 Übersetzungen
   const t = {
     de: {
       title: "Impressumsdaten",
       company: "Firma",
       contact: "Ansprechpartner",
       street: "Straße",
-      house: "Hausnummer",
+      number: "Hausnummer",
       zip: "PLZ",
       city: "Ort",
       phone: "Telefon",
@@ -29,16 +29,17 @@ export default function ImprintCard() {
       company: "Company",
       contact: "Contact Person",
       street: "Street",
-      house: "House No.",
+      number: "Number",
       zip: "ZIP",
       city: "City",
       phone: "Phone",
-      email: "E-Mail",
+      email: "Email",
       vat: "VAT-ID",
       button: "Edit Imprint",
     },
   }[lang];
 
+  // 🔗 Imprint-Daten abrufen
   const fetchImprint = async () => {
     try {
       const res = await fetch("https://api.smartpages.online/api/imprint", {
@@ -50,7 +51,8 @@ export default function ImprintCard() {
       return {
         company: "—",
         contact: "—",
-        address: "—",
+        street: "—",
+        number: "—",
         zip: "—",
         city: "—",
         email: "—",
@@ -64,13 +66,17 @@ export default function ImprintCard() {
   const data = () => imprint() || {};
   const displayValue = (val) => (val ? val : "—");
 
+  // 🧱 Layout
   return (
     <div class="w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5">
+      {/* 🔹 Überschrift */}
       <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5 text-center md:text-left">
         {t.title}
       </h2>
 
+      {/* 🔹 Felder im Raster */}
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
+        {/* 1️⃣ Reihe */}
         <div>
           <span class="font-medium text-gray-800">{t.company}:</span>
           <p class="text-gray-500">{displayValue(data().company)}</p>
@@ -80,22 +86,26 @@ export default function ImprintCard() {
           <p class="text-gray-500">{displayValue(data().contact)}</p>
         </div>
         <div class="flex justify-end lg:justify-start items-start">
-          <button class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200">
+          <button
+            data-action="edit-imprint"
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
+          >
             {t.button}
           </button>
         </div>
 
+        {/* 2️⃣ Reihe */}
         <div>
           <span class="font-medium text-gray-800">{t.street}:</span>
-          <p class="text-gray-500">{displayValue(data().address)}</p>
+          <p class="text-gray-500">{displayValue(data().street)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t.house}:</span>
-          <p class="text-gray-500">—</p>
+          <span class="font-medium text-gray-800">{t.number}:</span>
+          <p class="text-gray-500">{displayValue(data().number)}</p>
         </div>
-
         <div></div>
 
+        {/* 3️⃣ Reihe */}
         <div>
           <span class="font-medium text-gray-800">{t.zip}:</span>
           <p class="text-gray-500">{displayValue(data().zip)}</p>
@@ -104,9 +114,9 @@ export default function ImprintCard() {
           <span class="font-medium text-gray-800">{t.city}:</span>
           <p class="text-gray-500">{displayValue(data().city)}</p>
         </div>
-
         <div></div>
 
+        {/* 4️⃣ Reihe */}
         <div>
           <span class="font-medium text-gray-800">{t.phone}:</span>
           <p class="text-gray-500">{displayValue(data().phone)}</p>

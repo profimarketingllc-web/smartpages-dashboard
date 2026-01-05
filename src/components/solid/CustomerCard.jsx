@@ -1,7 +1,7 @@
 import { createResource } from "solid-js";
 
 export default function CustomerCard() {
-  // 🔍 Detect language automatically
+  // 🌍 Sprache automatisch erkennen
   const lang =
     typeof window !== "undefined"
       ? window.location.pathname.startsWith("/en")
@@ -9,7 +9,7 @@ export default function CustomerCard() {
         : "de"
       : "de";
 
-  // 🌐 Translations
+  // 🌐 Übersetzungen
   const t = {
     de: {
       title: "Kundendaten",
@@ -35,7 +35,7 @@ export default function CustomerCard() {
     },
   }[lang];
 
-  // 🔗 Fetch customer data
+  // 🔗 Kundendaten abrufen
   const fetchCustomer = async () => {
     try {
       const res = await fetch("https://api.smartpages.online/api/customer", {
@@ -61,7 +61,7 @@ export default function CustomerCard() {
   // 🧱 Layout
   return (
     <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5">
-      {/* 🔹 Login Status */}
+      {/* 🔹 Login-Status oben rechts */}
       <div class="absolute top-4 right-10 md:right-14">
         <span
           class={`inline-block px-4 py-1 text-sm font-medium rounded-full border 
@@ -75,21 +75,23 @@ export default function CustomerCard() {
         </span>
       </div>
 
-      {/* 🔹 Title */}
+      {/* 🔹 Überschrift */}
       <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5 text-center md:text-left">
         {t.title}
       </h2>
 
-      {/* 🔹 Grid fields */}
+      {/* 🔹 Felder im Raster */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8">
         <div>
           <span class="font-medium text-gray-800">{t.name}:</span>
           <p class="text-gray-600">{displayValue(data().name)}</p>
         </div>
+
         <div>
           <span class="font-medium text-gray-800">{t.plan}:</span>
           <p class="text-gray-600">{displayValue(data().plan)}</p>
         </div>
+
         <div>
           <span class="font-medium text-gray-800">{t.activeUntil}:</span>
           <p class="text-gray-600">{displayValue(data().activeUntil)}</p>
@@ -99,13 +101,18 @@ export default function CustomerCard() {
           <span class="font-medium text-gray-800">{t.status}:</span>
           <p class="text-gray-600">{displayValue(data().status)}</p>
         </div>
+
         <div>
           <span class="font-medium text-gray-800">{t.lastLogin}:</span>
           <p class="text-gray-600">{displayValue(data().lastLogin)}</p>
         </div>
 
+        {/* 🟧 Bearbeiten-Button */}
         <div class="flex justify-end items-center sm:justify-end">
-          <button class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200">
+          <button
+            data-action="edit-customer"
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
+          >
             {t.button}
           </button>
         </div>
