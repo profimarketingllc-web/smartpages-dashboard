@@ -2,6 +2,42 @@ import { createSignal } from "solid-js";
 import ModalWrapper from "./ModalWrapper";
 
 export default function EditImprintModal(props) {
+  const lang =
+    typeof window !== "undefined" && window.location.pathname.startsWith("/en")
+      ? "en"
+      : "de";
+
+  const t = {
+    de: {
+      title: "Impressum bearbeiten",
+      company: "Firma",
+      contact: "Ansprechpartner",
+      street: "Straße",
+      housenumber: "Hausnummer",
+      zip: "PLZ",
+      city: "Ort",
+      phone: "Telefon",
+      email: "E-Mail",
+      vat: "USt-ID",
+      cancel: "Abbrechen",
+      save: "Speichern",
+    },
+    en: {
+      title: "Edit Imprint",
+      company: "Company",
+      contact: "Contact Person",
+      street: "Street",
+      housenumber: "House Number",
+      zip: "ZIP",
+      city: "City",
+      phone: "Phone",
+      email: "Email",
+      vat: "VAT ID",
+      cancel: "Cancel",
+      save: "Save",
+    },
+  }[lang];
+
   const [form, setForm] = createSignal({
     company: props.data.company || "",
     contact: props.data.contact || "",
@@ -35,113 +71,44 @@ export default function EditImprintModal(props) {
 
   return (
     <ModalWrapper show={props.show} onClose={props.onClose}>
-      <h2 class="text-xl font-bold text-[#1E2A45] mb-4">Impressum bearbeiten</h2>
+      <h2 class="text-xl font-bold text-[#1E2A45] mb-4">{t.title}</h2>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Firma</label>
-          <input
-            type="text"
-            value={form().company}
-            onInput={(e) => updateField("company", e.target.value)}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Ansprechpartner</label>
-          <input
-            type="text"
-            value={form().contact}
-            onInput={(e) => updateField("contact", e.target.value)}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Straße</label>
-          <input
-            type="text"
-            value={form().street}
-            onInput={(e) => updateField("street", e.target.value)}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Hausnummer</label>
-          <input
-            type="text"
-            value={form().housenumber}
-            onInput={(e) => updateField("housenumber", e.target.value)}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">PLZ</label>
-          <input
-            type="text"
-            value={form().zip}
-            onInput={(e) => updateField("zip", e.target.value)}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Ort</label>
-          <input
-            type="text"
-            value={form().city}
-            onInput={(e) => updateField("city", e.target.value)}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Telefon</label>
-          <input
-            type="text"
-            value={form().phone}
-            onInput={(e) => updateField("phone", e.target.value)}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
-          />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">E-Mail</label>
-          <input
-            type="email"
-            value={form().email}
-            onInput={(e) => updateField("email", e.target.value)}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
-          />
-        </div>
-
-        <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 mb-1">USt-ID</label>
-          <input
-            type="text"
-            value={form().vat}
-            onInput={(e) => updateField("vat", e.target.value)}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
-          />
-        </div>
+        {[
+          ["company", t.company],
+          ["contact", t.contact],
+          ["street", t.street],
+          ["housenumber", t.housenumber],
+          ["zip", t.zip],
+          ["city", t.city],
+          ["phone", t.phone],
+          ["email", t.email],
+          ["vat", t.vat],
+        ].map(([key, label]) => (
+          <div class={key === "vat" ? "sm:col-span-2" : ""}>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+            <input
+              type={key === "email" ? "email" : "text"}
+              value={form()[key]}
+              onInput={(e) => updateField(key, e.target.value)}
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
+            />
+          </div>
+        ))}
       </div>
 
-      {/* Buttons */}
       <div class="mt-6 flex justify-end gap-3">
         <button
           class="px-4 py-2 bg-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-300 transition"
           onClick={props.onClose}
         >
-          Abbrechen
+          {t.cancel}
         </button>
         <button
           class="px-5 py-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white rounded-lg text-sm font-medium shadow hover:scale-105 transition"
           onClick={handleSave}
         >
-          Speichern
+          {t.save}
         </button>
       </div>
     </ModalWrapper>
