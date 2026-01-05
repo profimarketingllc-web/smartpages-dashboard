@@ -1,13 +1,17 @@
 import { createResource } from "solid-js";
 
 export default function CustomerCard() {
-  // 🌍 Sprache automatisch erkennen
-  const lang =
-    typeof window !== "undefined"
-      ? window.location.pathname.startsWith("/en")
-        ? "en"
-        : "de"
-      : "de";
+  // 🌍 Robuste Spracherkennung
+  const getLanguage = () => {
+    if (typeof document !== "undefined" && document.documentElement.lang)
+      return document.documentElement.lang.startsWith("en") ? "en" : "de";
+    if (typeof window !== "undefined") {
+      const pathLang = window.location.pathname.split("/")[1];
+      if (pathLang === "en") return "en";
+    }
+    return "de";
+  };
+  const lang = getLanguage();
 
   // 🌐 Übersetzungen
   const t = {
@@ -107,7 +111,7 @@ export default function CustomerCard() {
           <p class="text-gray-600">{displayValue(data().lastLogin)}</p>
         </div>
 
-        {/* 🟧 Bearbeiten-Button (signalbasiert) */}
+        {/* 🟧 Bearbeiten-Button (öffnet Modal) */}
         <div class="flex justify-end items-center sm:justify-end">
           <button
             data-signal="open-customer-modal"

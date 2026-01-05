@@ -11,7 +11,7 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
   <main class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300">
-    
+
     <!-- 🧭 OBERER BEREICH: Kundendaten + Systemnachricht -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
       <!-- 🪪 Kundendaten -->
@@ -20,7 +20,7 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       </DashboardCardWide>
 
       <!-- 💬 Systemnachricht -->
-      <div class="system-message flex justify-center xl:justify-end transition-all duration-300">
+      <div class="system-message flex justify-end items-center transition-all duration-300">
         <SystemMessage />
       </div>
     </section>
@@ -30,10 +30,10 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       <ImprintCard client:load />
     </DashboardCardWide>
 
-    <!-- 💼 PRODUKTGRID -->
-    <DashboardCardWide>
+    <!-- 💼 PRODUKTGRID (ohne Card) -->
+    <section class="mt-4 md:mt-6">
       <ProductGrid />
-    </DashboardCardWide>
+    </section>
 
     <!-- 🧩 Modals -->
     <EditCustomerModal client:load />
@@ -95,18 +95,15 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 </script>
 
 <style>
-  /* ===============================
-     🎯 PREMIUM DASHBOARD LAYOUT FIX
-     =============================== */
-
   .dashboard-top {
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .system-message {
-    align-self: stretch;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    margin-top: 4px;
   }
 
   @media (min-width: 1280px) {
@@ -114,9 +111,6 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 2rem;
-    }
-    .system-message {
-      justify-content: flex-end;
     }
   }
 
