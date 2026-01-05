@@ -10,10 +10,9 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
-  <main
-    class="flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
-  >
-    <!-- 🧭 OBERER BEREICH: Kundendaten + SystemMessage -->
+  <main class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300">
+    
+    <!-- 🧭 OBERER BEREICH: Kundendaten + Systemnachricht -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
       <!-- 🪪 Kundendaten -->
       <DashboardCardWide>
@@ -36,7 +35,7 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       <ProductGrid />
     </DashboardCardWide>
 
-    <!-- 🧩 Modals (werden per Signal geöffnet) -->
+    <!-- 🧩 Modals -->
     <EditCustomerModal client:load />
     <EditImprintModal client:load />
   </main>
@@ -49,7 +48,7 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
     const attachButtonListeners = () => {
       let found = false;
 
-      // 🟩 Customer Modal öffnen
+      // Customer Modal
       const customerBtn = document.querySelector("button[data-signal='open-customer-modal']");
       if (customerBtn && !customerBtn.dataset.bound) {
         customerBtn.dataset.bound = "true";
@@ -60,7 +59,7 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
         });
       }
 
-      // 🟧 Imprint Modal öffnen
+      // Imprint Modal
       const imprintBtn = document.querySelector("button[data-signal='open-imprint-modal']");
       if (imprintBtn && !imprintBtn.dataset.bound) {
         imprintBtn.dataset.bound = "true";
@@ -72,24 +71,24 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       }
 
       if (!found) {
-        console.warn("⚠️ Noch keine Buttons mit data-signal gefunden – warte auf Solid Hydration …");
+        console.warn("⚠️ Noch keine Buttons gefunden – warte auf Solid Hydration …");
       }
     };
 
-    // 🕓 1️⃣ Sofort versuchen
+    // Sofort versuchen
     attachButtonListeners();
 
-    // 🧩 2️⃣ DOM-Änderungen beobachten (wenn Solid die Buttons rendert)
+    // DOM-Änderungen beobachten
     const observer = new MutationObserver(() => attachButtonListeners());
     observer.observe(document.body, { childList: true, subtree: true });
 
-    // 🧹 3️⃣ Nach 10 Sekunden automatisch beenden (Performance)
+    // Nach 10s beenden (Performance)
     setTimeout(() => {
       observer.disconnect();
       console.log("🧹 MutationObserver deaktiviert (nach 10s)");
     }, 10000);
 
-    // 🪄 4️⃣ Sicherheitshalber Fallback-Checks
+    // Fallbacks
     setTimeout(attachButtonListeners, 1000);
     setTimeout(attachButtonListeners, 3000);
   });
@@ -100,14 +99,23 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
      🎯 PREMIUM DASHBOARD LAYOUT FIX
      =============================== */
 
+  .dashboard-top {
+    align-items: stretch;
+  }
+
+  .system-message {
+    align-self: stretch;
+    display: flex;
+    justify-content: flex-end;
+  }
+
   @media (min-width: 1280px) {
     .dashboard-top {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 2rem;
-      align-items: start;
     }
-    .dashboard-top .system-message {
+    .system-message {
       justify-content: flex-end;
     }
   }
@@ -119,7 +127,7 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       gap: 1.5rem;
       align-items: center;
     }
-    .dashboard-top .system-message {
+    .system-message {
       order: 2;
       justify-content: center !important;
       text-align: center;
@@ -135,7 +143,7 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       gap: 1.25rem;
       align-items: center;
     }
-    .dashboard-top .system-message {
+    .system-message {
       order: 2;
       justify-content: center !important;
       text-align: center;

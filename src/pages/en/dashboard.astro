@@ -9,12 +9,10 @@ import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 ---
 
-<PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <main
-    class="flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
-  >
-
-    <!-- 🧭 TOP SECTION: Customer Data + SystemMessage -->
+<PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
+  <main class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300">
+    
+    <!-- 🧭 TOP SECTION: Customer Data + System Message -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
       <!-- 🪪 Customer Data -->
       <DashboardCardWide>
@@ -37,65 +35,77 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       <ProductGrid />
     </DashboardCardWide>
 
-    <!-- 🧩 Modals (werden per Signal geöffnet) -->
+    <!-- 🧩 Modals -->
     <EditCustomerModal client:load />
     <EditImprintModal client:load />
-
   </main>
 </PageLayout>
 
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ English Dashboard scripts active (signal-based)");
+    console.log("✅ English Dashboard scripts active (signal-based + MutationObserver)");
 
     const attachButtonListeners = () => {
-      // Customer Modal
+      let found = false;
+
       const customerBtn = document.querySelector("button[data-signal='open-customer-modal']");
       if (customerBtn && !customerBtn.dataset.bound) {
         customerBtn.dataset.bound = "true";
+        found = true;
         customerBtn.addEventListener("click", () => {
           console.log("🟢 Opening Customer Modal");
           window.dispatchEvent(new CustomEvent("open-customer-modal"));
         });
-      } else if (!customerBtn) {
-        console.warn("⚠️ No button with data-signal='open-customer-modal' found.");
       }
 
-      // Imprint Modal
       const imprintBtn = document.querySelector("button[data-signal='open-imprint-modal']");
       if (imprintBtn && !imprintBtn.dataset.bound) {
         imprintBtn.dataset.bound = "true";
+        found = true;
         imprintBtn.addEventListener("click", () => {
           console.log("🟢 Opening Imprint Modal");
           window.dispatchEvent(new CustomEvent("open-imprint-modal"));
         });
-      } else if (!imprintBtn) {
-        console.warn("⚠️ No button with data-signal='open-imprint-modal' found.");
+      }
+
+      if (!found) {
+        console.warn("⚠️ Waiting for Solid hydration – no buttons found yet…");
       }
     };
 
-    // Initial call
     attachButtonListeners();
 
-    // Fallback for delayed Solid hydration
+    const observer = new MutationObserver(() => attachButtonListeners());
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    setTimeout(() => {
+      observer.disconnect();
+      console.log("🧹 MutationObserver disabled (after 10s)");
+    }, 10000);
+
     setTimeout(attachButtonListeners, 1000);
     setTimeout(attachButtonListeners, 3000);
   });
 </script>
 
 <style>
-  /* ===============================
-     🎯 PREMIUM DASHBOARD LAYOUT FIX
-     =============================== */
+  .dashboard-top {
+    align-items: stretch;
+  }
+
+  .system-message {
+    align-self: stretch;
+    display: flex;
+    justify-content: flex-end;
+  }
 
   @media (min-width: 1280px) {
     .dashboard-top {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 2rem;
-      align-items: start;
     }
-    .dashboard-top .system-message {
+    .system-message {
       justify-content: flex-end;
     }
   }
@@ -107,7 +117,7 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       gap: 1.5rem;
       align-items: center;
     }
-    .dashboard-top .system-message {
+    .system-message {
       order: 2;
       justify-content: center !important;
       text-align: center;
@@ -123,7 +133,7 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
       gap: 1.25rem;
       align-items: center;
     }
-    .dashboard-top .system-message {
+    .system-message {
       order: 2;
       justify-content: center !important;
       text-align: center;
