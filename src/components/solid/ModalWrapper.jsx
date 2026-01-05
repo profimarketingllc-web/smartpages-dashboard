@@ -8,8 +8,13 @@ export default function ModalWrapper(props) {
 
   const closeLabel = lang === "de" ? "Schließen" : "Close";
 
+  // 🧩 Hier liegt der Trick:
+  // Wenn props.show eine Funktion ist (Signal), rufe sie auf.
+  // Wenn nicht (SSR oder Boolean), nutze sie direkt.
+  const visible = typeof props.show === "function" ? props.show() : props.show;
+
   return (
-    <Show when={props.show()}>
+    <Show when={visible}>
       <div class="fixed inset-0 z-50 flex items-center justify-center">
         <div
           class="absolute inset-0 bg-black bg-opacity-40 backdrop-blur-sm transition-opacity"
