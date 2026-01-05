@@ -11,16 +11,19 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
   <main
     class="flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
   >
-
-    <!-- 🧭 OBERER BEREICH: Kundendaten + SystemMessage -->
-    <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
+    <!-- 🧭 OBERER BEREICH: Kundendaten + Systemnachricht -->
+    <section
+      class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300"
+    >
       <!-- 🪪 Kundendaten -->
       <DashboardCardWide>
         <CustomerCard client:load />
       </DashboardCardWide>
 
       <!-- 💬 Systemnachricht -->
-      <div class="system-message flex justify-center xl:justify-end transition-all duration-300">
+      <div
+        class="system-message flex justify-center xl:justify-end transition-all duration-300"
+      >
         <SystemMessage />
       </div>
     </section>
@@ -34,16 +37,33 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     <DashboardCardWide>
       <ProductGrid />
     </DashboardCardWide>
-
   </main>
+
+  <!-- ⚙️ Modal-Trigger Script -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const customerBtn = document.querySelector(
+        'button:has-text("Profil bearbeiten")'
+      );
+      const imprintBtn = document.querySelector(
+        'button:has-text("Impressum bearbeiten")'
+      );
+
+      customerBtn?.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent("open-customer-modal"));
+      });
+
+      imprintBtn?.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent("open-imprint-modal"));
+      });
+    });
+  </script>
 </PageLayout>
 
 <style>
   /* ===============================
      🎯 PREMIUM DASHBOARD LAYOUT FIX
      =============================== */
-
-  /* 🧩 Desktop-Layout (ab XL) → 2 Spalten */
   @media (min-width: 1280px) {
     .dashboard-top {
       display: grid;
@@ -51,13 +71,11 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
       gap: 2rem;
       align-items: start;
     }
-
     .dashboard-top .system-message {
       justify-content: flex-end;
     }
   }
 
-  /* 💻 Mittlere Screens (z. B. 900–1279px) → zentriert */
   @media (min-width: 768px) and (max-width: 1279px) {
     .dashboard-top {
       display: flex;
@@ -65,7 +83,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
       gap: 1.5rem;
       align-items: center;
     }
-
     .dashboard-top .system-message {
       order: 2;
       justify-content: center !important;
@@ -75,7 +92,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     }
   }
 
-  /* 📱 Kleine Screens (unter 768px) → 1 Spalte, zentriert */
   @media (max-width: 767px) {
     .dashboard-top {
       display: flex;
@@ -83,7 +99,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
       gap: 1.25rem;
       align-items: center;
     }
-
     .dashboard-top .system-message {
       order: 2;
       justify-content: center !important;
@@ -92,7 +107,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     }
   }
 
-  /* 🎨 Allgemeines Spacing */
   main {
     padding-top: 0.5rem;
     transition: all 0.3s ease-in-out;

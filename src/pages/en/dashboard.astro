@@ -11,21 +11,24 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
   <main
     class="flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
   >
-
     <!-- 🧭 TOP AREA: Customer Data + System Message -->
-    <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
+    <section
+      class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300"
+    >
       <!-- 🪪 Customer Data -->
       <DashboardCardWide>
         <CustomerCard client:load />
       </DashboardCardWide>
 
       <!-- 💬 System Message -->
-      <div class="system-message flex justify-center xl:justify-end transition-all duration-300">
+      <div
+        class="system-message flex justify-center xl:justify-end transition-all duration-300"
+      >
         <SystemMessage />
       </div>
     </section>
 
-    <!-- 🏢 IMPRINT DATA -->
+    <!-- 🏢 IMPRINT -->
     <DashboardCardWide>
       <ImprintCard client:load />
     </DashboardCardWide>
@@ -34,16 +37,31 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     <DashboardCardWide>
       <ProductGrid />
     </DashboardCardWide>
-
   </main>
+
+  <!-- ⚙️ Modal Trigger Script -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const customerBtn = document.querySelector(
+        'button:has-text("Edit Profile")'
+      );
+      const imprintBtn = document.querySelector('button:has-text("Edit Imprint")');
+
+      customerBtn?.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent("open-customer-modal"));
+      });
+
+      imprintBtn?.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent("open-imprint-modal"));
+      });
+    });
+  </script>
 </PageLayout>
 
 <style>
   /* ===============================
      🎯 PREMIUM DASHBOARD LAYOUT FIX
      =============================== */
-
-  /* 🧩 Desktop layout (from XL) → 2 columns */
   @media (min-width: 1280px) {
     .dashboard-top {
       display: grid;
@@ -51,13 +69,11 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
       gap: 2rem;
       align-items: start;
     }
-
     .dashboard-top .system-message {
       justify-content: flex-end;
     }
   }
 
-  /* 💻 Medium screens (e.g., 900–1279px) → centered layout */
   @media (min-width: 768px) and (max-width: 1279px) {
     .dashboard-top {
       display: flex;
@@ -65,7 +81,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
       gap: 1.5rem;
       align-items: center;
     }
-
     .dashboard-top .system-message {
       order: 2;
       justify-content: center !important;
@@ -75,7 +90,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     }
   }
 
-  /* 📱 Small screens (below 768px) → single column layout */
   @media (max-width: 767px) {
     .dashboard-top {
       display: flex;
@@ -83,7 +97,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
       gap: 1.25rem;
       align-items: center;
     }
-
     .dashboard-top .system-message {
       order: 2;
       justify-content: center !important;
@@ -92,7 +105,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     }
   }
 
-  /* 🎨 General spacing and transitions */
   main {
     padding-top: 0.5rem;
     transition: all 0.3s ease-in-out;
