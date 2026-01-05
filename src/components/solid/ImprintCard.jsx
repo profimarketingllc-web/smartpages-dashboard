@@ -1,15 +1,12 @@
-import { createSignal, onMount } from "solid-js";
+import { createResource } from "solid-js";
 
 export default function ImprintCard() {
-  // 🌍 Sprache automatisch erkennen
+  // 🌍 Sprachlogik
   const lang =
-    typeof window !== "undefined"
-      ? window.location.pathname.startsWith("/en")
-        ? "en"
-        : "de"
+    typeof window !== "undefined" && window.location.pathname.startsWith("/en")
+      ? "en"
       : "de";
 
-  // 🌐 Übersetzungen
   const t = {
     de: {
       title: "Impressum",
@@ -17,7 +14,11 @@ export default function ImprintCard() {
       address: "Adresse",
       contact: "Kontakt",
       website: "Webseite",
-      edit: "Impressum bearbeiten",
+      button: "Impressum bearbeiten",
+      placeholderCompany: "– keine Angaben –",
+      placeholderAddress: "– keine Adresse –",
+      placeholderContact: "– keine Kontaktdaten –",
+      placeholderWebsite: "– keine Website –",
     },
     en: {
       title: "Imprint",
@@ -25,61 +26,71 @@ export default function ImprintCard() {
       address: "Address",
       contact: "Contact",
       website: "Website",
-      edit: "Edit Imprint",
+      button: "Edit Imprint",
+      placeholderCompany: "– no information –",
+      placeholderAddress: "– no address –",
+      placeholderContact: "– no contact info –",
+      placeholderWebsite: "– no website –",
     },
   }[lang];
 
-  const [imprint, setImprint] = createSignal({
-    company: "SmartPages GmbH",
-    address: "Musterstraße 12, 12345 Berlin",
-    contact: "info@smartpages.online",
-    website: "https://smartpages.online",
-  });
+  // 🛰️ Daten abrufen (mit Platzhaltern, wenn API leer)
+  const fetchImprint = async () => {
+    try {
+      const res = await fetch("https://api.smartpages.online/api/imprint", {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok || !data || !data.company) throw new Error("No imprint data");
+      return data;
+    } catch {
+      return {
+        company: t.placeholderCompany,
+        address: t.placeholderAddress,
+        contact: t.placeholderContact,
+        website: t.placeholderWebsite,
+      };
+    }
+  };
+
+  const [imprint] = createResource(fetchImprint);
+  const data = () => imprint() || {};
 
   // 🧱 Layout
   return (
-    <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5">
+    <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-6 md:py-7">
       <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5 text-center md:text-left">
         {t.title}
       </h2>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-10">
         <div>
           <span class="font-medium text-gray-800">{t.company}:</span>
-          <p class="text-gray-600">{imprint().company}</p>
+          <p class="text-gray-600">{data().company}</p>
         </div>
 
         <div>
           <span class="font-medium text-gray-800">{t.address}:</span>
-          <p class="text-gray-600">{imprint().address}</p>
+          <p class="text-gray-600">{data().address}</p>
         </div>
 
         <div>
           <span class="font-medium text-gray-800">{t.contact}:</span>
-          <p class="text-gray-600">{imprint().contact}</p>
+          <p class="text-gray-600">{data().contact}</p>
         </div>
 
         <div>
           <span class="font-medium text-gray-800">{t.website}:</span>
-          <p class="text-gray-600">
-            <a
-              href={imprint().website}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-blue-600 hover:underline"
-            >
-              {imprint().website}
-            </a>
-          </p>
+          <p class="text-gray-600 break-all">{data().website}</p>
         </div>
 
-        {/* 🟧 Bearbeiten-Button (signalbasiert) */}
-        <div class="flex justify-end items-center sm:justify-end col-span-2">
+        {/* 🟧 Bearbeiten-Button */}
+        <div class="sm:col-span-2 flex justify-end mt-4">
           <button
-            data-signal="open-imprint-modal"
             class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
+            data-signal="open-imprint-modal"
           >
-            {t.edit}
+            {t.button}
           </button>
         </div>
       </div>
