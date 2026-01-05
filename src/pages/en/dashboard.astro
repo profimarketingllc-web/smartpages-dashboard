@@ -1,94 +1,86 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 import "~/styles/global.css";
-
-// ⚙️ Solid Components
 import CustomerCard from "@/components/solid/CustomerCard.jsx";
 import ImprintCard from "@/components/solid/ImprintCard.jsx";
+import ProductGrid from "@/components/ui/ProductGrid.astro";
+import EditCustomerModal from "@/components/solid/EditCustomerModal.jsx";
+import EditImprintModal from "@/components/solid/EditImprintModal.jsx";
 
-const title = "Dashboard – SmartPages";
+// Server-side session (optional)
+let authenticated = false;
+try {
+  const cookie = Astro.request.headers.get("cookie") || "";
+  if (cookie.includes("session=")) {
+    const res = await fetch("https://api.smartpages.online/api/session", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Cookie: cookie,
+      },
+      credentials: "include",
+    });
+    const data = await res.json();
+    authenticated = data?.ok && data?.authenticated;
+  }
+} catch (err) {
+  console.warn("Session check failed:", err);
+}
 ---
 
-<PageLayout title={title} sidebar={true} header={true}>
-  <!-- 🧭 Customer Data -->
-  <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-0">
-    <CustomerCard />
-  </section>
-
-  <!-- 🧾 Imprint Data -->
-  <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-4">
-    <ImprintCard />
-  </section>
-
-  <!-- 🧱 Product Cards -->
-  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 p-5 mt-4">
-    <a href="/en/smartprofile"
-       class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#4E6BFF] to-[#657AFF]
-              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-              hover:shadow-[0_0_25px_rgba(78,107,255,0.6)] hover:scale-[1.02]">
-      <h3 class="text-2xl font-bold mb-2">SmartProfile</h3>
-      <p class="text-sm">
-        Create your professional profile in minutes – perfect for freelancers, coaches and entrepreneurs.
-      </p>
-    </a>
-
-    <a href="/en/smartpage"
-       class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#F5B400] to-[#E47E00]
-              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-              hover:shadow-[0_0_25px_rgba(245,180,0,0.6)] hover:scale-[1.02]">
-      <h3 class="text-2xl font-bold mb-2">SmartPage</h3>
-      <p class="text-sm">
-        Build stunning pages fast – conversion-ready, mobile-optimized, and easy to edit.
-      </p>
-    </a>
-
-    <a href="/en/smartdomain"
-       class="rounded-2xl p-5 text-white bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]
-              shadow-[0_6px_16px_rgba(0,0,0,0.12)] transition-all duration-300
-              hover:shadow-[0_0_25px_rgba(139,92,255,0.6)] hover:scale-[1.02]">
-      <h3 class="text-2xl font-bold mb-2">SmartDomain</h3>
-      <p class="text-sm">
-        Secure your domain directly with SmartPages – professional, simple, and GDPR compliant.
-      </p>
-    </a>
-  </section>
-
-  <!-- 📨 Feedback -->
-  <section class="max-w-6xl mx-auto mt-4 bg-[#f8f9fb] rounded-2xl p-5 text-center md:text-left shadow-md border border-gray-100 mb-8">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-      <div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-1 md:mb-0">Your feedback helps us improve</h3>
-        <p class="text-sm text-gray-600">
-          Share bugs, ideas, or suggestions – help us make SmartPages even better.
-        </p>
-      </div>
-      <a
-        href="/en/feedback"
-        class="inline-block px-6 py-3 bg-[#D9534F] text-white rounded-xl hover:bg-[#C0413B] 
-               transition-all duration-300 shadow-md whitespace-nowrap"
+<PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
+  <main class="pb-12">
+    <!-- 💬 Welcome Message -->
+    <div class="max-w-6xl mx-auto flex justify-end mt-3 mb-2">
+      <div
+        class="bg-[#4E6BFF] text-white font-medium px-6 py-2.5 rounded-2xl shadow-md text-sm
+               hover:scale-[1.02] transition-all duration-300"
       >
-        Send Feedback
-      </a>
+        Welcome to the SmartCenter 👋
+      </div>
     </div>
-  </section>
+
+    <!-- 🧭 Customer Data -->
+    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6">
+      <CustomerCard />
+    </section>
+
+    <!-- 🧾 Imprint Data -->
+    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-4">
+      <ImprintCard />
+    </section>
+
+<!-- 🧩 Modal Components -->
+<div>
+  <EditCustomerModal />
+  <EditImprintModal />
+</div>
+
+    <!-- 🧱 Product Grid (Marketing section) -->
+    <ProductGrid />
+  </main>
 </PageLayout>
 
 <style>
-section {
+main {
   scroll-margin-top: 1.5rem;
 }
+
+section {
+  margin-top: 1.25rem !important;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
 section h2 {
   line-height: 1.2;
 }
+
 section p {
   line-height: 1.4;
 }
+
 .grid p {
   margin-bottom: 0.25rem;
-}
-section.max-w-6xl {
-  margin-top: 1rem !important;
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
 }
 </style>
