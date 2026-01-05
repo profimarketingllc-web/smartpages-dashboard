@@ -35,39 +35,47 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
       <ProductGrid />
     </DashboardCardWide>
 
+    <!-- 🧩 Modals (werden per Signal geöffnet) -->
+    <EditCustomerModal client:load />
+    <EditImprintModal client:load />
+
   </main>
 </PageLayout>
 
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ Dashboard scripts aktiv");
+    console.log("✅ Dashboard scripts aktiv (signalbasiert)");
 
     const attachButtonListeners = () => {
-      // 🔹 Button mit Text "Profil bearbeiten"
-      document.querySelectorAll("button").forEach((btn) => {
-        const text = btn.innerText.trim();
+      // Customer Modal öffnen
+      const customerBtn = document.querySelector("button[data-signal='open-customer-modal']");
+      if (customerBtn && !customerBtn.dataset.bound) {
+        customerBtn.dataset.bound = "true";
+        customerBtn.addEventListener("click", () => {
+          console.log("🟢 Öffne Customer Modal");
+          window.dispatchEvent(new CustomEvent("open-customer-modal"));
+        });
+      } else if (!customerBtn) {
+        console.warn("⚠️ Kein Button mit data-signal='open-customer-modal' gefunden.");
+      }
 
-        if (text === "Profil bearbeiten" && !btn.dataset.bound) {
-          btn.dataset.bound = "true";
-          btn.addEventListener("click", () => {
-            console.log("🟢 Öffne Customer Modal");
-            window.dispatchEvent(new CustomEvent("open-customer-modal"));
-          });
-        }
-
-        if (text === "Impressum bearbeiten" && !btn.dataset.bound) {
-          btn.dataset.bound = "true";
-          btn.addEventListener("click", () => {
-            console.log("🟢 Öffne Imprint Modal");
-            window.dispatchEvent(new CustomEvent("open-imprint-modal"));
-          });
-        }
-      });
+      // Imprint Modal öffnen
+      const imprintBtn = document.querySelector("button[data-signal='open-imprint-modal']");
+      if (imprintBtn && !imprintBtn.dataset.bound) {
+        imprintBtn.dataset.bound = "true";
+        imprintBtn.addEventListener("click", () => {
+          console.log("🟢 Öffne Imprint Modal");
+          window.dispatchEvent(new CustomEvent("open-imprint-modal"));
+        });
+      } else if (!imprintBtn) {
+        console.warn("⚠️ Kein Button mit data-signal='open-imprint-modal' gefunden.");
+      }
     };
 
+    // Initial versuchen
     attachButtonListeners();
 
-    // Fallback für Solid client:load Verzögerung
+    // Fallbacks, falls Solid erst nachträglich rendert
     setTimeout(attachButtonListeners, 1000);
     setTimeout(attachButtonListeners, 3000);
   });

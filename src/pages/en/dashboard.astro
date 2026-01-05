@@ -7,23 +7,20 @@ import ProductGrid from "~/components/core/ProductGrid.astro";
 import SystemMessage from "~/components/core/SystemMessage.astro";
 ---
 
-<PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
+<PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
   <main
     class="flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
   >
-    <!-- 🧭 TOP AREA: Customer Data + System Message -->
-    <section
-      class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300"
-    >
+
+    <!-- 🧭 TOP SECTION: Customer Data + SystemMessage -->
+    <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
       <!-- 🪪 Customer Data -->
       <DashboardCardWide>
         <CustomerCard client:load />
       </DashboardCardWide>
 
       <!-- 💬 System Message -->
-      <div
-        class="system-message flex justify-center xl:justify-end transition-all duration-300"
-      >
+      <div class="system-message flex justify-center xl:justify-end transition-all duration-300">
         <SystemMessage />
       </div>
     </section>
@@ -37,31 +34,58 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     <DashboardCardWide>
       <ProductGrid />
     </DashboardCardWide>
+
+    <!-- 🧩 Modals (werden per Signal geöffnet) -->
+    <EditCustomerModal client:load />
+    <EditImprintModal client:load />
+
   </main>
-
-  <!-- ⚙️ Modal Trigger Script -->
-  <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      const customerBtn = document.querySelector(
-        'button:has-text("Edit Profile")'
-      );
-      const imprintBtn = document.querySelector('button:has-text("Edit Imprint")');
-
-      customerBtn?.addEventListener("click", () => {
-        window.dispatchEvent(new CustomEvent("open-customer-modal"));
-      });
-
-      imprintBtn?.addEventListener("click", () => {
-        window.dispatchEvent(new CustomEvent("open-imprint-modal"));
-      });
-    });
-  </script>
 </PageLayout>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    console.log("✅ English Dashboard scripts active (signal-based)");
+
+    const attachButtonListeners = () => {
+      // Customer Modal
+      const customerBtn = document.querySelector("button[data-signal='open-customer-modal']");
+      if (customerBtn && !customerBtn.dataset.bound) {
+        customerBtn.dataset.bound = "true";
+        customerBtn.addEventListener("click", () => {
+          console.log("🟢 Opening Customer Modal");
+          window.dispatchEvent(new CustomEvent("open-customer-modal"));
+        });
+      } else if (!customerBtn) {
+        console.warn("⚠️ No button with data-signal='open-customer-modal' found.");
+      }
+
+      // Imprint Modal
+      const imprintBtn = document.querySelector("button[data-signal='open-imprint-modal']");
+      if (imprintBtn && !imprintBtn.dataset.bound) {
+        imprintBtn.dataset.bound = "true";
+        imprintBtn.addEventListener("click", () => {
+          console.log("🟢 Opening Imprint Modal");
+          window.dispatchEvent(new CustomEvent("open-imprint-modal"));
+        });
+      } else if (!imprintBtn) {
+        console.warn("⚠️ No button with data-signal='open-imprint-modal' found.");
+      }
+    };
+
+    // Initial call
+    attachButtonListeners();
+
+    // Fallback for delayed Solid hydration
+    setTimeout(attachButtonListeners, 1000);
+    setTimeout(attachButtonListeners, 3000);
+  });
+</script>
 
 <style>
   /* ===============================
      🎯 PREMIUM DASHBOARD LAYOUT FIX
      =============================== */
+
   @media (min-width: 1280px) {
     .dashboard-top {
       display: grid;
