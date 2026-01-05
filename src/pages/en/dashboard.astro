@@ -1,86 +1,100 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
-import "~/styles/global.css";
-import CustomerCard from "@/components/solid/CustomerCard.jsx";
-import ImprintCard from "@/components/solid/ImprintCard.jsx";
-import ProductGrid from "@/components/ui/ProductGrid.astro";
-import EditCustomerModal from "@/components/solid/EditCustomerModal.jsx";
-import EditImprintModal from "@/components/solid/EditImprintModal.jsx";
-
-// Server-side session (optional)
-let authenticated = false;
-try {
-  const cookie = Astro.request.headers.get("cookie") || "";
-  if (cookie.includes("session=")) {
-    const res = await fetch("https://api.smartpages.online/api/session", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        Cookie: cookie,
-      },
-      credentials: "include",
-    });
-    const data = await res.json();
-    authenticated = data?.ok && data?.authenticated;
-  }
-} catch (err) {
-  console.warn("Session check failed:", err);
-}
+import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
+import CustomerCard from "~/components/solid/CustomerCard.jsx";
+import ImprintCard from "~/components/solid/ImprintCard.jsx";
+import ProductGrid from "~/components/core/ProductGrid.astro";
+import SystemMessage from "~/components/core/SystemMessage.astro";
 ---
 
-<PageLayout title="Dashboard – SmartPages" sidebar={true} header={true}>
-  <main class="pb-12">
-    <!-- 💬 Welcome Message -->
-    <div class="max-w-6xl mx-auto flex justify-end mt-3 mb-2">
-      <div
-        class="bg-[#4E6BFF] text-white font-medium px-6 py-2.5 rounded-2xl shadow-md text-sm
-               hover:scale-[1.02] transition-all duration-300"
-      >
-        Welcome to the SmartCenter 👋
+<PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
+  <main
+    class="flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
+  >
+
+    <!-- 🧭 TOP AREA: Customer Data + System Message -->
+    <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
+      <!-- 🪪 Customer Data -->
+      <DashboardCardWide>
+        <CustomerCard client:load />
+      </DashboardCardWide>
+
+      <!-- 💬 System Message -->
+      <div class="system-message flex justify-center xl:justify-end transition-all duration-300">
+        <SystemMessage />
       </div>
-    </div>
-
-    <!-- 🧭 Customer Data -->
-    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6">
-      <CustomerCard />
     </section>
 
-    <!-- 🧾 Imprint Data -->
-    <section class="max-w-6xl mx-auto bg-gray-50 border border-gray-200 shadow-lg rounded-3xl p-6 mt-4">
-      <ImprintCard />
-    </section>
+    <!-- 🏢 IMPRINT DATA -->
+    <DashboardCardWide>
+      <ImprintCard client:load />
+    </DashboardCardWide>
 
-<!-- 🧩 Modal Components -->
-<div>
-  <EditCustomerModal />
-  <EditImprintModal />
-</div>
+    <!-- 💼 PRODUCT GRID -->
+    <DashboardCardWide>
+      <ProductGrid />
+    </DashboardCardWide>
 
-    <!-- 🧱 Product Grid (Marketing section) -->
-    <ProductGrid />
   </main>
 </PageLayout>
 
 <style>
-main {
-  scroll-margin-top: 1.5rem;
-}
+  /* ===============================
+     🎯 PREMIUM DASHBOARD LAYOUT FIX
+     =============================== */
 
-section {
-  margin-top: 1.25rem !important;
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
-}
+  /* 🧩 Desktop layout (from XL) → 2 columns */
+  @media (min-width: 1280px) {
+    .dashboard-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
 
-section h2 {
-  line-height: 1.2;
-}
+    .dashboard-top .system-message {
+      justify-content: flex-end;
+    }
+  }
 
-section p {
-  line-height: 1.4;
-}
+  /* 💻 Medium screens (e.g., 900–1279px) → centered layout */
+  @media (min-width: 768px) and (max-width: 1279px) {
+    .dashboard-top {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: center;
+    }
 
-.grid p {
-  margin-bottom: 0.25rem;
-}
+    .dashboard-top .system-message {
+      order: 2;
+      justify-content: center !important;
+      text-align: center;
+      width: 100%;
+      display: flex;
+    }
+  }
+
+  /* 📱 Small screens (below 768px) → single column layout */
+  @media (max-width: 767px) {
+    .dashboard-top {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      align-items: center;
+    }
+
+    .dashboard-top .system-message {
+      order: 2;
+      justify-content: center !important;
+      text-align: center;
+      width: 100%;
+    }
+  }
+
+  /* 🎨 General spacing and transitions */
+  main {
+    padding-top: 0.5rem;
+    transition: all 0.3s ease-in-out;
+  }
 </style>
