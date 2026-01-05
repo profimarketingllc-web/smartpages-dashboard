@@ -40,31 +40,38 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
 
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ Dashboard scripts loaded");
+    console.log("✅ Dashboard script initialized");
 
-    // 🔹 Buttons in den Solid-Komponenten finden
-    const customerBtn = document.querySelector("button[data-action='edit-customer']");
-    const imprintBtn = document.querySelector("button[data-action='edit-imprint']");
+    // Funktion zum Anbinden der Buttons
+    const attachButtonListeners = () => {
+      const customerBtn = document.querySelector("button[data-action='edit-customer']");
+      const imprintBtn = document.querySelector("button[data-action='edit-imprint']");
 
-    // 🔹 Klick-Event für Customer Modal
-    if (customerBtn) {
-      customerBtn.addEventListener("click", () => {
-        console.log("🟢 Öffne Customer Modal");
-        window.dispatchEvent(new CustomEvent("open-customer-modal"));
-      });
-    } else {
-      console.warn("⚠️ Kein Button [data-action='edit-customer'] gefunden!");
-    }
+      if (customerBtn && !customerBtn.dataset.bound) {
+        customerBtn.dataset.bound = "true";
+        customerBtn.addEventListener("click", () => {
+          console.log("🟢 Öffne Customer Modal");
+          window.dispatchEvent(new CustomEvent("open-customer-modal"));
+        });
+        console.log("✅ CustomerButton verbunden");
+      }
 
-    // 🔹 Klick-Event für Imprint Modal
-    if (imprintBtn) {
-      imprintBtn.addEventListener("click", () => {
-        console.log("🟢 Öffne Imprint Modal");
-        window.dispatchEvent(new CustomEvent("open-imprint-modal"));
-      });
-    } else {
-      console.warn("⚠️ Kein Button [data-action='edit-imprint'] gefunden!");
-    }
+      if (imprintBtn && !imprintBtn.dataset.bound) {
+        imprintBtn.dataset.bound = "true";
+        imprintBtn.addEventListener("click", () => {
+          console.log("🟢 Öffne Imprint Modal");
+          window.dispatchEvent(new CustomEvent("open-imprint-modal"));
+        });
+        console.log("✅ ImprintButton verbunden");
+      }
+    };
+
+    // Direkt versuchen, falls Komponenten schon da sind
+    attachButtonListeners();
+
+    // Fallback: MutationObserver für nachträgliche DOM-Änderungen
+    const observer = new MutationObserver(() => attachButtonListeners());
+    observer.observe(document.body, { childList: true, subtree: true });
   });
 </script>
 
@@ -73,7 +80,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
      🎯 PREMIUM DASHBOARD LAYOUT FIX
      =============================== */
 
-  /* 🧩 Desktop-Layout (ab XL) → 2 Spalten */
   @media (min-width: 1280px) {
     .dashboard-top {
       display: grid;
@@ -81,13 +87,11 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
       gap: 2rem;
       align-items: start;
     }
-
     .dashboard-top .system-message {
       justify-content: flex-end;
     }
   }
 
-  /* 💻 Mittlere Screens (z. B. 900–1279px) → zentriert */
   @media (min-width: 768px) and (max-width: 1279px) {
     .dashboard-top {
       display: flex;
@@ -95,7 +99,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
       gap: 1.5rem;
       align-items: center;
     }
-
     .dashboard-top .system-message {
       order: 2;
       justify-content: center !important;
@@ -105,7 +108,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     }
   }
 
-  /* 📱 Kleine Screens (unter 768px) → 1 Spalte, zentriert */
   @media (max-width: 767px) {
     .dashboard-top {
       display: flex;
@@ -113,7 +115,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
       gap: 1.25rem;
       align-items: center;
     }
-
     .dashboard-top .system-message {
       order: 2;
       justify-content: center !important;
@@ -122,7 +123,6 @@ import SystemMessage from "~/components/core/SystemMessage.astro";
     }
   }
 
-  /* 🎨 Allgemeines Spacing */
   main {
     padding-top: 0.5rem;
     transition: all 0.3s ease-in-out;
