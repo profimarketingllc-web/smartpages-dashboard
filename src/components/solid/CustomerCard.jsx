@@ -1,17 +1,13 @@
 import { createResource } from "solid-js";
 
 export default function CustomerCard() {
-  // 🌍 Robuste Spracherkennung
-  const getLanguage = () => {
-    if (typeof document !== "undefined" && document.documentElement.lang)
-      return document.documentElement.lang.startsWith("en") ? "en" : "de";
-    if (typeof window !== "undefined") {
-      const pathLang = window.location.pathname.split("/")[1];
-      if (pathLang === "en") return "en";
-    }
-    return "de";
-  };
-  const lang = getLanguage();
+  // 🌍 Sprache automatisch über URL erkennen
+  const lang =
+    typeof window !== "undefined"
+      ? window.location.pathname.includes("/en/")
+        ? "en"
+        : "de"
+      : "de";
 
   // 🌐 Übersetzungen
   const t = {
@@ -84,34 +80,30 @@ export default function CustomerCard() {
         {t.title}
       </h2>
 
-      {/* 🔹 Felder im Raster */}
+      {/* 🔹 Felder */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8">
         <div>
           <span class="font-medium text-gray-800">{t.name}:</span>
           <p class="text-gray-600">{displayValue(data().name)}</p>
         </div>
-
         <div>
           <span class="font-medium text-gray-800">{t.plan}:</span>
           <p class="text-gray-600">{displayValue(data().plan)}</p>
         </div>
-
         <div>
           <span class="font-medium text-gray-800">{t.activeUntil}:</span>
           <p class="text-gray-600">{displayValue(data().activeUntil)}</p>
         </div>
-
         <div>
           <span class="font-medium text-gray-800">{t.status}:</span>
           <p class="text-gray-600">{displayValue(data().status)}</p>
         </div>
-
         <div>
           <span class="font-medium text-gray-800">{t.lastLogin}:</span>
           <p class="text-gray-600">{displayValue(data().lastLogin)}</p>
         </div>
 
-        {/* 🟧 Bearbeiten-Button (öffnet Modal) */}
+        {/* 🟧 Bearbeiten-Button */}
         <div class="flex justify-end items-center sm:justify-end">
           <button
             data-signal="open-customer-modal"

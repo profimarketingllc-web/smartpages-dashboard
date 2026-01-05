@@ -156,29 +156,29 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
     }
 
     /* ======================================================
-       🧱 Above-the-Fold Optimization
+       🧱 Above-the-Fold Optimization (adjusted for compact grid)
     ====================================================== */
 
     main {
-      padding-top: 1.25rem !important; /* vorher 2rem+ */
-      padding-bottom: 3rem !important; /* kompakter */
+      padding-top: 0.75rem !important;  /* vorher 1.25rem */
+      padding-bottom: 1.75rem !important; /* vorher 3rem */
     }
 
-    /* DashboardCard kompakter (weniger vertical padding) */
+    /* DashboardCards kompakter */
     .dashboard-card {
-      padding-top: 1.25rem !important;
-      padding-bottom: 1.25rem !important;
+      padding-top: 1rem !important;
+      padding-bottom: 1rem !important;
     }
 
-    /* Fallback – falls DashboardCard kein eigenes padding hat */
+    /* Fallback für ungestylte Sections */
     section.w-full > section {
-      padding-top: 1.25rem;
-      padding-bottom: 1.25rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
     }
 
-    /* Sichtbarer Rand für das untere ProductGrid */
+    /* Harmonischer Abschluss unten (ProductGrid) */
     main > section:last-of-type {
-      margin-bottom: 2rem;
+      margin-bottom: 1.25rem;
     }
   </style>
 </html>
