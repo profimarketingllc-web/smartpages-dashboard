@@ -7,10 +7,7 @@ export default defineConfig({
   output: "server",
   adapter: cloudflare({
     mode: "directory",
-    // 🧩 Wichtig: explizites KV-Binding
-    bindings: {
-      SESSION: "SESSIONS",
-    },
+    imageService: "compile", // verhindert sharp-Fehler
   }),
   integrations: [solid(), tailwind()],
 });
