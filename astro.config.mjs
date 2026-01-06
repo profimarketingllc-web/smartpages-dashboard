@@ -3,6 +3,7 @@ import cloudflare from "@astrojs/cloudflare";
 import tailwind from "@astrojs/tailwind";
 import solid from "@astrojs/solid-js";
 import path from "path";
+// Trigger redeploy after Cloudflare SESSION binding fix
 
 export default defineConfig({
   // 🧠 Server Rendering aktivieren – notwendig für Middleware, Locals & Tokens
