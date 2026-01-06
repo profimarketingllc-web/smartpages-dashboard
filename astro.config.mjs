@@ -9,11 +9,15 @@ export default defineConfig({
   output: "server",
 
   // ⚙️ Cloudflare Adapter für SSR
-  adapter: cloudflare({
-    platformProxy: {
-      enabled: true, // Cloudflare Worker-kompatibel
+ adapter: cloudflare({
+  platformProxy: {
+    enabled: true,
+    bindings: {
+      SESSION: "SESSIONS", // 👈 Mappt Cloudflare-Binding auf Astro-Erwartung
     },
-  }),
+  },
+}),
+
 
   // 🧩 Vite-Konfiguration (Alias-Pfade)
   vite: {
