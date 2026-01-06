@@ -22,13 +22,32 @@ const { title, label, text, gradient, glow, action } = Astro.props;
 </a>
 
 <style>
+  /* ✨ Grundlayout */
   a {
-    min-height: 200px;
+    min-height: 160px; /* vorher 200px – kompakter, aber gleichmäßig */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Inhalt sauber oben ausgerichtet */
+    transition: all 0.3s ease;
   }
 
+  /* 💻 Desktop etwas großzügiger */
   @media (min-width: 768px) {
     a {
-      min-height: 210px;
+      min-height: 180px; /* vorher 210px */
+      padding-top: 1.25rem;
+      padding-bottom: 1.25rem;
     }
+  }
+
+  /* 🪄 Interne Typografie-Feinschliff */
+  h3 {
+    margin-bottom: 0.4rem; /* vorher 0.75rem */
+    line-height: 1.3;
+  }
+
+  p {
+    line-height: 1.4;
+    margin-top: 0.25rem;
   }
 </style>
