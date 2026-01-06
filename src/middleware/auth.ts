@@ -5,23 +5,23 @@ export const onRequest: MiddlewareHandler = async ({ request, locals, redirect, 
   const path = url.pathname;
 
   // 1️⃣ Öffentliche Seiten (Whitelist)
-  const publicRoutes = ["/", "/login", "/signin", "/register", "/privacy", "/imprint"];
+  const publicRoutes = ["/", "/login", "/signin", "/register", "/privacy", "/imprint", "/paywall"];
   if (publicRoutes.some((r) => path.startsWith(r))) {
     return next();
   }
 
-  // 2️⃣ Session Token prüfen (Cookie oder Header)
+  // 2️⃣ Token prüfen (Cookie oder Header)
   const token =
     request.headers.get("Authorization")?.replace("Bearer ", "") ||
     request.headers.get("x-smartpages-token") ||
     getCookie(request.headers.get("cookie") || "", "smartpages_session");
 
   if (!token) {
-    // Kein Token → redirect zum Login
-    return redirect("/login");
+    console.warn("[Auth] Kein Token gefunden → Weiterleitung");
+    return redirect(`/login?redirect=${encodeURIComponent(path)}`);
   }
 
-  // 3️⃣ Token validieren (Worker/D1/API-Aufruf)
+  // 3️⃣ Token gegen API verifizieren
   try {
     const res = await fetch("https://api.smartpages.online/api/session/verify", {
       method: "POST",
@@ -30,23 +30,38 @@ export const onRequest: MiddlewareHandler = async ({ request, locals, redirect, 
     });
 
     if (!res.ok) {
-      console.warn("[Auth] Invalid token");
-      return redirect("/login");
+      console.warn("[Auth] Ungültiger Token");
+      return redirect(`/login?redirect=${encodeURIComponent(path)}`);
     }
 
     const user = await res.json();
+    locals.user = user; // 🔹 Benutzer global verfügbar machen
 
-    // 4️⃣ Benutzer in locals speichern (für spätere Nutzung)
-    locals.user = user;
+    // 4️⃣ Zugriff auf Produkte prüfen
+    const ownedProducts = user.products || [];
 
-    return next();
+    if (path.includes("/smartpage") && !ownedProducts.includes("smartpage")) {
+      return redirect("/paywall?product=page");
+    }
+
+    if (path.includes("/smartprofile") && !ownedProducts.includes("smartprofile")) {
+      return redirect("/paywall?product=profile");
+    }
+
+    if (path.includes("/smartdomain") && !ownedProducts.includes("smartdomain")) {
+      return redirect("/paywall?product=domain");
+    }
+
   } catch (err) {
-    console.error("[Auth] Error verifying session:", err);
-    return redirect("/login");
+    console.error("[Auth] Fehler beim Verifizieren des Tokens:", err);
+    return redirect(`/login?redirect=${encodeURIComponent(path)}`);
   }
+
+  // 5️⃣ Zugriff erlaubt → nächste Middleware oder Seite
+  return next();
 };
 
-// 🔹 Kleine Helper-Funktion für Cookie-Parsing
+// 🔹 Cookie-Parser
 function getCookie(cookieHeader: string, name: string) {
   const match = cookieHeader.match(new RegExp("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)"));
   return match ? match[2] : null;
