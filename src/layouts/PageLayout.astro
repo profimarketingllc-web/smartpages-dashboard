@@ -5,16 +5,21 @@ import SmartSidebar from "~/components/core/SmartSidebar.astro";
 
 // 🌍 Sprache direkt aus URL ermitteln (funktioniert auch bei SSR)
 const currentPath = Astro.url.pathname.toLowerCase();
-const detectedLang = currentPath.includes("/en/") ? "en" : "de";
 
+// 🔄 Props + automatische Spracherkennung kombinieren
 const {
   sidebar = true,
   header = true,
   sticky = true,
   headerOffset = "compact",
-  lang = "de",
+  lang: propLang, // optionaler Sprach-Prop
   title = "SmartPages",
 } = Astro.props;
+
+// 🌍 Sprache aus URL ableiten, falls kein Prop gesetzt ist
+const currentPath = Astro.url.pathname.toLowerCase();
+const detectedLang = propLang || (currentPath.includes("/en/") ? "en" : "de");
+const lang = detectedLang;
 
 // Kompaktere Abstände für Premium-Dashboard
 const headerOffsetClass = headerOffset === "compact" ? "mt-2 md:mt-3" : "mt-12";

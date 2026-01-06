@@ -1,142 +1,127 @@
 ---
 /**
- * ProductGrid.astro – Premium Harmony Edition
- * -------------------------------------------
+ * ProductGrid.astro – Premium Harmony Edition (Mehrsprachig)
+ * -----------------------------------------------------------
+ * ✓ Sprachlogik über Props (de/en)
  * ✓ Gleichmäßige Höhe der ProductCards
  * ✓ Sanftes Fade-In beim Laden
- * ✓ Zentrierte Darstellung (in DashboardCard)
- * ✓ Optimiertes Padding für "Above the Fold"
+ * ✓ Kompatibel mit DashboardCard & SSR
  */
 
 import ProductCard from "./ProductCard.astro";
 
-// Aktuelle URL analysieren
+// Aktuelle URL analysieren (Fallback)
 const currentPath = Astro.url.pathname.toLowerCase();
+const detectedLang = currentPath.includes("/en/") ? "en" : "de";
 
-// Automatische Variante bestimmen
-let detectedVariant = "teaser";
-if (currentPath.includes("/dashboard")) detectedVariant = "upsell";
-else if (currentPath.includes("/login") || currentPath.includes("/signin")) detectedVariant = "teaser";
-
-// Props
+// Props einlesen
 const {
   products = [],
-  variant = detectedVariant,
+  variant = currentPath.includes("/dashboard") ? "upsell" : "teaser",
+  lang = detectedLang,
 } = Astro.props;
 
-// Produktsets
+// Mehrsprachige Produktsets
 const productSets = {
-  teaser: [
-    {
-      title: "SmartProfile",
-      label: "Bald verfügbar",
-      text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
-      gradient: "from-[#4E6BFF] to-[#657AFF]",
-      glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
-      action: null,
-    },
-    {
-      title: "SmartPage",
-      label: "Bald verfügbar",
-      text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
-      gradient: "from-[#F5B400] to-[#E47E00]",
-      glow: "hover:shadow-[0_0_30px_#F5B40080]",
-      action: null,
-    },
-    {
-      title: "SmartDomain",
-      label: "Bald verfügbar",
-      text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
-      gradient: "from-[#8B5CFF] to-[#A076FF]",
-      glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
-      action: null,
-    },
-  ],
-  upsell: [
-    {
-      title: "SmartProfile",
-      label: "",
-      text: "Schalte Premium-Funktionen für Dein Profil frei – mehr Reichweite, Branding und Automatisierung.",
-      gradient: "from-[#4E6BFF] to-[#657AFF]",
-      glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
-      action: "/paywall?product=profile",
-    },
-    {
-      title: "SmartPage",
-      label: "",
-      text: "Erstelle unbegrenzt Seiten mit erweiterten Templates, KI-Texten und Conversion-Boostern.",
-      gradient: "from-[#F5B400] to-[#E47E00]",
-      glow: "hover:shadow-[0_0_30px_#F5B40080]",
-      action: "/paywall?product=page",
-    },
-    {
-      title: "SmartDomain",
-      label: "",
-      text: "Profitiere von eigener Domain & SSL-Zertifikat für Dein SmartPages-Setup.",
-      gradient: "from-[#8B5CFF] to-[#A076FF]",
-      glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
-      action: "/paywall?product=domain",
-    },
-  ],
-};
+  teaser: {
+    de: [
+      {
+        title: "SmartProfile",
+        label: "Bald verfügbar",
+        text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
+        gradient: "from-[#4E6BFF] to-[#657AFF]",
+        glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
+        action: null,
+      },
+      {
+        title: "SmartPage",
+        label: "Bald verfügbar",
+        text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
+        gradient: "from-[#F5B400] to-[#E47E00]",
+        glow: "hover:shadow-[0_0_30px_#F5B40080]",
+        action: null,
+      },
+      {
+        title: "SmartDomain",
+        label: "Bald verfügbar",
+        text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
+        gradient: "from-[#8B5CFF] to-[#A076FF]",
+        glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
+        action: null,
+      },
+    ],
+    en: [
+      {
+        title: "SmartProfile",
+        label: "Coming soon",
+        text: "Create your professional profile in just a few clicks – ideal for freelancers, coaches, and entrepreneurs.",
+        gradient: "from-[#4E6BFF] to-[#657AFF]",
+        glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
+        action: null,
+      },
+      {
+        title: "SmartPage",
+        label: "Coming soon",
+        text: "Build stunning, conversion-optimized pages in minutes – simple, fast, and professional.",
+        gradient: "from-[#F5B400] to-[#E47E00]",
+        glow: "hover:shadow-[0_0_30px_#F5B40080]",
+        action: null,
+      },
+      {
+        title: "SmartDomain",
+        label: "Coming soon",
+        text: "Secure your own domain directly within SmartPages – professional, easy, and GDPR-compliant.",
+        gradient: "from-[#8B5CFF] to-[#A076FF]",
+        glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
+        action: null,
+      },
+    ],
+  },
 
-const items = products.length ? products : productSets[variant];
----
-
-<section
-  class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-6 py-4 md:py-5 
-         items-stretch justify-items-center animate-fadeIn"
->
-  {items.map((p) => (
-    <div class="w-full flex justify-center">
-      <ProductCard
-        title={p.title}
-        label={p.label}
-        text={p.text}
-        gradient={p.gradient}
-        glow={p.glow}
-        action={p.action}
-      />
-    </div>
-  ))}
-</section>
-
-<style>
-  /* 🪶 Sanftes Fade-In beim Laden */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(15px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fadeIn {
-    animation: fadeIn 0.6s ease-out both;
-  }
-
-  /* 🧩 Einheitliche Höhe erzwingen */
-  section {
-    align-items: stretch;
-  }
-
-  section > div {
-    display: flex;
-  }
-
-  /* 📏 Leicht kompakter für bessere Above-the-Fold-Darstellung */
-  section {
-    padding-top: 0.5rem;
-    padding-bottom: 0.75rem;
-  }
-
-  @media (max-width: 768px) {
-    section {
-      gap: 1rem;
-      padding: 0.75rem 1rem;
-    }
-  }
-</style>
+  upsell: {
+    de: [
+      {
+        title: "SmartProfile",
+        label: "",
+        text: "Schalte Premium-Funktionen für Dein Profil frei – mehr Reichweite, Branding und Automatisierung.",
+        gradient: "from-[#4E6BFF] to-[#657AFF]",
+        glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
+        action: "/paywall?product=profile",
+      },
+      {
+        title: "SmartPage",
+        label: "",
+        text: "Erstelle unbegrenzt Seiten mit erweiterten Templates, KI-Texten und Conversion-Boostern.",
+        gradient: "from-[#F5B400] to-[#E47E00]",
+        glow: "hover:shadow-[0_0_30px_#F5B40080]",
+        action: "/paywall?product=page",
+      },
+      {
+        title: "SmartDomain",
+        label: "",
+        text: "Profitiere von eigener Domain & SSL-Zertifikat für Dein SmartPages-Setup.",
+        gradient: "from-[#8B5CFF] to-[#A076FF]",
+        glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
+        action: "/paywall?product=domain",
+      },
+    ],
+    en: [
+      {
+        title: "SmartProfile",
+        label: "",
+        text: "Unlock premium features for your profile – more reach, branding, and automation.",
+        gradient: "from-[#4E6BFF] to-[#657AFF]",
+        glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
+        action: "/paywall?product=profile",
+      },
+      {
+        title: "SmartPage",
+        label: "",
+        text: "Create unlimited pages with advanced templates, AI-powered content, and conversion boosters.",
+        gradient: "from-[#F5B400] to-[#E47E00]",
+        glow: "hover:shadow-[0_0_30px_#F5B40080]",
+        action: "/paywall?product=page",
+      },
+      {
+        title: "SmartDomain",
+        label: "",

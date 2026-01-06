@@ -1,16 +1,20 @@
-import { createResource } from "solid-js";
+import { createResource, createSignal, onMount } from "solid-js";
 
-export default function CustomerCard() {
-  // 🌍 Sprache automatisch über URL erkennen
-  const lang =
-    typeof window !== "undefined"
-      ? window.location.pathname.includes("/en/")
-        ? "en"
-        : "de"
-      : "de";
+export default function CustomerCard(props) {
+  // 🌍 Sprache bestimmen (SSR-sicher + Client-fallback)
+  const [lang, setLang] = createSignal(
+    props.lang ||
+      (typeof window !== "undefined" && window.location.pathname.includes("/en/") ? "en" : "de")
+  );
+
+  onMount(() => {
+    if (!props.lang && typeof window !== "undefined") {
+      setLang(window.location.pathname.includes("/en/") ? "en" : "de");
+    }
+  });
 
   // 🌐 Übersetzungen
-  const t = {
+  const translations = {
     de: {
       title: "Kundendaten",
       name: "Name",
@@ -33,7 +37,9 @@ export default function CustomerCard() {
       loggedOut: "Logged out",
       active: "Active",
     },
-  }[lang];
+  };
+
+  const t = () => translations[lang()];
 
   // 🔗 Kundendaten abrufen
   const fetchCustomer = async () => {
@@ -47,7 +53,7 @@ export default function CustomerCard() {
       return {
         name: null,
         plan: null,
-        status: t.loggedOut,
+        status: t().loggedOut,
         activeUntil: null,
         lastLogin: null,
       };
@@ -66,7 +72,7 @@ export default function CustomerCard() {
         <span
           class={`inline-block px-4 py-1 text-sm font-medium rounded-full border 
             ${
-              data().status === t.active
+              data().status === t().active
                 ? "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]"
                 : "bg-[#F8D7DA] text-[#8B1A1A] border-[#E6A1A1]"
             }`}
@@ -77,29 +83,29 @@ export default function CustomerCard() {
 
       {/* 🔹 Überschrift */}
       <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5 text-center md:text-left">
-        {t.title}
+        {t().title}
       </h2>
 
       {/* 🔹 Felder */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8">
         <div>
-          <span class="font-medium text-gray-800">{t.name}:</span>
+          <span class="font-medium text-gray-800">{t().name}:</span>
           <p class="text-gray-600">{displayValue(data().name)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t.plan}:</span>
+          <span class="font-medium text-gray-800">{t().plan}:</span>
           <p class="text-gray-600">{displayValue(data().plan)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t.activeUntil}:</span>
+          <span class="font-medium text-gray-800">{t().activeUntil}:</span>
           <p class="text-gray-600">{displayValue(data().activeUntil)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t.status}:</span>
+          <span class="font-medium text-gray-800">{t().status}:</span>
           <p class="text-gray-600">{displayValue(data().status)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t.lastLogin}:</span>
+          <span class="font-medium text-gray-800">{t().lastLogin}:</span>
           <p class="text-gray-600">{displayValue(data().lastLogin)}</p>
         </div>
 
@@ -109,7 +115,7 @@ export default function CustomerCard() {
             data-signal="open-customer-modal"
             class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
           >
-            {t.button}
+            {t().button}
           </button>
         </div>
       </div>

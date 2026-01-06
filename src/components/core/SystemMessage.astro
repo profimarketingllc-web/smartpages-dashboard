@@ -1,7 +1,42 @@
 ---
-const { message = "Willkommen im SmartCenter 👋", type = "info" } = Astro.props;
+/**
+ * SystemMessage.astro – Final Production Edition
+ * ----------------------------------------------
+ * ✓ Sprachfähig (DE/EN)
+ * ✓ Farb- & Gradient-Logik pro Typ (info, success, warning, error)
+ * ✓ Dauerhaft sichtbar – keine Auto-Ausblendung
+ * ✓ Responsive Logik:
+ *     - Auf großen Bildschirmen rechtsbündig neben den Solid-Cards
+ *     - Auf mittleren & kleinen Bildschirmen springt sie über die Cards
+ * ✓ Voll kompatibel mit Dashboard-Grid (kein Template-Eingriff nötig)
+ */
 
-// Gradient & Glow je nach Nachrichtentyp
+const {
+  lang = Astro.url.pathname.toLowerCase().includes("/en/") ? "en" : "de",
+  message = null,
+  type = "info", // info | success | warning | error
+} = Astro.props;
+
+// 🌍 Standardtexte (Fallback)
+const defaultMessages = {
+  de: {
+    info: "Willkommen im SmartCenter 👋",
+    success: "Alles läuft reibungslos – Deine Daten sind aktuell.",
+    warning: "Achtung: Einige Informationen werden gerade synchronisiert.",
+    error: "Ein Fehler ist aufgetreten. Bitte lade die Seite neu.",
+  },
+  en: {
+    info: "Welcome to your SmartCenter 👋",
+    success: "Everything is running smoothly – your data is up to date.",
+    warning: "Note: Some information is currently syncing.",
+    error: "An error occurred. Please reload the page.",
+  },
+};
+
+// 🧠 Text bestimmen (API > Fallback)
+const finalMessage = message || defaultMessages[lang][type];
+
+// 🎨 Styles nach Nachrichtentyp
 const styleMap = {
   info: {
     gradient: "from-[#4E6BFF] to-[#657AFF]",
@@ -13,19 +48,4 @@ const styleMap = {
   },
   warning: {
     gradient: "from-[#F5B400] to-[#E47E00]",
-    glow: "hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]",
-  },
-  error: {
-    gradient: "from-[#E14D4D] to-[#B83535]",
-    glow: "hover:shadow-[0_0_20px_rgba(225,77,77,0.4)]",
-  },
-}[type];
----
-
-<div
-  class={`relative flex flex-col justify-center p-5 rounded-2xl shadow-lg border border-white/20 bg-gradient-to-br ${styleMap.gradient} text-white transition-all duration-300 ${styleMap.glow}`}
->
-  <p class="text-sm leading-relaxed text-white/90 text-center font-medium">
-    {message}
-  </p>
-</div>
+    glow: "hover:shadow-[0_0_20px]()

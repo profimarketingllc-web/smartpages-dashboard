@@ -9,43 +9,41 @@ import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 ---
 
-<PageLayout title="SmartPages Dashboard" sidebar={true} header={true}>
+<PageLayout title="SmartPages Dashboard" sidebar={true} header={true} lang="de">
   <main
     class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
   >
 
     <!-- 🧭 TOP SECTION: Customer Data + System Message -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
-      <!-- 🪪 Customer Data -->
       <DashboardCardWide>
-        <CustomerCard client:load />
+        <CustomerCard client:load lang="de" />
       </DashboardCardWide>
 
-      <!-- 💬 System Message -->
       <div class="system-message">
-        <SystemMessage />
+        <SystemMessage lang="de" />
       </div>
     </section>
 
     <!-- 🏢 IMPRINT -->
     <DashboardCardWide>
-      <ImprintCard client:load />
+      <ImprintCard client:load lang="de" />
     </DashboardCardWide>
 
-    <!-- 💼 PRODUCT GRID (no DashboardCard wrapper) -->
+    <!-- 💼 PRODUCT GRID -->
     <section class="mt-4 md:mt-6">
-      <ProductGrid />
+      <ProductGrid lang="de" />
     </section>
 
     <!-- 🧩 Modals -->
-    <EditCustomerModal client:load />
-    <EditImprintModal client:load />
+    <EditCustomerModal client:load lang="de" />
+    <EditImprintModal client:load lang="de" />
   </main>
 </PageLayout>
 
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ English Dashboard scripts active (signal-based + MutationObserver)");
+    console.log("✅ Deutsches Dashboard aktiv (Signalsteuerung + MutationObserver)");
 
     const attachButtonListeners = () => {
       let found = false;
@@ -55,7 +53,7 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
         customerBtn.dataset.bound = "true";
         found = true;
         customerBtn.addEventListener("click", () => {
-          console.log("🟢 Opening Customer Modal");
+          console.log("🟢 Öffne Kundenmodal");
           window.dispatchEvent(new CustomEvent("open-customer-modal"));
         });
       }
@@ -65,40 +63,29 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
         imprintBtn.dataset.bound = "true";
         found = true;
         imprintBtn.addEventListener("click", () => {
-          console.log("🟢 Opening Imprint Modal");
+          console.log("🟢 Öffne Impressummodal");
           window.dispatchEvent(new CustomEvent("open-imprint-modal"));
         });
       }
 
-      if (!found) {
-        console.warn("⚠️ Waiting for Solid hydration – no buttons found yet…");
-      }
+      if (!found) console.warn("⚠️ Warte auf Solid-Hydration – noch keine Buttons gefunden…");
     };
 
     attachButtonListeners();
-
     const observer = new MutationObserver(() => attachButtonListeners());
     observer.observe(document.body, { childList: true, subtree: true });
 
-    setTimeout(() => {
-      observer.disconnect();
-      console.log("🧹 MutationObserver disabled (after 10s)");
-    }, 10000);
-
+    setTimeout(() => observer.disconnect(), 10000);
     setTimeout(attachButtonListeners, 1000);
     setTimeout(attachButtonListeners, 3000);
   });
 </script>
 
 <style>
-  /* ===============================
-     🧩 Layout Core
-     =============================== */
   .dashboard-top {
     align-items: flex-start;
   }
 
-  /* 💬 SystemMessage responsive + bündig rechts */
   .system-message {
     display: flex;
     justify-content: flex-end;
@@ -108,38 +95,24 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
   }
 
   @media (min-width: 1280px) {
-    .system-message {
-      justify-content: flex-end;
-      padding-right: 0.75rem; /* bündig mit Cards */
-    }
+    .system-message { padding-right: 0.75rem; }
   }
 
   @media (max-width: 1279px) {
     .system-message {
       justify-content: center;
       text-align: center;
-      width: 100%;
       margin-top: 1rem;
     }
   }
 
   @media (max-width: 767px) {
     .dashboard-top {
-      display: flex;
       flex-direction: column;
       gap: 1.25rem;
       align-items: center;
     }
-    .system-message {
-      justify-content: center;
-      text-align: center;
-      width: 100%;
-      margin-top: 1rem;
-    }
   }
 
-  main {
-    padding-top: 0.5rem;
-    transition: all 0.3s ease-in-out;
-  }
+  main { padding-top: 0.5rem; transition: all 0.3s ease-in-out; }
 </style>
