@@ -1,67 +1,50 @@
 import type { MiddlewareHandler } from "astro";
 
-export const onRequest: MiddlewareHandler = async ({ request, locals, redirect, next }) => {
+export const onRequest: MiddlewareHandler = async ({ request, locals, redirect, next, platform }) => {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  // 1️⃣ Öffentliche Seiten (Whitelist)
-  const publicRoutes = ["/", "/login", "/signin", "/register", "/privacy", "/imprint", "/paywall"];
+  // 1️⃣ Öffentliche Routen (nicht geschützt)
+  const publicRoutes = ["/", "/login", "/signin", "/register", "/privacy", "/imprint"];
   if (publicRoutes.some((r) => path.startsWith(r))) {
     return next();
   }
 
-  // 2️⃣ Token prüfen (Cookie oder Header)
+  // 2️⃣ Token aus Cookie oder Header lesen
+  const cookieHeader = request.headers.get("cookie") || "";
   const token =
     request.headers.get("Authorization")?.replace("Bearer ", "") ||
-    request.headers.get("x-smartpages-token") ||
-    getCookie(request.headers.get("cookie") || "", "smartpages_session");
+    getCookie(cookieHeader, "smartpages_session");
 
   if (!token) {
-    console.warn("[Auth] Kein Token gefunden → Weiterleitung");
-    return redirect(`/login?redirect=${encodeURIComponent(path)}`);
+    console.warn("[Auth] Kein Token gefunden, redirect → /login");
+    return redirect("/login");
   }
 
-  // 3️⃣ Token gegen API verifizieren
   try {
-    const res = await fetch("https://api.smartpages.online/api/session/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
-    });
+    // 3️⃣ Cloudflare KV-Zugriff auf Session
+    const sessionData = await platform?.env?.SESSIONS?.get(token, { type: "json" });
 
-    if (!res.ok) {
-      console.warn("[Auth] Ungültiger Token");
-      return redirect(`/login?redirect=${encodeURIComponent(path)}`);
+    if (!sessionData) {
+      console.warn(`[Auth] Ungültige Session für Token: ${token}`);
+      return redirect("/login");
     }
 
-    const user = await res.json();
-    locals.user = user; // 🔹 Benutzer global verfügbar machen
+    // 4️⃣ User in locals speichern
+    locals.user = sessionData.user || null;
+    locals.session = sessionData;
 
-    // 4️⃣ Zugriff auf Produkte prüfen
-    const ownedProducts = user.products || [];
+    // Optional: Debug-Ausgabe
+    console.log("[Auth] User authenticated:", locals.user?.email);
 
-    if (path.includes("/smartpage") && !ownedProducts.includes("smartpage")) {
-      return redirect("/paywall?product=page");
-    }
-
-    if (path.includes("/smartprofile") && !ownedProducts.includes("smartprofile")) {
-      return redirect("/paywall?product=profile");
-    }
-
-    if (path.includes("/smartdomain") && !ownedProducts.includes("smartdomain")) {
-      return redirect("/paywall?product=domain");
-    }
-
+    return next();
   } catch (err) {
-    console.error("[Auth] Fehler beim Verifizieren des Tokens:", err);
-    return redirect(`/login?redirect=${encodeURIComponent(path)}`);
+    console.error("[Auth] KV-Fehler:", err);
+    return redirect("/login");
   }
-
-  // 5️⃣ Zugriff erlaubt → nächste Middleware oder Seite
-  return next();
 };
 
-// 🔹 Cookie-Parser
+// 🔹 Cookie Helper
 function getCookie(cookieHeader: string, name: string) {
   const match = cookieHeader.match(new RegExp("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)"));
   return match ? match[2] : null;

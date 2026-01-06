@@ -1,7 +1,8 @@
 import { createResource, createSignal, onMount } from "solid-js";
+import { t } from "~/utils/i18n";
 
 export default function CustomerCard(props) {
-  // 🌍 Sprache bestimmen (SSR-sicher + Client-fallback)
+  // 🌍 Sprache bestimmen (Middleware → Prop → URL-Fallback)
   const [lang, setLang] = createSignal(
     props.lang ||
       (typeof window !== "undefined" && window.location.pathname.includes("/en/") ? "en" : "de")
@@ -12,34 +13,6 @@ export default function CustomerCard(props) {
       setLang(window.location.pathname.includes("/en/") ? "en" : "de");
     }
   });
-
-  // 🌐 Übersetzungen
-  const translations = {
-    de: {
-      title: "Kundendaten",
-      name: "Name",
-      plan: "Tarif",
-      activeUntil: "aktiviert bis",
-      status: "Status",
-      lastLogin: "letzter Login",
-      button: "Profil bearbeiten",
-      loggedOut: "Abgemeldet",
-      active: "Aktiv",
-    },
-    en: {
-      title: "Customer Data",
-      name: "Name",
-      plan: "Plan",
-      activeUntil: "active until",
-      status: "Status",
-      lastLogin: "last login",
-      button: "Edit Profile",
-      loggedOut: "Logged out",
-      active: "Active",
-    },
-  };
-
-  const t = () => translations[lang()];
 
   // 🔗 Kundendaten abrufen
   const fetchCustomer = async () => {
@@ -53,7 +26,7 @@ export default function CustomerCard(props) {
       return {
         name: null,
         plan: null,
-        status: t().loggedOut,
+        status: t(lang(), "loggedOut", "customer"),
         activeUntil: null,
         lastLogin: null,
       };
@@ -72,7 +45,7 @@ export default function CustomerCard(props) {
         <span
           class={`inline-block px-4 py-1 text-sm font-medium rounded-full border 
             ${
-              data().status === t().active
+              data().status === t(lang(), "active", "customer")
                 ? "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]"
                 : "bg-[#F8D7DA] text-[#8B1A1A] border-[#E6A1A1]"
             }`}
@@ -83,29 +56,29 @@ export default function CustomerCard(props) {
 
       {/* 🔹 Überschrift */}
       <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5 text-center md:text-left">
-        {t().title}
+        {t(lang(), "title", "customer")}
       </h2>
 
       {/* 🔹 Felder */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8">
         <div>
-          <span class="font-medium text-gray-800">{t().name}:</span>
+          <span class="font-medium text-gray-800">{t(lang(), "name", "customer")}:</span>
           <p class="text-gray-600">{displayValue(data().name)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t().plan}:</span>
+          <span class="font-medium text-gray-800">{t(lang(), "plan", "customer")}:</span>
           <p class="text-gray-600">{displayValue(data().plan)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t().activeUntil}:</span>
+          <span class="font-medium text-gray-800">{t(lang(), "activeUntil", "customer")}:</span>
           <p class="text-gray-600">{displayValue(data().activeUntil)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t().status}:</span>
+          <span class="font-medium text-gray-800">{t(lang(), "status", "customer")}:</span>
           <p class="text-gray-600">{displayValue(data().status)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t().lastLogin}:</span>
+          <span class="font-medium text-gray-800">{t(lang(), "lastLogin", "customer")}:</span>
           <p class="text-gray-600">{displayValue(data().lastLogin)}</p>
         </div>
 
@@ -115,7 +88,7 @@ export default function CustomerCard(props) {
             data-signal="open-customer-modal"
             class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
           >
-            {t().button}
+            {t(lang(), "button", "customer")}
           </button>
         </div>
       </div>

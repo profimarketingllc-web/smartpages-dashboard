@@ -1,42 +1,37 @@
 ---
 /**
- * SystemMessage.astro – Final Production Edition
- * ----------------------------------------------
- * ✓ Sprachfähig (DE/EN)
- * ✓ Farb- & Gradient-Logik pro Typ (info, success, warning, error)
- * ✓ Dauerhaft sichtbar – keine Auto-Ausblendung
- * ✓ Responsive Logik:
- *     - Auf großen Bildschirmen rechtsbündig neben den Solid-Cards
- *     - Auf mittleren & kleinen Bildschirmen springt sie über die Cards
- * ✓ Voll kompatibel mit Dashboard-Grid (kein Template-Eingriff nötig)
+ * 🌍 SystemMessage.astro – Middleware-fähige, personalisierte Statusanzeige
+ * ------------------------------------------------------------------------
+ * ✅ Mehrsprachig (über Middleware oder URL)
+ * ✅ Automatische Personalisierung über {{name}} (z. B. „Willkommen, Martin 👋“)
+ * ✅ Farb- & Gradient-Logik pro Typ (info, success, warning, error)
+ * ✅ Kompatibel mit SSR + Astro.locals
+ * ✅ Responsive: zentriert auf kleinen Screens, rechtsbündig auf großen
  */
 
+import { t } from "~/utils/i18n";
+
+// 🧩 Props (mit sicheren Fallbacks)
 const {
-  lang = Astro.url.pathname.toLowerCase().includes("/en/") ? "en" : "de",
-  message = null,
-  type = "info", // info | success | warning | error
+  lang = Astro.locals?.lang || (Astro.url.pathname.toLowerCase().includes("/en/") ? "en" : "de"),
+  message = null,           // Optional: custom message von außen
+  type = "info",            // info | success | warning | error
+  userName = null,          // Optional: für personalisierte Grüße
 } = Astro.props;
 
-// 🌍 Standardtexte (Fallback)
-const defaultMessages = {
-  de: {
-    info: "Willkommen im SmartCenter 👋",
-    success: "Alles läuft reibungslos – Deine Daten sind aktuell.",
-    warning: "Achtung: Einige Informationen werden gerade synchronisiert.",
-    error: "Ein Fehler ist aufgetreten. Bitte lade die Seite neu.",
-  },
-  en: {
-    info: "Welcome to your SmartCenter 👋",
-    success: "Everything is running smoothly – your data is up to date.",
-    warning: "Note: Some information is currently syncing.",
-    error: "An error occurred. Please reload the page.",
-  },
-};
+// 🧠 Textlogik
+let finalMessage;
 
-// 🧠 Text bestimmen (API > Fallback)
-const finalMessage = message || defaultMessages[lang][type];
+// 1️⃣ Wenn custom message übergeben wurde → direkt anzeigen
+if (message) {
+  finalMessage = message;
+}
+// 2️⃣ Standardtext aus i18n.ts, automatisch mit Platzhalter ersetzt
+else {
+  finalMessage = t(lang, type, "system", { name: userName || "" });
+}
 
-// 🎨 Styles nach Nachrichtentyp
+// 🎨 Farb- & Glow-Definitionen
 const styleMap = {
   info: {
     gradient: "from-[#4E6BFF] to-[#657AFF]",
@@ -57,7 +52,8 @@ const styleMap = {
 }[type];
 ---
 
-<div class={`system-message-container relative flex flex-col justify-center`}>
+<!-- 🧱 Layout -->
+<div class="system-message-container relative flex flex-col justify-center">
   <div
     class={`relative flex flex-col justify-center p-5 rounded-2xl shadow-lg border border-white/20 bg-gradient-to-br ${styleMap.gradient} text-white transition-all duration-300 ${styleMap.glow}`}
   >
@@ -67,8 +63,8 @@ const styleMap = {
   </div>
 </div>
 
+<!-- 💅 Style bleibt identisch, aber zentriert besser auf mobilen Geräten -->
 <style>
-  /* 🧱 Grundlayout */
   .system-message {
     max-width: 420px;
     margin-left: auto;
@@ -76,19 +72,16 @@ const styleMap = {
     position: relative;
   }
 
-/* 🧭 Responsive: Message zentrieren bei schmalen Screens */
-@media (max-width: 1024px) {
-  .system-message-container {
-    display: flex;
-    justify-content: center !important;
-    align-items: center !important;
-    margin: 1rem auto 0 auto !important;
-    width: 100%;
-  }
-}
-
-  /* 📱 Responsive: Auf kleineren Bildschirmen oberhalb der Solid-Cards */
+  /* 📱 Zentriert auf kleinen & mittleren Screens */
   @media (max-width: 1024px) {
+    .system-message-container {
+      display: flex;
+      justify-content: center !important;
+      align-items: center !important;
+      margin: 1rem auto 0 auto !important;
+      width: 100%;
+    }
+
     .system-message {
       margin: 0 auto 1rem auto;
       display: flex;

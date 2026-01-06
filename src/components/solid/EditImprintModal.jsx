@@ -1,7 +1,17 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import ModalWrapper from "./ModalWrapper";
+import { t } from "~/utils/i18n";
 
-export default function EditImprintModal() {
+/**
+ * EditImprintModal.jsx
+ * -------------------------------------------------------
+ * ✅ nutzt globale i18n-Übersetzungen
+ * ✅ SSR-sicher (Middleware-kompatibel)
+ * ✅ reagiert auf Dashboard-Signale (open-imprint-modal)
+ * ✅ einheitlicher Stil & API-Verhalten
+ */
+
+export default function EditImprintModal(props) {
   const [showModal, setShowModal] = createSignal(false);
   const [form, setForm] = createSignal({
     company: "",
@@ -15,48 +25,12 @@ export default function EditImprintModal() {
     vat: "",
   });
 
-  // 🌍 Sprache erkennen
+  // 🌍 Sprache über Props oder URL (Fallback)
   const lang =
-    typeof window !== "undefined" && window.location.pathname.startsWith("/en")
-      ? "en"
-      : "de";
+    props.lang ||
+    (typeof window !== "undefined" && window.location.pathname.includes("/en/") ? "en" : "de");
 
-  const t = {
-    de: {
-      title: "Impressum bearbeiten",
-      company: "Firma",
-      contact: "Ansprechpartner",
-      street: "Straße",
-      number: "Hausnummer",
-      zip: "PLZ",
-      city: "Ort",
-      phone: "Telefon",
-      email: "E-Mail",
-      vat: "USt-ID",
-      cancel: "Abbrechen",
-      save: "Speichern",
-      success: "Impressum erfolgreich gespeichert.",
-      error: "Fehler beim Speichern.",
-    },
-    en: {
-      title: "Edit Imprint",
-      company: "Company",
-      contact: "Contact Person",
-      street: "Street",
-      number: "Number",
-      zip: "ZIP",
-      city: "City",
-      phone: "Phone",
-      email: "Email",
-      vat: "VAT ID",
-      cancel: "Cancel",
-      save: "Save",
-      success: "Imprint saved successfully.",
-      error: "Error saving imprint.",
-    },
-  }[lang];
-
-  // 🧩 Öffnen des Modals (Signal aus Dashboard)
+  // 🧭 Eventlistener für Modal öffnen
   onMount(() => {
     const openHandler = () => {
       console.log("🟢 open-imprint-modal empfangen");
@@ -67,7 +41,7 @@ export default function EditImprintModal() {
     onCleanup(() => window.removeEventListener("open-imprint-modal", openHandler));
   });
 
-  // 🗂️ Daten abrufen
+  // 🗂️ API: Imprint laden
   const loadImprint = async () => {
     try {
       const res = await fetch("https://api.smartpages.online/api/imprint", {
@@ -91,12 +65,10 @@ export default function EditImprintModal() {
     }
   };
 
-  // ✏️ Feldaktualisierung
-  const updateField = (key, value) => {
-    setForm({ ...form(), [key]: value });
-  };
+  // ✏️ Feldänderung
+  const updateField = (key, value) => setForm({ ...form(), [key]: value });
 
-  // 💾 Speichern in D1
+  // 💾 Speichern
   const handleSave = async () => {
     try {
       const res = await fetch("https://api.smartpages.online/api/imprint", {
@@ -105,32 +77,38 @@ export default function EditImprintModal() {
         credentials: "include",
         body: JSON.stringify(form()),
       });
-      if (!res.ok) throw new Error("API response not OK");
-      alert(t.success);
+
+      if (!res.ok) throw new Error("API error");
+
+      alert(t(lang, "success", "imprint"));
       setShowModal(false);
     } catch (err) {
       console.error("❌ Fehler beim Speichern:", err);
-      alert(t.error);
+      alert(t(lang, "error", "imprint"));
     }
   };
 
   const handleClose = () => setShowModal(false);
 
+  // 🧱 UI
   return (
-    <ModalWrapper show={showModal()} onClose={handleClose}>
-      <h2 class="text-xl font-bold text-[#1E2A45] mb-4">{t.title}</h2>
+    <ModalWrapper show={showModal()} onClose={handleClose} lang={lang}>
+      <h2 class="text-xl font-bold text-[#1E2A45] mb-4">
+        {t(lang, "editTitle", "imprint")}
+      </h2>
 
       {/* Formular */}
       <div class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
-        <Field label={t.company} keyName="company" value={form().company} onInput={updateField} />
-        <Field label={t.contact} keyName="contact" value={form().contact} onInput={updateField} />
-        <Field label={t.street} keyName="street" value={form().street} onInput={updateField} />
-        <Field label={t.number} keyName="number" value={form().number} onInput={updateField} />
-        <Field label={t.zip} keyName="zip" value={form().zip} onInput={updateField} />
-        <Field label={t.city} keyName="city" value={form().city} onInput={updateField} />
-        <Field label={t.phone} keyName="phone" value={form().phone} onInput={updateField} />
-        <Field label={t.email} keyName="email" value={form().email} onInput={updateField} />
-        <Field label={t.vat} keyName="vat" value={form().vat} onInput={updateField} />
+        {["company", "contact", "street", "number", "zip", "city", "phone", "email", "vat"].map(
+          (key) => (
+            <Field
+              label={t(lang, key, "imprint")}
+              keyName={key}
+              value={form()[key]}
+              onInput={updateField}
+            />
+          )
+        )}
       </div>
 
       {/* Buttons */}
@@ -139,20 +117,20 @@ export default function EditImprintModal() {
           class="px-4 py-2 bg-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-300 transition"
           onClick={handleClose}
         >
-          {t.cancel}
+          {t(lang, "cancelButton", "system")}
         </button>
         <button
           class="px-5 py-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white rounded-lg text-sm font-medium shadow hover:scale-105 transition"
           onClick={handleSave}
         >
-          {t.save}
+          {t(lang, "saveButton", "system")}
         </button>
       </div>
     </ModalWrapper>
   );
 }
 
-// 🔹 Reusable Field Component
+// 🔹 Reusable Input Field
 function Field(props) {
   return (
     <div>
