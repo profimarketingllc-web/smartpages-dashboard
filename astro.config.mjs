@@ -8,7 +8,7 @@ export default defineConfig({
   adapter: cloudflare({
     mode: "directory",
     platformProxy: {
-      enabled: true, // 🔧 sorgt dafür, dass Astro auf Cloudflare Pages Worker richtig läuft
+      enabled: true, // wichtig für Pages-Runtime
     },
   }),
   integrations: [solid(), tailwind()],
