@@ -48,4 +48,39 @@ const styleMap = {
   },
   warning: {
     gradient: "from-[#F5B400] to-[#E47E00]",
-    glow: "hover:shadow-[0_0_20px]()
+    glow: "hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]",
+  },
+  error: {
+    gradient: "from-[#E14D4D] to-[#B83535]",
+    glow: "hover:shadow-[0_0_20px_rgba(225,77,77,0.4)]",
+  },
+}[type];
+---
+
+<div
+  class={`system-message relative flex flex-col justify-center p-5 rounded-2xl shadow-lg border border-white/20 bg-gradient-to-br ${styleMap.gradient} text-white transition-all duration-300 ${styleMap.glow}`}
+>
+  <p class="text-sm leading-relaxed text-white/90 text-center font-medium">
+    {finalMessage}
+  </p>
+</div>
+
+<style>
+  /* 🧱 Grundlayout */
+  .system-message {
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: 0;
+    position: relative;
+  }
+
+  /* 📱 Responsive: Auf kleineren Bildschirmen oberhalb der Solid-Cards */
+  @media (max-width: 1024px) {
+    .system-message {
+      margin: 0 auto 1rem auto;
+      display: flex;
+      justify-content: center;
+      max-width: 90%;
+    }
+  }
+</style>
