@@ -17,7 +17,6 @@ const {
 } = Astro.props;
 
 // 🌍 Sprache aus URL ableiten, falls kein Prop gesetzt ist
-const currentPath = Astro.url.pathname.toLowerCase();
 const detectedLang = propLang || (currentPath.includes("/en/") ? "en" : "de");
 const lang = detectedLang;
 
@@ -112,17 +111,12 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
   </body>
 
   <style>
-    /* ================================
-       🎯 PREMIUM LAYOUT VERBESSERUNG
-    ================================ */
-
     main {
       margin: 0 auto;
       padding-top: 0.4rem;
       transition: all 0.3s ease-in-out;
     }
 
-    /* 📏 Extra-breite Bildschirme (≥1536px) */
     @media (min-width: 1536px) {
       main {
         max-width: 1500px;
@@ -131,7 +125,6 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
       }
     }
 
-    /* 💻 Große Laptops (1280–1535px) */
     @media (min-width: 1280px) and (max-width: 1535px) {
       main {
         max-width: 1400px;
@@ -140,7 +133,6 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
       }
     }
 
-    /* 📱 Tablets & kleinere Screens */
     @media (max-width: 1279px) {
       main {
         max-width: 100%;
@@ -149,14 +141,12 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
       }
     }
 
-    /* 🧱 Sidebar-Kompensation */
     @media (min-width: 1024px) {
       main {
         margin-left: 0.25rem;
       }
     }
 
-    /* 📲 Mobile Optimierung */
     @media (max-width: 768px) {
       main {
         padding-left: 0.75rem;
@@ -164,28 +154,21 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
       }
     }
 
-    /* ======================================================
-       🧱 Above-the-Fold Optimization (adjusted for compact grid)
-    ====================================================== */
-
     main {
-      padding-top: 0.75rem !important;  /* vorher 1.25rem */
-      padding-bottom: 1.75rem !important; /* vorher 3rem */
+      padding-top: 0.75rem !important;
+      padding-bottom: 1.75rem !important;
     }
 
-    /* DashboardCards kompakter */
     .dashboard-card {
       padding-top: 1rem !important;
       padding-bottom: 1rem !important;
     }
 
-    /* Fallback für ungestylte Sections */
     section.w-full > section {
       padding-top: 1rem;
       padding-bottom: 1rem;
     }
 
-    /* Harmonischer Abschluss unten (ProductGrid) */
     main > section:last-of-type {
       margin-bottom: 1.25rem;
     }
