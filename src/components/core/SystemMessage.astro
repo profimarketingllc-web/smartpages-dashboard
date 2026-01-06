@@ -57,12 +57,14 @@ const styleMap = {
 }[type];
 ---
 
-<div
-  class={`system-message relative flex flex-col justify-center p-5 rounded-2xl shadow-lg border border-white/20 bg-gradient-to-br ${styleMap.gradient} text-white transition-all duration-300 ${styleMap.glow}`}
->
-  <p class="text-sm leading-relaxed text-white/90 text-center font-medium">
-    {finalMessage}
-  </p>
+<div class={`system-message-container relative flex flex-col justify-center`}>
+  <div
+    class={`relative flex flex-col justify-center p-5 rounded-2xl shadow-lg border border-white/20 bg-gradient-to-br ${styleMap.gradient} text-white transition-all duration-300 ${styleMap.glow}`}
+  >
+    <p class="text-sm leading-relaxed text-white/90 text-center font-medium">
+      {finalMessage}
+    </p>
+  </div>
 </div>
 
 <style>
@@ -73,6 +75,17 @@ const styleMap = {
     margin-right: 0;
     position: relative;
   }
+
+/* 🧭 Responsive: Message zentrieren bei schmalen Screens */
+@media (max-width: 1024px) {
+  .system-message-container {
+    display: flex;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 1rem auto 0 auto !important;
+    width: 100%;
+  }
+}
 
   /* 📱 Responsive: Auf kleineren Bildschirmen oberhalb der Solid-Cards */
   @media (max-width: 1024px) {
