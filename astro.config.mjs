@@ -7,7 +7,7 @@ export default defineConfig({
   output: "server",
   adapter: cloudflare({
     mode: "directory",
-    imageService: "compile", // verhindert sharp-Fehler
+    // ❌ Entferne das Binding — Cloudflare Pages setzt es automatisch
   }),
   integrations: [solid(), tailwind()],
 });
