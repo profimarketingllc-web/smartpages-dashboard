@@ -10,9 +10,8 @@ export default defineConfig({
 
   // ⚙️ Cloudflare Adapter für SSR
   adapter: cloudflare({
-    // optional: Anpassbar, wenn du spezielle Worker-Optionen brauchst
     platformProxy: {
-      enabled: true,
+      enabled: true, // Cloudflare Worker-kompatibel
     },
   }),
 
@@ -25,22 +24,16 @@ export default defineConfig({
       },
     },
     ssr: {
-      noExternal: ["astro"], // Stabilität für Middleware & SSR-Umgebung
+      noExternal: ["astro"], // Stabilität für Middleware & SSR
     },
   },
 
-  // 🧱 Integrationen (Reihenfolge beachten!)
+  // 🧱 Integrationen (Solid zuerst!)
   integrations: [
-    // Solid muss VOR Tailwind geladen werden, damit Hydration funktioniert
     solid(),
     tailwind({
       config: path.resolve("./tailwind.config.cjs"),
       applyBaseStyles: true,
     }),
   ],
-
-  // 🌍 Optional – falls du künftig i18n (Mehrsprachigkeit) direkt steuern willst
-  experimental: {
-    middleware: true, // Explizit aktivieren (empfohlen bei Cloudflare SSR)
-  },
 });
