@@ -24,7 +24,7 @@ const { title, label, text, gradient, glow, action } = Astro.props;
 <style>
   /* ✨ Grundlayout */
   a {
-    min-height: 160px; /* vorher 200px – kompakter, aber gleichmäßig */
+    min-height: 140px; /* vorher 200px – kompakter, aber gleichmäßig */
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* Inhalt sauber oben ausgerichtet */
@@ -34,7 +34,7 @@ const { title, label, text, gradient, glow, action } = Astro.props;
   /* 💻 Desktop etwas großzügiger */
   @media (min-width: 768px) {
     a {
-      min-height: 180px; /* vorher 210px */
+      min-height: 160px; /* vorher 210px */
       padding-top: 1.25rem;
       padding-bottom: 1.25rem;
     }
