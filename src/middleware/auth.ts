@@ -1,62 +1,46 @@
-import type { MiddlewareHandler } from "astro";
+import type { APIContext } from "astro";
 
-export const onRequest: MiddlewareHandler = async ({ request, locals, redirect, next }) => {
-  const url = new URL(request.url);
-  const path = url.pathname;
+// ✅ Cloudflare KV-Binding prüfen
+const sessionStore =
+  (globalThis as any).SESSION ||
+  (globalThis as any).SESSIONS ||
+  null;
 
-  // Debug-Logging: prüfe SSR / KV / Request-Zustand
-  console.log("[AUTH] Incoming request:", path);
+if (!sessionStore) {
+  console.error("❌ [AUTH] Kein gültiges Cloudflare KV-Binding (SESSION/SESSIONS) gefunden!");
+  // Wenn das auftritt, wird der Worker bei Cloudflare mit 500 abbrechen
+  // aber du bekommst jetzt im Log eine KLARE Meldung.
+}
 
-  // Öffentliche Seiten (keine Auth)
-  const publicRoutes = ["/", "/login", "/signin", "/register", "/privacy", "/imprint"];
-  if (publicRoutes.some((r) => path.startsWith(r))) {
-    console.log("[AUTH] Public route, bypassing auth.");
-    return next();
-  }
+export async function onRequest(context: APIContext, next: () => Promise<Response>) {
+  console.log("🟡 [AUTH] Middleware gestartet...");
 
   try {
-    // Token prüfen (aus Header oder Cookie)
-    const token =
-      request.headers.get("Authorization")?.replace("Bearer ", "") ||
-      request.headers.get("x-smartpages-token") ||
-      getCookie(request.headers.get("cookie") || "", "smartpages_session");
+    // Beispiel: Authentifizierung prüfen (Minimalversion)
+    const token = context.cookies.get("sp_session_token")?.value;
 
     if (!token) {
-      console.warn("[AUTH] Kein Token gefunden → redirect /login");
-      return redirect("/login");
+      console.warn("⚠️ Kein Session-Token gefunden, leite zur Login-Seite um.");
+      return context.redirect("/login");
     }
 
-    // Token validieren
-    console.log("[AUTH] Token gefunden:", token.substring(0, 12) + "...");
+    // Optional: Session aus KV abrufen
+    if (sessionStore) {
+      const userData = await sessionStore.get(token);
+      if (!userData) {
+        console.warn("⚠️ Ungültiger oder abgelaufener Token:", token);
+        return context.redirect("/login");
+      }
 
-    const res = await fetch("https://api.smartpages.online/api/session/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
-    });
-
-    if (!res.ok) {
-      console.error("[AUTH] Fehler bei der Token-Verifikation:", res.status);
-      return redirect("/login");
+      // ✅ Benutzerobjekt in Context speichern
+      context.locals.user = JSON.parse(userData);
+      console.log("✅ [AUTH] Benutzer authentifiziert:", context.locals.user.email);
     }
 
-    const user = await res.json();
-    console.log("[AUTH] Benutzer erfolgreich validiert:", user?.email || "(kein Email)");
-
-    // Nutzer im locals speichern
-    locals.user = user;
-
+    // Weiter zur nächsten Middleware (lang) oder Seite
     return next();
   } catch (err) {
-    console.error("[AUTH] Unerwarteter Fehler:", err);
-    return new Response("Internal Error in auth middleware: " + (err as Error).message, {
-      status: 500,
-    });
+    console.error("❌ [AUTH] Fehler in Middleware:", err);
+    return new Response("Interner Serverfehler in Auth Middleware", { status: 500 });
   }
-};
-
-// Kleine Hilfsfunktion für Cookies
-function getCookie(cookieHeader: string, name: string) {
-  const match = cookieHeader.match(new RegExp("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)"));
-  return match ? match[2] : null;
 }
