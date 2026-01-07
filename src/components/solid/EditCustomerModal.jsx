@@ -6,26 +6,19 @@ import { t } from "~/utils/i18n";
  * EditCustomerModal.jsx
  * -------------------------------------------------------
  * ✅ Sprachfähig über zentrales i18n-System
- * ✅ SSR-kompatibel (nutzt Middleware oder URL)
- * ✅ Dynamisch via Dashboard-Events (open-customer-modal)
- * ✅ Einheitliches UI-Design mit ModalWrapper
- * ✅ Vorname / Nachname getrennt
+ * ✅ SSR-kompatibel
+ * ✅ Fehlerfrei in JSX-Struktur
  */
 
 export default function EditCustomerModal(props) {
   const [showModal, setShowModal] = createSignal(false);
-  const [formData, setFormData] = createSignal({
-    firstName: "",
-    lastName: "",
-    plan: "",
-  });
+  const [formData, setFormData] = createSignal({ firstName: "", lastName: "" });
 
-  // 🌍 Sprache bestimmen
   const lang =
     props.lang ||
     (typeof window !== "undefined" && window.location.pathname.includes("/en/") ? "en" : "de");
 
-  // 🧭 Dashboard-Eventlistener für Öffnen
+  // Dashboard-Eventlistener zum Öffnen
   onMount(() => {
     const openHandler = () => {
       console.log("🟢 open-customer-modal empfangen");
@@ -35,26 +28,18 @@ export default function EditCustomerModal(props) {
     onCleanup(() => window.removeEventListener("open-customer-modal", openHandler));
   });
 
-  // 🧩 Steuerfunktionen
   const handleClose = () => setShowModal(false);
-  const handleInput = (e) =>
-    setFormData({
-      ...formData(),
-      [e.target.name]: e.target.value,
-    });
+  const handleInput = (e) => setFormData({ ...formData(), [e.target.name]: e.target.value });
 
   const handleSave = async () => {
     console.log("💾 Kundendaten speichern:", formData());
     try {
-      const response = await fetch("https://api.smartpages.online/api/customer/update", {
-        method: "POST", // oder PATCH, falls du das in deiner API so verwendest
+      await fetch("https://api.smartpages.online/api/customer/update", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(formData()),
       });
-
-      if (!response.ok) throw new Error("Failed to save customer data");
-
       console.log("✅ Kundendaten erfolgreich gespeichert");
     } catch (err) {
       console.error("❌ Fehler beim Speichern:", err);
@@ -62,14 +47,12 @@ export default function EditCustomerModal(props) {
     setShowModal(false);
   };
 
-  // 🧱 UI
   return (
     <ModalWrapper show={showModal()} onClose={handleClose} lang={lang}>
       <h2 class="text-xl font-bold text-[#1E2A45] mb-4">
-        {t(lang, "editTitle", "customer") || "Kundendaten bearbeiten"}
+        {t(lang, "editTitle", "customer")}
       </h2>
 
-      {/* 🧾 Formularfelder */}
       <div class="space-y-4">
         {/* Vorname */}
         <div>
@@ -100,8 +83,8 @@ export default function EditCustomerModal(props) {
             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
           />
         </div>
+      </div>
 
-      {/* 🟧 Footer */}
       <div class="mt-6 flex justify-end gap-3">
         <button
           class="px-4 py-2 bg-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-300 transition"
