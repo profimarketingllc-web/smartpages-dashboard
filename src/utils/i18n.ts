@@ -35,22 +35,25 @@ const translations: Record<string, any> = {
     },
   },
 
-  systemMessage: {
-    de: {
-      personalized: (name: string) => `Willkommen zurück, ${name || "Benutzer"}! 👋`,
-      businessGreeting: (company: string) => `Willkommen im SmartCenter von ${company}! 🏢`,
-      trialEndingSoon: "Dein Testzeitraum läuft in den nächsten 3 Tagen ab.",
-      trialEndingTomorrow: "Dein Testzeitraum endet morgen!",
-      trialExpired: "Dein Testzeitraum ist abgelaufen. Bitte verlängere deinen Zugang.",
-    },
-    en: {
-      personalized: (name: string) => `Welcome back, ${name || "User"}! 👋`,
-      businessGreeting: (company: string) => `Welcome to ${company}'s SmartCenter! 🏢`,
-      trialEndingSoon: "Your trial period will end in the next 3 days.",
-      trialEndingTomorrow: "Your trial period ends tomorrow!",
-      trialExpired: "Your trial period has expired. Please renew your access.",
-    },
+ systemMessage: {
+  de: {
+    neutralGreeting: "Willkommen bei SmartPages 👋",
+    personalized: "Willkommen zurück, {0}! 👋",
+    businessGreeting: "Schön, dass Ihr Unternehmen wieder da ist, {0}! 👋",
+    trialEndingSoon: "Dein Testzeitraum endet in wenigen Tagen.",
+    trialEndingTomorrow: "Dein Testzeitraum endet morgen!",
+    trialExpired: "Dein Testzeitraum ist abgelaufen. Bitte aktualisiere deinen Plan.",
   },
+  en: {
+    neutralGreeting: "Welcome to SmartPages 👋",
+    personalized: "Welcome back, {0}! 👋",
+    businessGreeting: "Welcome back, {0}! 👋",
+    trialEndingSoon: "Your trial period will end soon.",
+    trialEndingTomorrow: "Your trial period ends tomorrow!",
+    trialExpired: "Your trial period has expired. Please update your plan.",
+  },
+},
+
 
   customer: {
     de: {
