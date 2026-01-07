@@ -5,41 +5,41 @@ import ProductGrid from "~/components/core/ProductGrid.astro";
 const products = [
   {
     title: "SmartProfile",
-    label: "BALD VERFÜGBAR",
-    text: "Dein persönliches Online-Profil, das deine Markenidentität widerspiegelt — sicher in Europa gehostet, optimiert für Sichtbarkeit, Glaubwürdigkeit und vollständige DSGVO-Konformität auf allen digitalen Kanälen.",
+    label: "COMING SOON",
+    text: "Your personal online profile that reflects your brand identity — securely hosted in Europe, optimized for visibility, credibility and full GDPR compliance across all digital channels.",
     gradient: "from-[#3D4CFF] to-[#6A5FFF]",
     glow: "hover:shadow-[0_0_30px_#3D4CFF80]",
   },
   {
     title: "SmartPage",
-    label: "BALD VERFÜGBAR",
-    text: "Erstelle beeindruckende, konversionsstarke Seiten in wenigen Minuten — ganz ohne Programmierung. Entwickelt für Kreative, Unternehmer und kleine Teams, die elegantes Design und volle Kontrolle wollen, ohne Komplexität.",
+    label: "COMING SOON",
+    text: "Create impressive, conversion-focused pages in just a few minutes — no coding required. Designed for creators, entrepreneurs, and small teams who want elegant design and full control without complexity.",
     gradient: "from-[#F5B400] to-[#E47E00]",
     glow: "hover:shadow-[0_0_30px_#F5B40080]",
   },
   {
     title: "SmartDomain",
-    label: "BALD VERFÜGBAR",
-    text: "Sichere deine eigene Domain, schütze deine Marke und bleibe von Anfang an DSGVO-konform. SmartDomain macht das Verwalten deiner Online-Identität mühelos — datenschutzorientiert, sicher und in Europa gehostet.",
+    label: "COMING SOON",
+    text: "Secure your own domain, protect your brand, and stay GDPR-compliant from the very beginning. SmartDomain makes managing your online identity effortless — privacy-first, secure, and hosted in Europe.",
     gradient: "from-[#9D3DFF] to-[#6A3AFF]",
     glow: "hover:shadow-[0_0_30px_#9D3DFF80]",
   },
 ];
 ---
 
-<html lang="de">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartPages Login</title>
     <meta
       name="description"
-      content="Anmeldung bei SmartPages — sicher, datenschutzkonform und in Europa gehostet."
+      content="Login to SmartPages — secure, privacy-friendly and hosted in Europe."
     />
   </head>
 
   <body class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden">
-    <!-- 🧭 Zentrierter Header -->
+    <!-- 🧭 Centered Header -->
     <header
       class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50"
     >
@@ -52,41 +52,42 @@ const products = [
         <div>
           <h1 class="text-3xl font-extrabold">SmartPages</h1>
           <p class="text-sm md:text-base opacity-90">
-            Wir bringen Dich in 10&nbsp;Minuten online — ohne Technik-Wissen.
+            Get online in 10&nbsp;minutes — no tech skills required.
           </p>
         </div>
       </div>
     </header>
 
-    <!-- 💡 Hauptbereich – kompakt, above-the-fold -->
+    <!-- 💡 Main Section – compact, above the fold -->
     <section
       class="w-full max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-8 lg:px-12 mt-8 items-start"
     >
-      <!-- Linke Infobox -->
+      <!-- Left Info Card -->
       <div class="bg-white shadow-lg p-8 rounded-2xl border border-gray-100">
         <h2 class="text-2xl font-extrabold text-[#F5B400] mb-5">
-          Willkommen bei SmartPages
+          Welcome to SmartPages
         </h2>
         <p class="mb-3">
-          Mit <strong>SmartPages</strong> erstellst du deine professionelle Online-Präsenz in nur
-          <strong>10 Minuten</strong> – ohne technisches Wissen oder komplizierte Einrichtung.
-          Alles wird sicher in <strong>Europa</strong> gehostet und ist vollständig
-          <strong>DSGVO-konform</strong>.
+          With <strong>SmartPages</strong>, you can create your professional online presence in just
+          <strong>10 minutes</strong> – without any technical skills or complicated setup.
+          Everything is securely hosted in <strong>Europe</strong> and fully
+          <strong>GDPR-compliant</strong>.
         </p>
         <p class="mb-3">
-          Wenn sich dein Publikum oder deine Kunden in der EU befinden, ist Datenschutz keine Option,
-          sondern Pflicht. SmartPages erfüllt diese Anforderungen automatisch – vom ersten Klick an.
+          If your audience or customers are located in the EU, privacy isn’t an option — it’s a
+          requirement. SmartPages meets these standards automatically from the very first click.
         </p>
         <p>
-          Gib unten einfach deine Kontaktdaten ein, und wir senden dir deinen persönlichen
-          <strong>Magic Link</strong> – ohne Passwort, ohne Tracking, ohne Datensammlung.
+          Simply enter your contact details below, and we’ll send you a personal
+          <strong>Magic Link</strong> for instant, secure access to your SmartPages dashboard —
+          no passwords, no tracking, no data collection.
         </p>
       </div>
 
-      <!-- Rechte Loginbox -->
+      <!-- Right Login Card -->
       <div class="bg-[#f6f8fb] shadow-lg p-8 rounded-2xl border border-gray-100">
         <form id="magicForm" class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm">
-          <label class="block text-sm text-gray-600 mb-1">Vorname *</label>
+          <label class="block text-sm text-gray-600 mb-1">First name *</label>
           <input
             type="text"
             name="first_name"
@@ -94,7 +95,7 @@ const products = [
             class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
           />
 
-          <label class="block text-sm text-gray-600 mb-1">Nachname</label>
+          <label class="block text-sm text-gray-600 mb-1">Last name</label>
           <input
             type="text"
             name="last_name"
@@ -111,11 +112,11 @@ const products = [
 
           <div class="flex items-center gap-2">
             <input type="checkbox" id="is_business" name="is_business" />
-            <label for="is_business" class="text-sm text-gray-600">Geschäftskonto</label>
+            <label for="is_business" class="text-sm text-gray-600">Business account</label>
           </div>
 
           <div id="company_field" class="hidden">
-            <label class="block text-sm text-gray-600 mb-1">Unternehmen</label>
+            <label class="block text-sm text-gray-600 mb-1">Company</label>
             <input
               type="text"
               name="company_name"
@@ -128,13 +129,13 @@ const products = [
             type="submit"
             class="mt-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow hover:shadow-[0_0_12px_2px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300"
           >
-            Magic Link senden
+            Send Magic Link
           </button>
         </form>
       </div>
     </section>
 
-    <!-- 🧱 ProductGrid (kompakt & bündig) -->
+    <!-- 🧱 ProductGrid (compact & aligned) -->
     <section class="mt-4 mb-8">
       <div class="w-full max-w-[1400px] mx-auto">
         <ProductGrid {products} compact />
@@ -143,7 +144,7 @@ const products = [
 
     <!-- Footer -->
     <footer class="text-center text-sm text-gray-600 py-3 bg-[#f5f5f5]">
-      © 2025 SmartPages · Profi Marketing LLC · Gehostet in Europa · DSGVO-konform
+      © 2025 SmartPages · Profi Marketing LLC · Hosted in Europe · GDPR-compliant
     </footer>
 
     <!-- Popup -->
@@ -182,7 +183,7 @@ const products = [
         };
 
         submitBtn.disabled = true;
-        showPopup("⏳ Sende deinen Magic Link...<br><span class='text-sm opacity-80'>Einen Moment bitte.</span>", "warning");
+        showPopup("⏳ Sending your Magic Link...<br><span class='text-sm opacity-80'>Please wait a moment.</span>", "warning");
 
         try {
           const res = await fetch(API_URL, {
@@ -192,12 +193,12 @@ const products = [
           });
           const result = await res.json();
           if (result.ok) {
-            showPopup("✅ Magic Link gesendet! Bitte überprüfe dein Postfach.", "success");
+            showPopup("✅ Magic Link sent! Please check your inbox.", "success");
           } else {
-            showPopup("⚠️ Ein Fehler ist aufgetreten. Bitte überprüfe deine Eingaben.", "error");
+            showPopup("⚠️ An error occurred. Please check your input.", "error");
           }
         } catch {
-          showPopup("⚠️ Netzwerkfehler. Bitte überprüfe deine Internetverbindung.", "error");
+          showPopup("⚠️ Network error. Please check your internet connection.", "error");
         } finally {
           submitBtn.disabled = false;
         }
