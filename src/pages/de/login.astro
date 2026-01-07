@@ -32,14 +32,23 @@ const products = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartPages Login</title>
-    <meta name="description" content="SmartPages Login — sicher, datenschutzkonform und in Europa gehostet." />
+    <meta
+      name="description"
+      content="Anmeldung bei SmartPages — sicher, datenschutzkonform und in Europa gehostet."
+    />
   </head>
 
   <body class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden">
-    <!-- Zentrierter Header mit Logo + Claim -->
-    <header class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50">
+    <!-- 🧭 Zentrierter Header -->
+    <header
+      class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50"
+    >
       <div class="flex items-center gap-5">
-        <img src="/SmartPages_icon_transparent.png" alt="SmartPages Logo" class="w-16 h-16" />
+        <img
+          src="/SmartPages_icon_transparent.png"
+          alt="SmartPages Logo"
+          class="w-16 h-16"
+        />
         <div>
           <h1 class="text-3xl font-extrabold">SmartPages</h1>
           <p class="text-sm md:text-base opacity-90">
@@ -49,11 +58,15 @@ const products = [
       </div>
     </header>
 
-    <!-- Hauptbereich kompakt above-the-fold -->
-    <section class="w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-6 lg:px-12 mt-20 items-start min-h-[70vh]">
-      <!-- Infoblock -->
-      <div class="bg-white shadow-md p-6 rounded-2xl border border-gray-100">
-        <h2 class="text-2xl font-extrabold text-[#F5B400] mb-4">Willkommen bei SmartPages</h2>
+    <!-- 💡 Hauptbereich – kompakt, above-the-fold -->
+    <section
+      class="w-full max-w-[1350px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 px-6 lg:px-10 mt-12 items-start min-h-[68vh]"
+    >
+      <!-- Linke Infobox -->
+      <div class="bg-white shadow-lg p-6 rounded-2xl border border-gray-100">
+        <h2 class="text-2xl font-extrabold text-[#F5B400] mb-4">
+          Willkommen bei SmartPages
+        </h2>
         <p class="mb-3">
           Mit <strong>SmartPages</strong> erstellst du deine professionelle Online-Präsenz in nur
           <strong>10 Minuten</strong> – ohne technisches Wissen oder komplizierte Einrichtung.
@@ -70,17 +83,31 @@ const products = [
         </p>
       </div>
 
-      <!-- Loginblock -->
-      <div class="bg-[#f6f8fb] shadow-md p-6 rounded-2xl border border-gray-100">
+      <!-- Rechte Loginbox -->
+      <div class="bg-[#f6f8fb] shadow-lg p-6 rounded-2xl border border-gray-100">
         <form id="magicForm" class="bg-white p-5 rounded-xl flex flex-col gap-3 shadow-sm">
           <label class="block text-sm text-gray-600 mb-1">Vorname *</label>
-          <input type="text" name="first_name" required class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+          <input
+            type="text"
+            name="first_name"
+            required
+            class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+          />
 
           <label class="block text-sm text-gray-600 mb-1">Nachname</label>
-          <input type="text" name="last_name" class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+          <input
+            type="text"
+            name="last_name"
+            class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+          />
 
           <label class="block text-sm text-gray-600 mb-1">E-Mail *</label>
-          <input type="email" name="email" required class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+          <input
+            type="email"
+            name="email"
+            required
+            class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+          />
 
           <div class="flex items-center gap-2">
             <input type="checkbox" id="is_business" name="is_business" />
@@ -89,28 +116,41 @@ const products = [
 
           <div id="company_field" class="hidden">
             <label class="block text-sm text-gray-600 mb-1">Unternehmen</label>
-            <input type="text" name="company_name" class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+            <input
+              type="text"
+              name="company_name"
+              class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+            />
           </div>
 
-          <button id="submitBtn" type="submit"
-            class="mt-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow hover:shadow-[0_0_12px_2px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300">
+          <button
+            id="submitBtn"
+            type="submit"
+            class="mt-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow hover:shadow-[0_0_12px_2px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300"
+          >
             Magic Link senden
           </button>
         </form>
       </div>
     </section>
 
-    <!-- Product Grid direkt darunter, kaum Abstand -->
-    <section class="mt-4 mb-6 px-4">
-      <ProductGrid {products} />
+    <!-- 🧱 ProductGrid -->
+    <section class="mt-2 mb-6 px-6 lg:px-10">
+      <div class="max-w-[1350px] mx-auto">
+        <ProductGrid {products} />
+      </div>
     </section>
 
+    <!-- Footer -->
     <footer class="text-center text-sm text-gray-600 py-3 bg-[#f5f5f5]">
       © 2025 SmartPages · Profi Marketing LLC · Gehostet in Europa · DSGVO-konform
     </footer>
 
     <!-- Popup -->
-    <div id="popup" class="hidden fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+    <div
+      id="popup"
+      class="hidden fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+    ></div>
 
     <script>
       const API_URL = "https://api.smartpages.online/api/auth/start";
@@ -154,10 +194,10 @@ const products = [
           if (result.ok) {
             showPopup("✅ Magic Link gesendet! Bitte überprüfe dein Postfach.", "success");
           } else {
-            showPopup("⚠️ Ein Fehler ist aufgetreten. Bitte überprüfe deine Angaben.", "error");
+            showPopup("⚠️ Ein Fehler ist aufgetreten. Bitte überprüfe deine Eingaben.", "error");
           }
         } catch {
-          showPopup("⚠️ Netzwerkfehler. Bitte Internetverbindung prüfen.", "error");
+          showPopup("⚠️ Netzwerkfehler. Bitte überprüfe deine Internetverbindung.", "error");
         } finally {
           submitBtn.disabled = false;
         }

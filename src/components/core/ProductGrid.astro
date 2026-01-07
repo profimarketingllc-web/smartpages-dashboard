@@ -5,6 +5,7 @@
  * ✓ Sprachlogik über Props (de/en)
  * ✓ Gleichmäßige Höhe der ProductCards
  * ✓ Sanftes Fade-In beim Laden
+ * ✓ Kompaktmodus für Login-/Landingpages (optional)
  * ✓ Kompatibel mit DashboardCard & SSR
  */
 
@@ -19,6 +20,7 @@ const {
   products = [],
   variant = currentPath.includes("/dashboard") ? "upsell" : "teaser",
   lang = detectedLang,
+  compact = false, // 🆕 Steuert kompaktes Layout (für Login)
 } = Astro.props;
 
 // Mehrsprachige Produktsets
@@ -139,7 +141,11 @@ const items = products.length ? products : productSets[variant][lang];
 ---
 
 <section
-  class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-6 py-4 md:py-5 items-stretch justify-items-center animate-fadeIn"
+  class={`${
+    compact
+      ? "max-w-5xl gap-5 py-2 px-4 md:px-6"
+      : "max-w-6xl gap-8 py-4 px-4 md:px-6 md:py-5"
+  } mx-auto grid grid-cols-1 md:grid-cols-3 items-stretch justify-items-center animate-fadeIn`}
 >
   {items.map((p) => (
     <div class="w-full flex justify-center">
@@ -173,8 +179,6 @@ const items = products.length ? products : productSets[variant][lang];
 
   section {
     align-items: stretch;
-    padding-top: 0.5rem;
-    padding-bottom: 0.75rem;
   }
 
   @media (max-width: 768px) {

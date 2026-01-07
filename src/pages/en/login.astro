@@ -6,21 +6,21 @@ const products = [
   {
     title: "SmartProfile",
     label: "COMING SOON",
-    text: "Your personal online profile that reflects your brand identity — securely hosted in Europe, optimized for visibility, credibility, and full GDPR compliance across all digital channels.",
+    text: "Your personal online profile reflecting your brand identity — securely hosted in Europe, optimized for visibility, credibility, and full GDPR compliance across all digital channels.",
     gradient: "from-[#3D4CFF] to-[#6A5FFF]",
     glow: "hover:shadow-[0_0_30px_#3D4CFF80]",
   },
   {
     title: "SmartPage",
     label: "COMING SOON",
-    text: "Create impressive, conversion-optimized pages in minutes — without coding. Designed for creatives, entrepreneurs, and small teams who want elegant design and full control without complexity.",
+    text: "Create stunning, conversion-ready pages in just minutes — no coding required. Designed for creators, entrepreneurs, and small teams who value style and control without complexity.",
     gradient: "from-[#F5B400] to-[#E47E00]",
     glow: "hover:shadow-[0_0_30px_#F5B40080]",
   },
   {
     title: "SmartDomain",
     label: "COMING SOON",
-    text: "Secure your own domain, protect your brand, and stay GDPR-compliant from day one. SmartDomain makes managing your online identity effortless — privacy-first, secure, and hosted in Europe.",
+    text: "Secure your own domain, protect your brand, and stay GDPR-compliant from day one. SmartDomain makes managing your online identity effortless — privacy-focused, safe, and hosted in Europe.",
     gradient: "from-[#9D3DFF] to-[#6A3AFF]",
     glow: "hover:shadow-[0_0_30px_#9D3DFF80]",
   },
@@ -34,12 +34,12 @@ const products = [
     <title>SmartPages Login</title>
     <meta
       name="description"
-      content="Login to SmartPages — secure, privacy-first, and hosted in Europe."
+      content="Login to SmartPages — secure, privacy-friendly, and hosted in Europe."
     />
   </head>
 
   <body class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden">
-    <!-- Centered Header with Logo + Claim -->
+    <!-- 🧭 Centered Header -->
     <header
       class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50"
     >
@@ -52,43 +52,42 @@ const products = [
         <div>
           <h1 class="text-3xl font-extrabold">SmartPages</h1>
           <p class="text-sm md:text-base opacity-90">
-            Go online in 10&nbsp;minutes — no tech skills needed.
+            Get online in just 10&nbsp;minutes — no tech skills required.
           </p>
         </div>
       </div>
     </header>
 
-    <!-- Main Area - Compact Above-the-Fold -->
+    <!-- 💡 Main Content – compact above-the-fold -->
     <section
-      class="w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-6 lg:px-12 mt-20 items-start min-h-[70vh]"
+      class="w-full max-w-[1350px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 px-6 lg:px-10 mt-12 items-start min-h-[68vh]"
     >
-      <!-- Left Block -->
-      <div class="bg-white shadow-md p-6 rounded-2xl border border-gray-100">
+      <!-- Left Info Box -->
+      <div class="bg-white shadow-lg p-6 rounded-2xl border border-gray-100">
         <h2 class="text-2xl font-extrabold text-[#F5B400] mb-4">
           Welcome to SmartPages
         </h2>
         <p class="mb-3">
           With <strong>SmartPages</strong>, you can create your professional online presence in just
-          <strong>10 minutes</strong> — no technical knowledge or complicated setup required.
+          <strong>10 minutes</strong> — no technical skills or complicated setup required.
           Everything is securely hosted in <strong>Europe</strong> and fully
           <strong>GDPR-compliant</strong>.
         </p>
         <p class="mb-3">
-          If your audience or clients are based in the EU, data protection isn’t optional — it’s a
-          requirement. SmartPages meets these standards automatically from the very first click.
+          If your audience or customers are based in the EU, privacy isn't optional — it's
+          essential. SmartPages meets all these requirements automatically from your very first
+          click.
         </p>
         <p>
-          Simply enter your contact details below, and we’ll send you your personal
-          <strong>Magic Link</strong> — no password, no tracking, no data collection.
+          Simply enter your contact details below, and we'll send you a personal
+          <strong>Magic Link</strong> for instant, secure access to your SmartPages Dashboard — no
+          password, no tracking, no data collection.
         </p>
       </div>
 
-      <!-- Right Block -->
-      <div class="bg-[#f6f8fb] shadow-md p-6 rounded-2xl border border-gray-100">
-        <form
-          id="magicForm"
-          class="bg-white p-5 rounded-xl flex flex-col gap-3 shadow-sm"
-        >
+      <!-- Right Login Box -->
+      <div class="bg-[#f6f8fb] shadow-lg p-6 rounded-2xl border border-gray-100">
+        <form id="magicForm" class="bg-white p-5 rounded-xl flex flex-col gap-3 shadow-sm">
           <label class="block text-sm text-gray-600 mb-1">First Name *</label>
           <input
             type="text"
@@ -104,7 +103,7 @@ const products = [
             class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
           />
 
-          <label class="block text-sm text-gray-600 mb-1">Email *</label>
+          <label class="block text-sm text-gray-600 mb-1">E-Mail *</label>
           <input
             type="email"
             name="email"
@@ -114,7 +113,7 @@ const products = [
 
           <div class="flex items-center gap-2">
             <input type="checkbox" id="is_business" name="is_business" />
-            <label for="is_business" class="text-sm text-gray-600">Business Account</label>
+            <label for="is_business" class="text-sm text-gray-600">Business account</label>
           </div>
 
           <div id="company_field" class="hidden">
@@ -137,11 +136,14 @@ const products = [
       </div>
     </section>
 
-    <!-- Product Grid directly below - minimal spacing -->
-    <section class="mt-4 mb-6 px-4">
-      <ProductGrid {products} />
+    <!-- 🧱 ProductGrid -->
+    <section class="mt-2 mb-6 px-6 lg:px-10">
+      <div class="max-w-[1350px] mx-auto">
+        <ProductGrid {products} compact />
+      </div>
     </section>
 
+    <!-- Footer -->
     <footer class="text-center text-sm text-gray-600 py-3 bg-[#f5f5f5]">
       © 2025 SmartPages · Profi Marketing LLC · Hosted in Europe · GDPR-compliant
     </footer>
@@ -194,10 +196,10 @@ const products = [
           if (result.ok) {
             showPopup("✅ Magic Link sent! Please check your inbox.", "success");
           } else {
-            showPopup("⚠️ An error occurred. Please check your details.", "error");
+            showPopup("⚠️ An error occurred. Please check your details and try again.", "error");
           }
         } catch {
-          showPopup("⚠️ Network error. Please check your connection.", "error");
+          showPopup("⚠️ Network error. Please check your internet connection.", "error");
         } finally {
           submitBtn.disabled = false;
         }
