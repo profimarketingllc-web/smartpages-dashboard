@@ -2,7 +2,6 @@ import { createResource, createSignal, onMount } from "solid-js";
 import { t } from "~/utils/i18n";
 
 export default function CustomerCard(props) {
-  // 🌍 Sprache bestimmen (Middleware → Prop → URL-Fallback)
   const [lang, setLang] = createSignal(
     props.lang ||
       (typeof window !== "undefined" && window.location.pathname.includes("/en/") ? "en" : "de")
@@ -23,7 +22,6 @@ export default function CustomerCard(props) {
       if (!res.ok) throw new Error("No customer data");
       return await res.json();
     } catch {
-      // ⚠️ Fallback für nicht eingeloggte User
       return {
         firstName: null,
         lastName: null,
@@ -38,14 +36,6 @@ export default function CustomerCard(props) {
   const [customer] = createResource(fetchCustomer);
   const data = () => customer() || {};
   const displayValue = (val) => (val ? val : "—");
-
-  // 🧩 Kombinierter Name
-  const fullName = () => {
-    if (data().firstName || data().lastName) {
-      return `${data().firstName ?? ""} ${data().lastName ?? ""}`.trim();
-    }
-    return "—";
-  };
 
   // 🧱 Layout
   return (
@@ -69,54 +59,45 @@ export default function CustomerCard(props) {
         {t(lang(), "title", "customer")}
       </h2>
 
-      {/* 🔹 Felder */}
+      {/* 🔹 Felder (2 Zeilen, 3 Spalten) */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8">
+        {/* Erste Zeile */}
         <div>
-          <span class="font-medium text-gray-800">
-            {t(lang(), "firstName", "customer")}:
-          </span>
+          <span class="font-medium text-gray-800">{t(lang(), "firstName", "customer")}:</span>
           <p class="text-gray-600">{displayValue(data().firstName)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">
-            {t(lang(), "lastName", "customer")}:
-          </span>
+          <span class="font-medium text-gray-800">{t(lang(), "lastName", "customer")}:</span>
           <p class="text-gray-600">{displayValue(data().lastName)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">
-            {t(lang(), "plan", "customer")}:
-          </span>
+          <span class="font-medium text-gray-800">{t(lang(), "status", "customer")}:</span>
+          <p class="text-gray-600">{displayValue(data().status)}</p>
+        </div>
+
+        {/* Zweite Zeile */}
+        <div>
+          <span class="font-medium text-gray-800">{t(lang(), "plan", "customer")}:</span>
           <p class="text-gray-600">{displayValue(data().plan)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">
-            {t(lang(), "activeUntil", "customer")}:
-          </span>
+          <span class="font-medium text-gray-800">{t(lang(), "activeUntil", "customer")}:</span>
           <p class="text-gray-600">{displayValue(data().activeUntil)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">
-            {t(lang(), "status", "customer")}:
-          </span>
-          <p class="text-gray-600">{displayValue(data().status)}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">
-            {t(lang(), "lastLogin", "customer")}:
-          </span>
+          <span class="font-medium text-gray-800">{t(lang(), "lastLogin", "customer")}:</span>
           <p class="text-gray-600">{displayValue(data().lastLogin)}</p>
         </div>
+      </div>
 
-        {/* 🟧 Bearbeiten-Button */}
-        <div class="flex justify-end items-center sm:justify-end">
-          <button
-            data-signal="open-customer-modal"
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
-          >
-            {t(lang(), "editButton", "customer")}
-          </button>
-        </div>
+      {/* 🟧 Bearbeiten-Button */}
+      <div class="flex justify-end items-center mt-6">
+        <button
+          data-signal="open-customer-modal"
+          class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
+        >
+          {t(lang(), "button", "customer")}
+        </button>
       </div>
     </div>
   );
