@@ -39,30 +39,32 @@ const products = [
   </head>
 
   <body class="bg-white text-gray-800 font-inter pt-24 md:pt-28">
-    <!-- Header -->
+    <!-- Einheitlicher Header -->
     <header
-      class="bg-[#1E2A45] text-white py-5 px-4 flex flex-col md:flex-row items-center justify-center gap-4 shadow-lg fixed top-0 left-0 right-0 z-50"
+      class="bg-[#1E2A45] text-white py-4 px-8 flex flex-wrap items-center justify-center md:justify-between shadow-md fixed top-0 left-0 right-0 z-50"
     >
-      <img
-        src="/SmartPages_icon_transparent.png"
-        alt="SmartPages Logo"
-        class="w-20 h-20"
-        loading="lazy"
-      />
-      <div class="text-center md:text-left">
-        <h1 class="text-3xl font-extrabold">SmartPages</h1>
-        <p class="text-sm md:text-base opacity-90">
-          In nur 10 Minuten online — datenschutzkonform und in Europa gehostet.
-        </p>
+      <div class="flex items-center gap-4">
+        <img
+          src="/SmartPages_icon_transparent.png"
+          alt="SmartPages Logo"
+          class="w-14 h-14"
+          loading="lazy"
+        />
+        <div>
+          <h1 class="text-2xl md:text-3xl font-extrabold">SmartPages</h1>
+          <p class="text-sm opacity-90">
+            Wir bringen Dich in 10 Minuten online — ohne Technik-Wissen.
+          </p>
+        </div>
       </div>
     </header>
 
-    <!-- Hero + Login -->
+    <!-- Hauptbereich -->
     <section
-      class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 px-6 mt-8 md:mt-10 mb-8 md:mb-10"
+      class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-14 xl:gap-20 px-8 xl:px-16 mt-14 md:mt-20 mb-16 md:mb-24 items-start"
     >
-      <!-- Left (Hero) -->
-      <div class="bg-white shadow-xl p-8 rounded-2xl border border-gray-100">
+      <!-- Linke Spalte -->
+      <div class="bg-white shadow-2xl p-10 rounded-3xl border border-gray-100">
         <h2 class="text-3xl font-extrabold text-[#F5B400] mb-6">
           Willkommen bei SmartPages
         </h2>
@@ -81,27 +83,44 @@ const products = [
 
         <p>
           Gib unten einfach deine Kontaktdaten ein, und wir senden dir einen persönlichen
-          <strong>Magic Link</strong> für den sicheren Sofortzugang zu deinem SmartPages-Dashboard – 
+          <strong>Magic Link</strong> für den sicheren Sofortzugang zu deinem SmartPages-Dashboard –
           ohne Passwort, ohne Tracking, ohne Datensammlung.
         </p>
       </div>
 
-      <!-- Right (Login Form) -->
-      <div class="bg-[#f6f8fb] shadow-xl p-8 rounded-2xl border border-gray-100">
-        <form id="magicForm" class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm">
+      <!-- Rechte Spalte -->
+      <div class="bg-[#f6f8fb] shadow-2xl p-10 rounded-3xl border border-gray-100">
+        <form
+          id="magicForm"
+          class="bg-white p-8 rounded-2xl flex flex-col gap-5 shadow-sm"
+        >
           <div>
             <label class="block text-sm text-gray-600 mb-1">Vorname *</label>
-            <input type="text" name="first_name" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+            <input
+              type="text"
+              name="first_name"
+              required
+              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+            />
           </div>
 
           <div>
             <label class="block text-sm text-gray-600 mb-1">Nachname</label>
-            <input type="text" name="last_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+            <input
+              type="text"
+              name="last_name"
+              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+            />
           </div>
 
           <div>
             <label class="block text-sm text-gray-600 mb-1">E-Mail *</label>
-            <input type="email" name="email" required class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+            <input
+              type="email"
+              name="email"
+              required
+              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+            />
           </div>
 
           <div class="flex items-center gap-2">
@@ -111,18 +130,25 @@ const products = [
 
           <div id="company_field" class="hidden">
             <label class="block text-sm text-gray-600 mb-1">Unternehmen</label>
-            <input type="text" name="company_name" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]" />
+            <input
+              type="text"
+              name="company_name"
+              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+            />
           </div>
 
-          <button id="submitBtn" type="submit"
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed">
+          <button
+            id="submitBtn"
+            type="submit"
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed"
+          >
             Magic Link senden
           </button>
         </form>
       </div>
     </section>
 
-    <!-- Product Cards -->
+    <!-- Produktbereich -->
     <section class="mt-6 mb-12 px-4">
       <ProductGrid {products} />
     </section>
@@ -133,7 +159,10 @@ const products = [
     </footer>
 
     <!-- Popup -->
-    <div id="popup" class="hidden fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+    <div
+      id="popup"
+      class="hidden fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+    ></div>
 
     <script>
       const API_URL = "https://api.smartpages.online/api/auth/start";
@@ -166,7 +195,10 @@ const products = [
         };
 
         submitBtn.disabled = true;
-        showPopup("⏳ Sende deinen Magic Link...<br><span class='text-sm opacity-80'>Einen Moment bitte.</span>", "warning");
+        showPopup(
+          "⏳ Sende deinen Magic Link...<br><span class='text-sm opacity-80'>Einen Moment bitte.</span>",
+          "warning"
+        );
 
         try {
           const res = await fetch(API_URL, {
@@ -178,30 +210,22 @@ const products = [
           const result = await res.json();
 
           if (result.ok) {
-            showPopup("✅ Magic Link gesendet! Bitte überprüfe dein Postfach.", "success");
+            showPopup("✅ Magic Link gesendet! Bitte prüfe dein Postfach.", "success");
           } else {
-            switch (result.error) {
-              case "invalid_email":
-                showPopup("❌ Bitte gib eine gültige E-Mail-Adresse ein.", "error");
-                break;
-              case "email_bounced":
-                showPopup("⚠️ Deine E-Mail konnte zuletzt nicht erreicht werden. Bitte prüfe deine Adresse.", "error");
-                break;
-              case "trial_expired":
-                showPopup("💡 Dein kostenloser Testzeitraum ist abgelaufen. Bitte prüfe deine E-Mails für Upgrade-Optionen.", "warning");
-                break;
-              case "rate_limited":
-                showPopup("⏳ Bitte warte einen Moment, bevor du erneut einen Magic Link anforderst.", "warning");
-                break;
-              case "mailer_unreachable":
-                showPopup("📭 Der Mailserver ist aktuell nicht erreichbar. Bitte versuche es später erneut.", "error");
-                break;
-              case "mailer_error":
-                showPopup("❌ Beim Versand der E-Mail ist ein Fehler aufgetreten. Bitte erneut versuchen.", "error");
-                break;
-              default:
-                showPopup("⚠️ Ein unbekannter Fehler ist aufgetreten. Bitte überprüfe deine Eingaben.", "error");
-            }
+            const messages = {
+              invalid_email: "❌ Bitte gib eine gültige E-Mail-Adresse ein.",
+              email_bounced:
+                "⚠️ Deine E-Mail konnte zuletzt nicht erreicht werden. Bitte prüfe deine Adresse.",
+              trial_expired:
+                "💡 Dein kostenloser Testzeitraum ist abgelaufen. Bitte prüfe deine E-Mails für Upgrade-Optionen.",
+              rate_limited:
+                "⏳ Bitte warte einen Moment, bevor du erneut einen Magic Link anforderst.",
+              mailer_unreachable:
+                "📭 Der Mailserver ist aktuell nicht erreichbar. Bitte versuche es später erneut.",
+              mailer_error:
+                "❌ Beim Versand der E-Mail ist ein Fehler aufgetreten. Bitte erneut versuchen.",
+            };
+            showPopup(messages[result.error] || "⚠️ Ein unbekannter Fehler ist aufgetreten.", "error");
           }
         } catch {
           showPopup("⚠️ Netzwerkfehler. Bitte überprüfe deine Internetverbindung.", "error");
