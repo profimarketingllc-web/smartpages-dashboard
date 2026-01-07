@@ -1,16 +1,3 @@
-/**
- * 🌍 i18n.ts – Zentrale Übersetzungs-Utility für SmartPages Dashboard
- * -------------------------------------------------------------------
- * ✅ Einheitliche Übersetzungen für:
- *   - Systemtexte (Buttons, Status, Fehlermeldungen)
- *   - CustomerCard & EditCustomerModal
- *   - ImprintCard & EditImprintModal
- *   - SystemMessage
- * ✅ Erweiterbar für weitere Module
- * ✅ SSR-fähig (kein window nötig)
- * ✅ Unterstützt Platzhalter ({{name}} etc.)
- */
-
 export const translations = {
   system: {
     de: {
@@ -39,48 +26,31 @@ export const translations = {
     },
   },
 
-systemMessage: {
-  de: {
-    personalized: (name: string) => `Willkommen zurück, ${name || "SmartUser"}! 👋`,
-    businessGreeting: (name: string) => `Willkommen im SmartCenter, ${name}! 👋`,
-    trialEndingSoon: "Dein Testzeitraum endet in wenigen Tagen. Jetzt upgraden, um weiterzumachen.",
-    trialEndingTomorrow: "Dein Testzeitraum endet morgen! Sichere dir deinen Zugang jetzt.",
-    trialExpired: "Dein Testzeitraum ist abgelaufen. Bitte wähle einen Tarif, um fortzufahren.",
+  customer: {
+    de: {
+      title: "Kundendaten",
+      editTitle: "Kundendaten bearbeiten",
+      firstName: "Vorname",
+      lastName: "Nachname",
+      plan: "Tarif",
+      activeUntil: "Aktiv bis",
+      status: "Status",
+      lastLogin: "Letzter Login",
+      button: "Profil bearbeiten",
+    },
+    en: {
+      title: "Customer Data",
+      editTitle: "Edit Customer Data",
+      firstName: "First Name",
+      lastName: "Last Name",
+      plan: "Plan",
+      activeUntil: "Active until",
+      status: "Status",
+      lastLogin: "Last login",
+      button: "Edit Profile",
+    },
   },
-  en: {
-    personalized: (name: string) => `Welcome back, ${name || "SmartUser"}! 👋`,
-    businessGreeting: (name: string) => `Welcome to your SmartCenter, ${name}! 👋`,
-    trialEndingSoon: "Your trial period ends in a few days. Upgrade now to continue.",
-    trialEndingTomorrow: "Your trial period ends tomorrow! Secure your access today.",
-    trialExpired: "Your trial has expired. Please select a plan to continue.",
-  },
-},
 
-customer: {
-  de: {
-    title: "Kundendaten",
-    editTitle: "Kundendaten bearbeiten",
-    firstName: "Vorname",
-    lastName: "Nachname",
-    plan: "Tarif",
-    activeUntil: "Aktiv bis",
-    status: "Status",
-    lastLogin: "Letzter Login",
-    editButton: "Profil bearbeiten",
-  },
-  en: {
-    title: "Customer Data",
-    editTitle: "Edit Customer Data",
-    firstName: "First name",
-    lastName: "Last name",
-    plan: "Plan",
-    activeUntil: "Active until",
-    status: "Status",
-    lastLogin: "Last login",
-    editButton: "Edit profile",
-  },
-},
- 
   imprint: {
     de: {
       title: "Impressumsdaten",
@@ -116,45 +86,3 @@ customer: {
     },
   },
 };
-
-/**
- * 🧠 `t(lang, key, section, vars)`
- * Allgemeine Übersetzungsfunktion mit Fallback und Variablenersetzung.
- */
-export function t(
-  lang: string,
-  key: string,
-  section: keyof typeof translations,
-  vars: Record<string, any> = {}
-): string {
-  const safeLang = lang === "en" ? "en" : "de";
-  const group = translations[section][safeLang];
-  if (!group) return key;
-
-  let value = group[key as keyof typeof group];
-  if (!value) return key;
-
-  // Falls der Wert eine Funktion ist (Legacy), ausführen
-  if (typeof value === "function") {
-    return (value as any)(vars.name || "");
-  }
-
-  // Platzhalter ersetzen
-  let msg = value as string;
-  for (const [k, v] of Object.entries(vars)) {
-    msg = msg.replace(`{{${k}}}`, v ?? "");
-  }
-
-  return msg;
-}
-
-/**
- * 🌐 useLang() – Hilfsfunktion für Komponenten
- * Erkennt Sprache client- oder serverseitig.
- */
-export function useLang(defaultLang = "de"): string {
-  if (typeof window !== "undefined") {
-    return window.location.pathname.includes("/en/") ? "en" : "de";
-  }
-  return defaultLang;
-}
