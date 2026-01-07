@@ -1,6 +1,6 @@
-import { defineMiddleware } from "astro:middleware";
+import type { MiddlewareHandler } from "astro";
 
-export const onRequest = defineMiddleware(async (context, next) => {
+export const onRequest: MiddlewareHandler = async (context, next) => {
   const { url, cookies, request, locals } = context;
   const pathname = url.pathname.toLowerCase();
   const referer = request.headers.get("referer")?.toLowerCase() || "";
@@ -34,4 +34,4 @@ export const onRequest = defineMiddleware(async (context, next) => {
   response.headers.set("x-smartpages-lang", lang);
 
   return response;
-});
+};

@@ -1,20 +1,22 @@
 import type { MiddlewareHandler } from "astro";
 
-export const onRequest: MiddlewareHandler = async ({ cookies, locals, env, request, next }) => {
+export const onRequest: MiddlewareHandler = async (context, next) => {
+  const { cookies, locals, env } = context;
+
   try {
     const sessionId = cookies.get("session_id")?.value;
 
     // 🚧 Kein Session-Binding vorhanden?
-    if (!env.SESSION && !env.DB) {
+    if (!env?.SESSION && !env?.DB) {
       console.warn("⚠️ Kein KV oder D1 Binding verfügbar, verwende Dummy-Session.");
       locals.session = { user_id: null, guest: true };
-      return next();
+      return await next();
     }
 
     // 🔐 Kein Session-Cookie → Gastmodus
     if (!sessionId) {
       locals.session = { user_id: null, guest: true };
-      return next();
+      return await next();
     }
 
     // 🗝️ Versuch, Session aus KV zu laden
@@ -22,7 +24,7 @@ export const onRequest: MiddlewareHandler = async ({ cookies, locals, env, reque
 
     if (!session?.user_id) {
       locals.session = { user_id: null, guest: true };
-      return next();
+      return await next();
     }
 
     // ✅ Session erfolgreich geladen
@@ -32,5 +34,5 @@ export const onRequest: MiddlewareHandler = async ({ cookies, locals, env, reque
     locals.session = { user_id: null, guest: true };
   }
 
-  return next();
+  return await next();
 };
