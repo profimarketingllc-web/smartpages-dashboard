@@ -39,82 +39,78 @@ const products = [
   </head>
 
   <body class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden">
-    <!-- Centered Header -->
+    <!-- Centered Header with Logo + Claim -->
     <header
-      class="bg-[#1E2A45] text-white py-5 px-6 flex flex-col items-center justify-center text-center shadow-lg fixed top-0 left-0 right-0 z-50"
+      class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50"
     >
-      <img
-        src="/SmartPages_icon_transparent.png"
-        alt="SmartPages Logo"
-        class="w-20 h-20 mb-2"
-        loading="lazy"
-      />
-      <h1 class="text-3xl font-extrabold">SmartPages</h1>
-      <p class="text-sm md:text-base opacity-90">
-        Go online in 10 minutes — no tech skills needed.
-      </p>
+      <div class="flex items-center gap-5">
+        <img
+          src="/SmartPages_icon_transparent.png"
+          alt="SmartPages Logo"
+          class="w-16 h-16"
+        />
+        <div>
+          <h1 class="text-3xl font-extrabold">SmartPages</h1>
+          <p class="text-sm md:text-base opacity-90">
+            Go online in 10&nbsp;minutes — no tech skills needed.
+          </p>
+        </div>
+      </div>
     </header>
 
-    <!-- Above the Fold Section -->
+    <!-- Main Area - Compact Above-the-Fold -->
     <section
-      class="w-full max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 px-6 lg:px-20 xl:px-28 mt-16 md:mt-24 items-start min-h-[75vh]"
+      class="w-full max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-6 lg:px-12 mt-20 items-start min-h-[70vh]"
     >
-      <!-- Left Column -->
-      <div class="bg-white shadow-xl p-8 xl:p-10 rounded-2xl border border-gray-100">
-        <h2 class="text-3xl font-extrabold text-[#F5B400] mb-6">
+      <!-- Left Block -->
+      <div class="bg-white shadow-md p-6 rounded-2xl border border-gray-100">
+        <h2 class="text-2xl font-extrabold text-[#F5B400] mb-4">
           Welcome to SmartPages
         </h2>
-
-        <p class="mb-4">
+        <p class="mb-3">
           With <strong>SmartPages</strong>, you can create your professional online presence in just
           <strong>10 minutes</strong> — no technical knowledge or complicated setup required.
           Everything is securely hosted in <strong>Europe</strong> and fully
           <strong>GDPR-compliant</strong>.
         </p>
-
-        <p class="mb-4">
+        <p class="mb-3">
           If your audience or clients are based in the EU, data protection isn’t optional — it’s a
           requirement. SmartPages meets these standards automatically from the very first click.
         </p>
-
         <p>
-          Simply enter your contact details below, and we’ll send you a personal
-          <strong>Magic Link</strong> for instant, secure access to your SmartPages dashboard —
-          no password, no tracking, no data collection.
+          Simply enter your contact details below, and we’ll send you your personal
+          <strong>Magic Link</strong> — no password, no tracking, no data collection.
         </p>
       </div>
 
-      <!-- Right Column -->
-      <div class="bg-[#f6f8fb] shadow-xl p-8 xl:p-10 rounded-2xl border border-gray-100">
-        <form id="magicForm" class="bg-white p-6 xl:p-8 rounded-xl flex flex-col gap-4 shadow-sm">
-          <div>
-            <label class="block text-sm text-gray-600 mb-1">First Name *</label>
-            <input
-              type="text"
-              name="first_name"
-              required
-              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-            />
-          </div>
+      <!-- Right Block -->
+      <div class="bg-[#f6f8fb] shadow-md p-6 rounded-2xl border border-gray-100">
+        <form
+          id="magicForm"
+          class="bg-white p-5 rounded-xl flex flex-col gap-3 shadow-sm"
+        >
+          <label class="block text-sm text-gray-600 mb-1">First Name *</label>
+          <input
+            type="text"
+            name="first_name"
+            required
+            class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+          />
 
-          <div>
-            <label class="block text-sm text-gray-600 mb-1">Last Name</label>
-            <input
-              type="text"
-              name="last_name"
-              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-            />
-          </div>
+          <label class="block text-sm text-gray-600 mb-1">Last Name</label>
+          <input
+            type="text"
+            name="last_name"
+            class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+          />
 
-          <div>
-            <label class="block text-sm text-gray-600 mb-1">Email *</label>
-            <input
-              type="email"
-              name="email"
-              required
-              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-            />
-          </div>
+          <label class="block text-sm text-gray-600 mb-1">Email *</label>
+          <input
+            type="email"
+            name="email"
+            required
+            class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+          />
 
           <div class="flex items-center gap-2">
             <input type="checkbox" id="is_business" name="is_business" />
@@ -126,14 +122,14 @@ const products = [
             <input
               type="text"
               name="company_name"
-              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
+              class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
             />
           </div>
 
           <button
             id="submitBtn"
             type="submit"
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-[0_0_20px_4px_rgba(245,180,0,0.6)] hover:scale-[1.04] transition-all duration-300 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed"
+            class="mt-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow hover:shadow-[0_0_12px_2px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300"
           >
             Send Magic Link
           </button>
@@ -141,12 +137,12 @@ const products = [
       </div>
     </section>
 
-    <!-- Product Section -->
-    <section class="mt-6 mb-12 px-6 md:px-12 xl:px-24">
+    <!-- Product Grid directly below - minimal spacing -->
+    <section class="mt-4 mb-6 px-4">
       <ProductGrid {products} />
     </section>
 
-    <footer class="text-center text-sm text-gray-600 py-6 bg-[#f5f5f5]">
+    <footer class="text-center text-sm text-gray-600 py-3 bg-[#f5f5f5]">
       © 2025 SmartPages · Profi Marketing LLC · Hosted in Europe · GDPR-compliant
     </footer>
 
@@ -165,7 +161,7 @@ const products = [
       function showPopup(message, type = "success") {
         popup.innerHTML = message;
         popup.className =
-          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-5 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
+          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
           (type === "success"
             ? "border-green-500 text-green-700"
             : type === "warning"
@@ -177,7 +173,6 @@ const products = [
 
       form?.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const data = {
           first_name: form.first_name.value.trim(),
           last_name: form.last_name.value.trim(),
@@ -187,37 +182,19 @@ const products = [
         };
 
         submitBtn.disabled = true;
-        showPopup(
-          "⏳ Sending your Magic Link...<br><span class='text-sm opacity-80'>Please wait a moment.</span>",
-          "warning"
-        );
+        showPopup("⏳ Sending your Magic Link...<br><span class='text-sm opacity-80'>Please wait a moment.</span>", "warning");
 
         try {
           const res = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
-            mode: "cors",
           });
           const result = await res.json();
-
           if (result.ok) {
             showPopup("✅ Magic Link sent! Please check your inbox.", "success");
           } else {
-            const messages = {
-              invalid_email: "❌ Please enter a valid email address.",
-              email_bounced:
-                "⚠️ Your email address could not be reached. Please check it and try again.",
-              trial_expired:
-                "💡 Your free trial has expired. Please check your email for upgrade options.",
-              rate_limited:
-                "⏳ Please wait a moment before requesting another Magic Link.",
-              mailer_unreachable:
-                "📭 The mail server is currently unavailable. Please try again later.",
-              mailer_error:
-                "❌ There was an error sending the email. Please try again.",
-            };
-            showPopup(messages[result.error] || "⚠️ An unknown error occurred.", "error");
+            showPopup("⚠️ An error occurred. Please check your details.", "error");
           }
         } catch {
           showPopup("⚠️ Network error. Please check your connection.", "error");
@@ -229,9 +206,7 @@ const products = [
       document.addEventListener("DOMContentLoaded", () => {
         const cb = document.getElementById("is_business");
         const field = document.getElementById("company_field");
-        cb?.addEventListener("change", () => {
-          field.classList.toggle("hidden", !cb.checked);
-        });
+        cb?.addEventListener("change", () => field.classList.toggle("hidden", !cb.checked));
       });
     </script>
   </body>
