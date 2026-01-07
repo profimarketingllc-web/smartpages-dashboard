@@ -60,11 +60,11 @@ const products = [
 
     <!-- 💡 Hauptbereich – kompakt, above-the-fold -->
     <section
-      class="w-full max-w-[1350px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 px-6 lg:px-10 mt-12 items-start min-h-[68vh]"
+      class="w-full max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-8 lg:px-12 mt-8 items-start"
     >
       <!-- Linke Infobox -->
-      <div class="bg-white shadow-lg p-6 rounded-2xl border border-gray-100">
-        <h2 class="text-2xl font-extrabold text-[#F5B400] mb-4">
+      <div class="bg-white shadow-lg p-8 rounded-2xl border border-gray-100">
+        <h2 class="text-2xl font-extrabold text-[#F5B400] mb-5">
           Willkommen bei SmartPages
         </h2>
         <p class="mb-3">
@@ -84,8 +84,8 @@ const products = [
       </div>
 
       <!-- Rechte Loginbox -->
-      <div class="bg-[#f6f8fb] shadow-lg p-6 rounded-2xl border border-gray-100">
-        <form id="magicForm" class="bg-white p-5 rounded-xl flex flex-col gap-3 shadow-sm">
+      <div class="bg-[#f6f8fb] shadow-lg p-8 rounded-2xl border border-gray-100">
+        <form id="magicForm" class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm">
           <label class="block text-sm text-gray-600 mb-1">Vorname *</label>
           <input
             type="text"
@@ -134,9 +134,9 @@ const products = [
       </div>
     </section>
 
-    <!-- 🧱 ProductGrid – exakt gleiche Breite wie oben -->
-    <section class="mt-4 mb-6 px-6 lg:px-10">
-      <div class="w-full max-w-[1350px] mx-auto">
+    <!-- 🧱 ProductGrid (kompakt & bündig) -->
+    <section class="mt-4 mb-8">
+      <div class="w-full max-w-[1500px] mx-auto">
         <ProductGrid {products} compact />
       </div>
     </section>
