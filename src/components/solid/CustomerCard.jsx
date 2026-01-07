@@ -23,10 +23,12 @@ export default function CustomerCard(props) {
       if (!res.ok) throw new Error("No customer data");
       return await res.json();
     } catch {
+      // ⚠️ Fallback für nicht eingeloggte User
       return {
-        name: null,
+        firstName: null,
+        lastName: null,
         plan: null,
-        status: t(lang(), "loggedOut", "customer"),
+        status: t(lang(), "loggedOut", "system"),
         activeUntil: null,
         lastLogin: null,
       };
@@ -37,6 +39,14 @@ export default function CustomerCard(props) {
   const data = () => customer() || {};
   const displayValue = (val) => (val ? val : "—");
 
+  // 🧩 Kombinierter Name
+  const fullName = () => {
+    if (data().firstName || data().lastName) {
+      return `${data().firstName ?? ""} ${data().lastName ?? ""}`.trim();
+    }
+    return "—";
+  };
+
   // 🧱 Layout
   return (
     <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5">
@@ -45,7 +55,7 @@ export default function CustomerCard(props) {
         <span
           class={`inline-block px-4 py-1 text-sm font-medium rounded-full border 
             ${
-              data().status === t(lang(), "active", "customer")
+              data().status === t(lang(), "statusActive", "system")
                 ? "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]"
                 : "bg-[#F8D7DA] text-[#8B1A1A] border-[#E6A1A1]"
             }`}
@@ -62,23 +72,39 @@ export default function CustomerCard(props) {
       {/* 🔹 Felder */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8">
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "name", "customer")}:</span>
-          <p class="text-gray-600">{displayValue(data().name)}</p>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "firstName", "customer")}:
+          </span>
+          <p class="text-gray-600">{displayValue(data().firstName)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "plan", "customer")}:</span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "lastName", "customer")}:
+          </span>
+          <p class="text-gray-600">{displayValue(data().lastName)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "plan", "customer")}:
+          </span>
           <p class="text-gray-600">{displayValue(data().plan)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "activeUntil", "customer")}:</span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "activeUntil", "customer")}:
+          </span>
           <p class="text-gray-600">{displayValue(data().activeUntil)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "status", "customer")}:</span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "status", "customer")}:
+          </span>
           <p class="text-gray-600">{displayValue(data().status)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "lastLogin", "customer")}:</span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "lastLogin", "customer")}:
+          </span>
           <p class="text-gray-600">{displayValue(data().lastLogin)}</p>
         </div>
 
@@ -88,7 +114,7 @@ export default function CustomerCard(props) {
             data-signal="open-customer-modal"
             class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
           >
-            {t(lang(), "button", "customer")}
+            {t(lang(), "editButton", "customer")}
           </button>
         </div>
       </div>

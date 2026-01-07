@@ -41,46 +41,46 @@ export const translations = {
 
 systemMessage: {
   de: {
-    guestWelcome: "Willkommen im SmartCenter 👋",
-    personalized: "Willkommen zurück, {{name}} 👋",
-    businessGreeting: "Willkommen im SmartCenter von {{name}} 👋",
-    trialEndingSoon: "Deine Testphase endet in wenigen Tagen, {{name}}.",
-    trialEndingTomorrow: "Letzter Tag deiner Testphase, {{name}} – sichere jetzt deine Daten!",
-    trialExpired: "Deine Testphase ist abgelaufen, {{name}}. Bitte wähle einen Tarif.",
+    personalized: (name: string) => `Willkommen zurück, ${name || "SmartUser"}! 👋`,
+    businessGreeting: (name: string) => `Willkommen im SmartCenter, ${name}! 👋`,
+    trialEndingSoon: "Dein Testzeitraum endet in wenigen Tagen. Jetzt upgraden, um weiterzumachen.",
+    trialEndingTomorrow: "Dein Testzeitraum endet morgen! Sichere dir deinen Zugang jetzt.",
+    trialExpired: "Dein Testzeitraum ist abgelaufen. Bitte wähle einen Tarif, um fortzufahren.",
   },
   en: {
-    guestWelcome: "Welcome to SmartCenter 👋",
-    personalized: "Welcome back, {{name}} 👋",
-    businessGreeting: "Welcome back, {{name}} 👋 — great to see your business online!",
-    trialEndingSoon: "Your trial will end soon, {{name}}.",
-    trialEndingTomorrow: "Last day of your trial, {{name}} — back up your data now!",
-    trialExpired: "Your trial has expired, {{name}}. Please choose a plan.",
+    personalized: (name: string) => `Welcome back, ${name || "SmartUser"}! 👋`,
+    businessGreeting: (name: string) => `Welcome to your SmartCenter, ${name}! 👋`,
+    trialEndingSoon: "Your trial period ends in a few days. Upgrade now to continue.",
+    trialEndingTomorrow: "Your trial period ends tomorrow! Secure your access today.",
+    trialExpired: "Your trial has expired. Please select a plan to continue.",
   },
-}
+},
 
-  customer: {
-    de: {
-      title: "Kundendaten",
-      editTitle: "Kundendaten bearbeiten",
-      name: "Name",
-      plan: "Tarif",
-      activeUntil: "Aktiv bis",
-      status: "Status",
-      lastLogin: "Letzter Login",
-      button: "Profil bearbeiten",
-    },
-    en: {
-      title: "Customer Data",
-      editTitle: "Edit Customer Data",
-      name: "Name",
-      plan: "Plan",
-      activeUntil: "Active until",
-      status: "Status",
-      lastLogin: "Last login",
-      button: "Edit Profile",
-    },
+customer: {
+  de: {
+    title: "Kundendaten",
+    editTitle: "Kundendaten bearbeiten",
+    firstName: "Vorname",
+    lastName: "Nachname",
+    plan: "Tarif",
+    activeUntil: "Aktiv bis",
+    status: "Status",
+    lastLogin: "Letzter Login",
+    editButton: "Profil bearbeiten",
   },
-
+  en: {
+    title: "Customer Data",
+    editTitle: "Edit Customer Data",
+    firstName: "First name",
+    lastName: "Last name",
+    plan: "Plan",
+    activeUntil: "Active until",
+    status: "Status",
+    lastLogin: "Last login",
+    editButton: "Edit profile",
+  },
+},
+ 
   imprint: {
     de: {
       title: "Impressumsdaten",
