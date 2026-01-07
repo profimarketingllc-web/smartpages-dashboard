@@ -1,32 +1,29 @@
-import type { MiddlewareHandler } from "astro";
+import { defineMiddleware } from "astro:middleware";
 
-// 🌐 Globale Middleware für Cloudflare Pages
-export const onRequest: MiddlewareHandler = async ({ request, locals, next }) => {
+export const onRequest = defineMiddleware(async (context, next) => {
   try {
-    const url = new URL(request.url);
+    const { request, url } = context;
 
-    // 🧩 Debug: Ausgabe ins Log (nur während Tests)
+    // Debug: Pfad im Cloudflare Log
     console.log("🌍 Middleware aktiv für:", url.pathname);
 
-    // Beispiel: Health-Check Route für Diagnosen
+    // Health-Check Endpoint
     if (url.pathname === "/health") {
-      return new Response("✅ Middleware & Worker laufen!", {
+      return new Response("✅ Middleware & Worker laufen (Astro v5)", {
         status: 200,
         headers: { "Content-Type": "text/plain" },
       });
     }
 
-    // Wenn alles okay → zum nächsten Handler weiterleiten (z. B. Seite rendern)
+    // Regulärer Seitenaufbau
     const response = await next();
-
-    // Debug-Header hinzufügen (zum schnellen Check im Browser)
     response.headers.set("x-middleware-status", "ok");
     return response;
   } catch (err: any) {
     console.error("❌ Middleware-Fehler:", err);
     return new Response(`❌ Middleware-Fehler: ${err?.message || err}`, {
       status: 500,
-      headers: { "Content-Type": "text/plain" },
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   }
-};
+});
