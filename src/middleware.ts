@@ -2,28 +2,26 @@ import { sequence } from "astro/middleware";
 import { onRequest as lang } from "./middleware/lang";
 import { onRequest as auth } from "./middleware/auth";
 
-// 🧠 Sicheres Setup mit vorgeschaltetem Healthcheck
-export const onRequest = async (context, next) => {
-  // 💚 Healthcheck zuerst — bevor irgendwas anderes passiert
+// ✅ 1️⃣ Health-Check separat behandeln (läuft immer, egal was schiefgeht)
+export const onRequest: MiddlewareHandler = async (context, next) => {
   if (context.url.pathname === "/health") {
     return new Response("✅ Worker & Middleware aktiv (Astro v5)", {
       status: 200,
-      headers: { "Content-Type": "text/plain" },
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   }
 
-  // Dann: eigentliche Middleware-Kette initialisieren
-  const chain = sequence(lang, auth, async (context, next) => {
-    const response = await next();
-    response.headers.set("x-middleware-sequence", "ok");
-    return response;
-  });
+  // ✅ 2️⃣ Middleware-Kette zusammenbauen
+  const chain = sequence(lang, auth);
 
   try {
-    return await chain(context, next);
+    // Wichtig: chain() statt sequence(lang, auth, ...) direkt!
+    const response = await chain(context, next);
+    response.headers.set("x-middleware-sequence", "ok");
+    return response;
   } catch (err: any) {
     console.error("❌ Middleware-Fehler:", err);
-    return new Response(`❌ Middleware-Fehler: ${err?.message || err}`, {
+    return new Response(`❌ Middleware-Fehler: ${err?.message || "Unbekannt"}`, {
       status: 500,
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
