@@ -1,18 +1,22 @@
-import type { MiddlewareHandler } from "astro";
+import { defineMiddleware } from "astro:middleware";
 
-export const onRequest: MiddlewareHandler = async ({ request, locals, cookies, next }) => {
-  const url = new URL(request.url);
-  const path = url.pathname.toLowerCase();
-  const ref = request.headers.get("referer")?.toLowerCase() || "";
+export const onRequest = defineMiddleware(async (context, next) => {
+  const { url, cookies, request, locals } = context;
+  const pathname = url.pathname.toLowerCase();
+  const referer = request.headers.get("referer")?.toLowerCase() || "";
 
   // 🌍 1️⃣ Sprache erkennen (URL > Referrer > Cookie > Default)
   let lang: "de" | "en" = "de";
 
-  if (path.includes("/en/")) lang = "en";
-  else if (ref.includes("/en/")) lang = "en";
-  else {
+  if (pathname.includes("/en/")) {
+    lang = "en";
+  } else if (referer.includes("/en/")) {
+    lang = "en";
+  } else {
     const cookieLang = cookies.get("lang")?.value;
-    if (cookieLang === "en" || cookieLang === "de") lang = cookieLang;
+    if (cookieLang === "en" || cookieLang === "de") {
+      lang = cookieLang;
+    }
   }
 
   // 📦 2️⃣ Sprache global speichern (für SSR + Komponenten)
@@ -30,4 +34,4 @@ export const onRequest: MiddlewareHandler = async ({ request, locals, cookies, n
   response.headers.set("x-smartpages-lang", lang);
 
   return response;
-};
+});
