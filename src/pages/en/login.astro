@@ -6,21 +6,21 @@ const products = [
   {
     title: "SmartProfile",
     label: "COMING SOON",
-    text: "Your personal online profile reflecting your brand identity — securely hosted in Europe, optimized for visibility, credibility, and full GDPR compliance across all digital channels.",
+    text: "Your personal online profile that reflects your brand identity — securely hosted in Europe, optimized for visibility, credibility, and full GDPR compliance across all digital channels.",
     gradient: "from-[#3D4CFF] to-[#6A5FFF]",
     glow: "hover:shadow-[0_0_30px_#3D4CFF80]",
   },
   {
     title: "SmartPage",
     label: "COMING SOON",
-    text: "Create stunning, conversion-ready pages in just minutes — no coding required. Designed for creators, entrepreneurs, and small teams who value style and control without complexity.",
+    text: "Create stunning, high-converting pages in minutes — no coding required. Designed for creators, entrepreneurs, and small teams who want elegant design and full control without complexity.",
     gradient: "from-[#F5B400] to-[#E47E00]",
     glow: "hover:shadow-[0_0_30px_#F5B40080]",
   },
   {
     title: "SmartDomain",
     label: "COMING SOON",
-    text: "Secure your own domain, protect your brand, and stay GDPR-compliant from day one. SmartDomain makes managing your online identity effortless — privacy-focused, safe, and hosted in Europe.",
+    text: "Secure your own domain, protect your brand, and stay GDPR-compliant from day one. SmartDomain makes managing your online identity effortless — privacy-focused, secure, and EU-hosted.",
     gradient: "from-[#9D3DFF] to-[#6A3AFF]",
     glow: "hover:shadow-[0_0_30px_#9D3DFF80]",
   },
@@ -34,7 +34,7 @@ const products = [
     <title>SmartPages Login</title>
     <meta
       name="description"
-      content="Login to SmartPages — secure, privacy-friendly, and hosted in Europe."
+      content="Login to SmartPages — secure, GDPR-compliant, and hosted in Europe."
     />
   </head>
 
@@ -52,13 +52,13 @@ const products = [
         <div>
           <h1 class="text-3xl font-extrabold">SmartPages</h1>
           <p class="text-sm md:text-base opacity-90">
-            Get online in just 10&nbsp;minutes — no tech skills required.
+            Go online in just 10&nbsp;minutes — no tech skills needed.
           </p>
         </div>
       </div>
     </header>
 
-    <!-- 💡 Main Content – compact above-the-fold -->
+    <!-- 💡 Main Section – compact, above-the-fold -->
     <section
       class="w-full max-w-[1350px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 px-6 lg:px-10 mt-12 items-start min-h-[68vh]"
     >
@@ -68,27 +68,25 @@ const products = [
           Welcome to SmartPages
         </h2>
         <p class="mb-3">
-          With <strong>SmartPages</strong>, you can create your professional online presence in just
-          <strong>10 minutes</strong> — no technical skills or complicated setup required.
-          Everything is securely hosted in <strong>Europe</strong> and fully
-          <strong>GDPR-compliant</strong>.
+          With <strong>SmartPages</strong>, you can build your professional online presence in just
+          <strong>10 minutes</strong> — without technical knowledge or complicated setup. Everything
+          is securely hosted in <strong>Europe</strong> and fully <strong>GDPR compliant</strong>.
         </p>
         <p class="mb-3">
-          If your audience or customers are based in the EU, privacy isn't optional — it's
-          essential. SmartPages meets all these requirements automatically from your very first
-          click.
+          If your audience or clients are in the EU, data protection isn’t optional — it’s required.
+          SmartPages ensures compliance from the very first click.
         </p>
         <p>
-          Simply enter your contact details below, and we'll send you a personal
-          <strong>Magic Link</strong> for instant, secure access to your SmartPages Dashboard — no
-          password, no tracking, no data collection.
+          Simply enter your contact details below, and we’ll send you a personal
+          <strong>Magic Link</strong> for instant, secure access to your SmartPages dashboard —
+          no password, no tracking, no data collection.
         </p>
       </div>
 
       <!-- Right Login Box -->
       <div class="bg-[#f6f8fb] shadow-lg p-6 rounded-2xl border border-gray-100">
         <form id="magicForm" class="bg-white p-5 rounded-xl flex flex-col gap-3 shadow-sm">
-          <label class="block text-sm text-gray-600 mb-1">First Name *</label>
+          <label class="block text-sm text-gray-600 mb-1">First name *</label>
           <input
             type="text"
             name="first_name"
@@ -96,14 +94,14 @@ const products = [
             class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
           />
 
-          <label class="block text-sm text-gray-600 mb-1">Last Name</label>
+          <label class="block text-sm text-gray-600 mb-1">Last name</label>
           <input
             type="text"
             name="last_name"
             class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
           />
 
-          <label class="block text-sm text-gray-600 mb-1">E-Mail *</label>
+          <label class="block text-sm text-gray-600 mb-1">Email *</label>
           <input
             type="email"
             name="email"
@@ -136,9 +134,9 @@ const products = [
       </div>
     </section>
 
-    <!-- 🧱 ProductGrid -->
-    <section class="mt-2 mb-6 px-6 lg:px-10">
-      <div class="max-w-[1350px] mx-auto">
+    <!-- 🧱 ProductGrid – same width & spacing -->
+    <section class="mt-4 mb-6 px-6 lg:px-10">
+      <div class="w-full max-w-[1350px] mx-auto">
         <ProductGrid {products} compact />
       </div>
     </section>
@@ -196,7 +194,7 @@ const products = [
           if (result.ok) {
             showPopup("✅ Magic Link sent! Please check your inbox.", "success");
           } else {
-            showPopup("⚠️ An error occurred. Please check your details and try again.", "error");
+            showPopup("⚠️ Something went wrong. Please check your details.", "error");
           }
         } catch {
           showPopup("⚠️ Network error. Please check your internet connection.", "error");
