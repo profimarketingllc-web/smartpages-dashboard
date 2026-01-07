@@ -6,8 +6,9 @@
  *   - CustomerCard & EditCustomerModal
  *   - ImprintCard & EditImprintModal
  *   - SystemMessage
- * ✅ Erweiterbar für weitere Module (Domains, Pages, Profile etc.)
+ * ✅ Erweiterbar für weitere Module
  * ✅ SSR-fähig (kein window nötig)
+ * ✅ Unterstützt Platzhalter ({{name}} etc.)
  */
 
 export const translations = {
@@ -38,22 +39,24 @@ export const translations = {
     },
   },
 
-  systemMessage: {
-    de: {
-      info: "Willkommen im SmartCenter 👋",
-      success: "Alles läuft reibungslos – Deine Daten sind aktuell.",
-      warning: "Achtung: Einige Informationen werden gerade synchronisiert.",
-      error: "Ein Fehler ist aufgetreten. Bitte lade die Seite neu.",
-      personalized: (name: string) => `Willkommen zurück, ${name}! 👋`,
-    },
-    en: {
-      info: "Welcome to your SmartCenter 👋",
-      success: "Everything is running smoothly – your data is up to date.",
-      warning: "Note: Some information is currently syncing.",
-      error: "An error occurred. Please reload the page.",
-      personalized: (name: string) => `Welcome back, ${name}! 👋`,
-    },
+systemMessage: {
+  de: {
+    guestWelcome: "Willkommen im SmartCenter 👋",
+    personalized: "Willkommen zurück, {{name}} 👋",
+    businessGreeting: "Willkommen im SmartCenter von {{name}} 👋",
+    trialEndingSoon: "Deine Testphase endet in wenigen Tagen, {{name}}.",
+    trialEndingTomorrow: "Letzter Tag deiner Testphase, {{name}} – sichere jetzt deine Daten!",
+    trialExpired: "Deine Testphase ist abgelaufen, {{name}}. Bitte wähle einen Tarif.",
   },
+  en: {
+    guestWelcome: "Welcome to SmartCenter 👋",
+    personalized: "Welcome back, {{name}} 👋",
+    businessGreeting: "Welcome back, {{name}} 👋 — great to see your business online!",
+    trialEndingSoon: "Your trial will end soon, {{name}}.",
+    trialEndingTomorrow: "Last day of your trial, {{name}} — back up your data now!",
+    trialExpired: "Your trial has expired, {{name}}. Please choose a plan.",
+  },
+}
 
   customer: {
     de: {
@@ -115,32 +118,43 @@ export const translations = {
 };
 
 /**
- * 🧠 `t(lang, key, section)`
- * Hilfsfunktion für Typsicherheit & Fallbacks.
- * Beispiel:
- *   t("de", "closeButton", "system")
- *   t("en", "name", "customer")
- *   t("de", "personalized", "systemMessage", "Max")
+ * 🧠 `t(lang, key, section, vars)`
+ * Allgemeine Übersetzungsfunktion mit Fallback und Variablenersetzung.
  */
-export function t(lang: string, key: string, section: keyof typeof translations, param?: string): string {
+export function t(
+  lang: string,
+  key: string,
+  section: keyof typeof translations,
+  vars: Record<string, any> = {}
+): string {
   const safeLang = lang === "en" ? "en" : "de";
   const group = translations[section][safeLang];
-
   if (!group) return key;
-  const value = group[key as keyof typeof group];
 
-  if (typeof value === "function") return value(param || "");
-  return (value as string) || key;
+  let value = group[key as keyof typeof group];
+  if (!value) return key;
+
+  // Falls der Wert eine Funktion ist (Legacy), ausführen
+  if (typeof value === "function") {
+    return (value as any)(vars.name || "");
+  }
+
+  // Platzhalter ersetzen
+  let msg = value as string;
+  for (const [k, v] of Object.entries(vars)) {
+    msg = msg.replace(`{{${k}}}`, v ?? "");
+  }
+
+  return msg;
 }
 
 /**
  * 🌐 useLang() – Hilfsfunktion für Komponenten
- * Erkennt die Sprache serverseitig oder clientseitig (Fallback).
+ * Erkennt Sprache client- oder serverseitig.
  */
 export function useLang(defaultLang = "de"): string {
   if (typeof window !== "undefined") {
     return window.location.pathname.includes("/en/") ? "en" : "de";
   }
-  // SSR / Astro-Middleware Fallback
   return defaultLang;
 }

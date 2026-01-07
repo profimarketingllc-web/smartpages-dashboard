@@ -1,38 +1,36 @@
-import type { APIContext } from "astro";
+import type { MiddlewareHandler } from "astro";
 
-export async function onRequest(context: APIContext, next: () => Promise<Response>) {
-  console.log("🧩 [AUTH] Middleware gestartet");
-
+export const onRequest: MiddlewareHandler = async ({ cookies, locals, env, request, next }) => {
   try {
-    // Cloudflare KV Binding prüfen
-    const kv =
-      (globalThis as any).SESSION ||
-      (globalThis as any).SESSIONS ||
-      (context.locals?.SESSION as any) ||
-      null;
+    const sessionId = cookies.get("session_id")?.value;
 
-    if (!kv) {
-      console.error("❌ [AUTH] Kein KV-Binding gefunden (SESSION/SESSIONS).");
-      return new Response("Fehler: Kein Cloudflare KV-Binding gefunden (SESSION).", {
-        status: 500,
-        headers: { "Content-Type": "text/plain" },
-      });
+    // 🚧 Kein Session-Binding vorhanden?
+    if (!env.SESSION && !env.DB) {
+      console.warn("⚠️ Kein KV oder D1 Binding verfügbar, verwende Dummy-Session.");
+      locals.session = { user_id: null, guest: true };
+      return next();
     }
 
-    console.log("✅ [AUTH] KV gefunden:", kv.constructor?.name || typeof kv);
+    // 🔐 Kein Session-Cookie → Gastmodus
+    if (!sessionId) {
+      locals.session = { user_id: null, guest: true };
+      return next();
+    }
 
-    // Beispiel: Testeintrag schreiben/lesen
-    await kv.put("debug-test", "ok", { expirationTtl: 60 });
-    const value = await kv.get("debug-test");
-    console.log("📦 [AUTH] KV-Testwert:", value);
+    // 🗝️ Versuch, Session aus KV zu laden
+    const session = await env.SESSION?.get(sessionId, { type: "json" });
 
-    // Wenn alles gut: Anfrage normal weitergeben
-    return next();
-  } catch (err: any) {
-    console.error("🔥 [AUTH] Laufzeitfehler in auth.ts:", err?.message || err);
-    return new Response("Interner Fehler: " + (err?.message || err), {
-      status: 500,
-      headers: { "Content-Type": "text/plain" },
-    });
+    if (!session?.user_id) {
+      locals.session = { user_id: null, guest: true };
+      return next();
+    }
+
+    // ✅ Session erfolgreich geladen
+    locals.session = session;
+  } catch (err) {
+    console.error("❌ [AUTH] Middleware-Fehler:", err);
+    locals.session = { user_id: null, guest: true };
   }
-}
+
+  return next();
+};
