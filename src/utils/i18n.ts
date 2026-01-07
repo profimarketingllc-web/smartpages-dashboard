@@ -1,3 +1,11 @@
+/**
+ * 🌍 i18n.ts – Übersetzungen und Sprach-Utility für SmartPages Dashboard
+ * -------------------------------------------------------------
+ * ✅ Einheitliche Übersetzungen für System, Customer, Imprint usw.
+ * ✅ Exportiert Hilfsfunktionen `t()` und `useLang()`
+ * ✅ SSR- und Middleware-kompatibel
+ */
+
 export const translations = {
   system: {
     de: {
@@ -86,3 +94,31 @@ export const translations = {
     },
   },
 };
+
+/**
+ * 🧠 Übersetzungsfunktion `t()`
+ * Beispiel: t("de", "saveButton", "system")
+ */
+export function t(
+  lang: string,
+  key: string,
+  section: keyof typeof translations,
+  param?: any
+): string {
+  const safeLang = lang === "en" ? "en" : "de";
+  const group = translations[section][safeLang];
+  if (!group) return key;
+  const value = group[key as keyof typeof group];
+  if (typeof value === "function") return value(param);
+  return (value as string) || key;
+}
+
+/**
+ * 🌐 useLang() – Sprache server- oder clientseitig erkennen
+ */
+export function useLang(defaultLang = "de"): string {
+  if (typeof window !== "undefined") {
+    return window.location.pathname.includes("/en/") ? "en" : "de";
+  }
+  return defaultLang;
+}
