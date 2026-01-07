@@ -48,7 +48,7 @@ export default function ImprintCard(props) {
           data-signal="open-imprint-modal"
           class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
         >
-          {t(lang, "Button", "imprint")}
+          {t(lang, "button", "imprint")}
         </button>
       </div>
 
