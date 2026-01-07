@@ -1,3 +1,17 @@
+/**
+ * 🧩 i18n.ts – Minimalversion mit Fix gegen "translations is not defined"
+ */
+
+const translations: Record<string, any> = {
+  system: {
+    de: { hello: "Hallo Welt" },
+    en: { hello: "Hello World" },
+  },
+};
+
+/**
+ * 🧠 Sichere Übersetzungsfunktion `t()`
+ */
 export function t(
   lang: string,
   key: string,
@@ -25,3 +39,16 @@ export function t(
   console.warn(`[i18n] ⚠️ Fehlender Schlüssel "${key}" in "${section}.${safeLang}"`);
   return key;
 }
+
+/**
+ * 🌐 useLang() – Sprache erkennen
+ */
+export function useLang(defaultLang = "de"): string {
+  if (typeof window !== "undefined") {
+    return window.location.pathname.includes("/en/") ? "en" : "de";
+  }
+  return defaultLang;
+}
+
+// 🚀 Optionaler Default-Export verhindert Tree-Shaking in Cloudflare
+export default { translations, t, useLang };
