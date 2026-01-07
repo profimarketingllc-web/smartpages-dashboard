@@ -35,25 +35,24 @@ const translations: Record<string, any> = {
     },
   },
 
- systemMessage: {
-  de: {
-    neutralGreeting: "Willkommen bei SmartPages 👋",
-    personalized: "Willkommen zurück, {0}! 👋",
-    businessGreeting: "Schön, dass Ihr Unternehmen wieder da ist, {0}! 👋",
-    trialEndingSoon: "Dein Testzeitraum endet in wenigen Tagen.",
-    trialEndingTomorrow: "Dein Testzeitraum endet morgen!",
-    trialExpired: "Dein Testzeitraum ist abgelaufen. Bitte aktualisiere deinen Plan.",
+  systemMessage: {
+    de: {
+      neutralGreeting: "Willkommen bei SmartPages 👋",
+      personalized: "Willkommen zurück, {0}! 👋",
+      businessGreeting: "Schön, dass Ihr Unternehmen wieder da ist, {0}! 👋",
+      trialEndingSoon: "Dein Testzeitraum endet in wenigen Tagen.",
+      trialEndingTomorrow: "Dein Testzeitraum endet morgen!",
+      trialExpired: "Dein Testzeitraum ist abgelaufen. Bitte aktualisiere deinen Plan.",
+    },
+    en: {
+      neutralGreeting: "Welcome to SmartPages 👋",
+      personalized: "Welcome back, {0}! 👋",
+      businessGreeting: "Welcome back, {0}! 👋",
+      trialEndingSoon: "Your trial period will end soon.",
+      trialEndingTomorrow: "Your trial period ends tomorrow!",
+      trialExpired: "Your trial period has expired. Please update your plan.",
+    },
   },
-  en: {
-    neutralGreeting: "Welcome to SmartPages 👋",
-    personalized: "Welcome back, {0}! 👋",
-    businessGreeting: "Welcome back, {0}! 👋",
-    trialEndingSoon: "Your trial period will end soon.",
-    trialEndingTomorrow: "Your trial period ends tomorrow!",
-    trialExpired: "Your trial period has expired. Please update your plan.",
-  },
-},
-
 
   customer: {
     de: {
@@ -134,8 +133,11 @@ export function t(lang: string, key: string, section: keyof typeof translations,
       console.warn(`[i18n] ⚠️ Fehlende Sprachgruppe: ${safeLang} in "${section}"`);
       return key;
     }
-    const value = group[key as keyof typeof group];
-    if (typeof value === "function") return value(param);
+    let value = group[key as keyof typeof group];
+    if (typeof value === "function") value = value(param);
+    if (typeof value === "string" && param !== undefined) {
+      return value.replace("{0}", param);
+    }
     if (typeof value === "string") return value;
     console.warn(`[i18n] ⚠️ Fehlender Schlüssel "${key}" in "${section}.${safeLang}"`);
     return key;
