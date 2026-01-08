@@ -1,37 +1,52 @@
+// ============================================================
+// Middleware: Authentifizierung über SmartCore Worker
+// ============================================================
+
 import type { MiddlewareHandler } from "astro";
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
-  const { cookies, locals, env } = context;
+  const { cookies, locals } = context;
 
   try {
-    const sessionId = cookies.get("session_id")?.value;
+    // 🔎 Session-Cookie abrufen
+    const sessionId = cookies.get("session")?.value;
 
-    // 🚧 Kein Session-Binding vorhanden?
-    if (!env?.SESSION && !env?.DB) {
-      console.warn("⚠️ Kein KV oder D1 Binding verfügbar, verwende Dummy-Session.");
-      locals.session = { user_id: null, guest: true };
-      return await next();
-    }
-
-    // 🔐 Kein Session-Cookie → Gastmodus
+    // 🧩 Kein Cookie = Gastmodus
     if (!sessionId) {
-      locals.session = { user_id: null, guest: true };
+      locals.session = { loggedIn: false, email: null };
       return await next();
     }
 
-    // 🗝️ Versuch, Session aus KV zu laden
-    const session = await env.SESSION?.get(sessionId, { type: "json" });
+    // 🚀 Session über Core Worker prüfen
+    const verifyRes = await fetch("https://api.smartpages.online/api/session/verify", {
+      method: "GET",
+      headers: {
+        Cookie: `session=${sessionId}`,
+        Accept: "application/json",
+      },
+      credentials: "include",
+    });
 
-    if (!session?.user_id) {
-      locals.session = { user_id: null, guest: true };
+    // ❌ Kein Erfolg → Gastmodus
+    if (!verifyRes.ok) {
+      locals.session = { loggedIn: false, email: null };
       return await next();
     }
 
-    // ✅ Session erfolgreich geladen
-    locals.session = session;
+    // ✅ Session erfolgreich validiert
+    const data = await verifyRes.json();
+    if (data?.ok && data?.email) {
+      locals.session = {
+        loggedIn: true,
+        email: data.email,
+        expires: data.expires,
+      };
+    } else {
+      locals.session = { loggedIn: false, email: null };
+    }
   } catch (err) {
-    console.error("❌ [AUTH] Middleware-Fehler:", err);
-    locals.session = { user_id: null, guest: true };
+    console.error("❌ Middleware Auth Error:", err);
+    locals.session = { loggedIn: false, email: null };
   }
 
   return await next();
