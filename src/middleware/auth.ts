@@ -21,9 +21,13 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   try {
     // 🔍 Core Worker prüfen lassen
     const verifyRes = await fetch(`https://api.smartpages.online/verify?token=${sessionId}`, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-    });
+  method: "GET",
+  headers: {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+  },
+  redirect: "manual", // verhindert 302-Follow
+});
 
     if (!verifyRes.ok) {
       console.warn("Session verification failed:", verifyRes.status);
