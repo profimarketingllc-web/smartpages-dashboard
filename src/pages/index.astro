@@ -1,13 +1,42 @@
 ---
+const lang = Astro.request.headers.get("accept-language")?.startsWith("en") ? "en" : "de";
 ---
-<html lang="de">
+
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartPages Dashboard</title>
   </head>
-  <body style="font-family: system-ui; text-align:center; margin-top:10vh;">
-    <h1>🚀 SmartPages Dashboard</h1>
+  <body
+    style="
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      background:#0b0b0c;
+      color:white;
+      font-family:sans-serif;
+      text-align:center;
+    "
+  >
+    <img
+      src="/SmartPages_icon_transparent.png"
+      alt="SmartPages Logo"
+      width="100"
+      height="100"
+      style="margin-bottom:1.5rem;"
+    />
+    <h1>SmartPages Dashboard</h1>
     <p>Dein Astro + Cloudflare Setup funktioniert!</p>
-    <p><a href="/dashboard" style="color:#C53A3A;">Zum Dashboard →</a></p>
+    <p>
+      <a
+        href={`/${lang}/login`}
+        style="color:#C53A3A; text-decoration:none; font-weight:bold;"
+      >
+        ➜ Zum Login
+      </a>
+    </p>
   </body>
 </html>
