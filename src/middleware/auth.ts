@@ -20,7 +20,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   try {
     // 🔍 Core Worker prüfen lassen
-    const verifyRes = await fetch(`https://api.smartpages.online/api/auth/verify?token=${sessionId}`, {
+    const verifyRes = await fetch(`https://api.smartpages.online/verify?token=${sessionId}`, {
       method: "GET",
       headers: { Accept: "application/json" },
     });
