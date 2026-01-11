@@ -3,15 +3,20 @@ import cloudflare from "@astrojs/cloudflare";
 import solid from "@astrojs/solid-js";
 import tailwind from "@astrojs/tailwind";
 
-// ⚙️ Moderne Astro-Config für Cloudflare Pages (2026)
 export default defineConfig({
-  output: "server",
+  output: "server", // <-- zwingt SSR statt Static Export
   adapter: cloudflare({
     mode: "directory",
     platformProxy: {
-      enabled: true, // nötig für Pages-Runtime
-      include: ["SESSION"], // deine KV-Bindings
+      enabled: true,
+      include: ["SESSION"], // falls du KV nutzt
     },
   }),
   integrations: [solid(), tailwind()],
+  vite: {
+    ssr: {
+      // Verhindert, dass Astro statische Bundles statt SSR baut
+      noExternal: ["@astrojs/cloudflare", "@astrojs/solid-js"],
+    },
+  },
 });
