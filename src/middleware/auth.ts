@@ -1,8 +1,10 @@
 // ============================================================
-// 🌟 SmartPages Middleware – Auth (v4.0 Core kompatibel)
+// 🌟 SmartPages Middleware – Auth v4.6 (Core 4.6 kompatibel)
 // ============================================================
-// Liest das session-Cookie, validiert es über den Core Worker,
-// und speichert den Login-Status in locals.session.
+// Zweck:
+//   ✅ Prüft Session-Cookie über Core Worker (/verify)
+//   ✅ Setzt locals.session (SSR)
+//   ✅ Fehlertolerant & SSR-sicher
 // ============================================================
 
 import type { MiddlewareHandler } from "astro";
@@ -11,23 +13,21 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const { cookies, locals } = context;
   const sessionId = cookies.get("session")?.value;
 
-  // 🧩 Standardstatus (nicht eingeloggt)
-  locals.session = { loggedIn: false, email: null, products: [] };
+  // Default Session-Status
+  locals.session = { loggedIn: false, email: null, lang: "de", products: [] };
 
-  if (!sessionId) {
-    return await next();
-  }
+  // Kein Session Cookie → direkt weiter
+  if (!sessionId) return await next();
 
   try {
-    // 🔍 Core Worker prüfen lassen
-    const verifyRes = await fetch(`https://api.smartpages.online/verify?token=${sessionId}`, {
-  method: "GET",
-  headers: {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-  },
-  redirect: "manual", // verhindert 302-Follow
-});
+    // Prüfen über Core Worker
+    const verifyRes = await fetch(
+      `https://api.smartpages.online/verify?token=${encodeURIComponent(sessionId)}`,
+      {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      }
+    );
 
     if (!verifyRes.ok) {
       console.warn("Session verification failed:", verifyRes.status);
@@ -39,8 +39,8 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       locals.session = {
         loggedIn: true,
         email: data.email,
-        lang: data.lang,
-        products: data.products,
+        lang: data.lang || "de",
+        products: data.products || [],
       };
     }
   } catch (err) {
