@@ -1,9 +1,16 @@
 import { sequence } from "astro/middleware";
 import { onRequest as lang } from "./middleware/lang";
-import { onRequest as auth } from "./middleware/auth";
+import { onRequest as verify } from "./middleware/verify";
 
-// ✅ 1️⃣ Health-Check separat behandeln (läuft immer, egal was schiefgeht)
+/**
+ * 🌐 SmartPages Middleware Router v4.7 FINAL
+ * - Health Check
+ * - Sprach- und Sessionprüfung (lang + verify)
+ * - Stabile Fehlerbehandlung
+ */
+
 export const onRequest: MiddlewareHandler = async (context, next) => {
+  // ✅ 1️⃣ Health Check
   if (context.url.pathname === "/health") {
     return new Response("✅ Worker & Middleware aktiv (Astro v5)", {
       status: 200,
@@ -11,11 +18,10 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     });
   }
 
-  // ✅ 2️⃣ Middleware-Kette zusammenbauen
-  const chain = sequence(lang, auth);
+  // ✅ 2️⃣ Middleware-Kette: Sprache → Session
+  const chain = sequence(lang, verify);
 
   try {
-    // Wichtig: chain() statt sequence(lang, auth, ...) direkt!
     const response = await chain(context, next);
     response.headers.set("x-middleware-sequence", "ok");
     return response;
