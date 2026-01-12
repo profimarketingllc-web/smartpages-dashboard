@@ -5,6 +5,9 @@ import tailwind from "@astrojs/tailwind";
 
 export default defineConfig({
   output: "server", // <-- zwingt SSR statt Static Export
+  image: {
+    service: "astro/assets/services/compile", // <-- hier aktivieren
+  },
   adapter: cloudflare({
     mode: "directory",
     platformProxy: {
