@@ -4,21 +4,22 @@ import solid from "@astrojs/solid-js";
 import tailwind from "@astrojs/tailwind";
 
 export default defineConfig({
-  output: "server", // <-- zwingt SSR statt Static Export
+  output: "server", // <-- SSR aktivieren
   image: {
-    service: "astro/assets/services/compile", // <-- hier aktivieren
+    service: {
+      entrypoint: "astro/assets/services/compile", // ✅ neue Syntax
+    },
   },
   adapter: cloudflare({
     mode: "directory",
     platformProxy: {
       enabled: true,
-      include: ["SESSION"], // falls du KV nutzt
+      include: ["SESSION"], // KV Binding
     },
   }),
   integrations: [solid(), tailwind()],
   vite: {
     ssr: {
-      // Verhindert, dass Astro statische Bundles statt SSR baut
       noExternal: ["@astrojs/cloudflare", "@astrojs/solid-js"],
     },
   },
