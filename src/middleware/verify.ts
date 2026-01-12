@@ -1,110 +1,57 @@
-// ============================================================
-// 🌟 SmartPages VERIFY Page – v4.6 (Core 4.6 kompatibel)
-// ============================================================
-// Zweck:
-//   ✅ Liest Token aus ?token=...
-//   ✅ Prüft Token über Core Worker (/verify)
-//   ✅ Setzt Cookie domainweit
-//   ✅ Zeigt Feedback ("Login erfolgreich")
-//   ✅ Leitet automatisch zum Dashboard
-// ============================================================
+import type { MiddlewareHandler } from "astro";
 
-import type { APIRoute } from "astro";
+/**
+ * 🌐 SmartPages Verify Middleware v4.7 FINAL
+ * - Prüft Session-Cookie über Core Worker (/verify)
+ * - Fällt zurück auf lokale KV-Prüfung (Failover)
+ * - Setzt locals.session (SSR-kompatibel)
+ */
 
-export const get: APIRoute = async ({ request, cookies, redirect, locals }) => {
+export const onRequest: MiddlewareHandler = async (context, next) => {
+  const { cookies, locals } = context;
+  const sessionId = cookies.get("session")?.value;
+
+  // Standardzustand (nicht eingeloggt)
+  locals.session = { loggedIn: false, email: null, lang: "de", plan: null };
+
+  // Kein Cookie? → direkt weiter
+  if (!sessionId) return next();
+
   try {
-    const url = new URL(request.url);
-    const token = url.searchParams.get("token");
-    if (!token) return new Response("Missing token", { status: 400 });
+    // 🔹 1. Versuch: Core Worker Verification
+    const verifyUrl = `https://api.smartpages.online/verify?token=${encodeURIComponent(sessionId)}`;
+    const res = await fetch(verifyUrl, { headers: { Accept: "application/json" } });
 
-    // 1️⃣ Token über Core Worker prüfen
-    const verifyRes = await fetch(
-      `https://api.smartpages.online/verify?token=${encodeURIComponent(token)}`,
-      {
-        method: "GET",
-        headers: { Accept: "application/json" },
-      }
-    );
-
-    if (!verifyRes.ok) {
-      return new Response("Invalid or expired token", { status: 401 });
-    }
-
-    const data = await verifyRes.json();
-
-    // 2️⃣ Cookie setzen (12h gültig)
-    cookies.set("session", token, {
-      path: "/",
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      domain: ".smartpages.online",
-      maxAge: 12 * 60 * 60,
-    });
-
-    // 3️⃣ SESSION KV (optional für SSR)
-    if (locals.runtime?.env?.SESSION) {
-      await locals.runtime.env.SESSION.put(
-        `session:${data.email}`,
-        JSON.stringify({
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.ok && data?.email) {
+        locals.session = {
+          loggedIn: true,
           email: data.email,
-          lang: data.lang,
-          products: data.products || [],
-          verifiedAt: Date.now(),
-        }),
-        { expirationTtl: 12 * 60 * 60 }
-      );
+          lang: data.lang || "de",
+          plan: data.plan || "trial",
+        };
+        return next();
+      }
     }
 
-    // 4️⃣ Visuelles Feedback (2s Redirect)
-    const dashboard =
-      data.lang === "en"
-        ? "https://desk.smartpages.online/en/dashboard"
-        : "https://desk.smartpages.online/de/dashboard";
+    // 🔹 2. Fallback: lokale KV-Abfrage
+    const kv = locals.runtime.env.SESSION;
+    const kvData = await kv.get(sessionId);
 
-    const html = `
-      <!DOCTYPE html>
-      <html lang="${data.lang || "de"}">
-        <head>
-          <meta charset="utf-8" />
-          <meta http-equiv="refresh" content="2;url=${dashboard}" />
-          <title>Login erfolgreich – SmartPages</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              background: #f9fafb;
-              color: #333;
-              text-align: center;
-              margin-top: 15vh;
-            }
-            h1 { color: #2b6cb0; }
-            .spinner {
-              margin: 20px auto;
-              width: 40px;
-              height: 40px;
-              border: 4px solid #ddd;
-              border-top-color: #2b6cb0;
-              border-radius: 50%;
-              animation: spin 1s linear infinite;
-            }
-            @keyframes spin { to { transform: rotate(360deg); } }
-          </style>
-        </head>
-        <body>
-          <h1>Login erfolgreich 🎉</h1>
-          <p>Willkommen zurück, ${data.email}</p>
-          <div class="spinner"></div>
-          <p>Du wirst weitergeleitet …</p>
-        </body>
-      </html>
-    `;
-
-    return new Response(html, {
-      status: 200,
-      headers: { "content-type": "text/html; charset=utf-8" },
-    });
-  } catch (err: any) {
-    console.error("❌ VERIFY Error:", err);
-    return new Response(`Verify failed: ${err.message}`, { status: 500 });
+    if (kvData) {
+      const user = JSON.parse(kvData);
+      locals.session = {
+        loggedIn: true,
+        email: user.email,
+        lang: user.lang,
+        plan: user.plan,
+      };
+      return next();
+    }
+  } catch (err) {
+    console.error("❌ [middleware/verify.ts] Fehler:", err);
   }
+
+  return next();
 };
