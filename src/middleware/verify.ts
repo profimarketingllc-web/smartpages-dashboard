@@ -1,25 +1,26 @@
 import type { MiddlewareHandler } from "astro";
 
 /**
- * 🌐 SmartPages Verify Middleware v4.7 FINAL
- * - Prüft Session-Cookie über Core Worker (/verify)
- * - Fällt zurück auf lokale KV-Prüfung (Failover)
- * - Setzt locals.session (SSR-kompatibel)
+ * 🌐 SmartPages Verify Middleware v4.8 FINAL (API AUTH)
+ * ---------------------------------------------------
+ * ✅ Prüft Session-Cookie über Core Worker (/api/auth/verify)
+ * ✅ Fällt zurück auf lokale KV-Prüfung (Failover)
+ * ✅ Setzt locals.session (SSR-kompatibel)
+ * ✅ Kein doppelter /verify-Request mehr
  */
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
   const { cookies, locals } = context;
   const sessionId = cookies.get("session")?.value;
 
-  // Standardzustand (nicht eingeloggt)
+  // Standardzustand: nicht eingeloggt
   locals.session = { loggedIn: false, email: null, lang: "de", plan: null };
 
-  // Kein Cookie? → direkt weiter
   if (!sessionId) return next();
 
   try {
-    // 🔹 1. Versuch: Core Worker Verification
-    const verifyUrl = `https://api.smartpages.online/verify?token=${encodeURIComponent(sessionId)}`;
+    // 🔹 1. Versuch: Neue Core Worker Verification
+    const verifyUrl = `https://api.smartpages.online/api/auth/verify?token=${encodeURIComponent(sessionId)}`;
     const res = await fetch(verifyUrl, { headers: { Accept: "application/json" } });
 
     if (res.ok) {
@@ -35,7 +36,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       }
     }
 
-    // 🔹 2. Fallback: lokale KV-Abfrage
+    // 🔹 2. Fallback: Lokale KV-Abfrage (z. B. bei Offline-Betrieb)
     const kv = locals.runtime.env.SESSION;
     const kvData = await kv.get(sessionId);
 
