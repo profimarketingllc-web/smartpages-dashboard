@@ -1,37 +1,44 @@
 import type { MiddlewareHandler } from "astro";
 
 /**
- * 🌐 SmartPages Verify Middleware v4.9 (Production Ready)
- * -------------------------------------------------------
- * ✅ Ruft Core Worker /api/auth/confirm auf (nicht mehr /verify)
- * ✅ Liest Session-Cookie und prüft Session-Zustand
- * ✅ Fällt zurück auf lokale KV-Prüfung (Failover)
- * ✅ Kompatibel mit SmartCore Worker v7.6 (Staging → Session → Dashboard)
+ * 🧩 SmartPages Verify Middleware v5.0 (SSR-kompatibel)
+ * -----------------------------------------------------
+ * ✅ Prüft Session über Core Worker (/api/auth/confirm)
+ * ✅ Leitet Cookie-Header korrekt weiter (SSR!)
+ * ✅ Fällt zurück auf lokale KV-Prüfung bei Offline/Timeout
+ * ✅ Setzt locals.session für SSR & CSR
  */
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
-  const { cookies, locals } = context;
+  const { cookies, locals, request } = context;
   const sessionId = cookies.get("session")?.value;
 
-  // 🧩 Standardzustand: nicht eingeloggt
-  locals.session = { loggedIn: false, email: null, lang: "de", plan: null };
+  // Standardzustand
+  locals.session = {
+    loggedIn: false,
+    email: null,
+    lang: "de",
+    plan: null,
+  };
 
-  // 🔹 Kein Session-Cookie → weiter ohne Login
+  // Ohne Session → keine Prüfung nötig
   if (!sessionId) return next();
 
   try {
-    // ============================================================
-    // 1️⃣  Hauptprüfung über Core Worker (/api/auth/confirm)
-    // ============================================================
-    const confirmUrl = `https://api.smartpages.online/api/auth/confirm?token=${encodeURIComponent(sessionId)}`;
-    const res = await fetch(confirmUrl, {
-      headers: { Accept: "application/json" },
+    // 🔹 SSR-sicherer Cookie-Header
+    const cookieHeader = request.headers.get("cookie") || "";
+
+    // 🔹 Anfrage an Core Worker mit Cookie-Forwarding
+    const res = await fetch("https://api.smartpages.online/api/auth/confirm", {
+      headers: {
+        cookie: cookieHeader, // <-- wichtig für SSR
+        Accept: "application/json",
+      },
       credentials: "include",
     });
 
     if (res.ok) {
-      const data = await res.json().catch(() => null);
-
+      const data = await res.json();
       if (data?.ok && data?.email) {
         locals.session = {
           loggedIn: true,
@@ -43,28 +50,21 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       }
     }
 
-    // ============================================================
-    // 2️⃣  Fallback: Lokale KV-Session prüfen (Offline-Modus)
-    // ============================================================
+    // 🔹 Fallback: Lokale KV prüfen (Failover-Modus)
     const kv = locals.runtime.env?.SESSION;
-    if (kv) {
-      const kvData = await kv.get(sessionId);
-      if (kvData) {
-        const user = JSON.parse(kvData);
-        locals.session = {
-          loggedIn: true,
-          email: user.email,
-          lang: user.lang || "de",
-          plan: user.plan || "trial",
-        };
-        return next();
-      }
-    }
+    const kvData = await kv?.get(sessionId, { type: "json" });
 
+    if (kvData?.email) {
+      locals.session = {
+        loggedIn: true,
+        email: kvData.email,
+        lang: kvData.lang || "de",
+        plan: kvData.plan || "trial",
+      };
+    }
   } catch (err) {
-    console.error("❌ [middleware/verify.ts] Fehler:", err);
+    console.error("❌ Verify-Fehler (SSR):", err);
   }
 
-  // 🔹 Wenn keine gültige Session gefunden → weiter ohne Login
   return next();
 };
