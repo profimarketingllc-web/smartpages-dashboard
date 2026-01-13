@@ -1,200 +1,142 @@
 # 🧭 SmartPages Dashboard
-**Version:** v1.4.3  
+
+**Version:** v1.6  
 **Stand:** Januar 2026  
-**Status:** Production Stable  
+**Status:** Production Stable
+
+---
 
 ## 🚀 Übersicht
-Das **SmartPages Dashboard** ist eine moderne, mehrsprachige Cloudflare-Astro-Anwendung,  
-die Benutzerkonten, Systemstatus und Inhalte über **KV- und D1-Bindings** verwaltet.  
-Das System kombiniert ein minimalistisches Frontend mit einer robusten Middleware-Schicht  
-und einem serverlosen **API-Layer** für Authentifizierung, Kundendaten und Impressum.
+
+Das **SmartPages Dashboard** ist eine Cloudflare-Astro-Anwendung mit einem zentralisierten API-Gateway (Core Worker v7.6).  
+Alle API-Aufrufe, Authentifizierungen und Datentransfers laufen über den zentralen SmartCore Worker (`api.smartpages.online`).  
+Das System wurde so umgebaut, dass sämtliche Endpunkte, Services und Authentifizierungen zentral über den Core verwaltet werden.
 
 ---
 
-## 🧩 Architekturüberblick
+## 🧱 Architekturübersicht
 
 ```
-Frontend (Astro + SolidJS)
+Frontend (Astro + Tailwind + SolidJS)
         ↓
-Middleware (auth.ts, lang.ts)
+API Layer (src/api/*)
         ↓
-API Layer (/api/* – Cloudflare Worker Functions)
+Core Worker (SmartCore v7.6)
         ↓
-D1 (Datenbank) + KV (Session Store)
+Cloudflare D1 (CORE_DB, AUTH_DB)
+        ↓
+Cloudflare KV (SESSION, STAGING)
 ```
 
-### 🏗 Hauptkomponenten
+### 🔧 Systemstruktur
 
-| Bereich | Zweck |
-|----------|--------|
-| `/src/pages/de/login.astro` & `/src/pages/en/login.astro` | Magic-Link Login Pages |
-| `/src/pages/dashboard.astro` | Dashboard mit CustomerCard, ImprintCard, SystemMessage |
-| `/src/pages/api/` | API-Endpoints für Auth, Customer, Imprint, Systemstatus |
-| `/src/middleware/` | Sprache (lang.ts) & Authentifizierung (auth.ts) |
-| `/src/utils/i18n.ts` | Mehrsprachigkeit (DE/EN) mit dynamischer Übersetzungslogik |
-| `/src/components/core/` | Layout-Komponenten wie ProductGrid, ProductCard |
-| `/src/components/dashboard/` | Funktionale Karten (CustomerCard, ImprintCard, SystemMessage) |
+| Ebene | Beschreibung |
+|--------|---------------|
+| **Frontend (Astro)** | Präsentationsebene mit Sprachumschaltung, Dashboard und Benutzeroberfläche |
+| **API Layer** | Leitet alle API-Aufrufe an den Core Worker weiter |
+| **Core Worker** | Zentrale Logik für Authentifizierung, Sessionmanagement, Mail- und Customer-Proxy |
+| **KV / D1** | Persistente Speicherung von Sitzungen, Tokens, Logs und temporären Auth-Daten |
 
 ---
 
-## ⚙️ Middleware
+## ⚙️ API-Endpunkte & Hauptkomponenten
 
-### 🔐 `auth.ts`
-- Liest das Cookie `session_id`
-- Prüft Session-Daten über `env.SESSION` (KV oder D1)
-- Fallback: `{ user_id: null, guest: true }`
-- Speichert Session in `locals.session` für alle Routen
+| Route / Datei | Methode | Beschreibung |
+|----------------|----------|---------------|
+| `/api/auth/start` | POST | Erstellt Magic Link und sendet Login-Mail |
+| `/api/auth/verify` | GET | Prüft Token und legt diesen temporär in Staging-KV ab |
+| `/api/auth/confirm` | GET | Erstellt Session aus Staging-Eintrag und löscht diesen anschließend |
+| `/api/auth/logout` | GET | Beendet Session und entfernt Cookie |
+| `/api/session/check` | GET | Prüft aktiven Loginstatus |
+| `/api/customer/profile` | GET | Kundendaten abrufen über Core Worker |
+| `/api/customer/imprint` | GET | Abruf von Impressumsdaten |
+| `/src/api/verify.ts` | - | Verifiziert bestehende Sessions über Core Worker |
+| `/src/middleware/lang.ts` | - | Sprachsteuerung (DE/EN) |
+| `/src/utils/i18n.ts` | - | Dynamische Übersetzungen und Mehrsprachigkeit |
+| `/src/pages/dashboard.astro` | GET | Haupt-Dashboard mit Kunden- und Impressumsdaten |
 
-### 🌍 `lang.ts`
-- Ermittelt Sprache aus:
-  - URL (`/en/` oder `/de/`)
-  - Referrer
-  - Cookie `lang`
-- Setzt globale Variable `locals.lang`
-- Synchronisiert Sprache über `x-smartpages-lang` Header
-
----
-
-## 🗄 Datenbindungen (KV & D1)
-
-| Binding | Zweck | Typ |
-|----------|--------|------|
-| `SESSION` | Speichert Session-Daten (auth.ts) | Cloudflare KV |
-| `DB` | Enthält persistente Nutzerdaten, Systemstatus, Impressum | Cloudflare D1 |
-
-Beide Bindings sind **optional**:
-Wenn sie im Dev-Modus nicht verfügbar sind, wird automatisch ein **Dummy-Fallback** aktiviert.  
+**Branches:**  
+- `main` → Production Deployment (Cloudflare Pages)  
+- `dev` → Entwicklungsumgebung mit Staging-Daten  
 
 ---
 
-## 💬 SystemMessage Engine (D1-gesteuert)
+## 🔐 Authentifizierungsablauf (Magic-Link)
 
-- Zeigt Begrüßung & Statusnachrichten an  
-- Liest dynamische Werte aus der D1-Tabelle `system_status`
-- Verknüpfung über `locals.systemMessage → i18n.t(lang, key, "systemMessage")`
+| Schritt | Endpoint | Beschreibung |
+|----------|-----------|---------------|
+| 1️⃣ | `/api/auth/start` | Token generieren und E-Mail versenden |
+| 2️⃣ | `/api/auth/verify` | Token prüfen und temporär speichern |
+| 3️⃣ | `/api/auth/confirm` | Session erstellen, Staging-Eintrag löschen |
+| 4️⃣ | `/api/auth/logout` | Session und Cookie löschen |
+| 5️⃣ | `/api/session/check` | Loginstatus abfragen |
 
-Beispiel:
-```ts
-locals.systemMessage = {
-  key: "trialEndingSoon",
-  status: "trial",
-};
-```
-
-D1-Struktur:
-```sql
-CREATE TABLE system_status (
-  user_id TEXT PRIMARY KEY,
-  status TEXT,
-  message_key TEXT,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  lang TEXT DEFAULT 'de'
-);
-```
+### 🔁 Weiterleitung
+Nach erfolgreicher Authentifizierung erfolgt die automatische Weiterleitung zum Dashboard:  
+`https://desk.smartpages.online/{lang}/dashboard`
 
 ---
 
-## 🌐 API-Layer & Worker-Runtime
+## 🗄 Datenbindungen
 
-Seit **v1.4** ist das Dashboard mit einer serverlosen API-Schicht ausgestattet,  
-die direkt in der Cloudflare-Worker-Umgebung ausgeführt wird.  
-
-### 🔗 Endpunkte
-
-| Route | Funktion | Methode | Auth |
-|--------|-----------|----------|------|
-| `/api/auth/start` | Sendet Magic Link per E-Mail | `POST` | ❌ |
-| `/api/customer/update` | Speichert Kundendaten | `POST` | ✅ |
-| `/api/imprint` | Liefert Impressumsdaten | `GET` | ✅ |
-| `/api/system/status` | (optional) Liest Systemstatus aus D1 | `GET` | ✅ |
-
-Jeder Endpunkt:
-- Läuft **serverless** als Cloudflare Function
-- Greift über `env` auf `SESSION` & `DB` zu
-- Gibt standardisierte JSON-Antwort zurück:
-  ```json
-  { "ok": true, "data": {...} }
-  ```
-
-Beispiel:
-```ts
-return new Response(
-  JSON.stringify({ ok: false, error: "invalid_email" }),
-  { status: 400 }
-);
-```
+| Binding | Beschreibung | Typ |
+|----------|---------------|------|
+| `CORE_DB` | Zentrale Datenbank (Tokens, Logs, Templates) | Cloudflare D1 |
+| `AUTH_DB` | Authentifizierungs-Backup | Cloudflare D1 |
+| `SESSION` | Aktive Benutzer-Sessions | Cloudflare KV |
+| `STAGING` | Temporäre Tokens (Verifizierungs-Übergabe) | Cloudflare KV |
+| `MAILER` | Service-Binding für E-Mail-Versand | Cloudflare Service |
+| `CUSTOMER` | Service-Binding für Kundendaten | Cloudflare Service |
 
 ---
 
-## 🧠 i18n-System
+## 🧩 Frontend-Komponenten
 
-Alle Texte (UI, System, Buttons, Messages) sind in `/src/utils/i18n.ts` zentralisiert.  
-Mit der Funktion:
-
-```ts
-t(lang, key, section)
-```
-
-z. B.:
-```ts
-t("de", "trialEndingSoon", "systemMessage")
-```
-
-Bei unbekannten Keys wird automatisch der Schlüsselname ausgegeben  
-und eine Warnung in der Konsole protokolliert.
+- **CustomerCard:** Zeigt Kundendaten und Statusinformationen  
+- **ImprintCard:** Dynamische Anzeige der Impressumsdaten  
+- **SystemMessage:** Zeigt Status- und Systemmeldungen direkt aus Core Worker Responses (Erfolg, Fehler, Warnung, Systemstatus)  
+- **ProductGrid / ProductCard:** Übersichtliche Darstellung der Hauptfunktionen im Dashboard  
+- **LangSwitcher:** Sprachumschaltung mit synchronisiertem Cookie und Header  
 
 ---
 
-## 🧱 Frontend & UI-Komponenten
-
-- **CustomerCard:** Zeigt Benutzerprofil mit Vorname, Nachname, Tarif, Status  
-- **ImprintCard:** Verwaltet Impressumsdaten, speichert über `/api/imprint`  
-- **SystemMessage:** Dynamische Begrüßung (neutral/personalisiert)  
-- **ProductGrid & ProductCard:** Reusable UI-Elemente für Login- & Dashboard-Pages  
-  - Responsive Layout (max. 1400 px)
-  - Einheitliche Breite mit Login-Kacheln  
-  - Animation via Tailwind (`hover:scale`, `shadow-xl`, etc.)
-
----
-
-## 🧪 Entwicklungs- & Deployment-Hinweise
+## 🧪 Deployment & Monitoring
 
 | Umgebung | Zweck | Besonderheiten |
 |-----------|--------|----------------|
-| **Development** | Lokaler Test ohne echte KV/D1 | Dummy-Daten & Logs |
-| **Staging / -dev** | Preview Deployments | Verbindet zu Test-D1 |
-| **Production** | Live auf Cloudflare Pages | KV + D1 aktiv |
+| **Development** | Testumgebung mit simulierten Sessions | Verwendung von Staging-KV |
+| **Production** | Live-System | Alle Bindings aktiv |
+| **Core Worker** | API Gateway für Authentifizierung, Mail, Customer und Session | Deployment über Cloudflare Dashboard |
 
-### 💾 Backups
-Git-Tags werden für Releases genutzt:
-- `release-v1.4.1`: Vor Middleware-Integration  
-- `release-v1.4.3`: Final mit API + SystemMessage
-
----
-
-## 🧩 Deployment & Rebuild
-Standardbefehl:
-
+### 💾 Build & Deployment
 ```bash
 npm run build
 npx astro build
 ```
-
-Cloudflare Pages erkennt Middleware & API automatisch  
-(`Using v2 root directory strategy` → Worker Routes aktiv).
+Cloudflare Pages erkennt automatisch API und Middleware (v2 Pages Routing).
 
 ---
 
-## 🧾 Lizenz & Hosting
-- Copyright © **2026 Profi Marketing**
-- Alle Daten DSGVO-konform in der EU gehostet
-- Deployment via **Cloudflare Pages + D1**
-- Keine externen Tracking-Skripte
+## 🧠 Monitoring & Debugging
+
+- Healthcheck: `/ping`  
+- Logging über `console.log`, `warn`, `error`  
+- Sessionprüfung: `/api/session/check`  
+- Token-Test: `/api/auth/start`  
 
 ---
 
-### ✅ Nächste Schritte
-- [ ] DEV-Test mit aktivem D1-Endpoint `/api/system/status`
-- [ ] API-Logging aktivieren
-- [ ] Docs → DOCX exportieren (für Knowledge Base)
-- [ ] v1.4.4 vorbereiten (MailQueue + Notification Center)
+## 🗳 Lizenz & Hosting
+
+- © 2026 Profi Marketing  
+- Hosting über Cloudflare Pages + Workers  
+- DSGVO-konform (EU-Datenhaltung)  
+- Keine externen Tracker  
+
+---
+
+### ✅ To-Do / Nächste Schritte
+- [ ] Verify-/Confirm-Flow finalisieren  
+- [ ] Middleware komplett mit Session-KV verbinden  
+- [ ] Inline-Routenpflege im Core Worker abschließen  
+- [ ] Testautomatisierung für Mailer- und Customer-Proxy implementieren
