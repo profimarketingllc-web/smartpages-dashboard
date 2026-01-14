@@ -1,7 +1,7 @@
 import { sequence, type MiddlewareHandler } from "astro/middleware";
 import { onRequest as lang } from "./middleware/lang";
 // ✅ Neuer Pfad: verify.ts liegt jetzt unter src/pages/api/auth/
-import { onRequest as verify } from "./pages/api/verify.ts";
+import { onRequest as verify } from "./pages/api/auth/verify.ts";
 
 /**
  * 🌐 SmartPages Middleware Router v4.8 (Production Ready)
