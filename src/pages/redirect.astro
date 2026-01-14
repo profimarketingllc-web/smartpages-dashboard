@@ -1,5 +1,7 @@
-// src/pages/auth/redirect.ts
-export async function onLoad() {
+---
+import { onMount } from "astro/jsx-runtime";
+
+onMount(async () => {
   const url = new URL(window.location.href);
   const token = url.searchParams.get("token");
   const lang = url.searchParams.get("lang") || "de";
@@ -38,6 +40,14 @@ export async function onLoad() {
   } catch (err) {
     message(`❌ Fehler: ${err.message}`);
   }
-}
+});
+---
 
-onLoad();
+<html>
+  <head>
+    <title>SmartPages Login</title>
+  </head>
+  <body style="background-color:#0b0d17;color:white;font-family:sans-serif;text-align:center;margin-top:20vh;">
+    <h2>🔐 Anmeldung wird überprüft...</h2>
+  </body>
+</html>
