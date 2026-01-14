@@ -9,6 +9,7 @@ import ProductGrid from "~/components/core/ProductGrid.astro";
 import SystemMessage from "~/components/core/SystemMessage.astro";
 import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
+import { ClientOnly } from "astro/client";
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true} lang="de">
@@ -19,7 +20,9 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
     <!-- 🧭 TOP SECTION: Customer Data + System Message -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
       <DashboardCardWide>
-        <CustomerCard client:load lang="de" />
+        <ClientOnly>
+          <CustomerCard lang="de" />
+        </ClientOnly>
       </DashboardCardWide>
 
       <div class="system-message">
@@ -29,7 +32,9 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 
     <!-- 🏢 IMPRINT -->
     <DashboardCardWide>
-      <ImprintCard client:load lang="de" />
+      <ClientOnly>
+        <ImprintCard lang="de" />
+      </ClientOnly>
     </DashboardCardWide>
 
     <!-- 💼 PRODUCT GRID -->
@@ -38,15 +43,22 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
     </section>
 
     <!-- 🧩 Modals -->
-    <EditCustomerModal client:load lang="de" />
-    <EditImprintModal client:load lang="de" />
+    <ClientOnly>
+      <EditCustomerModal lang="de" />
+    </ClientOnly>
+
+    <ClientOnly>
+      <EditImprintModal lang="de" />
+    </ClientOnly>
   </main>
 </PageLayout>
 
-<script>
+<!-- 🧠 Dashboard Initialisierung -->
+<script is:inline>
   window.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ Deutsches Dashboard aktiv (Signalsteuerung + MutationObserver)");
+    console.log("✅ Deutsches Dashboard geladen – Initialisierung läuft...");
 
+    // 🟢 Initiale Hydration-Prüfung (Solid-Komponenten ready)
     const attachButtonListeners = () => {
       let found = false;
 
@@ -76,10 +88,13 @@ import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
     attachButtonListeners();
     const observer = new MutationObserver(() => attachButtonListeners());
     observer.observe(document.body, { childList: true, subtree: true });
+    setTimeout(() => observer.disconnect(), 8000);
 
-    setTimeout(() => observer.disconnect(), 10000);
-    setTimeout(attachButtonListeners, 1000);
-    setTimeout(attachButtonListeners, 3000);
+    // 🟢 Wichtig: Nach Redirect Customer-Daten neu laden
+    setTimeout(() => {
+      console.log("🔄 Re-Trigger CustomerCard nach Redirect");
+      window.dispatchEvent(new Event("refresh-customer-data"));
+    }, 1000);
   });
 </script>
 
