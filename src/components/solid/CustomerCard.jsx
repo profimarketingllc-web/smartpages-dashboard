@@ -30,11 +30,13 @@ export default function CustomerCard(props) {
       }
 
       const result = await res.json();
-      if (!result?.ok || !result.user) {
+
+      // 🔧 FIX: Worker liefert { ok: true, data: {...} } statt { user: {...} }
+      const u = result.data || result.user || null;
+      if (!result.ok || !u) {
         return { status: t(lang(), "loggedOut", "system") };
       }
 
-      const u = result.user;
       return {
         firstName: u.first_name || "—",
         lastName: u.last_name || "—",
@@ -75,7 +77,7 @@ export default function CustomerCard(props) {
               data().status === t(lang(), "statusActive", "system")
                 ? "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]"
                 : "bg-[#F8D7DA] text-[#8B1A1A] border-[#E6A1A1]"
-            }` }
+            }`}
         >
           {data().status ?? "—"}
         </span>
