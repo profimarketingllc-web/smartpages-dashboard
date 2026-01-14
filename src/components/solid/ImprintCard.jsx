@@ -25,7 +25,7 @@ export default function ImprintCard(props) {
   // 🔗 Imprint-Daten abrufen (über Core Worker Proxy)
   const fetchImprint = async () => {
     try {
-      const res = await fetch("https://api.smartpages.online/api/customer/imprint", {
+      const res = await fetch("/api/customer/imprint", {
         method: "GET",
         credentials: "include", // Cookie mitnehmen
         headers: { Accept: "application/json" },

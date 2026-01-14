@@ -49,7 +49,7 @@ export default function EditCustomerModal(props) {
     setSuccess(false);
 
     try {
-      const res = await fetch("https://api.smartpages.online/api/customer/update", {
+      const res = await fetch("/api/customer/customeredit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", // sorgt dafür, dass das Session-Cookie (.smartpages.online) mitgesendet wird

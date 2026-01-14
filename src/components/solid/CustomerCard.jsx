@@ -26,7 +26,7 @@ export default function CustomerCard(props) {
   // 🔗 Kundendaten abrufen über Core Worker
   const fetchCustomer = async () => {
     try {
-      const res = await fetch("https://api.smartpages.online/api/customer/profile", {
+     const res = await fetch("/api/customer/customer", {
         method: "GET",
         credentials: "include", // sendet Cookie (.smartpages.online)
         headers: { Accept: "application/json" },

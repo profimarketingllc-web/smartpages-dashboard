@@ -48,7 +48,7 @@ export default function EditImprintModal(props) {
   const loadImprint = async () => {
     try {
       setLoading(true);
-      const res = await fetch("https://api.smartpages.online/api/customer/imprint", {
+      const res = await fetch("/api/customer/imprintedit", {
         credentials: "include",
       });
 
