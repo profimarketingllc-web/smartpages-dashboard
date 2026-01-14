@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ request }) => {
     }
 
     // 🔗 Anfrage an SmartCore Worker weiterleiten
-    const res = await fetch("https://api.smartpages.online/api/customer/profile", {
+    const res = await fetch("https://api.smartpages.online/api/customer/customer", {
       headers: {
         "Cookie": cookie,
         "Accept": "application/json",
