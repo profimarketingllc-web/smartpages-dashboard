@@ -1,11 +1,6 @@
 ---
 /**
- * 🔁 SmartPages Redirect Page (v2.1)
- * ---------------------------------
- * - Ablauf: Verify → Confirm → Redirect
- * - Vermeidet doppelte /confirm-Aufrufe
- * - Setzt Cookie zuverlässig durch echten Browser-Redirect
- * - Zeigt klare Statusmeldungen im Fehlerfall
+ * 🔁 SmartPages Redirect Page (stabiler Login-Flow)
  */
 ---
 
@@ -14,33 +9,10 @@
     <meta charset="UTF-8" />
     <title>SmartPages Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-      body {
-        background-color: #0b0d17;
-        color: #ffffff;
-        font-family: system-ui, sans-serif;
-        text-align: center;
-        margin-top: 20vh;
-      }
-      .spinner {
-        margin: 3rem auto;
-        border: 5px solid #444;
-        border-top: 5px solid #f5b400;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 0.9s linear infinite;
-      }
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
   </head>
 
-  <body>
+  <body style="background-color:#0b0d17;color:white;font-family:sans-serif;text-align:center;margin-top:20vh;">
     <h2>🔐 Anmeldung wird überprüft...</h2>
-    <div class="spinner"></div>
 
     <script is:inline>
       (async () => {
@@ -48,37 +20,37 @@
         const token = url.searchParams.get("token");
         const lang = url.searchParams.get("lang") || "de";
 
-        const showMessage = (text, emoji = "⚠️") => {
-          document.body.innerHTML = `
-            <h2>${emoji} ${text}</h2>
-            <p style="opacity:0.8;">Bitte fordere ggf. einen neuen Login-Link an.</p>
-          `;
+        const message = (txt) => {
+          document.body.innerHTML =
+            `<p style="font-family:sans-serif;text-align:center;margin-top:20vh;">${txt}</p>`;
         };
 
-        if (!token) {
-          showMessage("Kein Token gefunden.");
-          return;
-        }
+        if (!token) return message("❌ Kein Token gefunden.");
 
         try {
-          // 1️⃣ Token verifizieren
+          // 1️⃣ Verify
           const verifyRes = await fetch(
-            \`https://api.smartpages.online/api/auth/verify?token=\${token}&lang=\${lang}\`
+            `https://api.smartpages.online/api/auth/verify?token=${token}&lang=${lang}`
           );
           const verifyData = await verifyRes.json();
+          if (!verifyData.ok || !verifyData.redirect)
+            return message("⚠️ Token ungültig oder abgelaufen.");
 
-          if (!verifyData.ok || !verifyData.redirect) {
-            showMessage("Ungültiger oder abgelaufener Login-Link.");
-            return;
+          // 2️⃣ Confirm (setzt Session-Cookie)
+          const confirmRes = await fetch(
+            `https://api.smartpages.online${verifyData.redirect}`,
+            { credentials: "include" }
+          );
+          const confirmData = await confirmRes.json();
+
+          if (confirmData.ok && confirmData.redirect) {
+            // 3️⃣ Redirect ins Dashboard
+            window.location.href = confirmData.redirect;
+          } else {
+            message("⚠️ Fehler beim Bestätigen der Anmeldung.");
           }
-
-          // 2️⃣ Confirm direkt als echte Browser-Navigation ausführen
-          // ⚠️ Kein fetch() mehr! Das sorgt dafür, dass der Cookie akzeptiert wird.
-          window.location.href = \`https://api.smartpages.online\${verifyData.redirect}\`;
-
         } catch (err) {
-          console.error("Login-Redirect-Fehler:", err);
-          showMessage("Fehler bei der Anmeldung: " + err.message);
+          message(`❌ Fehler: ${err.message}`);
         }
       })();
     </script>
