@@ -9,9 +9,8 @@ import ProductGrid from "~/components/core/ProductGrid.astro";
 import SystemMessage from "~/components/core/SystemMessage.astro";
 import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
-import ClientOnly from "astro/components/ClientOnly.astro";
 
-// ✅ Server-side Session check
+// 🧩 SSR Session Check
 const cookie = Astro.request.headers.get("cookie") || "";
 if (!cookie.includes("session=")) {
   return Astro.redirect("/en/login");
@@ -22,12 +21,11 @@ if (!cookie.includes("session=")) {
   <main
     class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
   >
-    <!-- 🧭 TOP SECTION: Customer Data + System Message -->
-    <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
+
+    <!-- 🧭 TOP SECTION -->
+    <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
       <DashboardCardWide>
-        <ClientOnly>
-          <CustomerCard lang="en" />
-        </ClientOnly>
+        <CustomerCard client:only="solid-js" lang="en" />
       </DashboardCardWide>
 
       <div class="system-message">
@@ -35,25 +33,44 @@ if (!cookie.includes("session=")) {
       </div>
     </section>
 
-    <!-- 🏢 Imprint -->
+    <!-- 🏢 IMPRINT SECTION -->
     <DashboardCardWide>
-      <ClientOnly>
-        <ImprintCard lang="en" />
-      </ClientOnly>
+      <ImprintCard client:only="solid-js" lang="en" />
     </DashboardCardWide>
 
-    <!-- 💼 Product Grid -->
+    <!-- 💼 PRODUCT GRID -->
     <section class="mt-4 md:mt-6">
       <ProductGrid lang="en" />
     </section>
 
-    <!-- 🧩 Modals -->
-    <ClientOnly>
-      <EditCustomerModal lang="en" />
-      <EditImprintModal lang="en" />
-    </ClientOnly>
+    <!-- 🧩 MODALS -->
+    <EditCustomerModal client:only="solid-js" lang="en" />
+    <EditImprintModal client:only="solid-js" lang="en" />
   </main>
 </PageLayout>
+
+<script>
+  window.addEventListener("DOMContentLoaded", async () => {
+    console.log("🇬🇧 Dashboard active — Checking session and loading data...");
+
+    try {
+      const res = await fetch("https://api.smartpages.online/api/session/check", {
+        credentials: "include"
+      });
+      const data = await res.json();
+
+      if (!data.ok) {
+        console.warn("⚠️ Invalid session, redirecting to login...");
+        window.location.href = "/en/login";
+      } else {
+        console.log("✅ Session valid:", data.session.email);
+      }
+    } catch (e) {
+      console.error("❌ Session check failed:", e);
+      window.location.href = "/en/login";
+    }
+  });
+</script>
 
 <style>
   .dashboard-top {
@@ -69,7 +86,9 @@ if (!cookie.includes("session=")) {
   }
 
   @media (min-width: 1280px) {
-    .system-message { padding-right: 0.75rem; }
+    .system-message {
+      padding-right: 0.75rem;
+    }
   }
 
   @media (max-width: 1279px) {
@@ -88,5 +107,8 @@ if (!cookie.includes("session=")) {
     }
   }
 
-  main { padding-top: 0.5rem; transition: all 0.3s ease-in-out; }
+  main {
+    padding-top: 0.5rem;
+    transition: all 0.3s ease-in-out;
+  }
 </style>

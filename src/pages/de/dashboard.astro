@@ -9,9 +9,8 @@ import ProductGrid from "~/components/core/ProductGrid.astro";
 import SystemMessage from "~/components/core/SystemMessage.astro";
 import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
-import ClientOnly from "astro/components/ClientOnly.astro";
 
-// ✅ Serverseitiger Session-Check
+// 🔹 SSR-seitige Sessionprüfung
 const cookie = Astro.request.headers.get("cookie") || "";
 if (!cookie.includes("session=")) {
   return Astro.redirect("/de/login");
@@ -22,12 +21,10 @@ if (!cookie.includes("session=")) {
   <main
     class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
   >
-    <!-- 🧭 TOP SECTION: Kundendaten + Systemnachricht -->
-    <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
+
+    <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
       <DashboardCardWide>
-        <ClientOnly>
-          <CustomerCard lang="de" />
-        </ClientOnly>
+        <CustomerCard client:only="solid-js" lang="de" />
       </DashboardCardWide>
 
       <div class="system-message">
@@ -35,58 +32,38 @@ if (!cookie.includes("session=")) {
       </div>
     </section>
 
-    <!-- 🏢 Impressum -->
     <DashboardCardWide>
-      <ClientOnly>
-        <ImprintCard lang="de" />
-      </ClientOnly>
+      <ImprintCard client:only="solid-js" lang="de" />
     </DashboardCardWide>
 
-    <!-- 💼 Produktübersicht -->
     <section class="mt-4 md:mt-6">
       <ProductGrid lang="de" />
     </section>
 
-    <!-- 🧩 Modals -->
-    <ClientOnly>
-      <EditCustomerModal lang="de" />
-      <EditImprintModal lang="de" />
-    </ClientOnly>
+    <EditCustomerModal client:only="solid-js" lang="de" />
+    <EditImprintModal client:only="solid-js" lang="de" />
   </main>
 </PageLayout>
 
-<style>
-  .dashboard-top {
-    align-items: flex-start;
-  }
+<script>
+  window.addEventListener("DOMContentLoaded", async () => {
+    console.log("🇩🇪 Dashboard aktiv — Prüfe Session & lade Daten ...");
 
-  .system-message {
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-    width: 100%;
-    margin-top: 0.25rem;
-  }
-
-  @media (min-width: 1280px) {
-    .system-message { padding-right: 0.75rem; }
-  }
-
-  @media (max-width: 1279px) {
-    .system-message {
-      justify-content: center;
-      text-align: center;
-      margin-top: 1rem;
+    // 🔹 Sessionprüfung beim Laden
+    try {
+      const res = await fetch("https://api.smartpages.online/api/session/check", {
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        console.warn("⚠️ Keine gültige Session, redirect ...");
+        window.location.href = "/de/login";
+      } else {
+        console.log("✅ Session OK:", data.session.email);
+      }
+    } catch (e) {
+      console.error("❌ Sessionprüfung fehlgeschlagen:", e);
+      window.location.href = "/de/login";
     }
-  }
-
-  @media (max-width: 767px) {
-    .dashboard-top {
-      flex-direction: column;
-      gap: 1.25rem;
-      align-items: center;
-    }
-  }
-
-  main { padding-top: 0.5rem; transition: all 0.3s ease-in-out; }
-</style>
+  });
+</script>
