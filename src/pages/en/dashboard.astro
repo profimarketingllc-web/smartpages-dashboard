@@ -9,14 +9,19 @@ import ProductGrid from "~/components/core/ProductGrid.astro";
 import SystemMessage from "~/components/core/SystemMessage.astro";
 import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
-import ClientOnly from "astro/components/ClientOnly.astro";
+import { ClientOnly } from "astro/runtime/client";
+
+// ✅ Server-side Session check
+const cookie = Astro.request.headers.get("cookie") || "";
+if (!cookie.includes("session=")) {
+  return Astro.redirect("/en/login");
+}
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true} lang="en">
   <main
     class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
   >
-
     <!-- 🧭 TOP SECTION: Customer Data + System Message -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start transition-all duration-300">
       <DashboardCardWide>
@@ -30,14 +35,14 @@ import ClientOnly from "astro/components/ClientOnly.astro";
       </div>
     </section>
 
-    <!-- 🏢 IMPRINT -->
+    <!-- 🏢 Imprint -->
     <DashboardCardWide>
       <ClientOnly>
         <ImprintCard lang="en" />
       </ClientOnly>
     </DashboardCardWide>
 
-    <!-- 💼 PRODUCT GRID -->
+    <!-- 💼 Product Grid -->
     <section class="mt-4 md:mt-6">
       <ProductGrid lang="en" />
     </section>
@@ -45,58 +50,10 @@ import ClientOnly from "astro/components/ClientOnly.astro";
     <!-- 🧩 Modals -->
     <ClientOnly>
       <EditCustomerModal lang="en" />
-    </ClientOnly>
-
-    <ClientOnly>
       <EditImprintModal lang="en" />
     </ClientOnly>
   </main>
 </PageLayout>
-
-<!-- 🧠 Dashboard Initialization -->
-<script is:inline>
-  window.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ English Dashboard loaded – initializing...");
-
-    // 🟢 Initial hydration check (Solid components ready)
-    const attachButtonListeners = () => {
-      let found = false;
-
-      const customerBtn = document.querySelector("button[data-signal='open-customer-modal']");
-      if (customerBtn && !customerBtn.dataset.bound) {
-        customerBtn.dataset.bound = "true";
-        found = true;
-        customerBtn.addEventListener("click", () => {
-          console.log("🟢 Opening Customer Modal");
-          window.dispatchEvent(new CustomEvent("open-customer-modal"));
-        });
-      }
-
-      const imprintBtn = document.querySelector("button[data-signal='open-imprint-modal']");
-      if (imprintBtn && !imprintBtn.dataset.bound) {
-        imprintBtn.dataset.bound = "true";
-        found = true;
-        imprintBtn.addEventListener("click", () => {
-          console.log("🟢 Opening Imprint Modal");
-          window.dispatchEvent(new CustomEvent("open-imprint-modal"));
-        });
-      }
-
-      if (!found) console.warn("⚠️ Waiting for Solid hydration – no buttons found yet…");
-    };
-
-    attachButtonListeners();
-    const observer = new MutationObserver(() => attachButtonListeners());
-    observer.observe(document.body, { childList: true, subtree: true });
-    setTimeout(() => observer.disconnect(), 8000);
-
-    // 🟢 Important: Re-fetch customer data after redirect
-    setTimeout(() => {
-      console.log("🔄 Re-triggering CustomerCard after redirect");
-      window.dispatchEvent(new Event("refresh-customer-data"));
-    }, 1000);
-  });
-</script>
 
 <style>
   .dashboard-top {
