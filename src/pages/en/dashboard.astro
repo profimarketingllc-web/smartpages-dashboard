@@ -9,7 +9,7 @@ import ProductGrid from "~/components/core/ProductGrid.astro";
 import SystemMessage from "~/components/core/SystemMessage.astro";
 import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
-import { ClientOnly } from "astro/runtime/client";
+import ClientOnly from "astro/components/ClientOnly.astro";
 
 // ✅ Server-side Session check
 const cookie = Astro.request.headers.get("cookie") || "";
