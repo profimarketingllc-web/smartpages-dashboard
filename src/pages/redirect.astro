@@ -1,10 +1,12 @@
 ---
 /**
- * 🔁 SmartPages Redirect Page
- * Clientseitiger Auth-Flow (Verify → Confirm → Dashboard)
+ * ✅ SmartPages Redirect Page (v2)
+ * Führt den Login-Flow sauber clientseitig aus:
+ * 1️⃣ Verify → prüft Token
+ * 2️⃣ Browser-Redirect → Confirm (setzt Cookie)
+ * 3️⃣ Server → leitet weiter zum Dashboard
  */
 ---
-
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
@@ -21,43 +23,37 @@
         const token = url.searchParams.get("token");
         const lang = url.searchParams.get("lang") || "de";
 
-        const message = (txt) => {
+        const showMessage = (txt) => {
           document.body.innerHTML =
             `<p style="font-family:sans-serif;text-align:center;margin-top:20vh;">${txt}</p>`;
         };
 
         if (!token) {
-          message("❌ Kein Token gefunden.");
+          showMessage("❌ Kein Token gefunden.");
           return;
         }
 
         try {
-          // 1️⃣ Verify
+          // 1️⃣ Verify Token über Core Worker
           const verifyRes = await fetch(
             `https://api.smartpages.online/api/auth/verify?token=${token}&lang=${lang}`
           );
           const verifyData = await verifyRes.json();
 
           if (!verifyData.ok || !verifyData.redirect) {
-            message("⚠️ Token ungültig oder abgelaufen.");
+            showMessage("⚠️ Token ungültig oder abgelaufen.");
             return;
           }
 
-          // 2️⃣ Confirm
-          const confirmRes = await fetch(
-            `https://api.smartpages.online${verifyData.redirect}`,
-            { credentials: "include" }
-          );
-          const confirmData = await confirmRes.json();
+          // 2️⃣ Statt fetch() → echter Redirect (damit Cookie gesetzt wird)
+          window.location.href = `https://api.smartpages.online${verifyData.redirect}`;
 
-          if (confirmData.ok && confirmData.redirect) {
-            // 3️⃣ Redirect ins Dashboard
-            window.location.href = confirmData.redirect;
-          } else {
-            message("⚠️ Fehler beim Bestätigen der Anmeldung.");
-          }
+          // Der Confirm-Endpoint erledigt:
+          // - Session in KV speichern
+          // - Cookie setzen
+          // - Redirect zum Dashboard (/de/dashboard)
         } catch (err) {
-          message(`❌ Fehler: ${err.message}`);
+          showMessage(`❌ Fehler: ${err.message}`);
         }
       })();
     </script>
