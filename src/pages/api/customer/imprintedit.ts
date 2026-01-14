@@ -1,25 +1,24 @@
 import type { APIRoute } from "astro";
 
-const CORE_URL = "https://api.smartpages.online/api/customer/profile";
+const CORE_URL = "https://api.smartpages.online/api/customer/imprint/update";
 
-export const GET: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
-    // Cookie mit Session übernehmen
     const cookie = request.headers.get("cookie") || "";
+    const body = await request.text();
 
     const res = await fetch(CORE_URL, {
-      method: "GET",
+      method: "POST",
       headers: {
-        "Accept": "application/json",
         "Content-Type": "application/json",
         "cookie": cookie,
       },
+      body,
       credentials: "include",
     });
 
     const data = await res.json();
-
-    return new Response(JSON.stringify(data, null, 2), {
+    return new Response(JSON.stringify(data), {
       status: res.status,
       headers: {
         "Content-Type": "application/json",
@@ -28,13 +27,7 @@ export const GET: APIRoute = async ({ request }) => {
       },
     });
   } catch (err) {
-    console.error("❌ Fehler im /api/customer/profile Proxy:", err);
-    return new Response(
-      JSON.stringify({ ok: false, error: "proxy_failed" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    console.error("❌ Fehler im /api/customer/imprintedit Proxy:", err);
+    return new Response(JSON.stringify({ ok: false, error: "proxy_failed" }), { status: 500 });
   }
 };

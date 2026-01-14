@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 
-const CORE_URL = "https://api.smartpages.online/api/customer/imprint";
+const CORE_URL = "https://api.smartpages.online/api/customer/profile";
 
 export const GET: APIRoute = async ({ request }) => {
   try {
@@ -26,7 +26,7 @@ export const GET: APIRoute = async ({ request }) => {
       },
     });
   } catch (err) {
-    console.error("❌ Fehler im /api/customer/imprint Proxy:", err);
+    console.error("❌ Fehler im /api/customer/customer Proxy:", err);
     return new Response(JSON.stringify({ ok: false, error: "proxy_failed" }), { status: 500 });
   }
 };
