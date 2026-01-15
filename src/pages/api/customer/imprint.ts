@@ -1,32 +1,83 @@
 import type { APIRoute } from "astro";
 
+/**
+ * 📦 API: /api/customer/imprint
+ * -------------------------------------------------------
+ * ✅ Holt Impressumsdaten über Core Worker
+ * ✅ Leitet Session-Cookie weiter
+ * ✅ Normalisiert D1-Felder für Dashboard-Kompatibilität
+ */
+
 const CORE_URL = "https://api.smartpages.online/api/customer/imprint";
 
 export const GET: APIRoute = async ({ request }) => {
   try {
-    const cookie = request.headers.get("cookie") || "";
+    const cookieHeader = request.headers.get("cookie") ?? "";
 
+    if (!cookieHeader.includes("session=")) {
+      return new Response(JSON.stringify({ ok: false, error: "no_session" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // 🔗 Anfrage an den Core Worker weiterleiten
     const res = await fetch(CORE_URL, {
       method: "GET",
       headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "cookie": cookie,
+        Accept: "application/json",
+        Cookie: cookieHeader,
       },
       credentials: "include",
     });
 
-    const data = await res.json();
-    return new Response(JSON.stringify(data, null, 2), {
-      status: res.status,
+    const json = await res.json();
+
+    // 🧭 Wenn kein Datensatz vorhanden → leeres Objekt zurückgeben
+    if (!json?.ok || !json.data) {
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          data: null,
+          message: "no_imprint_found",
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const i = json.data;
+
+    // 🧱 Normalisierung auf erwartete Dashboard-Struktur
+    const normalized = {
+      company_name: i.company_name || "—",
+      contact_name: i.contact_name || "—",
+      street: i.street || "—",
+      postal_code: i.postal_code || "—",
+      city: i.city || "—",
+      country: i.country || "Deutschland",
+      email: i.email || "—",
+      phone: i.phone || "—",
+      vat_id: i.tax_id || "—",
+      register_court: i.register_court || "—",
+      register_number: i.register_number || "—",
+      updated_at: i.updated_at || "—",
+    };
+
+    return new Response(JSON.stringify({ ok: true, data: normalized }, null, 2), {
+      status: 200,
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "https://desk.smartpages.online",
-        "Access-Control-Allow-Credentials": "true",
+        "Cache-Control": "no-store",
       },
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("❌ Fehler im /api/customer/imprint Proxy:", err);
-    return new Response(JSON.stringify({ ok: false, error: "proxy_failed" }), { status: 500 });
+    return new Response(JSON.stringify({ ok: false, error: err.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
