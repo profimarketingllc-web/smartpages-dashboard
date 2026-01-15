@@ -1,0 +1,53 @@
+---
+import "~/styles/global.css";
+---
+
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SmartPages – Fehler</title>
+  </head>
+
+  <body class="bg-[#0B1120] text-white flex flex-col items-center justify-center h-screen font-inter text-center px-6">
+    <img src="/SmartPages_icon_transparent.png" alt="SmartPages Logo" class="w-24 h-24 mb-6 opacity-90" />
+
+    <h1 id="title" class="text-3xl font-extrabold mb-3"></h1>
+    <p id="message" class="text-gray-300 text-lg max-w-md mb-6 leading-relaxed"></p>
+
+    <a id="button"
+       href="/de/login"
+       class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:scale-105 transition-transform duration-300">
+    </a>
+
+    <script>
+      // 🧠 Sprache erkennen
+      const ref = document.referrer;
+      const lang = ref.includes("/en/") || location.pathname.includes("/en/") ? "en" : "de";
+
+      // 🧾 Systemtexte (zweisprachig)
+      const texts = {
+        de: {
+          title: "💥 Ein Fehler ist aufgetreten",
+          message: "Etwas ist schiefgelaufen. Bitte versuche es später erneut oder melde dich neu an.",
+          button: "Zur Login-Seite",
+          link: "/de/login"
+        },
+        en: {
+          title: "💥 An error occurred",
+          message: "Something went wrong. Please try again later or log in again.",
+          button: "Back to Login Page",
+          link: "/en/login"
+        }
+      };
+
+      // 🔤 Texte einsetzen
+      const t = texts[lang];
+      document.getElementById("title").innerText = t.title;
+      document.getElementById("message").innerText = t.message;
+      const btn = document.getElementById("button");
+      btn.innerText = t.button;
+      btn.href = t.link;
+    </script>
+  </body>
+</html>
