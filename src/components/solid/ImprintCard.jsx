@@ -2,12 +2,12 @@ import { createResource, createSignal, onMount, onCleanup } from "solid-js";
 import { t } from "~/utils/i18n";
 
 /**
- * 🧾 ImprintCard (SmartPages v5-ready)
+ * 🧾 ImprintCard (SmartPages v5.3)
  * -------------------------------------------------------
  * ✅ Holt Daten über Core Worker Proxy (/api/customer/imprint)
- * ✅ Zeigt Pflichtfelder mit * an
- * ✅ Straße / Hausnummer getrennt
- * ✅ Letzte Zeile in 3-Spalten-Layout (Telefon, E-Mail, USt-ID)
+ * ✅ Zeigt alle rechtlich relevanten Felder
+ * ✅ Pflichtfelder mit Stern gekennzeichnet (ohne Hover)
+ * ✅ Einheitliches Layout mit CustomerCard
  */
 
 export default function ImprintCard(props) {
@@ -22,7 +22,7 @@ export default function ImprintCard(props) {
     }
   });
 
-  // 🔗 Imprint-Daten abrufen
+  // 🔗 Imprint-Daten abrufen (über Core Worker Proxy)
   const fetchImprint = async () => {
     try {
       const res = await fetch("/api/customer/imprint", {
@@ -53,6 +53,8 @@ export default function ImprintCard(props) {
         phone: i.phone || "—",
         email: i.email || "—",
         vat: i.tax_id || "—",
+        registerCourt: i.register_court || "—",
+        registerNumber: i.register_number || "—",
       };
     } catch (err) {
       console.error("❌ Fehler beim Laden des Impressums:", err);
@@ -60,6 +62,7 @@ export default function ImprintCard(props) {
     }
   };
 
+  // 🧠 Solid Resource + Refresh-Event
   const [imprint, { refetch }] = createResource(fetchImprint);
 
   onMount(() => {
@@ -72,14 +75,7 @@ export default function ImprintCard(props) {
   });
 
   const data = () => imprint() || {};
-  const val = (v) => (v ? v : "—");
-
-  // 🔸 Pflichtfeld-Markierung
-  const requiredLabel = (label) => (
-    <span>
-      {label} <span class="text-red-500 font-bold">*</span>
-    </span>
-  );
+  const displayValue = (val) => (val && val !== "" ? val : "—");
 
   // 🧱 Layout
   return (
@@ -99,52 +95,61 @@ export default function ImprintCard(props) {
         </button>
       </div>
 
-      {/* 🧩 GRID: Grundstruktur */}
+      {/* 🧩 Grid-Struktur */}
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-        {/* Firma / Ansprechpartner */}
         <div>
-          <span class="font-medium text-gray-800">{requiredLabel("Firma")}:</span>
-          <p class="text-gray-500">{val(data().company)}</p>
+          <span class="font-medium text-gray-800">Firma <span class="text-red-500">*</span></span>
+          <p class="text-gray-500">{displayValue(data().company)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{requiredLabel("Ansprechpartner")}:</span>
-          <p class="text-gray-500">{val(data().contact)}</p>
-        </div>
-
-        {/* Straße / Hausnummer */}
-        <div>
-          <span class="font-medium text-gray-800">{requiredLabel("Straße")}:</span>
-          <p class="text-gray-500">{val(data().street)}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{requiredLabel("Hausnummer")}:</span>
-          <p class="text-gray-500">{val(data().hs_no)}</p>
+          <span class="font-medium text-gray-800">Ansprechpartner <span class="text-red-500">*</span></span>
+          <p class="text-gray-500">{displayValue(data().contact)}</p>
         </div>
 
-        {/* PLZ / Ort */}
         <div>
-          <span class="font-medium text-gray-800">{requiredLabel("PLZ")}:</span>
-          <p class="text-gray-500">{val(data().zip)}</p>
+          <span class="font-medium text-gray-800">Straße <span class="text-red-500">*</span></span>
+          <p class="text-gray-500">{displayValue(data().street)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{requiredLabel("Ort")}:</span>
-          <p class="text-gray-500">{val(data().city)}</p>
+          <span class="font-medium text-gray-800">Hausnummer <span class="text-red-500">*</span></span>
+          <p class="text-gray-500">{displayValue(data().hs_no)}</p>
+        </div>
+
+        <div>
+          <span class="font-medium text-gray-800">PLZ <span class="text-red-500">*</span></span>
+          <p class="text-gray-500">{displayValue(data().zip)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">Ort <span class="text-red-500">*</span></span>
+          <p class="text-gray-500">{displayValue(data().city)}</p>
         </div>
       </div>
 
-      {/* 📞 Zeile 4+5 in einer Reihe mit 3 Spalten */}
+      {/* 📞 Reihe 4 – Drei Spalten */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-3 mt-4">
         <div>
-          <span class="font-medium text-gray-800">{requiredLabel("Telefon")}:</span>
-          <p class="text-gray-500">{val(data().phone)}</p>
+          <span class="font-medium text-gray-800">Telefon <span class="text-red-500">*</span></span>
+          <p class="text-gray-500">{displayValue(data().phone)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{requiredLabel("E-Mail")}:</span>
-          <p class="text-gray-500">{val(data().email)}</p>
+          <span class="font-medium text-gray-800">E-Mail <span class="text-red-500">*</span></span>
+          <p class="text-gray-500">{displayValue(data().email)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{requiredLabel("USt-ID")}:</span>
-          <p class="text-gray-500">{val(data().vat)}</p>
+          <span class="font-medium text-gray-800">USt-ID <span class="text-red-500">*</span></span>
+          <p class="text-gray-500">{displayValue(data().vat)}</p>
+        </div>
+      </div>
+
+      {/* ⚖️ Reihe 5 – Registerdaten */}
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mt-4">
+        <div>
+          <span class="font-medium text-gray-800">Registergericht</span>
+          <p class="text-gray-500">{displayValue(data().registerCourt)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">Registernummer</span>
+          <p class="text-gray-500">{displayValue(data().registerNumber)}</p>
         </div>
       </div>
     </div>
