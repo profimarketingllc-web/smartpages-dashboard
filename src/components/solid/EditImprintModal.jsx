@@ -3,12 +3,13 @@ import ModalWrapper from "./ModalWrapper";
 import { t } from "~/utils/i18n";
 
 /**
- * 🧾 EditImprintModal (SmartPages v5-ready)
+ * 🧾 EditImprintModal (SmartPages v5.3)
  * -------------------------------------------------------
  * ✅ nutzt Core Worker Proxy (/api/customer/imprint & /update)
  * ✅ sendet Session-Cookie (.smartpages.online)
  * ✅ feuert refresh-imprint-data nach erfolgreichem Save
- * ✅ i18n-kompatibel + einheitlicher Stil
+ * ✅ enthält hs_no, register_court & register_number
+ * ✅ Pflichtfelder klar markiert (*)
  */
 
 export default function EditImprintModal(props) {
@@ -18,12 +19,14 @@ export default function EditImprintModal(props) {
     company: "",
     contact: "",
     street: "",
-    number: "",
+    hs_no: "",
     zip: "",
     city: "",
     phone: "",
     email: "",
     vat: "",
+    registerCourt: "",
+    registerNumber: "",
   });
   const [message, setMessage] = createSignal(null);
 
@@ -62,12 +65,14 @@ export default function EditImprintModal(props) {
         company: i.company_name || "",
         contact: i.contact_name || "",
         street: i.street || "",
-        number: i.hs_no || "",
+        hs_no: i.hs_no || "",
         zip: i.postal_code || "",
         city: i.city || "",
         phone: i.phone || "",
-        email: i.support_email || "",
-        vat: i.vat_id || "",
+        email: i.email || "",
+        vat: i.tax_id || "",
+        registerCourt: i.register_court || "",
+        registerNumber: i.register_number || "",
       });
     } catch (err) {
       console.warn("⚠️ Konnte Imprint-Daten nicht laden:", err);
@@ -94,12 +99,14 @@ export default function EditImprintModal(props) {
           company_name: form().company,
           contact_name: form().contact,
           street: form().street,
-          address_addon: form().number,
-          zip: form().zip,
+          hs_no: form().hs_no,
+          postal_code: form().zip,
           city: form().city,
           phone: form().phone,
-          support_email: form().email,
-          vat_id: form().vat,
+          email: form().email,
+          tax_id: form().vat,
+          register_court: form().registerCourt,
+          register_number: form().registerNumber,
         }),
       });
 
@@ -108,7 +115,7 @@ export default function EditImprintModal(props) {
       const result = await res.json();
       if (!result?.ok) throw new Error(result?.error || "unknown");
 
-      setMessage(t(lang, "saveSuccess", "imprint"));
+      setMessage(t(lang, "success", "imprint"));
       console.log("✅ Imprint erfolgreich gespeichert");
 
       // 🔁 Card neu laden
@@ -116,7 +123,7 @@ export default function EditImprintModal(props) {
       setTimeout(() => setShowModal(false), 600);
     } catch (err) {
       console.error("❌ Fehler beim Speichern:", err);
-      setMessage(t(lang, "saveError", "imprint"));
+      setMessage(t(lang, "error", "imprint"));
     } finally {
       setLoading(false);
     }
@@ -139,18 +146,20 @@ export default function EditImprintModal(props) {
       {/* Formular */}
       <div class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
         {[
-          ["company", "company"],
-          ["contact", "contact"],
-          ["street", "street"],
-          ["number", "number"],
-          ["zip", "zip"],
-          ["city", "city"],
-          ["phone", "phone"],
-          ["email", "email"],
-          ["vat", "vat"],
-        ].map(([key, labelKey]) => (
+          ["company", "company", true],
+          ["contact", "contact", true],
+          ["street", "street", true],
+          ["hs_no", "number", true],
+          ["zip", "zip", true],
+          ["city", "city", true],
+          ["phone", "phone", false],
+          ["email", "email", true],
+          ["vat", "vat", false],
+          ["registerCourt", "registerCourt", false],
+          ["registerNumber", "registerNumber", false],
+        ].map(([key, labelKey, required]) => (
           <Field
-            label={t(lang, labelKey, "imprint")}
+            label={`${t(lang, labelKey, "imprint")}${required ? " *" : ""}`}
             keyName={key}
             value={form()[key]}
             onInput={updateField}
@@ -173,7 +182,7 @@ export default function EditImprintModal(props) {
           disabled={loading()}
         >
           {loading()
-            ? t(lang, "saving", "system")
+            ? t(lang, "loading", "system")
             : t(lang, "saveButton", "system")}
         </button>
       </div>
@@ -185,7 +194,9 @@ export default function EditImprintModal(props) {
 function Field(props) {
   return (
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">{props.label}</label>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        {props.label}
+      </label>
       <input
         type="text"
         value={props.value}

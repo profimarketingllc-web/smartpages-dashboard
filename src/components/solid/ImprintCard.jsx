@@ -4,10 +4,10 @@ import { t } from "~/utils/i18n";
 /**
  * 🧾 ImprintCard (SmartPages v5.3)
  * -------------------------------------------------------
- * ✅ Holt Daten über Core Worker Proxy (/api/customer/imprint)
- * ✅ Zeigt alle rechtlich relevanten Felder
- * ✅ Pflichtfelder mit Stern gekennzeichnet (ohne Hover)
- * ✅ Einheitliches Layout mit CustomerCard
+ * ✅ Läuft über Core Worker Proxy (/api/customer/imprint)
+ * ✅ Zeigt alle relevanten rechtlichen Angaben
+ * ✅ Pflichtfelder klar markiert (*)
+ * ✅ Enthält Registerdaten & Hausnummer
  */
 
 export default function ImprintCard(props) {
@@ -98,29 +98,41 @@ export default function ImprintCard(props) {
       {/* 🧩 Grid-Struktur */}
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
         <div>
-          <span class="font-medium text-gray-800">Firma <span class="text-red-500">*</span></span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "company", "imprint")} <span class="text-red-500">*</span>
+          </span>
           <p class="text-gray-500">{displayValue(data().company)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">Ansprechpartner <span class="text-red-500">*</span></span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "contact", "imprint")} <span class="text-red-500">*</span>
+          </span>
           <p class="text-gray-500">{displayValue(data().contact)}</p>
         </div>
 
         <div>
-          <span class="font-medium text-gray-800">Straße <span class="text-red-500">*</span></span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "street", "imprint")} <span class="text-red-500">*</span>
+          </span>
           <p class="text-gray-500">{displayValue(data().street)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">Hausnummer <span class="text-red-500">*</span></span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "number", "imprint")} <span class="text-red-500">*</span>
+          </span>
           <p class="text-gray-500">{displayValue(data().hs_no)}</p>
         </div>
 
         <div>
-          <span class="font-medium text-gray-800">PLZ <span class="text-red-500">*</span></span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "zip", "imprint")} <span class="text-red-500">*</span>
+          </span>
           <p class="text-gray-500">{displayValue(data().zip)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">Ort <span class="text-red-500">*</span></span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "city", "imprint")} <span class="text-red-500">*</span>
+          </span>
           <p class="text-gray-500">{displayValue(data().city)}</p>
         </div>
       </div>
@@ -128,15 +140,21 @@ export default function ImprintCard(props) {
       {/* 📞 Reihe 4 – Drei Spalten */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-3 mt-4">
         <div>
-          <span class="font-medium text-gray-800">Telefon <span class="text-red-500">*</span></span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "phone", "imprint")}
+          </span>
           <p class="text-gray-500">{displayValue(data().phone)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">E-Mail <span class="text-red-500">*</span></span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "email", "imprint")} <span class="text-red-500">*</span>
+          </span>
           <p class="text-gray-500">{displayValue(data().email)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">USt-ID <span class="text-red-500">*</span></span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "vat", "imprint")}
+          </span>
           <p class="text-gray-500">{displayValue(data().vat)}</p>
         </div>
       </div>
@@ -144,11 +162,15 @@ export default function ImprintCard(props) {
       {/* ⚖️ Reihe 5 – Registerdaten */}
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mt-4">
         <div>
-          <span class="font-medium text-gray-800">Registergericht</span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "registerCourt", "imprint")}
+          </span>
           <p class="text-gray-500">{displayValue(data().registerCourt)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">Registernummer</span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "registerNumber", "imprint")}
+          </span>
           <p class="text-gray-500">{displayValue(data().registerNumber)}</p>
         </div>
       </div>
