@@ -99,6 +99,7 @@ const translations: Record<string, any> = {
      button: "Impressum bearbeiten",
      success: "Impressum erfolgreich gespeichert.",
      error: "Fehler beim Speichern.",
+     loadError: "Konnte Impressumsdaten nicht laden.",
    },
    en: {
      title: "Imprint Information",
@@ -117,6 +118,7 @@ const translations: Record<string, any> = {
      button: "Edit Imprint",
      success: "Imprint saved successfully.",
      error: "Error saving imprint.",
+     loadError: "Could not load imprint data.",
     },
   },
 };
