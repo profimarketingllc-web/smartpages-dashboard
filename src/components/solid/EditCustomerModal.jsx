@@ -3,16 +3,22 @@ import ModalWrapper from "./ModalWrapper";
 import { t } from "~/utils/i18n";
 
 /**
- * 🧱 EditCustomerModal (SmartPages v5-ready)
+ * 🧱 EditCustomerModal (SmartPages v5.3-ready)
  * -------------------------------------------------------
- * ✅ Proxy über Core Worker (/api/customer/update)
- * ✅ Sicher mit Cookies (credentials: "include")
+ * ✅ GET lädt aktuelle Kundendaten (/api/customer/customer)
+ * ✅ POST speichert Änderungen (/api/customer/customeredit)
+ * ✅ Proxy über Core Worker mit Cookies
  * ✅ Visuelles Feedback + Event zum Refresh der CustomerCard
  */
 
 export default function EditCustomerModal(props) {
   const [showModal, setShowModal] = createSignal(false);
-  const [formData, setFormData] = createSignal({ firstName: "", lastName: "" });
+  const [formData, setFormData] = createSignal({
+    firstName: "",
+    lastName: "",
+    company_name: "",
+    is_business: 0,
+  });
   const [loading, setLoading] = createSignal(false);
   const [error, setError] = createSignal("");
   const [success, setSuccess] = createSignal(false);
@@ -21,27 +27,55 @@ export default function EditCustomerModal(props) {
     props.lang ||
     (typeof window !== "undefined" && window.location.pathname.includes("/en/") ? "en" : "de");
 
-  // 🟢 Dashboard-Event zum Öffnen empfangen
+  // 🟢 Modal öffnen
   onMount(() => {
-    const openHandler = () => {
+    const openHandler = async () => {
       console.log("🟢 open-customer-modal empfangen");
       setShowModal(true);
       setError("");
       setSuccess(false);
+      await loadCustomerData();
     };
     window.addEventListener("open-customer-modal", openHandler);
     onCleanup(() => window.removeEventListener("open-customer-modal", openHandler));
   });
 
-  const handleClose = () => {
-    setShowModal(false);
-    setError("");
-    setSuccess(false);
+  // 🧠 Kundendaten laden (GET)
+  const loadCustomerData = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/customer/customer", {
+        method: "GET",
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+
+      if (!json?.ok || !json.data) throw new Error("no_customer_data");
+
+      const data = json.data;
+      console.log("📥 Geladene Kundendaten:", data);
+
+      setFormData({
+        firstName: data.first_name || "",
+        lastName: data.last_name || "",
+        company_name: data.company_name || "",
+        is_business: data.is_business || 0,
+      });
+    } catch (err) {
+      console.error("❌ Fehler beim Laden der Kundendaten:", err);
+      setError(t(lang, "loadError", "customer") || "Fehler beim Laden der Daten");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // 🔤 Eingabe aktualisieren
   const handleInput = (e) => setFormData({ ...formData(), [e.target.name]: e.target.value });
 
-  // 💾 Daten speichern
+  // 💾 Speichern (POST)
   const handleSave = async () => {
     console.log("💾 Kundendaten speichern:", formData());
     setLoading(true);
@@ -52,26 +86,19 @@ export default function EditCustomerModal(props) {
       const res = await fetch("/api/customer/customeredit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // sorgt dafür, dass das Session-Cookie (.smartpages.online) mitgesendet wird
+        credentials: "include",
         body: JSON.stringify(formData()),
       });
 
-      if (!res.ok) {
-        if (res.status === 401) throw new Error("Nicht eingeloggt");
-        throw new Error(`API-Fehler (${res.status})`);
-      }
-
+      if (!res.ok) throw new Error(`API-Fehler (${res.status})`);
       const result = await res.json();
-      if (!result?.ok) throw new Error(result.error || "Unbekannter Fehler");
+
+      if (!result?.ok) throw new Error(result.error || "unknown_error");
 
       console.log("✅ Kundendaten erfolgreich gespeichert");
       setSuccess(true);
-
-      // 🔄 CustomerCard soll sofort aktualisiert werden:
       window.dispatchEvent(new Event("refresh-customer-data"));
-
-      // ⏳ nach kurzer Pause schließen
-      setTimeout(() => setShowModal(false), 1000);
+      setTimeout(() => setShowModal(false), 800);
     } catch (err) {
       console.error("❌ Fehler beim Speichern:", err);
       setError(err.message || "Fehler beim Speichern");
@@ -80,18 +107,42 @@ export default function EditCustomerModal(props) {
     }
   };
 
+  const handleClose = () => setShowModal(false);
+
   return (
     <ModalWrapper show={showModal()} onClose={handleClose} lang={lang}>
       <h2 class="text-xl font-bold text-[#1E2A45] mb-4">
         {t(lang, "editTitle", "customer")}
       </h2>
 
-      {/* 🔸 Formular */}
-      <div class="space-y-4">
+      {/* 🟠 Fehlermeldung */}
+      {error() && (
+        <p class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-2">
+          {error()}
+        </p>
+      )}
+
+      {/* Formularfelder */}
+      <div class="space-y-4 mt-3">
+        {/* Firma */}
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            {t(lang, "company", "imprint")} *
+          </label>
+          <input
+            type="text"
+            name="company_name"
+            value={formData().company_name}
+            onInput={handleInput}
+            placeholder={t(lang, "company", "imprint")}
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
+          />
+        </div>
+
         {/* Vorname */}
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            {t(lang, "firstName", "customer")}
+            {t(lang, "firstName", "customer")} *
           </label>
           <input
             type="text"
@@ -106,7 +157,7 @@ export default function EditCustomerModal(props) {
         {/* Nachname */}
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            {t(lang, "lastName", "customer")}
+            {t(lang, "lastName", "customer")} *
           </label>
           <input
             type="text"
@@ -117,21 +168,14 @@ export default function EditCustomerModal(props) {
             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
           />
         </div>
-
-        {/* ⚠️ Fehleranzeige */}
-        {error() && (
-          <p class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-2">
-            {error()}
-          </p>
-        )}
-
-        {/* ✅ Erfolg */}
-        {success() && (
-          <p class="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-2">
-            {t(lang, "savedMessage", "system") || "Gespeichert!"}
-          </p>
-        )}
       </div>
+
+      {/* ✅ Erfolg */}
+      {success() && (
+        <p class="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-2 mt-3">
+          {t(lang, "savedMessage", "system") || "Gespeichert!"}
+        </p>
+      )}
 
       {/* 🔘 Buttons */}
       <div class="mt-6 flex justify-end gap-3">

@@ -1,5 +1,5 @@
 /**
- * 📦 API: /api/customer/customer
+ * 📦 API: /api/customer
  * -------------------------------------------------------
  * ✅ Holt Kundendaten über Core Worker
  * ✅ Nutzt Session-Cookie (SmartPages Auth)
@@ -18,8 +18,8 @@ export const GET: APIRoute = async ({ request }) => {
       });
     }
 
-    // 🔗 Anfrage an SmartCore Worker weiterleiten
-    const res = await fetch("https://api.smartpages.online/api/customer/customer", {
+    // 🔗 Anfrage an Core Worker weiterleiten
+    const res = await fetch("https://api.smartpages.online/api/customer", {
       headers: {
         "Cookie": cookie,
         "Accept": "application/json",
@@ -44,7 +44,7 @@ export const GET: APIRoute = async ({ request }) => {
       },
     });
   } catch (err: any) {
-    console.error("❌ Fehler in /api/customer/customer:", err);
+    console.error("❌ Fehler in /api/customer:", err);
     return new Response(
       JSON.stringify({ ok: false, error: err.message || "unexpected_error" }),
       { status: 500, headers: { "Content-Type": "application/json" } }

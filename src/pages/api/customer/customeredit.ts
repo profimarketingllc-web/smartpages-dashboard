@@ -1,33 +1,50 @@
 import type { APIRoute } from "astro";
 
-const CORE_URL = "https://api.smartpages.online/api/customer/update";
+/**
+ * 📦 API: /api/customeredit
+ * -------------------------------------------------------
+ * ✅ Leitet Kundendaten-Update an Core Worker weiter
+ * ✅ Nutzt Session-Cookie (.smartpages.online)
+ * ✅ Gibt Worker-Antwort an das Frontend zurück
+ */
+
+const CORE_URL = "https://api.smartpages.online/api/customeredit";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const cookie = request.headers.get("cookie") || "";
     const body = await request.text();
 
+    // 🔗 Anfrage an Core Worker weiterleiten
     const res = await fetch(CORE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "cookie": cookie,
+        "Cookie": cookie,
       },
       body,
       credentials: "include",
     });
 
     const data = await res.json();
+
     return new Response(JSON.stringify(data), {
       status: res.status,
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "https://desk.smartpages.online",
         "Access-Control-Allow-Credentials": "true",
+        "Cache-Control": "no-store",
       },
     });
-  } catch (err) {
-    console.error("❌ Fehler im /api/customer/customeredit Proxy:", err);
-    return new Response(JSON.stringify({ ok: false, error: "proxy_failed" }), { status: 500 });
+  } catch (err: any) {
+    console.error("❌ Fehler im /api/customeredit Proxy:", err);
+    return new Response(
+      JSON.stringify({ ok: false, error: err.message || "proxy_failed" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 };

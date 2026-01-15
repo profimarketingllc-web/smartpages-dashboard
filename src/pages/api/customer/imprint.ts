@@ -8,7 +8,7 @@ import type { APIRoute } from "astro";
  * ✅ Normalisiert D1-Felder für Dashboard-Kompatibilität
  */
 
-const CORE_URL = "https://api.smartpages.online/api/customer/imprint";
+const CORE_URL = "https://api.smartpages.online/api/imprint";
 
 export const GET: APIRoute = async ({ request }) => {
   try {
@@ -30,6 +30,14 @@ export const GET: APIRoute = async ({ request }) => {
       },
       credentials: "include",
     });
+
+    if (!res.ok) {
+      console.warn(`⚠️ Core Worker antwortete mit Status ${res.status}`);
+      return new Response(JSON.stringify({ ok: false, error: "core_error" }), {
+        status: res.status,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     const json = await res.json();
 
@@ -55,11 +63,12 @@ export const GET: APIRoute = async ({ request }) => {
       company_name: i.company_name || "—",
       contact_name: i.contact_name || "—",
       street: i.street || "—",
+      hs_no: i.hs_no || "—",
       postal_code: i.postal_code || "—",
       city: i.city || "—",
       country: i.country || "Deutschland",
-      email: i.email || "—",
       phone: i.phone || "—",
+      email: i.email || "—",
       vat_id: i.tax_id || "—",
       register_court: i.register_court || "—",
       register_number: i.register_number || "—",

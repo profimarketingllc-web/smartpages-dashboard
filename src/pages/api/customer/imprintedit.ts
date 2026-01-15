@@ -1,33 +1,51 @@
 import type { APIRoute } from "astro";
 
-const CORE_URL = "https://api.smartpages.online/api/customer/imprint/update";
+/**
+ * 📦 API: /api/customer/imprintedit
+ * -------------------------------------------------------
+ * ✅ Leitet Impressums-Update an Core Worker weiter
+ * ✅ Nutzt Session-Cookie (.smartpages.online)
+ * ✅ Gibt Worker-Antwort an das Frontend zurück
+ * ✅ Kompatibel mit Core/Customer Worker v5.3
+ */
+
+const CORE_URL = "https://api.smartpages.online/api/imprintedit";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const cookie = request.headers.get("cookie") || "";
     const body = await request.text();
 
+    // 🔗 Anfrage an Core Worker weiterleiten
     const res = await fetch(CORE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "cookie": cookie,
+        "Cookie": cookie,
       },
       body,
       credentials: "include",
     });
 
     const data = await res.json();
+
     return new Response(JSON.stringify(data), {
       status: res.status,
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "https://desk.smartpages.online",
         "Access-Control-Allow-Credentials": "true",
+        "Cache-Control": "no-store",
       },
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("❌ Fehler im /api/customer/imprintedit Proxy:", err);
-    return new Response(JSON.stringify({ ok: false, error: "proxy_failed" }), { status: 500 });
+    return new Response(
+      JSON.stringify({ ok: false, error: err.message || "proxy_failed" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 };

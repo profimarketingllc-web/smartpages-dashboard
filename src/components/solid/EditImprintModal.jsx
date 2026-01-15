@@ -5,7 +5,8 @@ import { t } from "~/utils/i18n";
 /**
  * 🧾 EditImprintModal (SmartPages v5.3)
  * -------------------------------------------------------
- * ✅ nutzt Core Worker Proxy (/api/customer/imprint & /update)
+ * ✅ Lädt über /api/customer/imprint (GET)
+ * ✅ Speichert über /api/customer/imprintedit (POST)
  * ✅ sendet Session-Cookie (.smartpages.online)
  * ✅ feuert refresh-imprint-data nach erfolgreichem Save
  * ✅ enthält hs_no, register_court & register_number
@@ -35,7 +36,7 @@ export default function EditImprintModal(props) {
     props.lang ||
     (typeof window !== "undefined" && window.location.pathname.includes("/en/") ? "en" : "de");
 
-  // 🧭 Modal öffnen (vom Dashboard-Button getriggert)
+  // 🧭 Modal öffnen
   onMount(() => {
     const openHandler = () => {
       console.log("🟢 open-imprint-modal empfangen");
@@ -47,15 +48,17 @@ export default function EditImprintModal(props) {
     onCleanup(() => window.removeEventListener("open-imprint-modal", openHandler));
   });
 
-  // 🗂️ Aktuelle Imprint-Daten laden (über Core Worker)
+  // 🗂️ Imprint-Daten laden
   const loadImprint = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/customer/imprintedit", {
+      const res = await fetch("/api/customer/imprint", {
+        method: "GET",
         credentials: "include",
+        headers: { Accept: "application/json" },
       });
 
-      if (!res.ok) throw new Error("API response not OK");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
       const result = await res.json();
       if (!result?.ok || !result.data) throw new Error("Invalid imprint data");
@@ -70,13 +73,14 @@ export default function EditImprintModal(props) {
         city: i.city || "",
         phone: i.phone || "",
         email: i.email || "",
-        vat: i.tax_id || "",
+        vat: i.vat_id || "",
         registerCourt: i.register_court || "",
         registerNumber: i.register_number || "",
       });
+      console.log("📥 Imprint-Daten erfolgreich geladen:", i);
     } catch (err) {
       console.warn("⚠️ Konnte Imprint-Daten nicht laden:", err);
-      setMessage(t(lang, "loadError", "imprint"));
+      setMessage(t(lang, "loadError", "imprint") || "Fehler beim Laden der Daten.");
     } finally {
       setLoading(false);
     }
@@ -91,7 +95,7 @@ export default function EditImprintModal(props) {
       setLoading(true);
       setMessage(null);
 
-      const res = await fetch("https://api.smartpages.online/api/customer/imprint/update", {
+      const res = await fetch("/api/customer/imprintedit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -115,15 +119,15 @@ export default function EditImprintModal(props) {
       const result = await res.json();
       if (!result?.ok) throw new Error(result?.error || "unknown");
 
-      setMessage(t(lang, "success", "imprint"));
       console.log("✅ Imprint erfolgreich gespeichert");
+      setMessage(t(lang, "success", "imprint") || "Gespeichert.");
 
-      // 🔁 Card neu laden
+      // 🔁 Card aktualisieren
       window.dispatchEvent(new Event("refresh-imprint-data"));
-      setTimeout(() => setShowModal(false), 600);
+      setTimeout(() => setShowModal(false), 800);
     } catch (err) {
       console.error("❌ Fehler beim Speichern:", err);
-      setMessage(t(lang, "error", "imprint"));
+      setMessage(t(lang, "error", "imprint") || "Fehler beim Speichern.");
     } finally {
       setLoading(false);
     }
@@ -143,7 +147,7 @@ export default function EditImprintModal(props) {
         <div class="text-sm mb-3 text-[#E47E00] font-medium">{message()}</div>
       )}
 
-      {/* Formular */}
+      {/* Formularfelder */}
       <div class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
         {[
           ["company", "company", true],
@@ -190,7 +194,7 @@ export default function EditImprintModal(props) {
   );
 }
 
-// 🔹 Reusable Input Field
+// 🔹 Wiederverwendbares Eingabefeld
 function Field(props) {
   return (
     <div>
