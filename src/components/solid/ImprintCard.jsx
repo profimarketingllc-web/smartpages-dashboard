@@ -2,12 +2,13 @@ import { createResource, createSignal, onMount, onCleanup } from "solid-js";
 import { t } from "~/utils/i18n";
 
 /**
- * 🧾 ImprintCard (SmartPages v5-ready)
+ * 🧾 ImprintCard (SmartPages v5.2 – angepasst an D1 Schema)
  * -------------------------------------------------------
  * ✅ Läuft über Core Worker Proxy (/api/customer/imprint)
- * ✅ Sendet Session-Cookie (.smartpages.online)
+ * ✅ Holt Daten aus imprint_data (D1)
  * ✅ Reagiert auf refresh-imprint-data
  * ✅ Einheitliches Design mit CustomerCard
+ * ✅ Mapping korrigiert: postal_code, email, tax_id usw.
  */
 
 export default function ImprintCard(props) {
@@ -27,7 +28,7 @@ export default function ImprintCard(props) {
     try {
       const res = await fetch("/api/customer/imprint", {
         method: "GET",
-        credentials: "include", // Cookie mitnehmen
+        credentials: "include",
         headers: { Accept: "application/json" },
       });
 
@@ -54,17 +55,18 @@ export default function ImprintCard(props) {
         };
       }
 
+      // 🔹 Feldzuordnung aus aktueller DB-Struktur (imprint_data)
       const i = result.data;
       return {
         company: i.company_name || "—",
         contact: i.contact_name || "—",
         street: i.street || "—",
-        number: i.address_addon || "—",
-        zip: i.zip || "—",
+        number: i.hs_no || "—",
+        zip: i.postal_code || "—",
         city: i.city || "—",
-        email: i.support_email || "—",
+        email: i.email || "—",
         phone: i.phone || "—",
-        vat: i.vat_id || "—",
+        vat: i.tax_id || "—",
       };
     } catch (err) {
       console.error("❌ Fehler beim Laden des Impressums:", err);
@@ -115,51 +117,4 @@ export default function ImprintCard(props) {
         </button>
       </div>
 
-      {/* 🧩 Grid-Struktur */}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-x-8 gap-y-3">
-        <div>
-          <span class="font-medium text-gray-800">{t(lang(), "company", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().company)}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t(lang(), "contact", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().contact)}</p>
-        </div>
-
-        <div>
-          <span class="font-medium text-gray-800">{t(lang(), "street", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().street)}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t(lang(), "number", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().number)}</p>
-        </div>
-
-        <div>
-          <span class="font-medium text-gray-800">{t(lang(), "zip", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().zip)}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t(lang(), "city", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().city)}</p>
-        </div>
-      </div>
-
-      {/* 📞 Reihe 4 */}
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-3 mt-4">
-        <div>
-          <span class="font-medium text-gray-800">{t(lang(), "phone", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().phone)}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t(lang(), "email", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().email)}</p>
-        </div>
-        <div>
-          <span class="font-medium text-gray-800">{t(lang(), "vat", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().vat)}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
+      {/* 🧩 Gri*
