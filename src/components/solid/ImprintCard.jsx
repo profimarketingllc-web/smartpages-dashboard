@@ -4,10 +4,10 @@ import { t } from "~/utils/i18n";
 /**
  * 🧾 ImprintCard (SmartPages v5-ready)
  * -------------------------------------------------------
- * ✅ Läuft über Core Worker Proxy (/api/customer/imprint)
- * ✅ Sendet Session-Cookie (.smartpages.online)
- * ✅ Reagiert auf refresh-imprint-data
- * ✅ Einheitliches Design mit CustomerCard
+ * ✅ Holt Daten über Core Worker Proxy (/api/customer/imprint)
+ * ✅ Zeigt Pflichtfelder mit * an
+ * ✅ Straße / Hausnummer getrennt
+ * ✅ Letzte Zeile in 3-Spalten-Layout (Telefon, E-Mail, USt-ID)
  */
 
 export default function ImprintCard(props) {
@@ -22,67 +22,44 @@ export default function ImprintCard(props) {
     }
   });
 
-  // 🔗 Imprint-Daten abrufen (über Core Worker Proxy)
+  // 🔗 Imprint-Daten abrufen
   const fetchImprint = async () => {
     try {
       const res = await fetch("/api/customer/imprint", {
         method: "GET",
-        credentials: "include", // Cookie mitnehmen
+        credentials: "include",
         headers: { Accept: "application/json" },
       });
 
       if (!res.ok) {
         if (res.status === 401) {
           console.warn("Nicht eingeloggt oder Session abgelaufen");
-          return { company: "—", contact: "—" };
+          return {};
         }
         throw new Error(`API-Fehler: ${res.status}`);
       }
 
       const result = await res.json();
-      if (!result?.ok || !result.data) {
-        return {
-          company: "—",
-          contact: "—",
-          street: "—",
-          hs_no: "—",
-          zip: "—",
-          city: "—",
-          email: "—",
-          phone: "—",
-          vat: "—",
-        };
-      }
+      if (!result?.ok || !result.data) return {};
 
       const i = result.data;
       return {
         company: i.company_name || "—",
         contact: i.contact_name || "—",
         street: i.street || "—",
-        hs_no: i.hs_no || "—", // ✅ Hausnummer
+        hs_no: i.hs_no || "—",
         zip: i.postal_code || "—",
         city: i.city || "—",
-        email: i.email || "—",
         phone: i.phone || "—",
+        email: i.email || "—",
         vat: i.tax_id || "—",
       };
     } catch (err) {
       console.error("❌ Fehler beim Laden des Impressums:", err);
-      return {
-        company: "—",
-        contact: "—",
-        street: "—",
-        hs_no: "—",
-        zip: "—",
-        city: "—",
-        email: "—",
-        phone: "—",
-        vat: "—",
-      };
+      return {};
     }
   };
 
-  // 🧠 Solid Resource + Refresh-Event
   const [imprint, { refetch }] = createResource(fetchImprint);
 
   onMount(() => {
@@ -95,7 +72,14 @@ export default function ImprintCard(props) {
   });
 
   const data = () => imprint() || {};
-  const displayValue = (val) => (val ? val : "—");
+  const val = (v) => (v ? v : "—");
+
+  // 🔸 Pflichtfeld-Markierung
+  const requiredLabel = (label) => (
+    <span>
+      {label} <span class="text-red-500 font-bold">*</span>
+    </span>
+  );
 
   // 🧱 Layout
   return (
@@ -115,47 +99,52 @@ export default function ImprintCard(props) {
         </button>
       </div>
 
-      {/* 🧩 Grid-Struktur */}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-x-8 gap-y-3">
+      {/* 🧩 GRID: Grundstruktur */}
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+        {/* Firma / Ansprechpartner */}
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "company", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().company)}</p>
+          <span class="font-medium text-gray-800">{requiredLabel("Firma")}:</span>
+          <p class="text-gray-500">{val(data().company)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "contact", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().contact)}</p>
-        </div>
-
-        <div>
-          <span class="font-medium text-gray-800">{t(lang(), "street", "imprint")}:</span>
-          <p class="text-gray-500">
-            {displayValue(data().street)} {displayValue(data().hs_no)}
-          </p>
+          <span class="font-medium text-gray-800">{requiredLabel("Ansprechpartner")}:</span>
+          <p class="text-gray-500">{val(data().contact)}</p>
         </div>
 
+        {/* Straße / Hausnummer */}
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "zip", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().zip)}</p>
+          <span class="font-medium text-gray-800">{requiredLabel("Straße")}:</span>
+          <p class="text-gray-500">{val(data().street)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "city", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().city)}</p>
+          <span class="font-medium text-gray-800">{requiredLabel("Hausnummer")}:</span>
+          <p class="text-gray-500">{val(data().hs_no)}</p>
+        </div>
+
+        {/* PLZ / Ort */}
+        <div>
+          <span class="font-medium text-gray-800">{requiredLabel("PLZ")}:</span>
+          <p class="text-gray-500">{val(data().zip)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">{requiredLabel("Ort")}:</span>
+          <p class="text-gray-500">{val(data().city)}</p>
         </div>
       </div>
 
-      {/* 📞 Reihe 4 */}
+      {/* 📞 Zeile 4+5 in einer Reihe mit 3 Spalten */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-3 mt-4">
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "phone", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().phone)}</p>
+          <span class="font-medium text-gray-800">{requiredLabel("Telefon")}:</span>
+          <p class="text-gray-500">{val(data().phone)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "email", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().email)}</p>
+          <span class="font-medium text-gray-800">{requiredLabel("E-Mail")}:</span>
+          <p class="text-gray-500">{val(data().email)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "vat", "imprint")}:</span>
-          <p class="text-gray-500">{displayValue(data().vat)}</p>
+          <span class="font-medium text-gray-800">{requiredLabel("USt-ID")}:</span>
+          <p class="text-gray-500">{val(data().vat)}</p>
         </div>
       </div>
     </div>
