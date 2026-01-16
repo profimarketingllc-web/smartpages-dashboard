@@ -1,0 +1,68 @@
+name: Manual Cloudflare Worker Backup
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Optionaler Backup-Tag (z. B. stable-2026-01-16)"
+        required: false
+        default: "manual"
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    name: Backup Cloudflare Workers
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create Backup Folder
+        run: mkdir -p backups/workers
+
+      - name: Backup Cloudflare Workers
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          echo "🔍 Hole Liste aller Worker ..."
+          curl -s -X GET "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts" \
+            -H "Authorization: Bearer ${CF_API_TOKEN}" -o workers.json
+
+          WORKER_NAMES=$(jq -r '.result[].id' workers.json)
+          if [ -z "$WORKER_NAMES" ]; then
+            echo "❌ Keine Worker gefunden oder Zugriff verweigert"
+            cat workers.json
+            exit 1
+          fi
+
+          echo "📦 Gefundene Worker:"
+          echo "$WORKER_NAMES"
+
+          TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+
+          for NAME in $WORKER_NAMES; do
+            echo "🧩 Backup für Worker: $NAME ..."
+            FILE="backups/workers/${NAME}-${TIMESTAMP}.js"
+
+            curl -s -X GET "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts/${NAME}" \
+              -H "Authorization: Bearer ${CF_API_TOKEN}" \
+              -H "Content-Type: application/javascript" -o "$FILE"
+
+            if grep -q "addEventListener" "$FILE"; then
+              echo "✅ Gesichert: $FILE"
+            else
+              echo "⚠️ WARNUNG: Worker ${NAME} enthält keinen Code, wird markiert."
+              mv "$FILE" "${FILE}.invalid"
+            fi
+          done
+
+      - name: Commit & Push Backups
+        run: |
+          git config --global user.name "SmartPages Backup Bot"
+          git config --global user.email "backup@smartpages.online"
+          git add backups/workers
+          git commit -m "💾 Worker Backup – $(date '+%Y-%m-%d %H:%M:%S')" || echo "ℹ️ Keine Änderungen"
+          git push origin HEAD
