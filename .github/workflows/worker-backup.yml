@@ -20,8 +20,8 @@ jobs:
       - name: 🧩 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 📦 Install Tools
-        run: sudo apt-get update && sudo apt-get install -y jq curl
+      - name: 📦 Install jq (JSON Parser)
+        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: 📁 Create Backup Folder
         run: mkdir -p backups/workers
@@ -31,25 +31,31 @@ jobs:
           CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          set -e
           echo "🔍 Hole Liste aller Cloudflare Worker ..."
-          RESPONSE=$(curl -s -w "%{http_code}" -o workers.json \
-            -X GET "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts" \
-            -H "Authorization: Bearer ${CF_API_TOKEN}" \
-            -H "Content-Type: application/json")
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X GET \
+            "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts" \
+            -H "Authorization: Bearer ${CF_API_TOKEN}")
 
-          echo "📡 HTTP-Status: ${RESPONSE}"
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          STATUS=$(echo "$RESPONSE" | tail -n 1)
 
-          if [ "$RESPONSE" -ne 200 ]; then
-            echo "❌ Fehler beim Abrufen der Worker-Liste!"
-            cat workers.json
+          echo "🌐 HTTP Status: $STATUS"
+          echo "📄 Antwort: $BODY" | head -n 20
+
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ API-Fehler beim Abrufen der Worker (Status: $STATUS)"
+            echo "$BODY"
             exit 1
           fi
 
-          WORKER_NAMES=$(jq -r '.result[].id' workers.json || echo "")
+          echo "$BODY" > workers.json
+
+          WORKER_NAMES=$(jq -r '.result[].id' workers.json)
           if [ -z "$WORKER_NAMES" ]; then
-            echo "⚠️ Keine Worker gefunden oder Zugriff verweigert"
-            cat workers.json
-            exit 5
+            echo "❌ Keine Worker gefunden oder Zugriff verweigert"
+            jq '.' workers.json
+            exit 1
           fi
 
           echo "📦 Gefundene Worker:"
@@ -61,16 +67,21 @@ jobs:
             echo "🧩 Sichere Worker: $NAME ..."
             FILE="backups/workers/${NAME}-${TIMESTAMP}.js"
 
-            CODE_RESPONSE=$(curl -s -w "%{http_code}" -o "$FILE" \
-              -X GET "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts/${NAME}" \
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X GET \
+              "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts/${NAME}" \
               -H "Authorization: Bearer ${CF_API_TOKEN}" \
               -H "Content-Type: application/javascript")
 
-            if [ "$CODE_RESPONSE" -ne 200 ]; then
-              echo "⚠️ Fehler beim Abrufen von $NAME (Status $CODE_RESPONSE)"
-              mv "$FILE" "${FILE}.error"
+            BODY=$(echo "$RESPONSE" | head -n -1)
+            STATUS=$(echo "$RESPONSE" | tail -n 1)
+
+            if [ "$STATUS" != "200" ]; then
+              echo "⚠️ Fehler beim Abrufen von $NAME (Status $STATUS)"
+              echo "$BODY" | head -n 15
               continue
             fi
+
+            echo "$BODY" > "$FILE"
 
             if grep -q "addEventListener" "$FILE"; then
               echo "✅ Gesichert: $FILE"
