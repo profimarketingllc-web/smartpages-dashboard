@@ -20,6 +20,9 @@ jobs:
       - name: 🧩 Checkout Repository
         uses: actions/checkout@v4
 
+      - name: 📦 Install Tools
+        run: sudo apt-get update && sudo apt-get install -y jq curl
+
       - name: 📁 Create Backup Folder
         run: mkdir -p backups/workers
 
@@ -29,14 +32,24 @@ jobs:
           CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           echo "🔍 Hole Liste aller Cloudflare Worker ..."
-          curl -s -X GET "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts" \
-            -H "Authorization: Bearer ${CF_API_TOKEN}" -o workers.json
+          RESPONSE=$(curl -s -w "%{http_code}" -o workers.json \
+            -X GET "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts" \
+            -H "Authorization: Bearer ${CF_API_TOKEN}" \
+            -H "Content-Type: application/json")
 
-          WORKER_NAMES=$(jq -r '.result[].id' workers.json)
-          if [ -z "$WORKER_NAMES" ]; then
-            echo "❌ Keine Worker gefunden oder Zugriff verweigert"
+          echo "📡 HTTP-Status: ${RESPONSE}"
+
+          if [ "$RESPONSE" -ne 200 ]; then
+            echo "❌ Fehler beim Abrufen der Worker-Liste!"
             cat workers.json
             exit 1
+          fi
+
+          WORKER_NAMES=$(jq -r '.result[].id' workers.json || echo "")
+          if [ -z "$WORKER_NAMES" ]; then
+            echo "⚠️ Keine Worker gefunden oder Zugriff verweigert"
+            cat workers.json
+            exit 5
           fi
 
           echo "📦 Gefundene Worker:"
@@ -48,9 +61,16 @@ jobs:
             echo "🧩 Sichere Worker: $NAME ..."
             FILE="backups/workers/${NAME}-${TIMESTAMP}.js"
 
-            curl -s -X GET "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts/${NAME}" \
+            CODE_RESPONSE=$(curl -s -w "%{http_code}" -o "$FILE" \
+              -X GET "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/workers/scripts/${NAME}" \
               -H "Authorization: Bearer ${CF_API_TOKEN}" \
-              -H "Content-Type: application/javascript" -o "$FILE"
+              -H "Content-Type: application/javascript")
+
+            if [ "$CODE_RESPONSE" -ne 200 ]; then
+              echo "⚠️ Fehler beim Abrufen von $NAME (Status $CODE_RESPONSE)"
+              mv "$FILE" "${FILE}.error"
+              continue
+            fi
 
             if grep -q "addEventListener" "$FILE"; then
               echo "✅ Gesichert: $FILE"
