@@ -9,7 +9,7 @@ import type { APIRoute } from "astro";
  * ✅ Kompatibel mit Core/Customer Worker v5.3
  */
 
-const CORE_URL = "https://api.smartpages.online/api/imprintedit";
+const CORE_URL = "https://api.smartpages.online/api/customer/imprintedit";
 
 export const POST: APIRoute = async ({ request }) => {
   try {

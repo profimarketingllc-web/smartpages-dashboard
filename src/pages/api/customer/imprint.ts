@@ -8,7 +8,7 @@ import type { APIRoute } from "astro";
  * ✅ Normalisiert D1-Felder für Dashboard-Kompatibilität
  */
 
-const CORE_URL = "https://api.smartpages.online/api/imprint";
+const CORE_URL = "https://api.smartpages.online/api/customer/imprint";
 
 export const GET: APIRoute = async ({ request }) => {
   try {
