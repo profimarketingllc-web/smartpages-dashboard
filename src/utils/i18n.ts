@@ -10,11 +10,12 @@
 const translations: Record<string, any> = {
   system: {
     de: {
+      title: "Kundendaten",
       closeButton: "Schließen",
       cancelButton: "Abbrechen",
       saveButton: "Speichern",
+      button: "Profil bearbeiten"
       statusActive: "eingeloggt",
-      statusInactive: "Inaktiv",
       loggedOut: "abgemeldet",
       loading: "Lade Daten …",
       error: "Ein Fehler ist aufgetreten.",
@@ -22,11 +23,12 @@ const translations: Record<string, any> = {
       warning: "Bitte überprüfe deine Eingaben.",
     },
     en: {
+      title: "Customer Data",
       closeButton: "Close",
       cancelButton: "Cancel",
       saveButton: "Save",
+      button: "Edit Profile"
       statusActive: "logged in",
-      statusInactive: "Inactive",
       loggedOut: "logged out",
       loading: "Loading data…",
       error: "An error occurred.",
