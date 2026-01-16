@@ -1,0 +1,55 @@
+name: Manual Astro Project Backup
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Optionaler Backup-Tag (z. B. astro-stable-2026-01-16)"
+        required: false
+        default: "manual"
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    name: Backup Astro Project Structure
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create Backup Folder
+        run: mkdir -p backups/astro
+
+      - name: Copy Astro Source Files
+        run: |
+          echo "📦 Kopiere Astro-Projektstruktur..."
+          rsync -av --exclude='node_modules' \
+                    --exclude='.astro' \
+                    --exclude='dist' \
+                    --exclude='.git' \
+                    --exclude='.vscode' \
+                    ./ ./backups/astro/
+
+      - name: Compress Backups (Hybrid Mode)
+        run: |
+          TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+          cd backups
+
+          # 🌀 Erstelle immer eine aktuelle Sicherung (rolling)
+          zip -r "astro-latest.zip" astro
+
+          # 🧭 Erstelle zusätzlich einen Snapshot mit Tag und Timestamp
+          zip -r "astro-${{ github.event.inputs.tag }}-${TIMESTAMP}.zip" astro
+
+          # 🧹 Temporären Ordner löschen
+          rm -rf astro
+
+      - name: Commit & Push Backups
+        run: |
+          git config --global user.name "SmartPages Backup Bot"
+          git config --global user.email "backup@smartpages.online"
+          git add backups/
+          git commit -m "💾 Astro Backup – $(date '+%Y-%m-%d %H:%M:%S')" || echo "ℹ️ Keine Änderungen zum Commit"
+          git push origin HEAD
