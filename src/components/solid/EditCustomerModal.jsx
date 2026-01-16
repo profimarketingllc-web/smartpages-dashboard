@@ -3,12 +3,13 @@ import ModalWrapper from "./ModalWrapper";
 import { t } from "~/utils/i18n";
 
 /**
- * 🧱 EditCustomerModal (SmartPages v5.3-ready)
+ * 🧱 EditCustomerModal (SmartPages v5.4)
  * -------------------------------------------------------
  * ✅ GET lädt aktuelle Kundendaten (/api/customer/customer)
  * ✅ POST speichert Änderungen (/api/customer/customeredit)
- * ✅ Proxy über Core Worker mit Cookies
- * ✅ Visuelles Feedback + Event zum Refresh der CustomerCard
+ * ✅ Blockiert Speichern, bis Daten geladen sind
+ * ✅ Automatische Erkennung: is_business = (company_name != "")
+ * ✅ Kein Sternchen beim Firmennamen
  */
 
 export default function EditCustomerModal(props) {
@@ -20,12 +21,16 @@ export default function EditCustomerModal(props) {
     is_business: 0,
   });
   const [loading, setLoading] = createSignal(false);
+  const [dataLoaded, setDataLoaded] = createSignal(false);
   const [error, setError] = createSignal("");
   const [success, setSuccess] = createSignal(false);
 
   const lang =
     props.lang ||
-    (typeof window !== "undefined" && window.location.pathname.includes("/en/") ? "en" : "de");
+    (typeof window !== "undefined" &&
+    window.location.pathname.includes("/en/")
+      ? "en"
+      : "de");
 
   // 🟢 Modal öffnen
   onMount(() => {
@@ -34,7 +39,8 @@ export default function EditCustomerModal(props) {
       setShowModal(true);
       setError("");
       setSuccess(false);
-      await loadCustomerData();
+      setDataLoaded(false);
+      loadCustomerData(); // nicht blockierend
     };
     window.addEventListener("open-customer-modal", openHandler);
     onCleanup(() => window.removeEventListener("open-customer-modal", openHandler));
@@ -64,6 +70,8 @@ export default function EditCustomerModal(props) {
         company_name: data.company_name || "",
         is_business: data.is_business || 0,
       });
+
+      setDataLoaded(true); // ✅ jetzt kann gespeichert werden
     } catch (err) {
       console.error("❌ Fehler beim Laden der Kundendaten:", err);
       setError(t(lang, "loadError", "customer") || "Fehler beim Laden der Daten");
@@ -83,11 +91,17 @@ export default function EditCustomerModal(props) {
     setSuccess(false);
 
     try {
+      // 🧠 Automatische Business-Erkennung
+      const payload = {
+        ...formData(),
+        is_business: formData().company_name.trim() !== "" ? 1 : 0,
+      };
+
       const res = await fetch("/api/customer/customeredit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(formData()),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) throw new Error(`API-Fehler (${res.status})`);
@@ -124,10 +138,10 @@ export default function EditCustomerModal(props) {
 
       {/* Formularfelder */}
       <div class="space-y-4 mt-3">
-        {/* Firma */}
+        {/* Firma (kein Pflichtfeld mehr) */}
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            {t(lang, "company", "imprint")} *
+            {t(lang, "company", "imprint")}
           </label>
           <input
             type="text"
@@ -187,13 +201,13 @@ export default function EditCustomerModal(props) {
           {t(lang, "cancelButton", "system")}
         </button>
         <button
-          class={`px-5 py-2 rounded-lg text-sm font-medium shadow transition ${
-            loading()
+          class={`px-5 py-2 rounded-lg text-sm font-medium shadow transition-transform duration-200 will-change-transform ${
+            loading() || !dataLoaded()
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:scale-105"
           }`}
           onClick={handleSave}
-          disabled={loading()}
+          disabled={loading() || !dataLoaded()}
         >
           {loading()
             ? t(lang, "saving", "system") || "Speichern..."
