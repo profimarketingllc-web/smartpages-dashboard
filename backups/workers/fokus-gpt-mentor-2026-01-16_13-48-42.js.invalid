@@ -1,0 +1,289 @@
+--7b6351bdaaac1eb9d65aa10e8a89aca2a720ac7166f9fce761ce46548018
+Content-Disposition: form-data; name="worker.js"
+
+/**
+ * fokus-gpt-mentor – Version v2.4 (Final – 06.01.2026)
+ * -----------------------------------------------------
+ * Verantwortlich für: Weekly Capture, Snapshot & Pre-Seeding
+ * Läuft automatisch Samstag 05:00 UTC
+ * Vollständig Cloudflare-kompatibel
+ */
+
+////////////////////////////////////////////////////////////
+// Hilfsfunktionen
+////////////////////////////////////////////////////////////
+
+const log = {
+  info: (...args) => console.log("[mentor-worker]", ...args),
+  error: (...args) => console.error("[mentor-worker:ERROR]", ...args),
+};
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data, null, 2), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8" },
+  });
+}
+
+function getWeekRangeSatToFri(baseDate = new Date()) {
+  const day = baseDate.getUTCDay();
+  const saturday = new Date(Date.UTC(baseDate.getUTCFullYear(), baseDate.getUTCMonth(), baseDate.getUTCDate()));
+  const diffToSaturday = (day + 1) % 7;
+  saturday.setUTCDate(saturday.getUTCDate() - diffToSaturday);
+  const friday = new Date(saturday);
+  friday.setUTCDate(friday.getUTCDate() + 6);
+  const toISO = (d) => d.toISOString().slice(0, 10);
+  return { start: toISO(saturday), end: toISO(friday) };
+}
+
+function addDaysISO(isoDate, days) {
+  const [y, m, d] = isoDate.split("-").map(Number);
+  const base = new Date(Date.UTC(y, m - 1, d));
+  base.setUTCDate(base.getUTCDate() + days);
+  return base.toISOString().slice(0, 10);
+}
+
+function getIsoWeekInfo(date) {
+  const tmp = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const day = tmp.getUTCDay() || 7;
+  tmp.setUTCDate(tmp.getUTCDate() + 4 - day);
+  const isoYear = tmp.getUTCFullYear();
+  const yearStart = new Date(Date.UTC(isoYear, 0, 1));
+  const diffMs = tmp.getTime() - yearStart.getTime();
+  const weekNo = Math.ceil((diffMs / 86400000 + 1) / 7);
+  return { isoYear, isoWeek: weekNo };
+}
+
+function getIsoWeekFromRange(weekStartIso, weekEndIso) {
+  const [y, m, d] = weekEndIso.split("-").map(Number);
+  const friday = new Date(Date.UTC(y, m - 1, d));
+  const day = friday.getUTCDay();
+  const diffToMonday = (day + 6) % 7;
+  const monday = new Date(friday);
+  monday.setUTCDate(friday.getUTCDate() - diffToMonday);
+  return getIsoWeekInfo(monday);
+}
+
+////////////////////////////////////////////////////////////
+// Pre-Seed Days Routine (nur bei Weekly Capture)
+////////////////////////////////////////////////////////////
+
+async function ensureDaysExist(range, db) {
+  const existing = await db
+    .prepare("SELECT day_date FROM days WHERE day_date BETWEEN ? AND ?")
+    .bind(range.start, range.end)
+    .all();
+
+  const existingDates = new Set(existing.results.map((r) => r.day_date));
+  const toInsert = [];
+
+  for (let i = 0; i < 7; i++) {
+    const d = addDaysISO(range.start, i);
+    if (!existingDates.has(d)) toInsert.push(d);
+  }
+
+  for (const date of toInsert) {
+    await db
+      .prepare(`INSERT INTO days (day_date, created_at, preseeded) VALUES (?, datetime('now'), 1)`)
+      .bind(date)
+      .run();
+    log.info(`[preseed] Neuer Day angelegt: ${date}`);
+  }
+
+  log.info(`[preseed] Abschluss: ${toInsert.length} neue Tage.`);
+}
+
+////////////////////////////////////////////////////////////
+// Mentor Framework abrufen
+////////////////////////////////////////////////////////////
+
+async function getMentorFramework(scope = "mentoring", db) {
+  try {
+    const row = await db
+      .prepare("SELECT framework_json FROM mentor_frameworks WHERE scope = ? LIMIT 1")
+      .bind(scope)
+      .first();
+    if (!row) return null;
+    return typeof row.framework_json === "string"
+      ? JSON.parse(row.framework_json)
+      : row.framework_json;
+  } catch (err) {
+    log.error("MentorFramework Error:", err);
+    return null;
+  }
+}
+
+////////////////////////////////////////////////////////////
+// Weekly Snapshot & Capture
+////////////////////////////////////////////////////////////
+
+async function buildWeeklySnapshot(env, url) {
+  const db = env.Fokus_GPT;
+  const weeklyUrl = url instanceof URL ? url : new URL(url);
+  const weekStartParam = weeklyUrl.searchParams.get("week_start");
+  const scopeParam = weeklyUrl.searchParams.get("scope") || "mentoring";
+
+  const range = weekStartParam
+    ? { start: weekStartParam, end: addDaysISO(weekStartParam, 6) }
+    : getWeekRangeSatToFri();
+
+  const { isoYear, isoWeek } = getIsoWeekFromRange(range.start, range.end);
+  const mentorFramework = await getMentorFramework(scopeParam, db);
+
+  const [summaryRow, moodRow, projectRows] = await Promise.all([
+    db.prepare(
+      `SELECT COUNT(DISTINCT d.day_date) AS total_days, COUNT(*) AS total_project_days
+       FROM project_day pd JOIN days d ON d.id = pd.day_id
+       WHERE d.day_date BETWEEN ? AND ?`
+    ).bind(range.start, range.end).first(),
+
+    db.prepare(
+      `SELECT AVG(mood) AS avg_mood, AVG(focus) AS avg_focus,
+              AVG(motivation) AS avg_motivation, AVG(energy) AS avg_energy
+       FROM days WHERE day_date BETWEEN ? AND ?`
+    ).bind(range.start, range.end).first(),
+
+    db.prepare(
+      `SELECT pd.*, d.day_date FROM project_day pd JOIN days d ON d.id = pd.day_id
+       WHERE d.day_date BETWEEN ? AND ? ORDER BY d.day_date ASC, pd.project_slug ASC`
+    ).bind(range.start, range.end).all(),
+  ]);
+
+  const rows = projectRows?.results || [];
+  const projectsMap = new Map();
+
+  for (const row of rows) {
+    const key = row.project_slug || "unknown";
+    if (!projectsMap.has(key)) {
+      projectsMap.set(key, {
+        project_slug: row.project_slug,
+        project_name: row.project_name,
+        days_active: 0,
+        momentum_sum: 0,
+        momentum_count: 0,
+        week_goal: row.week_goal || null,
+        progress_items: [],
+        blockers: [],
+        focus_next: [],
+      });
+    }
+    const p = projectsMap.get(key);
+    p.days_active += 1;
+    if (row.momentum && !Number.isNaN(Number(row.momentum))) {
+      p.momentum_sum += Number(row.momentum);
+      p.momentum_count += 1;
+    }
+    if (!p.week_goal && row.week_goal) p.week_goal = row.week_goal;
+    if (row.progress) p.progress_items.push(row.progress);
+    if (row.blocker) p.blockers.push(row.blocker);
+    if (row.focus_tomorrow) p.focus_next.push(row.focus_tomorrow);
+  }
+
+  const projects = Array.from(projectsMap.values()).map((p) => ({
+    project_slug: p.project_slug,
+    project_name: p.project_name,
+    days_active: p.days_active,
+    avg_momentum: p.momentum_count > 0 ? p.momentum_sum / p.momentum_count : null,
+    week_goal: p.week_goal,
+    progress_items: p.progress_items,
+    blockers: p.blockers,
+    focus_next: p.focus_next,
+  }));
+
+  return {
+    status: "ok",
+    source: "live_db",
+    snapshot: {
+      week: { start: range.start, end: range.end, iso_year: isoYear, iso_week: isoWeek, generated_at: new Date().toISOString() },
+      summary: summaryRow ?? {},
+      mood: moodRow ?? {},
+      projects,
+      mentor_framework: mentorFramework || null,
+    },
+  };
+}
+
+async function handleWeeklyCapture(url, env) {
+  const db = env.Fokus_GPT;
+  const range = getWeekRangeSatToFri();
+  await ensureDaysExist(range, db); // ✅ <- korrekt & vollständig
+  const snapshot = await buildWeeklySnapshot(env, url);
+  const weekInfo = snapshot.snapshot.week;
+  const payload = JSON.stringify(snapshot);
+
+  const existing = await db
+    .prepare("SELECT id FROM weekly_reports WHERE week_start=? OR week_end=? LIMIT 1")
+    .bind(weekInfo.start, weekInfo.end)
+    .first();
+
+  if (existing && existing.id) {
+    await db
+      .prepare("UPDATE weekly_reports SET content_json=?, created_at=datetime('now') WHERE id=?")
+      .bind(payload, existing.id)
+      .run();
+  } else {
+    await db
+      .prepare(
+        `INSERT INTO weekly_reports
+         (week_start, week_end, content_json, week_year, week_number, report_type, created_at)
+         VALUES (?1, ?2, ?3, ?4, ?5, 'weekreport', datetime('now'))`
+      )
+      .bind(weekInfo.start, weekInfo.end, payload, weekInfo.iso_year, weekInfo.iso_week)
+      .run();
+  }
+
+  log.info(`[capture] Weekly Report stored: ${weekInfo.start} → ${weekInfo.end}`);
+  return json({ status: "ok", message: `Weekly report stored for ${weekInfo.start} → ${weekInfo.end}` });
+}
+
+////////////////////////////////////////////////////////////
+// Cron Routine (Samstag 05:00 UTC)
+////////////////////////////////////////////////////////////
+
+async function runMentorCron(env) {
+  const fakeUrl = new URL("https://cron.local/weekly/capture?scope=mentoring");
+  await handleWeeklyCapture(fakeUrl, env);
+}
+
+////////////////////////////////////////////////////////////
+// Worker Entry
+////////////////////////////////////////////////////////////
+
+const worker = {
+  async fetch(req, env) {
+    const url = new URL(req.url);
+    const { pathname } = url;
+
+    try {
+      if (pathname === "/health") return new Response("ok", { status: 200 });
+      if (pathname === "/weekly/raw") return json(await buildWeeklySnapshot(env, url));
+      if (pathname === "/weekly/capture") return handleWeeklyCapture(url, env);
+      if (pathname === "/debug/mentoring-run" && req.method === "POST") {
+        await runMentorCron(env);
+        return json({ status: "ok", message: "Mentor cron run completed" });
+      }
+
+      return new Response("not found", { status: 404 });
+    } catch (err) {
+      log.error("Worker Exception:", err);
+      return json({ status: "error", message: String(err) }, 500);
+    }
+  },
+
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(
+      (async () => {
+        try {
+          await runMentorCron(env);
+          log.info("[cron] Weekly capture erfolgreich abgeschlossen");
+        } catch (err) {
+          log.error("[cron] Fehler im Cron:", err);
+        }
+      })()
+    );
+  },
+};
+
+export default worker;
+
+--7b6351bdaaac1eb9d65aa10e8a89aca2a720ac7166f9fce761ce46548018--

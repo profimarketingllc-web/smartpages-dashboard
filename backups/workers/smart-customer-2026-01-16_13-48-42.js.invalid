@@ -1,0 +1,200 @@
+--a117f8b8c60a6c994882db1bee3dd989655626f723a5c17f4ed35184c496
+Content-Disposition: form-data; name="worker.js"
+
+// ============================================================
+// 🌟 SmartPages CUSTOMER Worker – v5.3 (Stable, mit Edit-Fix)
+// ============================================================
+// Endpunkte (Frontend-Matching):
+//   ✅ /customer        → Kundendaten abrufen (Card)
+//   ✅ /customeredit    → Kundendaten abrufen + speichern (Modal)
+//   ✅ /imprint         → Impressum abrufen (Card)
+//   ✅ /imprintedit     → Impressum abrufen + speichern (Modal)
+// ============================================================
+
+export default {
+  async fetch(req, env, ctx) {
+    const url = new URL(req.url);
+    const { pathname } = url;
+
+    try {
+      // ============================================================
+      // 0️⃣ Health Check
+      // ============================================================
+      if (pathname === "/ping") {
+        return jsonResponse({ ok: true, service: "customer-worker", version: "5.3 (Stable)" });
+      }
+
+      // ============================================================
+      // 1️⃣ Authentifizierung
+      // ============================================================
+      const userEmail = req.headers.get("x-session-email");
+      if (!userEmail) {
+        console.warn("[CustomerWorker] ❌ Unauthorized access attempt");
+        return jsonResponse({ ok: false, error: "unauthorized" }, 401);
+      }
+
+      // ============================================================
+      // 2️⃣ CUSTOMER – Kundendaten abrufen (Card)
+      // ============================================================
+      if (pathname === "/customer" && req.method === "GET") {
+        const user = await env.CUSTOMER_DB.prepare(
+          `SELECT email, first_name, last_name, company_name, plan, status, 
+                  language, is_business, customer_no, trial_end, last_login, created_at
+           FROM users WHERE email = ? LIMIT 1`
+        ).bind(userEmail).first();
+
+        if (!user)
+          return jsonResponse({ ok: false, message: "user_not_found" }, 404);
+
+        ctx.waitUntil(
+          env.CUSTOMER_DB.prepare(`UPDATE users SET last_login = datetime('now') WHERE email = ?`)
+            .bind(userEmail)
+            .run()
+        );
+
+        return jsonResponse({ ok: true, data: user });
+      }
+
+      // ============================================================
+      // 3️⃣ CUSTOMEREDIT – Kundendaten abrufen (Modal)
+      // ============================================================
+      if (pathname === "/customeredit" && req.method === "GET") {
+        const user = await env.CUSTOMER_DB.prepare(
+          `SELECT email, first_name, last_name, company_name, plan, status, 
+                  language, is_business, customer_no
+           FROM users WHERE email = ? LIMIT 1`
+        ).bind(userEmail).first();
+
+        if (!user)
+          return jsonResponse({ ok: false, message: "user_not_found" }, 404);
+
+        return jsonResponse({ ok: true, data: user });
+      }
+
+      // ============================================================
+      // 4️⃣ CUSTOMEREDIT – Kundendaten speichern (Modal)
+      // ============================================================
+      if (pathname === "/customeredit" && req.method === "POST") {
+        const body = await req.json().catch(() => null);
+        if (!body) return jsonResponse({ ok: false, error: "invalid_json" }, 400);
+
+        const { first_name, last_name, company_name, is_business } = body;
+
+        await env.CUSTOMER_DB.prepare(
+          `UPDATE users
+           SET first_name = ?, last_name = ?, company_name = ?, is_business = ?
+           WHERE email = ?`
+        ).bind(first_name, last_name, company_name, is_business ? 1 : 0, userEmail).run();
+
+        console.log(`[CustomerWorker] ✅ Kundendaten aktualisiert für: ${userEmail}`);
+        return jsonResponse({ ok: true, message: "customer_updated" });
+      }
+
+      // ============================================================
+      // 5️⃣ IMPRINT – Daten abrufen (Card)
+      // ============================================================
+      if (pathname === "/imprint" && req.method === "GET") {
+        const imprint = await env.CUSTOMER_DB.prepare(
+          `SELECT * FROM imprint_data WHERE email = ? LIMIT 1`
+        ).bind(userEmail).first();
+
+        if (!imprint)
+          return jsonResponse({ ok: true, data: null, message: "no_imprint_found" });
+
+        return jsonResponse({ ok: true, data: imprint });
+      }
+
+      // ============================================================
+      // 6️⃣ IMPRINTEDIT – Daten abrufen (Modal)
+      // ============================================================
+      if (pathname === "/imprintedit" && req.method === "GET") {
+        const imprint = await env.CUSTOMER_DB.prepare(
+          `SELECT * FROM imprint_data WHERE email = ? LIMIT 1`
+        ).bind(userEmail).first();
+
+        if (!imprint)
+          return jsonResponse({ ok: true, data: null, message: "no_imprint_found" });
+
+        return jsonResponse({ ok: true, data: imprint });
+      }
+
+      // ============================================================
+      // 7️⃣ IMPRINTEDIT – Daten speichern (Modal)
+      // ============================================================
+      if (pathname === "/imprintedit" && req.method === "POST") {
+        const data = await req.json().catch(() => null);
+        if (!data) return jsonResponse({ ok: false, error: "invalid_json" }, 400);
+
+        const customer = await env.CUSTOMER_DB.prepare(
+          `SELECT customer_no FROM users WHERE email = ? LIMIT 1`
+        ).bind(userEmail).first();
+
+        const customer_no = customer?.customer_no;
+        if (!customer_no)
+          return jsonResponse({ ok: false, error: "customer_no_missing" }, 400);
+
+        await env.CUSTOMER_DB.prepare(
+          `INSERT INTO imprint_data (
+            customer_no, email, company_name, contact_name, street, hs_no, postal_code, city, country,
+            phone, email, tax_id, register_court, register_number, updated_at
+          )
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+          ON CONFLICT(email)
+          DO UPDATE SET
+            company_name = excluded.company_name,
+            contact_name = excluded.contact_name,
+            street = excluded.street,
+            hs_no = excluded.hs_no,
+            postal_code = excluded.postal_code,
+            city = excluded.city,
+            country = excluded.country,
+            phone = excluded.phone,
+            email = excluded.email,
+            tax_id = excluded.tax_id,
+            register_court = excluded.register_court,
+            register_number = excluded.register_number,
+            updated_at = datetime('now');`
+        ).bind(
+          customer_no,
+          userEmail,
+          data.company_name || "",
+          data.contact_name || "",
+          data.street || "",
+          data.hs_no || "",
+          data.postal_code || "",
+          data.city || "",
+          data.country || "Deutschland",
+          data.phone || "",
+          data.email || "",
+          data.tax_id || "",
+          data.register_court || "",
+          data.register_number || ""
+        ).run();
+
+        console.log(`✅ Imprint gespeichert für ${userEmail} (Kunde: ${customer_no})`);
+        return jsonResponse({ ok: true, message: "imprint_updated" });
+      }
+
+      // ============================================================
+      // ❌ Fallback
+      // ============================================================
+      return jsonResponse({ ok: false, error: "not_found" }, 404);
+
+    } catch (err) {
+      console.error("[CustomerWorker] ❌ Fehler:", err);
+      return jsonResponse({ ok: false, error: err.message }, 500);
+    }
+  },
+};
+
+// ============================================================
+// 🔧 Helper Functions
+// ============================================================
+function jsonResponse(obj, status = 200) {
+  return new Response(JSON.stringify(obj, null, 2), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+--a117f8b8c60a6c994882db1bee3dd989655626f723a5c17f4ed35184c496--

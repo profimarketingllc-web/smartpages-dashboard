@@ -1,0 +1,241 @@
+--4a1eedb789a5da8d2696631d9b2a7ca405b143b32ec5433b47d23a6c2a7c
+Content-Disposition: form-data; name="worker.js"
+
+/**
+ * 💌 SmartPages MAILER Worker – Production v6.5 (final)
+ * -------------------------------------------------
+ * Features:
+ *  ✅ Versand über Resend mit Template-Registry
+ *  ✅ Kein /verify mehr – nur /api/auth/verify
+ *  ✅ 100% interne Cloudflare-Dienstbindung (keine externen URLs)
+ *  ✅ Logging in D1 (email_events, bounce tracking)
+ *  ✅ Healthcheck + CORS + Webhooks
+ */
+
+export default {
+  async fetch(req, env, ctx) {
+    const url = new URL(req.url);
+    const { pathname, searchParams } = url;
+
+    // ============================================================
+    // 🟡 CORS Preflight
+    // ============================================================
+    if (req.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: cors() });
+    }
+
+    // ============================================================
+    // 1️⃣ SEND TEMPLATE EMAIL
+    // ============================================================
+    if (pathname === "/api/send" && req.method === "POST") {
+      let payload;
+      try {
+        payload = await req.json();
+      } catch {
+        return json({ ok: false, error: "invalid_json" }, 400);
+      }
+
+      const {
+        type,
+        email,
+        lang = "de",
+        first_name,
+        last_name = "",
+        data = {},
+      } = payload;
+
+      if (!type || !email)
+        return json({ ok: false, error: "missing_fields" }, 400);
+
+      // 🧠 Template aus Registry validieren
+      const templateMeta = TEMPLATE_REGISTRY[type];
+      if (!templateMeta)
+        return json({ ok: false, error: `unknown_type_${type}` }, 400);
+
+      // ✅ Nur noch saubere Verify-URL auf /api/auth/verify
+      const verifyUrl = `https://api.smartpages.online/api/auth/verify?token=${
+        data.token || ""
+      }&lang=${lang}`;
+
+      try {
+        // 📜 Template aus D1 abrufen (optional)
+        const template = await env.CORE_DB.prepare(`
+          SELECT template_id, subject
+          FROM mail_templates
+          WHERE type = ? AND lang = ? AND active = 1
+          LIMIT 1
+        `)
+          .bind(type, lang)
+          .first();
+
+        const subject =
+          template?.subject ||
+          (lang === "en"
+            ? templateMeta.subject.en
+            : templateMeta.subject.de);
+        const templateId = template?.template_id || null;
+
+        // ⚙️ Variablen vorbereiten
+        const variables = {
+          firstName: first_name,
+          lastName: last_name || "",
+          projectName: "SmartPages",
+          supportEmail: env.MAIL_SUPPORT || "support@smartpages.online",
+          verifyUrl,
+          validMinutes: data.validMinutes || 15,
+          ...data,
+        };
+
+        let response;
+
+        if (templateId) {
+          // ✅ Template-Mail via Resend
+          const mailData = {
+            from: env.MAIL_FROM || "SmartPages <no-reply@smartpages.online>",
+            to: [email],
+            subject,
+            template: {
+              id: templateId,
+              variables,
+            },
+          };
+
+          response = await sendViaResend(env, mailData);
+        } else {
+          // 🧩 Fallback HTML-Mail
+          const fallback = {
+            from: env.MAIL_FROM || "SmartPages <no-reply@smartpages.online>",
+            to: [email],
+            subject,
+            html: `
+              <p>Hallo ${[first_name, last_name].filter(Boolean).join(" ")},</p>
+              <p>${templateMeta.fallback(
+                lang,
+                verifyUrl,
+                variables.validMinutes
+              )}</p>
+            `,
+          };
+
+          response = await sendViaResend(env, fallback);
+        }
+
+        // 🪵 Logging in D1
+        await env.CORE_DB.prepare(`
+          INSERT INTO email_events (email, event_type, provider, payload, provider_response, status_code)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `)
+          .bind(
+            email,
+            type,
+            "resend",
+            JSON.stringify(payload),
+            JSON.stringify(response.result),
+            response.status
+          )
+          .run();
+
+        console.log(`📧 Mail erfolgreich an ${email} gesendet`);
+        return json({ ok: true, message: "mail_sent" }, 200);
+      } catch (err) {
+        console.error("❌ Mail send failed:", err);
+        return json({ ok: false, error: err.message }, 500);
+      }
+    }
+
+    // ============================================================
+    // 2️⃣ WEBHOOKS – Resend Events
+    // ============================================================
+    if (pathname === "/api/webhooks/resend" && req.method === "POST") {
+      const body = await req.json().catch(() => null);
+      if (!body) return json({ ok: false, error: "invalid_json" }, 400);
+
+      const event = body.type || "unknown";
+      const email = body.data?.email || null;
+      console.log(`📩 Webhook received: ${event} for ${email}`);
+
+      try {
+        await env.CORE_DB.prepare(`
+          INSERT INTO email_events (email, event_type, provider, payload)
+          VALUES (?, ?, ?, ?)
+        `)
+          .bind(email, event, "resend", JSON.stringify(body))
+          .run();
+
+        if (["email.bounced", "email.delivery_failed"].includes(event)) {
+          await env.CORE_DB.prepare(`
+            INSERT OR IGNORE INTO bounced_emails (email, event_type, provider, created_at)
+            VALUES (?, ?, ?, datetime('now'))
+          `)
+            .bind(email, event, "resend")
+            .run();
+        }
+      } catch (err) {
+        console.error("❌ Webhook log failed:", err);
+      }
+
+      return json({ ok: true, message: "webhook_logged" }, 200);
+    }
+
+    // ============================================================
+    // 3️⃣ HEALTH CHECK
+    // ============================================================
+    if (pathname === "/ping") {
+      return json({ ok: true, service: "mailer", status: "running" }, 200);
+    }
+
+    // ============================================================
+    // ❌ Fallback
+    // ============================================================
+    return json({ ok: false, error: "not_found" }, 404);
+  },
+};
+
+// ============================================================
+// 📋 TEMPLATE REGISTRY
+// ============================================================
+const TEMPLATE_REGISTRY = {
+  magic_link: {
+    subject: {
+      de: "Dein Login-Link für SmartPages",
+      en: "Your SmartPages Login Link",
+    },
+    fallback: (lang, url, minutes) =>
+      lang === "en"
+        ? `Click the link below to log in (valid for ${minutes} minutes):<br/><a href="${url}">${url}</a>`
+        : `Klicke auf den folgenden Link, um dich einzuloggen (gültig für ${minutes} Minuten):<br/><a href="${url}">${url}</a>`,
+  },
+};
+
+// ============================================================
+// 🔧 Helpers
+// ============================================================
+async function sendViaResend(env, data) {
+  const send = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  const result = await send.json();
+  return { status: send.status, result };
+}
+
+function cors() {
+  return {
+    "Access-Control-Allow-Origin": "https://*.smartpages.online",
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+    "Access-Control-Allow-Headers": "content-type",
+  };
+}
+
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj, null, 2), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8", ...cors() },
+  });
+}
+
+--4a1eedb789a5da8d2696631d9b2a7ca405b143b32ec5433b47d23a6c2a7c--

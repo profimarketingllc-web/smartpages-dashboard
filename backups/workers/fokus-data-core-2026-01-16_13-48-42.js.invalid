@@ -1,0 +1,312 @@
+--b42ba3ce9500bda448a121425b319d853e25374837b1e836a370f8d65dfc
+Content-Disposition: form-data; name="index.js"
+
+/**
+ * Fokus Data-Core v2.6 Light (Production Stable)
+ * -----------------------------------------------
+ * Enthält:
+ *  - tägliche Prüfung/Erstellung von Days
+ *  - Webhook für Tagesberichte
+ *  - Lokale DailyReport-Abfrage
+ *  - Weekly Summary für Mentor-Systeme
+ *
+ * Kein Moodboard-Sync, keine externen Calls.
+ */
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const path = url.pathname;
+    const method = request.method.toUpperCase();
+
+    const noAuthPaths = ["/health", "/getDailyReport"];
+    const requireAuth = env.INGEST_SECRET && env.INGEST_SECRET.length > 0;
+
+    if (requireAuth && !noAuthPaths.includes(path)) {
+      const secret = request.headers.get("x-ingest-secret");
+      if (!secret || secret !== env.INGEST_SECRET) {
+        return jsonResponse({ status: "error", message: "Unauthorized" }, 403);
+      }
+    }
+
+    try {
+      // HEALTH
+      if (path === "/health" && method === "GET") {
+        return jsonResponse({
+          status: "ok",
+          version: "2.6-light",
+          message: "Fokus Data-Core läuft stabil (Moodboard-Sync deaktiviert).",
+        });
+      }
+
+      // ACTIVE PROJECTS
+      if (path === "/projects/active" && method === "GET") {
+        return await getActiveProjects(env);
+      }
+
+      // DAILY REPORT (lokal)
+      if (path === "/getDailyReport" && method === "GET") {
+        return await getDailyReport(env, url);
+      }
+
+      // WEBHOOK IMPORT
+      if (path === "/ingest/webhook" && method === "POST") {
+        return await handleWebhook(request, env);
+      }
+
+      // CRON ENDPOINTS
+      if (path === "/cron/daily" && method === "GET") {
+        return await checkTodayDayEntry(env);
+      }
+
+      // WEEKLY SUMMARY (Mentor-Integration)
+      if (path === "/weekly/summary_friday" && method === "GET") {
+        return await generateWeeklySummary(env);
+      }
+
+      return jsonResponse({ status: "error", message: "Endpoint nicht gefunden." }, 404);
+    } catch (err) {
+      console.error("❌ Worker Error:", err);
+      return jsonResponse({ status: "error", message: err.message || "Internal Error" }, 500);
+    }
+  },
+
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(runCronTasks(env));
+  },
+};
+
+// =======================================================
+// CRON RUNNER
+// =======================================================
+async function runCronTasks(env) {
+  const now = new Date();
+  const utcHour = now.getUTCHours();
+  console.log("⏰ Cron gestartet:", now.toISOString());
+
+  // Tägliche Erstellung der Day-Einträge
+  await checkTodayDayEntry(env);
+
+  // Nur am Freitag (UTC 23 Uhr): Wochenzusammenfassung
+  if (now.getUTCDay() === 5 && utcHour >= 23) {
+    console.log("🧾 Wöchentliche Zusammenfassung wird erstellt...");
+    await generateWeeklySummary(env);
+  }
+}
+
+// =======================================================
+// DAILY CHECK
+// =======================================================
+async function checkTodayDayEntry(env) {
+  const db = env.Fokus_GPT;
+  const today = new Date().toISOString().slice(0, 10);
+  const existing = await db
+    .prepare("SELECT id FROM days WHERE day_date = ?")
+    .bind(today)
+    .first();
+
+  if (!existing) {
+    await db
+      .prepare("INSERT INTO days (day_date, created_at) VALUES (?, datetime('now'))")
+      .bind(today)
+      .run();
+    return jsonResponse({ status: "ok", message: `Neuer Tag ${today} erstellt.` });
+  }
+
+  return jsonResponse({ status: "ok", message: `Tag ${today} existiert bereits.` });
+}
+
+// =======================================================
+// ACTIVE PROJECTS
+// =======================================================
+async function getActiveProjects(env) {
+  const db = env.Fokus_GPT;
+  const { results } = await db
+    .prepare(`SELECT project_slug, project_name, drive_inbox_id, drive_inbox_url, is_active
+              FROM projects WHERE is_active = 1 ORDER BY sort_order ASC`)
+    .all();
+  return jsonResponse({ status: "ok", projects: results });
+}
+
+// =======================================================
+// DAILY REPORT LOCAL FETCH
+// =======================================================
+async function getDailyReport(env, url) {
+  const db = env.Fokus_GPT;
+  const project = url.searchParams.get("project") || "smart";
+  const date = url.searchParams.get("date");
+
+  let query = `
+    SELECT pd.*, d.day_date
+    FROM project_day pd
+    LEFT JOIN days d ON pd.day_id = d.id
+    WHERE pd.project_slug = ?
+  `;
+  if (date) query += " AND d.day_date = ?";
+  query += " ORDER BY pd.created_at DESC LIMIT 1";
+
+  const result = date
+    ? await db.prepare(query).bind(project, date).first()
+    : await db.prepare(query).bind(project).first();
+
+  if (!result)
+    return jsonResponse({
+      status: "ok",
+      project_slug: project,
+      last_entry: null,
+      message: "Kein Eintrag gefunden.",
+    });
+
+  return jsonResponse({
+    status: "ok",
+    source: "D1",
+    project_slug: project,
+    last_entry: result,
+  });
+}
+
+// =======================================================
+// WEBHOOK IMPORT
+// =======================================================
+async function handleWebhook(request, env) {
+  const db = env.Fokus_GPT;
+  try {
+    const payload = await request.json();
+    if (!payload.project_slug || !payload.day_date || !payload.summary) {
+      return jsonResponse({
+        status: "error",
+        message: "Ungültige Datenstruktur. Erforderlich: project_slug, day_date, summary.",
+      });
+    }
+
+    const contentHash = await hashContent(JSON.stringify(payload));
+    const existing = await db
+      .prepare("SELECT id FROM project_day WHERE content_hash = ?")
+      .bind(contentHash)
+      .first();
+    if (existing) {
+      return jsonResponse({ status: "ok", message: "Bereits vorhanden, kein Import notwendig." });
+    }
+
+    let day = await db
+      .prepare("SELECT id FROM days WHERE day_date = ?")
+      .bind(payload.day_date)
+      .first();
+
+    if (!day) {
+      const res = await db
+        .prepare("INSERT INTO days (day_date) VALUES (?)")
+        .bind(payload.day_date)
+        .run();
+      day = { id: res.lastRowId };
+    }
+
+    await db
+      .prepare(`
+        INSERT INTO project_day (
+          project_slug, project_name, day_id, summary, progress, blocker,
+          focus_tomorrow, momentum, is_ops, is_private, content_hash, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      `)
+      .bind(
+        payload.project_slug,
+        payload.project_name || null,
+        day.id,
+        payload.summary,
+        JSON.stringify(payload.progress || []),
+        payload.blocker || null,
+        JSON.stringify(payload.focus_tomorrow || []),
+        payload.momentum || 0,
+        payload.is_ops || 0,
+        payload.is_private || 0,
+        contentHash
+      )
+      .run();
+
+    return jsonResponse({
+      status: "ok",
+      message: `Bericht für ${payload.project_name || payload.project_slug} gespeichert.`,
+    });
+  } catch (err) {
+    console.error("🚨 Fehler bei handleWebhook:", err);
+    return jsonResponse({ status: "error", message: err.message });
+  }
+}
+
+// =======================================================
+// WEEKLY SUMMARY (Freitag Nacht)
+// =======================================================
+async function generateWeeklySummary(env) {
+  const db = env.Fokus_GPT;
+  const now = new Date();
+  const day = now.getDay();
+  const daysSinceLastFriday = day >= 5 ? day - 5 : 7 - (5 - day);
+  const end = new Date(now);
+  end.setDate(now.getDate() - daysSinceLastFriday);
+  const start = new Date(end);
+  start.setDate(end.getDate() - 6);
+
+  const { results } = await db
+    .prepare(`
+      SELECT p.project_slug, p.project_name, d.day_date, d.mood, d.energy, d.focus, d.motivation
+      FROM days d
+      LEFT JOIN project_day p ON d.id = p.day_id
+      WHERE d.day_date BETWEEN ? AND ?
+    `)
+    .bind(start.toISOString().slice(0, 10), end.toISOString().slice(0, 10))
+    .all();
+
+  if (!results.length) {
+    return jsonResponse({ status: "ok", message: "Keine Daten für diese Woche." });
+  }
+
+  const avgMood = average(results.map((r) => r.mood || 0));
+  const avgEnergy = average(results.map((r) => r.energy || 0));
+  const avgFocus = average(results.map((r) => r.focus || 0));
+  const avgMotivation = average(results.map((r) => r.motivation || 0));
+
+  const summary = { avgMood, avgEnergy, avgFocus, avgMotivation };
+
+  await db
+    .prepare(`
+      INSERT INTO weekly_reports (report_type, week_start, week_end, content_json, created_at)
+      VALUES ('weekreport', ?, ?, ?, datetime('now'))
+    `)
+    .bind(
+      start.toISOString().slice(0, 10),
+      end.toISOString().slice(0, 10),
+      JSON.stringify(summary)
+    )
+    .run();
+
+  return jsonResponse({
+    status: "ok",
+    message: "Wöchentlicher Bericht erstellt.",
+    summary,
+  });
+}
+
+// =======================================================
+// HELPERS
+// =======================================================
+function jsonResponse(obj, status = 200) {
+  return new Response(JSON.stringify(obj, null, 2), {
+    headers: { "Content-Type": "application/json" },
+    status,
+  });
+}
+
+async function hashContent(content) {
+  const data = new TextEncoder().encode(content);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function average(arr) {
+  const valid = arr.filter((x) => x > 0);
+  return valid.length ? valid.reduce((a, b) => a + b, 0) / valid.length : 0;
+}
+
+--b42ba3ce9500bda448a121425b319d853e25374837b1e836a370f8d65dfc--

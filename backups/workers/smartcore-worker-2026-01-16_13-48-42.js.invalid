@@ -1,0 +1,270 @@
+--f16b07795996d0f35e056a6a62919cde80ba9c9f964e19b1acb62b7c870a
+Content-Disposition: form-data; name="worker.js"
+
+/**
+ * 🚀 SmartCore Worker – v8.8-auth-restored (Stable Full Version)
+ * --------------------------------------------------------------
+ * ✅ Magic Link Auth (start / verify / confirm / logout)
+ * ✅ Session Handling & Cookie Management
+ * ✅ Proxy zu Customer Worker (customer / imprint / edit)
+ * ✅ Redirects desk → api
+ * ✅ CORS + Debug + Health
+ * ✅ Kompatibel mit CUSTOMER v5.x Bindings
+ */
+
+export default {
+  async fetch(req, env, ctx) {
+    const url = new URL(req.url);
+    const { pathname } = url;
+
+    // ------------------------------------------------------------
+    // 0️⃣ CORS / OPTIONS
+    // ------------------------------------------------------------
+    if (req.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders() });
+    }
+
+    // ------------------------------------------------------------
+    // 1️⃣ Redirect desk → api
+    // ------------------------------------------------------------
+    if (url.hostname === "desk.smartpages.online" && pathname.startsWith("/api/")) {
+      const redirectUrl = `https://api.smartpages.online${pathname}${url.search}`;
+      console.log(`[SmartCore] 🔁 Redirect desk → ${redirectUrl}`);
+      return Response.redirect(redirectUrl, 307);
+    }
+
+    try {
+      // ------------------------------------------------------------
+      // 2️⃣ AUTH START – send Magic Link
+      // ------------------------------------------------------------
+      if (pathname === "/api/auth/start" && req.method === "POST") {
+        const { email, lang = "de" } = await req.json().catch(() => ({}));
+        if (!email) return json({ ok: false, error: "missing_email" }, 400);
+
+        const token = crypto.randomUUID();
+        const verifyUrl = `https://desk.smartpages.online/redirect?token=${token}&lang=${lang}`;
+
+        await env.AUTH_DB.prepare(`
+          INSERT INTO magic_tokens (email, token, created_at, expires_at)
+          VALUES (?, ?, unixepoch(), unixepoch('now', '+5 minutes'))
+        `).bind(email, token).run();
+
+        await env.MAILER.fetch("https://mailer.smartpages.online/api/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "magic_link",
+            email,
+            lang,
+            data: { verifyUrl, validMinutes: 5 },
+          }),
+        });
+
+        console.log(`[SmartCore] 📩 Magic Link erstellt für ${email}`);
+        return json({ ok: true, message: "magic_link_sent" });
+      }
+
+      // ------------------------------------------------------------
+      // 3️⃣ AUTH VERIFY – token check + stage in temporary storage
+      // ------------------------------------------------------------
+      if (pathname === "/api/auth/verify" && req.method === "GET") {
+        const token = url.searchParams.get("token");
+        const lang = url.searchParams.get("lang") || "de";
+        if (!token) return json({ ok: false, error: "missing_token" }, 400);
+
+        const magic = await env.AUTH_DB.prepare(`
+          SELECT email FROM magic_tokens
+          WHERE token = ? AND used_at IS NULL
+          AND expires_at > unixepoch()
+        `).bind(token).first();
+
+        if (!magic) return json({ ok: false, error: "invalid_or_expired_token" }, 401);
+
+        await env.STAGING.put(token, JSON.stringify({ email: magic.email, lang }), {
+          expirationTtl: 60,
+        });
+
+        console.info(`[SmartCore] 🔄 Token zwischengespeichert für ${magic.email}`);
+        return json({
+          ok: true,
+          step: "verify_done",
+          redirect: `/api/auth/confirm?token=${token}`,
+        });
+      }
+
+      // ------------------------------------------------------------
+      // 4️⃣ AUTH CONFIRM – create session + set cookie
+      // ------------------------------------------------------------
+      if (pathname === "/api/auth/confirm" && req.method === "GET") {
+        const token = url.searchParams.get("token");
+        if (!token) return json({ ok: false, error: "missing_token" }, 400);
+
+        const stagingData = await env.STAGING.get(token, { type: "json" });
+        if (!stagingData?.email) {
+          return json({ ok: false, error: "staging_not_found" }, 401);
+        }
+
+        await env.AUTH_DB.prepare(
+          `UPDATE magic_tokens SET used_at = unixepoch() WHERE token = ?`
+        ).bind(token).run();
+
+        const sessionId = crypto.randomUUID();
+        const sessionData = {
+          email: stagingData.email,
+          lang: stagingData.lang || "de",
+          created: Date.now(),
+          plan: "trial",
+        };
+
+        await env.SESSION.put(sessionId, JSON.stringify(sessionData), {
+          expirationTtl: 12 * 60 * 60,
+        });
+        await env.STAGING.delete(token);
+
+        const cookieValue = `session=${sessionId}; Path=/; Domain=${
+          env.COOKIE_DOMAIN || ".smartpages.online"
+        }; Secure; HttpOnly; SameSite=None; Max-Age=${12 * 60 * 60}`;
+
+        console.log(`[SmartCore] ✅ Session erstellt für ${sessionData.email}`);
+        return json(
+          {
+            ok: true,
+            step: "confirm_done",
+            redirect: `https://desk.smartpages.online/${sessionData.lang}/dashboard`,
+          },
+          200,
+          { "Set-Cookie": cookieValue }
+        );
+      }
+
+      // ------------------------------------------------------------
+      // 5️⃣ AUTH LOGOUT
+      // ------------------------------------------------------------
+      if (pathname === "/api/auth/logout") {
+        const cookie = req.headers.get("cookie") || "";
+        const match = cookie.match(/session=([^;]+)/);
+        if (match) await env.SESSION.delete(match[1]);
+
+        return new Response(null, {
+          status: 204,
+          headers: {
+            "Set-Cookie": `session=; Path=/; Domain=${
+              env.COOKIE_DOMAIN || ".smartpages.online"
+            }; Secure; HttpOnly; SameSite=None; Max-Age=0`,
+          },
+        });
+      }
+
+      // ------------------------------------------------------------
+      // 6️⃣ SESSION CHECK
+      // ------------------------------------------------------------
+      if (pathname === "/api/session/check") {
+        const cookie = req.headers.get("cookie") || "";
+        const match = cookie.match(/session=([^;]+)/);
+        const sessionId = match ? match[1] : null;
+        if (!sessionId) return json({ ok: false, loggedIn: false });
+
+        const session = await env.SESSION.get(sessionId, { type: "json" });
+        return json({ ok: !!session, session });
+      }
+
+      // ------------------------------------------------------------
+      // 7️⃣ CUSTOMER PROXY
+      // ------------------------------------------------------------
+      if (pathname.startsWith("/api/customer")) {
+        const cookie = req.headers.get("cookie") || "";
+        const match = cookie.match(/session=([^;]+)/);
+        const sessionId = match ? match[1] : null;
+        if (!sessionId) return json({ ok: false, error: "unauthorized" }, 401);
+
+        const session = await env.SESSION.get(sessionId, { type: "json" });
+        if (!session?.email) return json({ ok: false, error: "invalid_session" }, 401);
+
+        // Routing fix
+        let targetPath = pathname.replace("/api/customer", "");
+        if (!targetPath || targetPath === "/") targetPath = "/customer";
+
+        const internalUrl = `https://customer.smartpages.internal${targetPath}`;
+        console.log(`[SmartCore] 🔀 Proxy → ${internalUrl}`);
+
+        const internalReq = new Request(internalUrl, {
+          method: req.method,
+          headers: {
+            "x-session-email": session.email,
+            "x-session-lang": session.lang || "de",
+            "x-session-plan": session.plan || "trial",
+            ...(req.method !== "GET" && { "Content-Type": "application/json" }),
+          },
+          body: req.method !== "GET" ? req.body : undefined,
+        });
+
+        const proxied = await env.CUSTOMER.fetch(internalReq);
+        const responseText = await proxied.text();
+
+        return new Response(responseText, {
+          status: proxied.status,
+          headers: { "Content-Type": "application/json", ...corsHeaders() },
+        });
+      }
+
+      // ------------------------------------------------------------
+      // 8️⃣ DEBUG / PING / STATUS
+      // ------------------------------------------------------------
+      if (pathname === "/ping") {
+        return json({ ok: true, service: "smartcore-worker", version: "8.8-auth-restored" });
+      }
+
+      if (pathname === "/api/debug-bindings") {
+        return json({
+          ok: true,
+          bindings: Object.keys(env),
+          customerType: typeof env.CUSTOMER,
+          hasFetch: !!env.CUSTOMER?.fetch,
+        });
+      }
+
+      if (pathname === "/api/system/status") {
+        return json({
+          ok: true,
+          message: "SmartCore running",
+          version: "8.8-auth-restored",
+          time: new Date().toISOString(),
+        });
+      }
+
+      // ------------------------------------------------------------
+      // 9️⃣ Fallback
+      // ------------------------------------------------------------
+      return json({ ok: false, error: "not_found" }, 404);
+    } catch (err) {
+      console.error("[SmartCore] ❌ Globaler Fehler:", err);
+      return json({ ok: false, error: err.message }, 500);
+    }
+  },
+};
+
+// ------------------------------------------------------------
+// 🔧 Helpers
+// ------------------------------------------------------------
+function corsHeaders() {
+  return {
+    "Access-Control-Allow-Origin": "https://desk.smartpages.online",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+    "Access-Control-Allow-Headers":
+      "content-type, x-session-email, x-session-plan, x-session-lang",
+  };
+}
+
+function json(obj, status = 200, extraHeaders = {}) {
+  return new Response(JSON.stringify(obj, null, 2), {
+    status,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      ...corsHeaders(),
+      ...extraHeaders,
+    },
+  });
+}
+
+--f16b07795996d0f35e056a6a62919cde80ba9c9f964e19b1acb62b7c870a--
