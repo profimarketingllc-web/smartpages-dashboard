@@ -2,12 +2,12 @@ import { createResource, createSignal, onMount, onCleanup } from "solid-js";
 import { t } from "~/utils/i18n";
 
 /**
- * 🧠 CustomerCard (SmartPages v5.5)
+ * 🧠 CustomerCard (SmartPages v5.6)
  * -------------------------------------------------------
  * ✅ Holt Daten aus /api/customer/customer
- * ✅ Zeigt dynamisch Firma + Name bei Business
- * ✅ Reaktiv mit "refresh-customer-data"-Event
- * ✅ Statusanzeige mit Farbcode
+ * ✅ Zeigt Firma + Name bei Business, nur Name bei Privat
+ * ✅ Titel bleibt bestehen
+ * ✅ Reaktiv + stabil
  */
 
 export default function CustomerCard(props) {
@@ -40,8 +40,8 @@ export default function CustomerCard(props) {
       }
 
       const result = await res.json();
-
       const u = result.data || result.user || null;
+
       if (!result.ok || !u) {
         return { status: t(lang(), "loggedOut", "system") };
       }
@@ -79,22 +79,26 @@ export default function CustomerCard(props) {
   const data = () => customer() || {};
   const displayValue = (val) => (val ? val : "—");
 
-  // 🧠 Smart: Anzeige-Logik
+  // 🧠 Smart Anzeige
   const displayHeader = () => {
     if (data().is_business && data().company) {
       return (
-        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
-          <span class="text-lg font-semibold text-[#1E2A45]">{displayValue(data().company)}</span>
-          <span class="text-gray-500 text-sm">
+        <div class="mt-2">
+          <p class="text-lg font-semibold text-[#1E2A45] leading-tight">
+            {displayValue(data().company)}
+          </p>
+          <p class="text-gray-500 text-sm">
             {displayValue(`${data().firstName} ${data().lastName}`)}
-          </span>
+          </p>
         </div>
       );
     } else {
       return (
-        <span class="text-lg font-semibold text-[#1E2A45]">
-          {displayValue(`${data().firstName} ${data().lastName}`)}
-        </span>
+        <div class="mt-2">
+          <p class="text-lg font-semibold text-[#1E2A45] leading-tight">
+            {displayValue(`${data().firstName} ${data().lastName}`)}
+          </p>
+        </div>
       );
     }
   };
@@ -115,11 +119,16 @@ export default function CustomerCard(props) {
         </span>
       </div>
 
-      {/* 🧠 Smart Header */}
-      <div class="mb-5 text-center md:text-left">{displayHeader()}</div>
+      {/* 🔹 Titel */}
+      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-2 text-center md:text-left">
+        {t(lang(), "title", "customer")}
+      </h2>
 
-      {/* 📦 Details */}
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8">
+      {/* 🧠 Smart Name-Anzeige */}
+      {displayHeader()}
+
+      {/* 📋 Details */}
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8 mt-5">
         <div>
           <span class="font-medium text-gray-800">{t(lang(), "status", "customer")}:</span>
           <p class="text-gray-600">{displayValue(data().status)}</p>
@@ -138,7 +147,7 @@ export default function CustomerCard(props) {
         </div>
       </div>
 
-      {/* 🔘 Edit-Button */}
+      {/* 🟠 Button */}
       <div class="flex justify-end items-center mt-6">
         <button
           data-signal="open-customer-modal"
