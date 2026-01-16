@@ -13,6 +13,7 @@ export default function CustomerCard(props) {
     }
   });
 
+  // 🔹 Kundendaten abrufen
   const fetchCustomer = async () => {
     try {
       const res = await fetch("/api/customer/customer", {
@@ -31,7 +32,7 @@ export default function CustomerCard(props) {
 
       const result = await res.json();
 
-      // 🔧 FIX: Worker liefert { ok: true, data: {...} } statt { user: {...} }
+      // 🔧 Worker liefert { ok: true, data: {...} } statt { user: {...} }
       const u = result.data || result.user || null;
       if (!result.ok || !u) {
         return { status: t(lang(), "loggedOut", "system") };
@@ -68,8 +69,10 @@ export default function CustomerCard(props) {
   const data = () => customer() || {};
   const displayValue = (val) => (val ? val : "—");
 
+  // 🧱 UI-Rendering
   return (
     <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5">
+      {/* 🔹 Status Badge */}
       <div class="absolute top-4 right-10 md:right-14">
         <span
           class={`inline-block px-4 py-1 text-sm font-medium rounded-full border 
@@ -83,27 +86,50 @@ export default function CustomerCard(props) {
         </span>
       </div>
 
+      {/* 🔹 Titel */}
       <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5 text-center md:text-left">
         {t(lang(), "title", "customer")}
       </h2>
 
+      {/* 🧾 Datenraster */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8">
-        <div><span class="font-medium text-gray-800">{t(lang(), "firstName", "customer")}:</span><p class="text-gray-600">{displayValue(data().firstName)}</p></div>
-        <div><span class="font-medium text-gray-800">{t(lang(), "lastName", "customer")}:</span><p class="text-gray-600">{displayValue(data().lastName)}</p></div>
-        <div><span class="font-medium text-gray-800">{t(lang(), "status", "customer")}:</span><p class="text-gray-600">{displayValue(data().status)}</p></div>
-        <div><span class="font-medium text-gray-800">{t(lang(), "plan", "customer")}:</span><p class="text-gray-600">{displayValue(data().plan)}</p></div>
-        <div><span class="font-medium text-gray-800">{t(lang(), "activeUntil", "customer")}:</span><p class="text-gray-600">{displayValue(data().activeUntil)}</p></div>
-        <div><span class="font-medium text-gray-800">{t(lang(), "lastLogin", "customer")}:</span><p class="text-gray-600">{displayValue(data().lastLogin)}</p></div>
+        <div>
+          <span class="font-medium text-gray-800">{t(lang(), "firstName", "customer")}:</span>
+          <p class="text-gray-600">{displayValue(data().firstName)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">{t(lang(), "lastName", "customer")}:</span>
+          <p class="text-gray-600">{displayValue(data().lastName)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">{t(lang(), "status", "customer")}:</span>
+          <p class="text-gray-600">{displayValue(data().status)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">{t(lang(), "plan", "customer")}:</span>
+          <p class="text-gray-600">{displayValue(data().plan)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">{t(lang(), "activeUntil", "customer")}:</span>
+          <p class="text-gray-600">{displayValue(data().activeUntil)}</p>
+        </div>
+        <div>
+          <span class="font-medium text-gray-800">{t(lang(), "lastLogin", "customer")}:</span>
+          <p class="text-gray-600">{displayValue(data().lastLogin)}</p>
+        </div>
       </div>
 
+      {/* 🟧 Buttonbereich (CLS-optimiert) */}
       <div class="flex justify-end items-center mt-6">
-        <button
-          data-signal="open-customer-modal"
-          onClick={() => window.dispatchEvent(new Event("open-customer-modal"))}
-          class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
-        >
-          {t(lang(), "button", "customer")}
-        </button>
+        <div class="inline-block">
+          <button
+            data-signal="open-customer-modal"
+            onClick={() => window.dispatchEvent(new Event("open-customer-modal"))}
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-transform duration-200 will-change-transform"
+          >
+            {t(lang(), "button", "customer")}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -61,7 +61,7 @@ const translations: Record<string, any> = {
       firstName: "Vorname",
       lastName: "Nachname",
       plan: "Tarif",
-      activeUntil: "Aktiv bis",
+      activeUntil: "Aktiiert bis",
       status: "Status",
       lastLogin: "Letzter Login",
       button: "Profil bearbeiten",
