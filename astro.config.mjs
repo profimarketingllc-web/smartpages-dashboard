@@ -7,41 +7,42 @@ import tailwind from "@astrojs/tailwind";
 // ⚙️ ASTRO CONFIGURATION (SmartPages Dashboard v5.8)
 // ------------------------------------------------------------
 // ✅ SSR aktiviert (output: "server")
-// ✅ Cloudflare Directory Mode (Workers + D1 + R2)
-// ✅ PlatformProxy für SSR Sessions
-// ✅ Tailwind + Solid integriert
-// ✅ Neue Syntax für Astro Image Service
+// ✅ Cloudflare Directory Mode für Pages Functions
+// ✅ Solid + Tailwind integriert
+// ✅ Automatische Sessions (SESSION, AUTH_DB, CORE_DB via Pages-Bindings)
+// ✅ Fix: Vite Alias (~) für Build-Kompatibilität
 // ============================================================
 
 export default defineConfig({
-  output: "server", // 🔥 SSR aktivieren (Server Rendering)
-  
+  output: "server",
+
   image: {
     service: {
-      entrypoint: "astro/assets/services/compile", // Neue Syntax (Astro ≥ 4.0)
+      entrypoint: "astro/assets/services/compile",
     },
   },
 
   adapter: cloudflare({
-    mode: "directory", // ⚡️ Kompatibel mit Cloudflare Pages Functions
+    mode: "directory",
     platformProxy: {
-      enabled: true, // 🔐 Erlaubt Zugriff auf Cloudflare Bindings
-      include: ["SESSION"], // z. B. KV, Durable Object, etc.
+      enabled: true,
+      // 👉 Cloudflare Pages liefert Bindings automatisch
     },
   }),
 
-  integrations: [
-    solid(),     // 🧠 SolidJS Integration für Interaktive Komponenten
-    tailwind(),  // 🎨 TailwindCSS für Styling
-  ],
+  integrations: [solid(), tailwind()],
+
+  // 🧩 Middleware für User-Sessions aktivieren
+  middleware: ["src/middleware/user-session.ts"],
 
   vite: {
     ssr: {
-      // 🚫 Verhindert Build-Fehler durch externe Module bei SSR
-      noExternal: [
-        "@astrojs/cloudflare",
-        "@astrojs/solid-js"
-      ],
+      noExternal: ["@astrojs/cloudflare", "@astrojs/solid-js"],
+    },
+    resolve: {
+      alias: {
+        "~": new URL("./src", import.meta.url).pathname,
+      },
     },
   },
 });
