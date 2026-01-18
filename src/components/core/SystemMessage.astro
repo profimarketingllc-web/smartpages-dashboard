@@ -1,14 +1,13 @@
 ---
 import { t } from "~/utils/i18n/i18n";
 
-// 🧩 Userdaten automatisch aus Middleware holen
+// 🧠 Hole Daten direkt aus Middleware (locals.user)
 const user = Astro.locals?.user || {};
 const {
   lang = "de",
   firstName = "",
-  lastName = "",
   companyName = "",
-  isBusiness = false,
+  isBusiness = 0,
   plan = "trial",
   trialEnd = null,
   hasToken = false,
@@ -19,7 +18,7 @@ let type = "info";
 let messageKey = "neutralGreeting";
 let messageVars = "";
 
-// 🧮 Logik für Trial-Ende
+// 🧮 Prüfe Status
 if (hasToken && plan === "trial" && trialEnd) {
   const daysLeft = Math.ceil(
     (new Date(trialEnd).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
@@ -48,7 +47,7 @@ if (hasToken && isBusiness) {
 // 🧍‍♂️ Private Kunden
 if (hasToken && !isBusiness) {
   messageKey = "personalized";
-  messageVars = firstName || lastName || "";
+  messageVars = firstName || "";
 }
 
 // 📩 Übersetzung abrufen
