@@ -99,16 +99,27 @@ export default function ImprintCard(props) {
     setSaving(false);
   };
 
-  // 🧱 Layout – altes Design wiederhergestellt
+  // 🧱 Layout
   return (
-    <div class="w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5">
-      {/* 🔹 Titel */}
-      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5 text-center md:text-left">
-        {t(lang(), "title", "imprint")}
-      </h2>
+    <div class="w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5 relative">
+      {/* 🔹 Titel + (nur wenn kein Custom aktiv ist) Modal-Button */}
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45]">
+          {t(lang(), "title", "imprint")}
+        </h2>
+
+        <Show when={!useCustom()}>
+          <button
+            onClick={() => window.dispatchEvent(new Event("open-imprint-modal"))}
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
+          >
+            {t(lang(), "button", "imprint")}
+          </button>
+        </Show>
+      </div>
 
       {/* 🟩 Eigene Impressum-Option */}
-      <div class="flex items-center gap-3 mb-5 border border-gray-200 rounded-lg p-3 bg-gray-50">
+      <div class="flex items-center gap-3 mb-6 border border-gray-300 rounded-lg p-3 bg-gray-50">
         <input
           type="checkbox"
           checked={useCustom()}
@@ -146,16 +157,6 @@ export default function ImprintCard(props) {
 
       {/* Wenn Standard-Impressum aktiv */}
       <Show when={!useCustom()}>
-        <div class="absolute top-4 right-8">
-          <button
-            onClick={() => window.dispatchEvent(new Event("open-imprint-modal"))}
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
-          >
-            {t(lang(), "button", "imprint")}
-          </button>
-        </div>
-
-        {/* 🔹 Grid mit altem Reihenaufbau */}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
           <div>
             <span class="font-medium text-gray-800">Firma *</span>
