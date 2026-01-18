@@ -5,10 +5,12 @@ import PageLayout from "~/layouts/PageLayout.astro";
 import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
 import CustomerCard from "~/components/solid/CustomerCard.jsx";
 import ImprintCard from "~/components/solid/ImprintCard.jsx";
+import PrivacyCard from "~/components/solid/PrivacyCard.jsx";
 import ProductGrid from "~/components/core/ProductGrid.astro";
 import SystemMessage from "~/components/core/SystemMessage.astro";
 import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
+import EditPrivacyModal from "~/components/solid/EditPrivacyModal.jsx";
 
 // 🧩 SSR Session Check
 const cookie = Astro.request.headers.get("cookie") || "";
@@ -38,6 +40,11 @@ if (!cookie.includes("session=")) {
       <ImprintCard client:only="solid-js" lang="en" />
     </DashboardCardWide>
 
+    <!-- 🔒 PRIVACY SECTION -->
+    <DashboardCardWide>
+      <PrivacyCard client:only="solid-js" lang="en" />
+    </DashboardCardWide>
+
     <!-- 💼 PRODUCT GRID -->
     <section class="mt-4 md:mt-6">
       <ProductGrid lang="en" />
@@ -46,69 +53,8 @@ if (!cookie.includes("session=")) {
     <!-- 🧩 MODALS -->
     <EditCustomerModal client:only="solid-js" lang="en" />
     <EditImprintModal client:only="solid-js" lang="en" />
+    <EditPrivacyModal client:only="solid-js" lang="en" />
   </main>
 </PageLayout>
 
-<script>
-  window.addEventListener("DOMContentLoaded", async () => {
-    console.log("🇬🇧 Dashboard active — Checking session and loading data...");
-
-    try {
-      const res = await fetch("https://api.smartpages.online/api/session/check", {
-        credentials: "include"
-      });
-      const data = await res.json();
-
-      if (!data.ok) {
-        console.warn("⚠️ Invalid session, redirecting to login...");
-        window.location.href = "/en/login";
-      } else {
-        console.log("✅ Session valid:", data.session.email);
-      }
-    } catch (e) {
-      console.error("❌ Session check failed:", e);
-      window.location.href = "/en/login";
-    }
-  });
-</script>
-
-<style>
-  .dashboard-top {
-    align-items: flex-start;
-  }
-
-  .system-message {
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-    width: 100%;
-    margin-top: 0.25rem;
-  }
-
-  @media (min-width: 1280px) {
-    .system-message {
-      padding-right: 0.75rem;
-    }
-  }
-
-  @media (max-width: 1279px) {
-    .system-message {
-      justify-content: center;
-      text-align: center;
-      margin-top: 1rem;
-    }
-  }
-
-  @media (max-width: 767px) {
-    .dashboard-top {
-      flex-direction: column;
-      gap: 1.25rem;
-      align-items: center;
-    }
-  }
-
-  main {
-    padding-top: 0.5rem;
-    transition: all 0.3s ease-in-out;
-  }
-</style>
+<script
