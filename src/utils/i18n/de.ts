@@ -1,10 +1,9 @@
-export default {
+export const i18n_de = {
   system: {
     title: "Kundendaten",
     closeButton: "Schließen",
     cancelButton: "Abbrechen",
     saveButton: "Speichern",
-    saving: "Speichervorgang läuft …",
     button: "Profil bearbeiten",
     statusActive: "eingeloggt",
     loggedOut: "abgemeldet",
@@ -13,6 +12,7 @@ export default {
     success: "Aktion erfolgreich ausgeführt.",
     warning: "Bitte überprüfe deine Eingaben.",
   },
+
   imprint: {
     title: "Impressumsdaten",
     editTitle: "Impressum bearbeiten",
@@ -32,16 +32,31 @@ export default {
     error: "Fehler beim Speichern.",
     loadError: "Konnte Impressumsdaten nicht laden.",
   },
+
   privacy: {
     title: "Datenschutzerklärung",
     editTitle: "Datenschutzerklärung bearbeiten",
-    contact: "Verantwortliche Person",
+    company: "Firma",
+    contact: "Ansprechpartner",
+    street: "Straße",
+    number: "Hausnummer",
+    zip: "PLZ",
+    city: "Ort",
     phone: "Telefon",
     email: "E-Mail",
-    address: "Adresse",
-    button: "Datenschutz bearbeiten",
+    country: "Land",
+    button: "Datenschutzerklärung bearbeiten",
     success: "Datenschutzerklärung erfolgreich gespeichert.",
     error: "Fehler beim Speichern.",
     loadError: "Konnte Datenschutzdaten nicht laden.",
+  },
+
+  systemMessage: {
+    neutralGreeting: "Willkommen bei SmartPages 👋",
+    personalized: "Willkommen zurück, {0}! 👋",
+    businessGreeting: "Schön, dass Ihr Unternehmen wieder da ist, {0}! 👋",
+    trialEndingSoon: "Dein Testzeitraum endet in wenigen Tagen.",
+    trialEndingTomorrow: "Dein Testzeitraum endet morgen!",
+    trialExpired: "Dein Testzeitraum ist abgelaufen. Bitte aktualisiere deinen Plan.",
   },
 };

@@ -1,14 +1,20 @@
-import { createSignal, createResource, onMount, onCleanup } from "solid-js";
-import { t } from "~/utils/i18n";
+import { createSignal, createResource, onMount, onCleanup, Show } from "solid-js";
+import { t, useLang } from "~/utils/i18n/i18n";
 
 export default function PrivacyCard(props) {
-  const [lang, setLang] = createSignal(
-    props.lang ||
-      (typeof window !== "undefined" && window.location.pathname.includes("/en/") ? "en" : "de")
-  );
+  // 🌍 Sprachlogik (SSR-kompatibel)
+  const [lang, setLang] = createSignal(props.lang || useLang("de"));
 
   const [useCustomPrivacy, setUseCustomPrivacy] = createSignal(false);
   const [customText, setCustomText] = createSignal("");
+  const [saving, setSaving] = createSignal(false);
+  const [message, setMessage] = createSignal("");
+
+  onMount(() => {
+    if (typeof window !== "undefined") {
+      setLang(window.location.pathname.includes("/en/") ? "en" : "de");
+    }
+  });
 
   // 🔗 Datenschutz-Daten abrufen
   const fetchPrivacy = async () => {
@@ -25,10 +31,8 @@ export default function PrivacyCard(props) {
       if (!result?.ok || !result.data) return {};
 
       const p = result.data;
-
-      // Flag prüfen
       setUseCustomPrivacy(p.use_custom_privacy === 1);
-      setCustomText(p.custom_privacy_text || "");
+      if (p.custom_html) setCustomText(p.custom_html);
 
       return {
         company: p.company_name || "—",
@@ -48,55 +52,113 @@ export default function PrivacyCard(props) {
   };
 
   const [privacy, { refetch }] = createResource(fetchPrivacy);
-
-  // 🔄 Refresh bei Speichern
-  onMount(() => {
-    const handler = () => refetch();
-    window.addEventListener("refresh-privacy-data", handler);
-    onCleanup(() => window.removeEventListener("refresh-privacy-data", handler));
-  });
-
-  const handleToggle = async (e) => {
-    const active = e.target.checked;
-    setUseCustomPrivacy(active);
-
-    try {
-      await fetch("/api/customer/privacytoggle", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ use_custom_privacy: active }),
-      });
-      console.log(`🔁 Privacy Toggle aktualisiert: ${active}`);
-    } catch (err) {
-      console.error("⚠️ Fehler beim Umschalten:", err);
-    }
-  };
-
   const data = () => privacy() || {};
   const display = (val) => (val && val !== "" ? val : "—");
 
-  return (
-    <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5">
-      {/* 🔹 Titel */}
-      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5 text-center md:text-left">
-        {t(lang(), "title", "privacy")}
-      </h2>
+  // 🔄 Toggle speichern → direkt D1-Update auslösen
+  const handleToggle = async (e) => {
+    const active = e.target.checked;
+    setUseCustomPrivacy(active);
+    setMessage("");
 
-      {/* 🟢 Button (nur wenn KEIN Custom aktiv) */}
-      {!useCustomPrivacy() && (
-        <div class="absolute top-4 right-8">
+    try {
+      const res = await fetch("/api/customer/privacyedit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          use_custom_privacy: active,
+          privacy_template: "",
+          custom_html: active ? customText() : "",
+        }),
+      });
+
+      const json = await res.json();
+      if (json.ok) {
+        console.log(`✅ use_custom_privacy aktualisiert: ${active}`);
+        setMessage(
+          active
+            ? t(lang(), "customEnabled", "privacy") ||
+              "Eigene Datenschutzerklärung aktiviert."
+            : t(lang(), "customDisabled", "privacy") ||
+              "Standard-Datenschutzerklärung wieder aktiv."
+        );
+        window.dispatchEvent(new Event("refresh-privacy-data"));
+      } else {
+        setMessage(
+          t(lang(), "updateError", "privacy") ||
+            "⚠️ Fehler beim Aktualisieren der Datenschutzerklärung."
+        );
+      }
+    } catch (err) {
+      console.error("❌ Fehler beim Speichern des Toggles:", err);
+      setMessage(
+        t(lang(), "unexpectedError", "privacy") ||
+          "❌ Unerwarteter Fehler beim Aktualisieren."
+      );
+    }
+  };
+
+  // 💾 Custom speichern
+  const handleSave = async () => {
+    if (!customText().trim()) {
+      setMessage(
+        t(lang(), "emptyText", "privacy") ||
+          "Bitte gib deinen Datenschutztext ein."
+      );
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch("/api/customer/privacyedit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          use_custom_privacy: true,
+          custom_html: customText(),
+        }),
+      });
+      const result = await res.json();
+      setMessage(
+        result.ok
+          ? t(lang(), "saveSuccess", "privacy") ||
+            "✅ Datenschutz erfolgreich gespeichert."
+          : t(lang(), "saveError", "privacy") ||
+            "❌ Fehler beim Speichern."
+      );
+    } catch {
+      setMessage(
+        t(lang(), "unexpectedError", "privacy") ||
+          "❌ Unerwarteter Fehler beim Speichern."
+      );
+    }
+    setSaving(false);
+  };
+
+  // 🧱 Layout
+  return (
+    <div class="w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5 relative">
+      {/* 🔹 Titel + Modal-Button */}
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45]">
+          {t(lang(), "title", "privacy")}
+        </h2>
+
+        <Show when={!useCustomPrivacy()}>
           <button
-            onClick={() => window.dispatchEvent(new Event("open-privacy-modal"))}
+            onClick={() =>
+              window.dispatchEvent(new Event("open-privacy-modal"))
+            }
             class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
           >
             {t(lang(), "button", "privacy")}
           </button>
-        </div>
-      )}
+        </Show>
+      </div>
 
       {/* ⚙️ Toggle */}
-      <div class="mb-6 flex items-center gap-3 bg-gray-50 px-4 py-3 rounded-lg border border-gray-300">
+      <div class="mb-6 flex items-center gap-3 bg-gray-50 px-4 py-3 rounded-lg border border-gray-400">
         <input
           id="toggle-privacy"
           type="checkbox"
@@ -104,60 +166,67 @@ export default function PrivacyCard(props) {
           onChange={handleToggle}
           class="w-5 h-5 accent-black cursor-pointer"
         />
-        <label for="toggle-privacy" class="text-gray-800 text-sm font-medium cursor-pointer">
-          Ich verwende eine eigene Datenschutzerklärung
+        <label
+          for="toggle-privacy"
+          class="text-gray-800 text-sm font-medium cursor-pointer"
+        >
+          {t(lang(), "useOwnPrivacy", "privacy") ||
+            "Ich verwende eine eigene Datenschutzerklärung"}
         </label>
       </div>
 
       {/* 📋 Anzeige Felder oder Custom Text */}
-      {useCustomPrivacy() ? (
-        <div class="p-4 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 whitespace-pre-line text-sm">
-          {customText() || "Kein eigener Datenschutztext hinterlegt."}
+      <Show when={useCustomPrivacy()}>
+        <textarea
+          class="w-full h-48 p-3 border rounded-lg text-sm text-gray-700 mt-2"
+          placeholder={
+            t(lang(), "placeholder", "privacy") ||
+            "Hier kannst du deine eigene Datenschutzerklärung eingeben..."
+          }
+          value={customText()}
+          onInput={(e) => setCustomText(e.currentTarget.value)}
+        />
+        <div class="flex justify-end mt-3">
+          <button
+            disabled={saving()}
+            onClick={handleSave}
+            class={`px-5 py-2.5 rounded-lg text-white ${
+              saving() ? "bg-gray-400" : "bg-[#1E2A45] hover:bg-[#2C3B5A]"
+            }`}
+          >
+            {saving()
+              ? t(lang(), "saving", "system") || "Speichert..."
+              : t(lang(), "saveButton", "system") || "Speichern"}
+          </button>
         </div>
-      ) : (
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-          <div>
-            <span class="font-medium text-gray-800">Firma *</span>
-            <p class="text-gray-500">{display(data().company)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">Ansprechpartner *</span>
-            <p class="text-gray-500">{display(data().contact)}</p>
-          </div>
+        <Show when={message()}>
+          <p class="mt-2 text-right text-sm text-gray-600">{message()}</p>
+        </Show>
+      </Show>
 
-          <div>
-            <span class="font-medium text-gray-800">Straße *</span>
-            <p class="text-gray-500">{display(data().street)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">Hausnummer *</span>
-            <p class="text-gray-500">{display(data().hs_no)}</p>
-          </div>
-
-          <div>
-            <span class="font-medium text-gray-800">PLZ *</span>
-            <p class="text-gray-500">{display(data().postal_code)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">Ort *</span>
-            <p class="text-gray-500">{display(data().city)}</p>
-          </div>
-
-          <div>
-            <span class="font-medium text-gray-800">Telefon</span>
-            <p class="text-gray-500">{display(data().phone)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">E-Mail *</span>
-            <p class="text-gray-500">{display(data().email)}</p>
-          </div>
-
-          <div>
-            <span class="font-medium text-gray-800">Land *</span>
-            <p class="text-gray-500">{display(data().country)}</p>
-          </div>
+      {/* 📋 Standard-Datenanzeige */}
+      <Show when={!useCustomPrivacy()}>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 border border-gray-300 rounded-xl p-4 bg-white shadow-sm">
+          {[
+            ["company", "Firma *", data().company],
+            ["contact", "Ansprechpartner *", data().contact],
+            ["street", "Straße *", data().street],
+            ["hs_no", "Hausnummer *", data().hs_no],
+            ["postal_code", "PLZ *", data().postal_code],
+            ["city", "Ort *", data().city],
+            ["phone", "Telefon", data().phone],
+            ["email", "E-Mail *", data().email],
+            ["country", "Land *", data().country],
+          ].map(([key, label, value]) => (
+            <div>
+              <span class="font-medium text-gray-800">
+                {t(lang(), key, "privacy") || label}
+              </span>
+              <p class="text-gray-500">{display(value)}</p>
+            </div>
+          ))}
         </div>
-      )}
+      </Show>
     </div>
   );
 }

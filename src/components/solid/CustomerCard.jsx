@@ -1,27 +1,24 @@
 import { createResource, createSignal, onMount, onCleanup } from "solid-js";
-import { t } from "~/utils/i18n";
+import { t, useLang } from "~/utils/i18n/i18n"; // ✅ neue Struktur
 
 /**
- * 🧠 CustomerCard (SmartPages v5.7)
+ * 🧠 CustomerCard (SmartPages v5.8)
  * -------------------------------------------------------
- * ✅ Zeigt Firmenname + Vor-/Nachname (intelligent)
- * ✅ Kein Platzhalter bei fehlendem Nachnamen
- * ✅ Titel "Kundendaten" bleibt immer sichtbar
- * ✅ Neue Status-Texte: "eingeloggt" / "abgemeldet"
- * ✅ Optimiert für CLS & INP
+ * ✅ Basiert auf client:only (keine SSR-Hydration-Konflikte)
+ * ✅ i18n getrennt (de/en über ~/utils/i18n/)
+ * ✅ Bessere Stabilität bei Session-Refresh
+ * ✅ Perfekt kompatibel mit Cloudflare SSR + API Calls
  */
 
 export default function CustomerCard(props) {
+  // 🌍 Sprache erkennen
   const [lang, setLang] = createSignal(
-    props.lang ||
-      (typeof window !== "undefined" &&
-      window.location.pathname.includes("/en/")
-        ? "en"
-        : "de")
+    props.lang || useLang(typeof window !== "undefined" ? "de" : "de")
   );
 
+  // 🧭 Sprache beim Mounten erneut prüfen (z. B. /en/ oder /de/)
   onMount(() => {
-    if (!props.lang && typeof window !== "undefined") {
+    if (typeof window !== "undefined") {
       setLang(window.location.pathname.includes("/en/") ? "en" : "de");
     }
   });
@@ -37,7 +34,7 @@ export default function CustomerCard(props) {
 
       if (!res.ok) {
         if (res.status === 401) {
-          console.warn("Nicht eingeloggt oder Session abgelaufen");
+          console.warn("⚠️ Nicht eingeloggt oder Session abgelaufen");
           return { status: t(lang(), "loggedOut", "system") };
         }
         throw new Error(`API-Fehler ${res.status}`);
@@ -69,25 +66,26 @@ export default function CustomerCard(props) {
     }
   };
 
+  // 🗂️ Resource für Daten + automatisches Refetching
   const [customer, { refetch }] = createResource(fetchCustomer);
 
   onMount(() => {
+    if (typeof window === "undefined") return;
     const handler = () => {
-      console.log("🔄 CustomerCard: Daten werden aktualisiert...");
+      console.log("🔁 CustomerCard: Daten werden aktualisiert …");
       refetch();
     };
     window.addEventListener("refresh-customer-data", handler);
-    onCleanup(() =>
-      window.removeEventListener("refresh-customer-data", handler)
-    );
+    onCleanup(() => window.removeEventListener("refresh-customer-data", handler));
   });
 
+  // 🧩 Hilfsfunktionen
   const data = () => customer() || {};
+  const displayValue = (val) => (val && val !== "" ? val : "—");
 
-  // 🧠 Anzeige-Logik: Firmen-/Privatansicht
   const displayHeader = () => {
     const first = data().firstName || "";
-    const last = data().lastName && data().lastName.trim() !== "" ? data().lastName : "";
+    const last = data().lastName || "";
     const fullName = last ? `${first} ${last}` : first;
 
     if (data().is_business && data().company) {
@@ -110,9 +108,7 @@ export default function CustomerCard(props) {
     }
   };
 
-  const displayValue = (val) =>
-    val && val !== "" && val !== null ? val : "—";
-
+  // 🧱 UI
   return (
     <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5 transition-all duration-300">
       {/* 🟢 Statusanzeige */}
@@ -134,7 +130,7 @@ export default function CustomerCard(props) {
         {t(lang(), "title", "customer")}
       </h2>
 
-      {/* 👤 Smart Name/Firma Anzeige */}
+      {/* 👤 Name / Firma */}
       {displayHeader()}
 
       {/* 📋 Details */}
@@ -168,10 +164,8 @@ export default function CustomerCard(props) {
       {/* 🟠 Bearbeiten-Button */}
       <div class="flex justify-end items-center mt-6">
         <button
-          data-signal="open-customer-modal"
-          onClick={() =>
-            window.dispatchEvent(new Event("open-customer-modal"))
-          }
+          aria-label={t(lang(), "button", "customer")}
+          onClick={() => window.dispatchEvent(new Event("open-customer-modal"))}
           class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-transform duration-200"
         >
           {t(lang(), "button", "customer")}

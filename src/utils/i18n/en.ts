@@ -1,10 +1,9 @@
-export default {
+export const i18n_en = {
   system: {
     title: "Customer Data",
     closeButton: "Close",
     cancelButton: "Cancel",
     saveButton: "Save",
-    saving: "Saving …",
     button: "Edit Profile",
     statusActive: "logged in",
     loggedOut: "logged out",
@@ -13,6 +12,7 @@ export default {
     success: "Action completed successfully.",
     warning: "Please check your input.",
   },
+
   imprint: {
     title: "Imprint Information",
     editTitle: "Edit Imprint",
@@ -32,16 +32,31 @@ export default {
     error: "Error saving imprint.",
     loadError: "Could not load imprint data.",
   },
+
   privacy: {
     title: "Privacy Policy",
     editTitle: "Edit Privacy Policy",
-    contact: "Responsible Person",
+    company: "Company",
+    contact: "Contact Person",
+    street: "Street",
+    number: "Number",
+    zip: "ZIP",
+    city: "City",
     phone: "Phone",
     email: "Email",
-    address: "Address",
+    country: "Country",
     button: "Edit Privacy Policy",
     success: "Privacy Policy saved successfully.",
-    error: "Error saving Privacy Policy.",
-    loadError: "Could not load privacy data.",
+    error: "Error saving privacy policy.",
+    loadError: "Could not load privacy policy.",
+  },
+
+  systemMessage: {
+    neutralGreeting: "Welcome to SmartPages 👋",
+    personalized: "Welcome back, {0}! 👋",
+    businessGreeting: "Welcome back, {0}! 👋",
+    trialEndingSoon: "Your trial period will end soon.",
+    trialEndingTomorrow: "Your trial period ends tomorrow!",
+    trialExpired: "Your trial period has expired. Please update your plan.",
   },
 };

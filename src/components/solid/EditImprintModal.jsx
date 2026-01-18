@@ -1,16 +1,14 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import ModalWrapper from "./ModalWrapper";
-import { t } from "~/utils/i18n";
+import { t, useLang } from "~/utils/i18n/i18n";
 
 /**
- * 🧾 EditImprintModal (SmartPages v5.3)
+ * 🧾 EditImprintModal (SmartPages v5.8)
  * -------------------------------------------------------
- * ✅ Lädt über /api/customer/imprint (GET)
- * ✅ Speichert über /api/customer/imprintedit (POST)
- * ✅ sendet Session-Cookie (.smartpages.online)
- * ✅ feuert refresh-imprint-data nach erfolgreichem Save
- * ✅ enthält hs_no, register_court & register_number
- * ✅ Pflichtfelder klar markiert (*)
+ * ✅ Lädt / Speichert via API
+ * ✅ i18n-System (~/utils/i18n/i18n)
+ * ✅ SSR-sicher & stabil
+ * ✅ refresh-imprint-data Event nach Speichern
  */
 
 export default function EditImprintModal(props) {
@@ -31,13 +29,14 @@ export default function EditImprintModal(props) {
   });
   const [message, setMessage] = createSignal(null);
 
-  // 🌍 Sprache bestimmen
-  const lang =
-    props.lang ||
-    (typeof window !== "undefined" && window.location.pathname.includes("/en/") ? "en" : "de");
+  // 🌍 Sprache (SSR-sicher)
+  const [lang, setLang] = createSignal(props.lang || useLang("de"));
 
-  // 🧭 Modal öffnen
   onMount(() => {
+    if (typeof window !== "undefined") {
+      setLang(window.location.pathname.includes("/en/") ? "en" : "de");
+    }
+
     const openHandler = () => {
       console.log("🟢 open-imprint-modal empfangen");
       setMessage(null);
@@ -48,7 +47,7 @@ export default function EditImprintModal(props) {
     onCleanup(() => window.removeEventListener("open-imprint-modal", openHandler));
   });
 
-  // 🗂️ Imprint-Daten laden
+  // 🗂️ Daten laden
   const loadImprint = async () => {
     try {
       setLoading(true);
@@ -79,14 +78,14 @@ export default function EditImprintModal(props) {
       });
       console.log("📥 Imprint-Daten erfolgreich geladen:", i);
     } catch (err) {
-      console.warn("⚠️ Konnte Imprint-Daten nicht laden:", err);
-      setMessage(t(lang, "loadError", "imprint") || "Fehler beim Laden der Daten.");
+      console.warn("⚠️ Fehler beim Laden des Impressums:", err);
+      setMessage(t(lang(), "loadError", "imprint") || "Fehler beim Laden der Daten.");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✏️ Eingaben aktualisieren
+  // ✏️ Eingabe aktualisieren
   const updateField = (key, value) => setForm({ ...form(), [key]: value });
 
   // 💾 Änderungen speichern
@@ -120,14 +119,14 @@ export default function EditImprintModal(props) {
       if (!result?.ok) throw new Error(result?.error || "unknown");
 
       console.log("✅ Imprint erfolgreich gespeichert");
-      setMessage(t(lang, "success", "imprint") || "Gespeichert.");
+      setMessage(t(lang(), "saveSuccess", "imprint") || "Gespeichert.");
 
       // 🔁 Card aktualisieren
       window.dispatchEvent(new Event("refresh-imprint-data"));
       setTimeout(() => setShowModal(false), 800);
     } catch (err) {
       console.error("❌ Fehler beim Speichern:", err);
-      setMessage(t(lang, "error", "imprint") || "Fehler beim Speichern.");
+      setMessage(t(lang(), "saveError", "imprint") || "Fehler beim Speichern.");
     } finally {
       setLoading(false);
     }
@@ -137,9 +136,9 @@ export default function EditImprintModal(props) {
 
   // 🧱 UI
   return (
-    <ModalWrapper show={showModal()} onClose={handleClose} lang={lang}>
+    <ModalWrapper show={showModal()} onClose={handleClose} lang={lang()}>
       <h2 class="text-xl font-bold text-[#1E2A45] mb-4">
-        {t(lang, "editTitle", "imprint")}
+        {t(lang(), "editTitle", "imprint")}
       </h2>
 
       {/* 🟡 Statusmeldung */}
@@ -150,20 +149,20 @@ export default function EditImprintModal(props) {
       {/* Formularfelder */}
       <div class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
         {[
-          ["company", "company", true],
-          ["contact", "contact", true],
-          ["street", "street", true],
-          ["hs_no", "number", true],
-          ["zip", "zip", true],
-          ["city", "city", true],
-          ["phone", "phone", false],
-          ["email", "email", true],
-          ["vat", "vat", false],
-          ["registerCourt", "registerCourt", false],
-          ["registerNumber", "registerNumber", false],
-        ].map(([key, labelKey, required]) => (
+          ["company", true],
+          ["contact", true],
+          ["street", true],
+          ["hs_no", true],
+          ["zip", true],
+          ["city", true],
+          ["phone", false],
+          ["email", true],
+          ["vat", false],
+          ["registerCourt", false],
+          ["registerNumber", false],
+        ].map(([key, required]) => (
           <Field
-            label={`${t(lang, labelKey, "imprint")}${required ? " *" : ""}`}
+            label={`${t(lang(), key, "imprint")}${required ? " *" : ""}`}
             keyName={key}
             value={form()[key]}
             onInput={updateField}
@@ -171,23 +170,27 @@ export default function EditImprintModal(props) {
         ))}
       </div>
 
-      {/* Buttons */}
+      {/* 🔘 Buttons */}
       <div class="mt-6 flex justify-end gap-3">
         <button
           class="px-4 py-2 bg-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-300 transition"
           onClick={handleClose}
           disabled={loading()}
         >
-          {t(lang, "cancelButton", "system")}
+          {t(lang(), "cancelButton", "system")}
         </button>
         <button
-          class="px-5 py-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white rounded-lg text-sm font-medium shadow hover:scale-105 transition"
+          class={`px-5 py-2 rounded-lg text-sm font-medium shadow transition-transform duration-200 will-change-transform ${
+            loading()
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:scale-105"
+          }`}
           onClick={handleSave}
           disabled={loading()}
         >
           {loading()
-            ? t(lang, "loading", "system")
-            : t(lang, "saveButton", "system")}
+            ? t(lang(), "saving", "system") || "Speichern..."
+            : t(lang(), "saveButton", "system") || "Speichern"}
         </button>
       </div>
     </ModalWrapper>

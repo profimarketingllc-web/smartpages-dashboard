@@ -1,15 +1,14 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import ModalWrapper from "./ModalWrapper";
-import { t } from "~/utils/i18n";
+import { t, useLang } from "~/utils/i18n/i18n";
 
 /**
- * 🔒 EditPrivacyModal (SmartPages v5.3)
+ * 🔒 EditPrivacyModal (SmartPages v5.8)
  * -------------------------------------------------------
- * ✅ Lädt über /api/customer/privacy (GET)
- * ✅ Speichert über /api/customer/privacyedit (POST)
- * ✅ sendet Session-Cookie (.smartpages.online)
- * ✅ feuert refresh-privacy-data nach erfolgreichem Save
- * ✅ Pflichtfelder klar markiert (*)
+ * ✅ i18n-System integriert (~/utils/i18n/i18n)
+ * ✅ SSR-sicher
+ * ✅ lädt / speichert korrekt via API
+ * ✅ feuert refresh-privacy-data nach Save
  */
 
 export default function EditPrivacyModal(props) {
@@ -24,13 +23,14 @@ export default function EditPrivacyModal(props) {
   });
   const [message, setMessage] = createSignal(null);
 
-  // 🌍 Sprache bestimmen
-  const lang =
-    props.lang ||
-    (typeof window !== "undefined" && window.location.pathname.includes("/en/") ? "en" : "de");
+  // 🌍 SSR-kompatible Sprache
+  const [lang, setLang] = createSignal(props.lang || useLang("de"));
 
-  // 🧭 Modal öffnen
   onMount(() => {
+    if (typeof window !== "undefined") {
+      setLang(window.location.pathname.includes("/en/") ? "en" : "de");
+    }
+
     const openHandler = () => {
       console.log("🟢 open-privacy-modal empfangen");
       setMessage(null);
@@ -66,8 +66,8 @@ export default function EditPrivacyModal(props) {
       });
       console.log("📥 Privacy-Daten erfolgreich geladen:", i);
     } catch (err) {
-      console.warn("⚠️ Konnte Privacy-Daten nicht laden:", err);
-      setMessage(t(lang, "loadError", "privacy") || "Fehler beim Laden der Daten.");
+      console.warn("⚠️ Fehler beim Laden der Privacy-Daten:", err);
+      setMessage(t(lang(), "loadError", "privacy") || "Fehler beim Laden der Daten.");
     } finally {
       setLoading(false);
     }
@@ -101,14 +101,14 @@ export default function EditPrivacyModal(props) {
       if (!result?.ok) throw new Error(result?.error || "unknown");
 
       console.log("✅ Privacy erfolgreich gespeichert");
-      setMessage(t(lang, "success", "privacy") || "Gespeichert.");
+      setMessage(t(lang(), "saveSuccess", "privacy") || "Gespeichert.");
 
       // 🔁 Card aktualisieren
       window.dispatchEvent(new Event("refresh-privacy-data"));
       setTimeout(() => setShowModal(false), 800);
     } catch (err) {
       console.error("❌ Fehler beim Speichern:", err);
-      setMessage(t(lang, "error", "privacy") || "Fehler beim Speichern.");
+      setMessage(t(lang(), "saveError", "privacy") || "Fehler beim Speichern.");
     } finally {
       setLoading(false);
     }
@@ -118,9 +118,10 @@ export default function EditPrivacyModal(props) {
 
   // 🧱 UI
   return (
-    <ModalWrapper show={showModal()} onClose={handleClose} lang={lang}>
+    <ModalWrapper show={showModal()} onClose={handleClose} lang={lang()}>
       <h2 class="text-xl font-bold text-[#1E2A45] mb-4">
-        {t(lang, "editTitle", "privacy") || "Datenschutzerklärung bearbeiten"}
+        {t(lang(), "editTitle", "privacy") ||
+          "Datenschutzerklärung bearbeiten"}
       </h2>
 
       {/* 🟡 Statusmeldung */}
@@ -131,14 +132,14 @@ export default function EditPrivacyModal(props) {
       {/* Formularfelder */}
       <div class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
         {[
-          ["privacy_contact", "privacy_contact", true],
-          ["email", "email", true],
-          ["phone", "phone", false],
-          ["address", "address", true],
-          ["country", "country", false],
-        ].map(([key, labelKey, required]) => (
+          ["privacy_contact", true],
+          ["email", true],
+          ["phone", false],
+          ["address", true],
+          ["country", false],
+        ].map(([key, required]) => (
           <Field
-            label={`${t(lang, labelKey, "privacy")}${required ? " *" : ""}`}
+            label={`${t(lang(), key, "privacy")}${required ? " *" : ""}`}
             keyName={key}
             value={form()[key]}
             onInput={updateField}
@@ -146,23 +147,27 @@ export default function EditPrivacyModal(props) {
         ))}
       </div>
 
-      {/* Buttons */}
+      {/* 🔘 Buttons */}
       <div class="mt-6 flex justify-end gap-3">
         <button
           class="px-4 py-2 bg-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-300 transition"
           onClick={handleClose}
           disabled={loading()}
         >
-          {t(lang, "cancelButton", "system")}
+          {t(lang(), "cancelButton", "system")}
         </button>
         <button
-          class="px-5 py-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white rounded-lg text-sm font-medium shadow hover:scale-105 transition"
+          class={`px-5 py-2 rounded-lg text-sm font-medium shadow transition-transform duration-200 will-change-transform ${
+            loading()
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:scale-105"
+          }`}
           onClick={handleSave}
           disabled={loading()}
         >
           {loading()
-            ? t(lang, "loading", "system")
-            : t(lang, "saveButton", "system")}
+            ? t(lang(), "saving", "system") || "Speichert..."
+            : t(lang(), "saveButton", "system") || "Speichern"}
         </button>
       </div>
     </ModalWrapper>
