@@ -1,22 +1,25 @@
 ---
-import { t } from "~/utils/i18n/i18n";
+import { t } from "~/utils/i18n";
 
+// 🧩 Userdaten automatisch aus Middleware holen
+const user = Astro.locals?.user || {};
 const {
-  lang = Astro.locals?.lang || "de",
+  lang = "de",
   firstName = "",
+  lastName = "",
   companyName = "",
-  isBusiness = 0,
+  isBusiness = false,
   plan = "trial",
   trialEnd = null,
   hasToken = false,
-} = Astro.props;
+} = user;
 
 // 🧩 Standardwerte
 let type = "info";
 let messageKey = "neutralGreeting";
-let messageVars = [];
+let messageVars = "";
 
-// 📅 Wenn Trial aktiv ist → verbleibende Tage berechnen
+// 🧮 Logik für Trial-Ende
 if (hasToken && plan === "trial" && trialEnd) {
   const daysLeft = Math.ceil(
     (new Date(trialEnd).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
@@ -25,23 +28,27 @@ if (hasToken && plan === "trial" && trialEnd) {
   if (daysLeft <= 0) {
     type = "error";
     messageKey = "trialExpired";
-    messageVars = [isBusiness ? companyName : firstName];
   } else if (daysLeft === 1) {
     type = "warning";
     messageKey = "trialEndingTomorrow";
-    messageVars = [isBusiness ? companyName : firstName];
   } else if (daysLeft <= 3) {
     type = "info";
     messageKey = "trialEndingSoon";
-    messageVars = [isBusiness ? companyName : firstName, daysLeft];
   } else {
     messageKey = "personalized";
-    messageVars = [isBusiness ? companyName : firstName];
   }
-} else if (hasToken) {
-  // 🏢 Business oder Privat
+}
+
+// 🏢 Business-Kunden
+if (hasToken && isBusiness) {
+  messageKey = "businessGreeting";
+  messageVars = companyName || "";
+}
+
+// 🧍‍♂️ Private Kunden
+if (hasToken && !isBusiness) {
   messageKey = "personalized";
-  messageVars = [isBusiness ? companyName : firstName];
+  messageVars = firstName || lastName || "";
 }
 
 // 📩 Übersetzung abrufen
@@ -61,4 +68,3 @@ const finalMessage = t(lang, messageKey, "messages", messageVars);
     </p>
   </div>
 </div>
-
