@@ -1,5 +1,5 @@
-import { i18n_de } from "./i18n.de";
-import { i18n_en } from "./i18n.en";
+import { i18n_de } from "./de";
+import { i18n_en } from "./en";
 
 const dictionaries = {
   de: i18n_de,
