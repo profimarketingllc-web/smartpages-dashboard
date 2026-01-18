@@ -5,7 +5,7 @@ import type { APIRoute } from "astro";
  * -------------------------------------------------------
  * ✅ Holt Datenschutzdaten über Core Worker
  * ✅ Leitet Session-Cookie weiter
- * ✅ Normalisiert D1-Felder für Dashboard-Kompatibilität
+ * ✅ Greift auf `legal_info` Tabelle zu
  */
 
 const CORE_URL = "https://api.smartpages.online/api/customer/privacy";
@@ -21,7 +21,7 @@ export const GET: APIRoute = async ({ request }) => {
       });
     }
 
-    // 🔗 Anfrage an den Core Worker weiterleiten
+    // 🔗 Anfrage an den Core Worker
     const res = await fetch(CORE_URL, {
       method: "GET",
       headers: {
@@ -41,7 +41,7 @@ export const GET: APIRoute = async ({ request }) => {
 
     const json = await res.json();
 
-    // 🧭 Wenn kein Datensatz vorhanden → leeres Objekt zurückgeben
+    // 🧭 Kein Datensatz vorhanden
     if (!json?.ok || !json.data) {
       return new Response(
         JSON.stringify({
@@ -56,18 +56,22 @@ export const GET: APIRoute = async ({ request }) => {
       );
     }
 
-    const i = json.data;
+    const p = json.data;
 
-    // 🧱 Normalisierung auf erwartete Dashboard-Struktur
+    // 🧱 Normalisierung für das Frontend
     const normalized = {
-      privacy_contact: i.privacy_contact || "—",
-      email: i.email || "—",
-      phone: i.phone || "—",
-      address: i.address || "—",
-      country: i.country || "Deutschland",
-      use_custom_privacy: i.use_custom_privacy ?? 0,
-      custom_html: i.custom_html || "",
-      updated_at: i.updated_at || "—",
+      company_name: p.company_name || "—",
+      contact_name: p.contact_name || "—",
+      street: p.street || "—",
+      hs_no: p.hs_no || "—",
+      postal_code: p.postal_code || "—",
+      city: p.city || "—",
+      country: p.country || "Deutschland",
+      phone: p.phone || "—",
+      email: p.email || "—",
+      use_custom_privacy: p.use_custom_privacy || 0,
+      custom_privacy_text: p.custom_privacy_text || "",
+      updated_at: p.updated_at || "—",
     };
 
     return new Response(JSON.stringify({ ok: true, data: normalized }, null, 2), {

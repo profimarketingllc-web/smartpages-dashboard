@@ -5,8 +5,7 @@ import type { APIRoute } from "astro";
  * -------------------------------------------------------
  * ✅ Leitet Datenschutz-Update an Core Worker weiter
  * ✅ Nutzt Session-Cookie (.smartpages.online)
- * ✅ Gibt Worker-Antwort an das Frontend zurück
- * ✅ Kompatibel mit Core/Customer Worker v5.4
+ * ✅ Gibt Worker-Antwort ans Frontend zurück
  */
 
 const CORE_URL = "https://api.smartpages.online/api/customer/privacyedit";
@@ -16,7 +15,6 @@ export const POST: APIRoute = async ({ request }) => {
     const cookie = request.headers.get("cookie") || "";
     const body = await request.text();
 
-    // 🔗 Anfrage an Core Worker weiterleiten
     const res = await fetch(CORE_URL, {
       method: "POST",
       headers: {
