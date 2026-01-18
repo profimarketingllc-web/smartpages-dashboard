@@ -56,4 +56,16 @@ export const i18n_de = {
     email: "E-Mail",
     editTitle: "Datenschutzerklärung bearbeiten",
   },
+
+ messages: {
+   neutralGreeting: "Willkommen bei SmartPages 👋", 
+   personalized: "Willkommen zurück, {0} 👋",
+   businessGreeting: "Schön, dass {0} wieder da ist 👋",
+   trialActive: "Dein Testzeitraum läuft noch – viel Spaß beim Erkunden!",
+   trialEndingSoon: "Dein Testzeitraum endet in wenigen Tagen. Denk daran, deinen Plan zu verlängern.",
+   trialEndingTomorrow: "Dein Testzeitraum endet morgen – sichere dir jetzt deinen Zugang!",
+   trialExpired: "Dein Testzeitraum ist abgelaufen. Bitte buche einen Plan, um SmartPages weiter zu nutzen.",
+   planActive: "Dein SmartPages-Plan ist aktiv. Vielen Dank für deine Unterstützung 💪",
+   supportContact: "Bei Fragen steht dir unser Support-Team jederzeit zur Verfügung.",
+ },
 };

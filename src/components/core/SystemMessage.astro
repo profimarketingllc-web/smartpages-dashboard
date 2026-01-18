@@ -10,6 +10,7 @@ const {
   plan = "trial",
   trialEnd = null,
   hasToken = false,
+  systemMessage = "", // kommt optional aus D1 oder API
 } = Astro.props;
 
 // 🧩 Standardwerte
@@ -17,7 +18,18 @@ let type = "info";
 let messageKey = "neutralGreeting";
 let messageVars = "";
 
-// 🧮 Prüfe Status
+// ✅ Personalisierte Begrüßung
+if (hasToken) {
+  if (isBusiness && companyName) {
+    messageKey = "businessGreeting";
+    messageVars = companyName;
+  } else if (firstName || lastName) {
+    messageKey = "personalized";
+    messageVars = firstName || lastName;
+  }
+}
+
+// 🧮 Plan-Status prüfen
 if (hasToken && plan === "trial" && trialEnd) {
   const daysLeft = Math.ceil(
     (new Date(trialEnd).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
@@ -33,30 +45,23 @@ if (hasToken && plan === "trial" && trialEnd) {
     type = "info";
     messageKey = "trialEndingSoon";
   } else {
-    messageKey = "personalized";
+    messageKey = "trialActive";
   }
+} else if (plan && plan !== "trial") {
+  type = "success";
+  messageKey = "planActive";
 }
 
-// 🏢 Business-Kunden (falls eingeloggt)
-if (hasToken && isBusiness) {
-  messageKey = "businessGreeting";
-  messageVars = companyName || "";
-}
-
-// 🧍‍♂️ Private Kunden (falls eingeloggt)
-if (hasToken && !isBusiness) {
-  messageKey = "personalized";
-  messageVars = firstName || lastName || "";
-}
-
-// 📩 Übersetzung abrufen
-const finalMessage = t(lang, messageKey, "systemMessage", messageVars);
+// 📦 Übersetzung laden oder D1-Override verwenden
+const translated = t(lang, messageKey, "messages", messageVars);
+const finalMessage = systemMessage || translated;
 ---
 
 <div class="system-message-container relative flex flex-col justify-center">
   <div
     class={`relative flex flex-col justify-center p-5 rounded-2xl shadow-lg border border-white/20 bg-gradient-to-br text-white transition-all duration-300
       ${type === "info" ? "from-blue-500 to-blue-600" : ""}
+      ${type === "success" ? "from-green-500 to-emerald-600" : ""}
       ${type === "warning" ? "from-yellow-500 to-orange-600" : ""}
       ${type === "error" ? "from-red-500 to-red-600" : ""}
     `}

@@ -7,10 +7,10 @@ const dictionaries = {
 };
 
 /**
- * 🌍 Übersetzungsfunktion t()
- * t(lang, key, section, param?)
+ * 🌍 Mehrsprachige Übersetzungsfunktion
+ * Unterstützt mehrere Platzhalter {0}, {1}, {2} usw.
  */
-export function t(lang: string, key: string, section: string, param?: any): string {
+export function t(lang: string, key: string, section: string, params?: any): string {
   try {
     const safeLang = lang === "en" ? "en" : "de";
     const dict = dictionaries[safeLang];
@@ -18,11 +18,21 @@ export function t(lang: string, key: string, section: string, param?: any): stri
     if (!sectionData) return key;
 
     let value = sectionData[key];
-    if (typeof value === "function") value = value(param);
-    if (typeof value === "string" && param !== undefined) {
-      return value.replace("{0}", param);
+    if (typeof value === "function") value = value(params);
+    if (typeof value !== "string") return key;
+
+    // 🔄 Einzel- oder Mehrfachparameter ersetzen
+    if (params !== undefined) {
+      if (Array.isArray(params)) {
+        params.forEach((p, i) => {
+          value = value.replace(new RegExp(`\\{${i}\\}`, "g"), p);
+        });
+      } else {
+        value = value.replace("{0}", params);
+      }
     }
-    return value || key;
+
+    return value;
   } catch (err) {
     console.error("[i18n] Fehler in t():", err);
     return key;
@@ -30,7 +40,7 @@ export function t(lang: string, key: string, section: string, param?: any): stri
 }
 
 /**
- * 🧭 useLang() – erkennt Sprache aus URL
+ * 🧭 useLang() – erkennt Sprache aus URL oder SSR
  */
 export function useLang(defaultLang = "de"): string {
   if (typeof window !== "undefined") {

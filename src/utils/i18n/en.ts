@@ -56,4 +56,16 @@ export const i18n_en = {
     email: "Email",
     editTitle: "Edit Privacy Policy",
   },
+
+ messages: {
+   neutralGreeting: "Welcome to SmartPages 👋",
+   personalized: "Welcome back, {0} 👋",
+   businessGreeting: "Great to see {0} again 👋",
+   trialActive: "Your trial is active – enjoy exploring!",
+   trialEndingSoon: "Your trial will end in a few days. Don’t forget to upgrade your plan.",
+   trialEndingTomorrow: "Your trial ends tomorrow – secure your access today!",
+   trialExpired: "Your trial period has expired. Please subscribe to continue using SmartPages.",
+   planActive: "Your SmartPages plan is active. Thank you for your support 💪",
+   supportContact: "Need help? Our support team is always here for you.",
+ },
 };
