@@ -1,5 +1,5 @@
 import { Show, createMemo } from "solid-js";
-import { t } from "~/utils/i18n";
+import { t } from "~/utils/i18n/i18n";
 
 /**
  * ModalWrapper – zentraler Modal-Container für alle Dialoge
@@ -67,3 +67,4 @@ export default function ModalWrapper(props) {
     </Show>
   );
 }
+

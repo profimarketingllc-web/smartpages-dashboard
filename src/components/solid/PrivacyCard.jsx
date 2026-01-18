@@ -230,3 +230,4 @@ export default function PrivacyCard(props) {
     </div>
   );
 }
+
