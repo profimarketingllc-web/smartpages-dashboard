@@ -18,7 +18,7 @@ export default function ImprintCard(props) {
     }
   });
 
-  // 🔗 Daten abrufen (über Core Worker Proxy)
+  // 🔗 Daten abrufen
   const fetchImprint = async () => {
     try {
       const res = await fetch("/api/customer/imprint", {
@@ -55,24 +55,13 @@ export default function ImprintCard(props) {
   };
 
   const [imprint, { refetch }] = createResource(fetchImprint);
-
-  onMount(() => {
-    const handler = () => {
-      console.log("🔄 ImprintCard: Daten werden aktualisiert...");
-      refetch();
-    };
-    window.addEventListener("refresh-imprint-data", handler);
-    onCleanup(() => window.removeEventListener("refresh-imprint-data", handler));
-  });
-
   const data = () => imprint() || {};
   const displayValue = (val) => (val && val !== "" ? val : "—");
 
-  // 🔄 Toggle-Änderung speichern
+  // 🔄 Toggle speichern
   const handleToggle = async (e) => {
     const newVal = e.currentTarget.checked;
     setUseCustom(newVal);
-    setMessage("");
     try {
       await fetch("/api/customer/imprintedit", {
         method: "POST",
@@ -80,13 +69,12 @@ export default function ImprintCard(props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ use_custom_imprint: newVal }),
       });
-      console.log("Toggle gespeichert:", newVal);
     } catch (err) {
       console.error("Fehler beim Speichern des Toggles:", err);
     }
   };
 
-  // 💾 Custom-Text speichern
+  // 💾 Custom speichern
   const handleSave = async () => {
     if (!customText().trim()) {
       setMessage("Bitte gib deinen Impressumstext ein.");
@@ -104,31 +92,26 @@ export default function ImprintCard(props) {
         }),
       });
       const result = await res.json();
-      if (result.ok) {
-        setMessage("✅ Dein Impressum wurde gespeichert.");
-      } else {
-        setMessage("❌ Fehler: " + result.error);
-      }
-    } catch (err) {
-      console.error("Fehler beim Speichern:", err);
+      setMessage(result.ok ? "✅ Dein Impressum wurde gespeichert." : "❌ Fehler beim Speichern.");
+    } catch {
       setMessage("❌ Unerwarteter Fehler beim Speichern.");
     }
     setSaving(false);
   };
 
-  // 🧱 Layout
+  // 🧱 Layout ohne eigenen Rahmen
   return (
-    <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-5 bg-white rounded-2xl shadow-md">
-      {/* 🔹 Titel & Toggle */}
+    <div class="w-full text-sm text-gray-700 px-6 py-2">
+      {/* Kopfzeile */}
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45]">
           {t(lang(), "title", "imprint")}
         </h2>
 
-        {/* 🔘 Toggle */}
+        {/* Toggle sichtbar */}
         <label class="flex items-center gap-2 text-sm cursor-pointer">
           <span class="text-gray-600">
-            {useCustom() ? "Eigenes Impressum" : "Standard-Template"}
+            {useCustom() ? "Eigenes Impressum" : "Standard"}
           </span>
           <input
             type="checkbox"
@@ -139,10 +122,10 @@ export default function ImprintCard(props) {
         </label>
       </div>
 
-      {/* Wenn Custom deaktiviert ist → alte Karte */}
+      {/* Standardansicht */}
       <Show when={!useCustom()}>
-        {/* 🟧 Bearbeiten-Button */}
-        <div class="absolute top-4 right-8">
+        {/* Button rechts */}
+        <div class="flex justify-end mb-3">
           <button
             onClick={() => window.dispatchEvent(new Event("open-imprint-modal"))}
             class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
@@ -151,72 +134,64 @@ export default function ImprintCard(props) {
           </button>
         </div>
 
-        {/* Standard-Imprint-Daten */}
+        {/* Grid-Daten */}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
           <div>
-            <span class="font-medium text-gray-800">{t(lang(), "company", "imprint")} *</span>
+            <span class="font-medium text-gray-800">Firma *</span>
             <p class="text-gray-500">{displayValue(data().company)}</p>
           </div>
           <div>
-            <span class="font-medium text-gray-800">{t(lang(), "contact", "imprint")} *</span>
+            <span class="font-medium text-gray-800">Ansprechpartner *</span>
             <p class="text-gray-500">{displayValue(data().contact)}</p>
           </div>
           <div>
-            <span class="font-medium text-gray-800">{t(lang(), "street", "imprint")} *</span>
+            <span class="font-medium text-gray-800">Straße *</span>
             <p class="text-gray-500">{displayValue(data().street)}</p>
           </div>
           <div>
-            <span class="font-medium text-gray-800">{t(lang(), "number", "imprint")} *</span>
+            <span class="font-medium text-gray-800">Hausnummer *</span>
             <p class="text-gray-500">{displayValue(data().hs_no)}</p>
           </div>
           <div>
-            <span class="font-medium text-gray-800">{t(lang(), "zip", "imprint")} *</span>
+            <span class="font-medium text-gray-800">PLZ *</span>
             <p class="text-gray-500">{displayValue(data().zip)}</p>
           </div>
           <div>
-            <span class="font-medium text-gray-800">{t(lang(), "city", "imprint")} *</span>
+            <span class="font-medium text-gray-800">Ort *</span>
             <p class="text-gray-500">{displayValue(data().city)}</p>
           </div>
-        </div>
-
-        {/* 📞 Reihe 4 – Drei Spalten */}
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-3 mt-4">
           <div>
-            <span class="font-medium text-gray-800">{t(lang(), "phone", "imprint")}</span>
+            <span class="font-medium text-gray-800">Telefon</span>
             <p class="text-gray-500">{displayValue(data().phone)}</p>
           </div>
           <div>
-            <span class="font-medium text-gray-800">{t(lang(), "email", "imprint")} *</span>
+            <span class="font-medium text-gray-800">E-Mail *</span>
             <p class="text-gray-500">{displayValue(data().email)}</p>
           </div>
           <div>
-            <span class="font-medium text-gray-800">{t(lang(), "vat", "imprint")}</span>
+            <span class="font-medium text-gray-800">USt-ID</span>
             <p class="text-gray-500">{displayValue(data().vat)}</p>
           </div>
-        </div>
-
-        {/* ⚖️ Reihe 5 – Registerdaten */}
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mt-4">
           <div>
-            <span class="font-medium text-gray-800">{t(lang(), "registerCourt", "imprint")}</span>
+            <span class="font-medium text-gray-800">Registergericht</span>
             <p class="text-gray-500">{displayValue(data().registerCourt)}</p>
           </div>
           <div>
-            <span class="font-medium text-gray-800">{t(lang(), "registerNumber", "imprint")}</span>
+            <span class="font-medium text-gray-800">Registernummer</span>
             <p class="text-gray-500">{displayValue(data().registerNumber)}</p>
           </div>
         </div>
       </Show>
 
-      {/* Wenn Custom aktiv → Textfeld */}
+      {/* Custom-Ansicht */}
       <Show when={useCustom()}>
         <textarea
-          class="w-full h-48 p-3 border rounded-lg text-sm text-gray-700 mt-4"
+          class="w-full h-48 p-3 border rounded-lg text-sm text-gray-700 mt-2"
           placeholder="Hier kannst du dein eigenes Impressum eingeben..."
           value={customText()}
           onInput={(e) => setCustomText(e.currentTarget.value)}
         />
-        <div class="flex justify-end mt-4">
+        <div class="flex justify-end mt-3">
           <button
             disabled={saving()}
             onClick={handleSave}
@@ -228,7 +203,7 @@ export default function ImprintCard(props) {
           </button>
         </div>
         <Show when={message()}>
-          <p class="mt-3 text-right text-sm text-gray-600">{message()}</p>
+          <p class="mt-2 text-right text-sm text-gray-600">{message()}</p>
         </Show>
       </Show>
     </div>
