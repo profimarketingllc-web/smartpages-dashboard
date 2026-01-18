@@ -99,91 +99,28 @@ export default function ImprintCard(props) {
     setSaving(false);
   };
 
-  // 🧱 Layout ohne eigenen Rahmen
+  // 🧱 Layout – altes Design wiederhergestellt
   return (
-    <div class="w-full text-sm text-gray-700 px-6 py-2">
-      {/* Kopfzeile */}
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45]">
-          {t(lang(), "title", "imprint")}
-        </h2>
+    <div class="w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5">
+      {/* 🔹 Titel */}
+      <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-5 text-center md:text-left">
+        {t(lang(), "title", "imprint")}
+      </h2>
 
-        {/* Toggle sichtbar */}
-        <label class="flex items-center gap-2 text-sm cursor-pointer">
-          <span class="text-gray-600">
-            {useCustom() ? "Eigenes Impressum" : "Standard"}
-          </span>
-          <input
-            type="checkbox"
-            checked={useCustom()}
-            onChange={handleToggle}
-            class="w-5 h-5 accent-[#1E2A45]"
-          />
-        </label>
+      {/* 🟩 Eigene Impressum-Option */}
+      <div class="flex items-center gap-3 mb-5 border border-gray-200 rounded-lg p-3 bg-gray-50">
+        <input
+          type="checkbox"
+          checked={useCustom()}
+          onChange={handleToggle}
+          class="w-5 h-5 accent-black cursor-pointer"
+        />
+        <span class="text-gray-800 font-medium">
+          Ich verwende ein eigenes Impressum
+        </span>
       </div>
 
-      {/* Standardansicht */}
-      <Show when={!useCustom()}>
-        {/* Button rechts */}
-        <div class="flex justify-end mb-3">
-          <button
-            onClick={() => window.dispatchEvent(new Event("open-imprint-modal"))}
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
-          >
-            {t(lang(), "button", "imprint")}
-          </button>
-        </div>
-
-        {/* Grid-Daten */}
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-          <div>
-            <span class="font-medium text-gray-800">Firma *</span>
-            <p class="text-gray-500">{displayValue(data().company)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">Ansprechpartner *</span>
-            <p class="text-gray-500">{displayValue(data().contact)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">Straße *</span>
-            <p class="text-gray-500">{displayValue(data().street)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">Hausnummer *</span>
-            <p class="text-gray-500">{displayValue(data().hs_no)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">PLZ *</span>
-            <p class="text-gray-500">{displayValue(data().zip)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">Ort *</span>
-            <p class="text-gray-500">{displayValue(data().city)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">Telefon</span>
-            <p class="text-gray-500">{displayValue(data().phone)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">E-Mail *</span>
-            <p class="text-gray-500">{displayValue(data().email)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">USt-ID</span>
-            <p class="text-gray-500">{displayValue(data().vat)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">Registergericht</span>
-            <p class="text-gray-500">{displayValue(data().registerCourt)}</p>
-          </div>
-          <div>
-            <span class="font-medium text-gray-800">Registernummer</span>
-            <p class="text-gray-500">{displayValue(data().registerNumber)}</p>
-          </div>
-        </div>
-      </Show>
-
-      {/* Custom-Ansicht */}
+      {/* Wenn eigenes Impressum aktiviert */}
       <Show when={useCustom()}>
         <textarea
           class="w-full h-48 p-3 border rounded-lg text-sm text-gray-700 mt-2"
@@ -205,6 +142,70 @@ export default function ImprintCard(props) {
         <Show when={message()}>
           <p class="mt-2 text-right text-sm text-gray-600">{message()}</p>
         </Show>
+      </Show>
+
+      {/* Wenn Standard-Impressum aktiv */}
+      <Show when={!useCustom()}>
+        <div class="absolute top-4 right-8">
+          <button
+            onClick={() => window.dispatchEvent(new Event("open-imprint-modal"))}
+            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 transition-all duration-200"
+          >
+            {t(lang(), "button", "imprint")}
+          </button>
+        </div>
+
+        {/* 🔹 Grid mit altem Reihenaufbau */}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+          <div>
+            <span class="font-medium text-gray-800">Firma *</span>
+            <p class="text-gray-500">{displayValue(data().company)}</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-800">Ansprechpartner *</span>
+            <p class="text-gray-500">{displayValue(data().contact)}</p>
+          </div>
+
+          <div>
+            <span class="font-medium text-gray-800">Straße *</span>
+            <p class="text-gray-500">{displayValue(data().street)}</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-800">Hausnummer *</span>
+            <p class="text-gray-500">{displayValue(data().hs_no)}</p>
+          </div>
+
+          <div>
+            <span class="font-medium text-gray-800">PLZ *</span>
+            <p class="text-gray-500">{displayValue(data().zip)}</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-800">Ort *</span>
+            <p class="text-gray-500">{displayValue(data().city)}</p>
+          </div>
+
+          <div>
+            <span class="font-medium text-gray-800">Registernummer</span>
+            <p class="text-gray-500">{displayValue(data().registerNumber)}</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-800">Registergericht</span>
+            <p class="text-gray-500">{displayValue(data().registerCourt)}</p>
+          </div>
+
+          <div>
+            <span class="font-medium text-gray-800">Telefon</span>
+            <p class="text-gray-500">{displayValue(data().phone)}</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-800">E-Mail *</span>
+            <p class="text-gray-500">{displayValue(data().email)}</p>
+          </div>
+          <div>
+            <span class="font-medium text-gray-800">USt-ID</span>
+            <p class="text-gray-500">{displayValue(data().vat)}</p>
+          </div>
+        </div>
       </Show>
     </div>
   );
