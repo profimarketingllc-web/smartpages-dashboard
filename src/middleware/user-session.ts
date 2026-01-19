@@ -2,41 +2,51 @@
 import type { MiddlewareHandler } from "astro/middleware";
 
 /**
- * 🧠 User-Session Middleware (v6.6 – Production Fix)
- * --------------------------------------------------
- * ✅ Holt Userdaten über SmartCore Proxy (api.smartpages.online)
- * ✅ Nutzt Cookie für Session-Identifikation
- * ✅ Befüllt locals.user für Templates (z. B. SystemMessage)
+ * 🧠 SmartPages User Session Middleware (v6.7)
+ * --------------------------------------------
+ * ✅ Holt Userdaten vom Core Worker (api.smartpages.online)
+ * ✅ Übergibt Cookie an Core (Session-Erkennung)
+ * ✅ Setzt locals.user und locals.lang für SSR-Komponenten
  */
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
-  const cookie = context.request.headers.get("cookie") || "";
-  const hasSession = cookie.includes("session=");
+  const cookieHeader = context.request.headers.get("cookie") || "";
+  const hasSession = cookieHeader.includes("session=");
 
   if (!hasSession) {
-    // Keine Session → neutral fortsetzen (z. B. Login-Seite)
+    console.warn("[SmartPages] Keine Session im Cookie gefunden.");
     return next();
   }
 
   try {
-    // 🔄 Anfrage an Core Worker (Proxy zu Customer)
-    const res = await fetch(`https://api.smartpages.online/api/customer`, {
+    // 🔍 Userdaten über Core Worker abrufen
+    const response = await fetch("https://api.smartpages.online/api/customer", {
       headers: {
-        "Cookie": cookie,
+        "Cookie": cookieHeader,
         "Accept": "application/json",
       },
-      credentials: "include",
+      method: "GET",
     });
 
-    if (res.ok) {
-      const data = await res.json();
-      // 🧩 Kundendaten in Locals speichern
-      context.locals.user = data?.customer || data?.data || null;
+    if (response.ok) {
+      const json = await response.json();
+
+      // 🔧 Unterstützt mehrere Antwortstrukturen (data, customer, user)
+      const userData =
+        json?.customer || json?.data || json?.user || null;
+
+      if (userData) {
+        context.locals.user = userData;
+        context.locals.lang = userData.lang || "de";
+        console.log("[SmartPages] ✅ locals.user gesetzt:", userData.email || userData.firstName);
+      } else {
+        console.warn("[SmartPages] ⚠️ Keine userData im JSON:", Object.keys(json));
+      }
     } else {
-      console.warn(`[SmartPages] ⚠️ Core API /api/customer → ${res.status}`);
+      console.error("[SmartPages] ❌ Core API /api/customer Fehler:", response.status);
     }
   } catch (err) {
-    console.error("[SmartPages] ❌ Fehler beim Abrufen der Kundendaten:", err);
+    console.error("[SmartPages] ❌ Middleware-Fehler beim Abrufen der Kundendaten:", err);
   }
 
   return next();
