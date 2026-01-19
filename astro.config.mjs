@@ -4,12 +4,12 @@ import solid from "@astrojs/solid-js";
 import tailwind from "@astrojs/tailwind";
 
 // ============================================================
-// ⚙️ ASTRO CONFIGURATION (SmartPages Dashboard v5.8)
+// ⚙️ ASTRO CONFIGURATION (SmartPages Dashboard v5.16)
 // ------------------------------------------------------------
 // ✅ SSR aktiviert (output: "server")
-// ✅ Cloudflare Directory Mode (Workers + D1 + KV)
+// ✅ Cloudflare Directory Mode (Pages Functions)
 // ✅ SolidJS + Tailwind integriert
-// ✅ Middleware automatisch geladen (user-session + lang)
+// ✅ Middleware automatisch erkannt (user-session + lang)
 // ============================================================
 
 export default defineConfig({
@@ -30,10 +30,6 @@ export default defineConfig({
   }),
 
   integrations: [solid(), tailwind()],
-
-  experimental: {
-    middleware: true, // <--- 🧩 aktiviert automatische Middleware-Erkennung
-  },
 
   vite: {
     ssr: {
