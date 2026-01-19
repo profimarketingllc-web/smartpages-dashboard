@@ -52,5 +52,12 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     locals.user = { hasToken: false };
   }
 
+  // 🔹 SystemMessage vorbereiten (z. B. personalisierte Begrüßung)
+  locals.systemMessage = {
+    key: user.first_name ? "personalized" : "neutralGreeting",
+    status: user.plan || "trial",
+    lang: user.lang || "de",
+  };
+
   return next();
 };
