@@ -5,14 +5,12 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const { locals, request } = context;
 
   try {
-    // 🔹 Session prüfen
     const token = request.headers.get("Cookie")?.match(/session=([^;]+)/)?.[1];
     if (!token) {
       locals.user = { hasToken: false };
       return next();
     }
 
-    // 🔹 User aus D1 holen
     const db = context.env?.DB;
     const session = await db
       .prepare("SELECT user_id FROM sessions WHERE token = ?")
@@ -47,17 +45,17 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       plan: user.plan || "trial",
       trialEnd: user.trial_end,
     };
+
+    // 🔹 Begrüßungsnachricht vorbereiten
+    locals.systemMessage = {
+      key: user.first_name ? "personalized" : "neutralGreeting",
+      status: user.plan || "trial",
+      lang: user.lang || "de",
+    };
   } catch (err) {
     console.error("❌ Fehler in user-session middleware:", err);
     locals.user = { hasToken: false };
   }
-
-  // 🔹 SystemMessage vorbereiten (z. B. personalisierte Begrüßung)
-  locals.systemMessage = {
-    key: user.first_name ? "personalized" : "neutralGreeting",
-    status: user.plan || "trial",
-    lang: user.lang || "de",
-  };
 
   return next();
 };
