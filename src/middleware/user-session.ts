@@ -4,7 +4,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   const { locals, request, url } = context;
 
   try {
-    // 🔹 Session-Cookie prüfen
     const cookie = request.headers.get("cookie") || "";
     const token = cookie.match(/session=([^;]+)/)?.[1];
 
@@ -13,8 +12,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       return next();
     }
 
-    // 🔹 Lokalen API-Endpunkt (Dashboard-Proxy) aufrufen
-    //     → das Dashboard ruft intern https://api.smartpages.online/api/customer auf
     const baseUrl = new URL(url).origin;
     const res = await fetch(`${baseUrl}/api/customer`, {
       headers: { Cookie: cookie, Accept: "application/json" },
@@ -26,7 +23,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       return next();
     }
 
-    // 🔹 Ergebnis übernehmen
     const data = await res.json();
 
     locals.user = {
@@ -34,11 +30,9 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       id: data.id,
       firstName: data.first_name,
       lastName: data.last_name,
-      companyName: data.company_name,
-      isBusiness: data.is_business,
       plan: data.plan,
-      trialEnd: data.trial_end,
       lang: data.lang || "de",
+      trialEnd: data.trial_end,
     };
   } catch (err) {
     console.error("❌ Fehler in user-session middleware:", err);

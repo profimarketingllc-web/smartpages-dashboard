@@ -1,13 +1,14 @@
 import type { MiddlewareHandler } from "astro/middleware";
+import { onRequest as userSessionMiddleware } from "./middleware/user-session";
 
 /**
- * 🧩 SmartPages Middleware v5.1 (stabil)
+ * 🧩 SmartPages Middleware v6.0
  * ------------------------------------
  * ✅ prüft Session-Cookie nur auf geschützten Seiten
+ * ✅ lädt automatisch User-Daten über /api/customer
  * ✅ Login- & Redirect-Seiten bleiben frei zugänglich
- * ✅ kein Zugriff auf Core Worker nötig
+ * ✅ kein direkter Zugriff auf Core Worker nötig
  */
-
 export const onRequest: MiddlewareHandler = async (context, next) => {
   const path = context.url.pathname;
 
@@ -32,7 +33,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     return next();
   }
 
-  // 🔐 Session prüfen nur auf geschützten Bereichen (z. B. /dashboard)
+  // 🔐 Session prüfen
   const cookie = context.request.headers.get("cookie") || "";
   const hasSession = cookie.includes("session=");
 
@@ -41,6 +42,9 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     const lang = path.includes("/en") ? "en" : "de";
     return Response.redirect(`https://desk.smartpages.online/${lang}/login`);
   }
+
+  // 🧠 User-Daten in locals laden (über API)
+  await userSessionMiddleware(context, async () => {});
 
   // ✅ Zugriff erlaubt
   return next();
