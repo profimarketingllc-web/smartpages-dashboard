@@ -1,44 +1,40 @@
-import type { MiddlewareHandler } from "astro";
+import type { MiddlewareHandler } from "astro/middleware";
 
-// 🧩 Middleware: Liest User-Daten aus Cloudflare KV ("SESSION")
+/**
+ * 🧠 User-Session Middleware (v6.5)
+ * --------------------------------------------------
+ * ✅ Holt Userdaten aus dem Dashboard-Endpunkt /api/customer
+ * ✅ Keine direkte Verbindung zur KV
+ * ✅ Befüllt locals.user für Templates & Debug
+ */
+
 export const onRequest: MiddlewareHandler = async (context, next) => {
-  const { locals, request, env } = context;
+  const cookie = context.request.headers.get("cookie") || "";
+  const hasSession = cookie.includes("session=");
+
+  // Wenn keine Session vorhanden → weiter (oder Redirect)
+  if (!hasSession) {
+    return next();
+  }
 
   try {
-    const cookie = request.headers.get("cookie") || "";
-    const tokenMatch = cookie.match(/session=([^;]+)/);
-    const token = tokenMatch ? tokenMatch[1] : null;
+    // 🔄 Anfrage an den bereits funktionierenden API-Endpunkt
+    const baseUrl = context.url.origin;
+    const res = await fetch(`${baseUrl}/api/customer/customer`, {
+      headers: { "Cookie": cookie, "Accept": "application/json" },
+      credentials: "include",
+    });
 
-    if (!token) {
-      locals.user = { hasToken: false, note: "No session cookie" };
-      return next();
+    if (res.ok) {
+      const data = await res.json();
+
+      // 🧩 Kundendaten in Locals speichern
+      context.locals.user = data?.data || data;
+    } else {
+      console.warn(`⚠️ API /customer antwortete mit ${res.status}`);
     }
-
-    // 🧠 Prüfe, ob SESSION-KV vorhanden ist
-    if (!env || !env.SESSION) {
-      locals.user = { hasToken: false, note: "SESSION KV not available" };
-      return next();
-    }
-
-    // 🔍 Session aus Cloudflare KV abrufen
-    const sessionData = await env.SESSION.get(token, { type: "json" });
-
-    if (!sessionData) {
-      locals.user = { hasToken: false, note: "No data for token" };
-      return next();
-    }
-
-    // ✅ User-Daten setzen
-    locals.user = {
-      hasToken: true,
-      email: sessionData.email,
-      lang: sessionData.lang || "de",
-      plan: sessionData.plan || "trial",
-      created: sessionData.created,
-    };
-  } catch (err: any) {
-    console.error("❌ user-session middleware error:", err);
-    locals.user = { hasToken: false, error: err.message };
+  } catch (err) {
+    console.error("❌ Fehler beim Abrufen der Kundendaten:", err);
   }
 
   return next();
