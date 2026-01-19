@@ -1,5 +1,18 @@
 import type { MiddlewareHandler } from "astro";
 
+export const onRequest: MiddlewareHandler = async (context, next) => {
+  console.log("✅ Middleware läuft auf Cloudflare");
+
+  context.locals.debug = {
+    message: "Middleware wurde ausgeführt 🎉",
+    url: context.url.pathname,
+    time: new Date().toISOString(),
+  };
+
+  return next();
+};
+
+
 // ⚙️ Diese Middleware prüft Session und lädt Userdaten aus D1
 export const onRequest: MiddlewareHandler = async (context, next) => {
   const { locals, request } = context;
