@@ -1,5 +1,5 @@
 import type { MiddlewareHandler } from "astro/middleware";
-import { onRequest as userSessionMiddleware } from "../middleware/user-session";
+import { onRequest as userSessionMiddleware } from "@middleware/user-session";
 
 /**
  * 🧩 SmartPages Combined Middleware v6.5
