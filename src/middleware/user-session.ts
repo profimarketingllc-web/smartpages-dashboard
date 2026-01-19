@@ -1,9 +1,17 @@
 import type { MiddlewareHandler } from "astro";
 
+/**
+ * 🧠 SmartPages User-Session Middleware v6.3
+ * ------------------------------------------
+ * ✅ Liest Session direkt aus Cloudflare KV (Binding: SESSION)
+ * ✅ Kein externer Fetch nötig
+ * ✅ Übergibt Userdaten an locals.user
+ */
 export const onRequest: MiddlewareHandler = async (context, next) => {
-  const { locals, request, url } = context;
+  const { locals, request, env } = context;
 
   try {
+    // 🔑 Session-Cookie auslesen
     const cookie = request.headers.get("cookie") || "";
     const token = cookie.match(/session=([^;]+)/)?.[1];
 
@@ -12,28 +20,26 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       return next();
     }
 
-    const baseUrl = new URL(url).origin;
-    const res = await fetch(`${baseUrl}/api/customer`, {
-      headers: { Cookie: cookie, Accept: "application/json" },
-    });
+    // ⚙️ Session aus Cloudflare KV lesen
+    const sessionData = await env.SESSION.get(token);
 
-    if (!res.ok) {
+    if (!sessionData) {
+      console.warn(`⚠️ Keine Session in KV für Token: ${token}`);
       locals.user = { hasToken: false };
-      console.warn("⚠️ /api/customer antwortete mit:", res.status);
       return next();
     }
 
-    const data = await res.json();
+    const data = JSON.parse(sessionData);
 
+    // 🔹 Userdaten aus KV übernehmen
     locals.user = {
       hasToken: true,
-      id: data.id,
-      firstName: data.first_name,
-      lastName: data.last_name,
-      plan: data.plan,
+      email: data.email || null,
       lang: data.lang || "de",
-      trialEnd: data.trial_end,
+      plan: data.plan || "trial",
+      created: data.created || null,
     };
+
   } catch (err) {
     console.error("❌ Fehler in user-session middleware:", err);
     locals.user = { hasToken: false };
