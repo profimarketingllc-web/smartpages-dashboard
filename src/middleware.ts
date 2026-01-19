@@ -22,6 +22,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   // 🚫 Nie blockieren bei öffentlichen Pfaden
   if (
     path.startsWith("/api/") ||
+    path.startsWith("/debug") || 
     path.includes("/login") ||
     path.startsWith("/redirect") ||
     path.startsWith("/_astro/") ||
