@@ -1,9 +1,15 @@
 ---
-import { Astro } from "astro";
+/**
+ * 🧩 SmartPages Debug Locals
+ * ------------------------------------------
+ * Zeigt den aktuellen Inhalt von Astro.locals
+ * (z. B. user, lang, systemMessage)
+ */
 
 const debugData = {
-  locals: Astro.locals || {},
-  runtime: Astro.runtime || {},
+  url: Astro.url.toString(),
+  locals: Astro.locals,
+  runtime: Astro.runtime,
 };
 ---
 
