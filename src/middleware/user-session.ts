@@ -1,48 +1,47 @@
-// src/middleware/user-session.ts
 import type { MiddlewareHandler } from "astro/middleware";
 
 /**
- * SmartPages User Session Middleware (v7.0)
- * ------------------------------------------
- * Holt Nutzerdaten über den SmartCore-Proxy.
- * Erkennt Session-Cookies, ruft API-Host extern auf,
- * und befüllt Astro.locals.user + Astro.locals.lang.
+ * 🧠 User-Session Middleware (v7.0)
+ * --------------------------------------------------
+ * ✅ Holt Userdaten über SmartCore-Endpunkt /api/session/userinfo
+ * ✅ Keine interne Worker-Verbindung erforderlich
+ * ✅ Befüllt locals.user und locals.lang für alle Templates
  */
+
 export const onRequest: MiddlewareHandler = async (context, next) => {
-  const cookieHeader = context.request.headers.get("cookie") || "";
-  const hasSession = cookieHeader.includes("session=");
+  const cookie = context.request.headers.get("cookie") || "";
+  const hasSession = cookie.includes("session=");
 
   if (!hasSession) {
+    // Kein Cookie → kein Login
     return next();
   }
 
   try {
-    const apiUrl = "https://api.smartpages.online/api/customer";
-
-    const response = await fetch(apiUrl, {
-      headers: {
-        "Cookie": cookieHeader,
-        "Accept": "application/json",
-      },
+    // 🌐 Neue API-Abfrage über SmartCore
+    const res = await fetch("https://api.smartpages.online/api/session/userinfo", {
       method: "GET",
+      headers: {
+        Cookie: cookie,
+        Accept: "application/json",
+      },
     });
 
-    if (response.ok) {
-      const json = await response.json();
-      const userData = json?.data || json?.customer || null;
+    if (res.ok) {
+      const json = await res.json();
+      const user = json?.user || null;
 
-      if (userData) {
-        context.locals.user = userData;
-        context.locals.lang = userData.language || "de";
-        console.log("[SmartPages] ✅ user-session Middleware aktiv:", userData.email);
+      if (user) {
+        context.locals.user = user;
+        context.locals.lang = user.language || user.lang || "de";
       } else {
-        console.warn("[SmartPages] ⚠️ Keine userData im JSON:", Object.keys(json));
+        console.warn("[SmartPages] ⚠️ Kein Userobjekt erhalten:", json);
       }
     } else {
-      console.error("[SmartPages] ❌ Core Worker Antwort:", response.status);
+      console.warn(`[SmartPages] ⚠️ Session UserInfo Fehler (${res.status})`);
     }
   } catch (err) {
-    console.error("[SmartPages] ❌ Middleware-Fehler:", err);
+    console.error("❌ Fehler beim Abrufen der Userdaten:", err);
   }
 
   return next();
