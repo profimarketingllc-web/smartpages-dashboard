@@ -7,10 +7,9 @@ import tailwind from "@astrojs/tailwind";
 // ⚙️ ASTRO CONFIGURATION (SmartPages Dashboard v5.8)
 // ------------------------------------------------------------
 // ✅ SSR aktiviert (output: "server")
-// ✅ Cloudflare Directory Mode für Pages Functions
-// ✅ Solid + Tailwind integriert
-// ✅ Automatische Sessions (SESSION, AUTH_DB, CORE_DB via Pages-Bindings)
-// ✅ Fix: Vite Alias (~) für Build-Kompatibilität
+// ✅ Cloudflare Directory Mode (Workers + D1 + KV)
+// ✅ SolidJS + Tailwind integriert
+// ✅ Middleware automatisch geladen (user-session + lang)
 // ============================================================
 
 export default defineConfig({
@@ -26,14 +25,15 @@ export default defineConfig({
     mode: "directory",
     platformProxy: {
       enabled: true,
-      // 👉 Cloudflare Pages liefert Bindings automatisch
+      include: ["SESSION", "AUTH_DB", "CORE_DB"],
     },
   }),
 
   integrations: [solid(), tailwind()],
 
-  // 🧩 Middleware für User-Sessions aktivieren
-  middleware: ["src/middleware/user-session.ts"],
+  experimental: {
+    middleware: true, // <--- 🧩 aktiviert automatische Middleware-Erkennung
+  },
 
   vite: {
     ssr: {
