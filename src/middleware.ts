@@ -1,17 +1,17 @@
 import type { MiddlewareHandler } from "astro/middleware";
-import { onRequest as userSessionMiddleware } from "./middleware/user-session";
+import { onRequest as userSessionMiddleware } from "../middleware/user-session";
 
 /**
- * 🧩 SmartPages Middleware v6.4
- * ------------------------------
- * ✅ prüft Session-Cookie nur auf geschützten Seiten
- * ✅ lädt Sessiondaten direkt aus KV über user-session.ts
- * ✅ Login- & Redirect-Seiten bleiben frei zugänglich
+ * 🧩 SmartPages Combined Middleware v6.5
+ * -------------------------------------
+ * ✅ Einheitliche Middleware für alle Seiten
+ * ✅ Prüft Session, lädt Userdaten aus KV
+ * ✅ Führt Weiterleitungen aus (Login etc.)
  */
 export const onRequest: MiddlewareHandler = async (context, next) => {
   const path = context.url.pathname;
 
-  // 🩺 Health-Check
+  // 🩺 Health Check (funktioniert wie gehabt)
   if (path === "/health") {
     return new Response("✅ Middleware aktiv", {
       status: 200,
@@ -19,12 +19,11 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     });
   }
 
-  // 🚫 Nie blockieren bei diesen Pfaden
+  // 🚫 Nie blockieren bei öffentlichen Pfaden
   if (
     path.startsWith("/api/") ||
-    path.startsWith("/redirect") ||
-    path.endsWith("/login") ||
     path.includes("/login") ||
+    path.startsWith("/redirect") ||
     path.startsWith("/_astro/") ||
     path.startsWith("/public/") ||
     path.startsWith("/favicon")
@@ -42,7 +41,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     return Response.redirect(`https://desk.smartpages.online/${lang}/login`);
   }
 
-  // 🧠 Userdaten aus KV lesen
+  // 🧠 Userdaten aus KV via user-session.ts laden
   await userSessionMiddleware(context, async () => {});
 
   // ✅ Zugriff erlaubt
