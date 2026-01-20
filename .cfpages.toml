@@ -1,3 +1,0 @@
-# .cfpages.toml
-build_command = "npm run build"
-pages_build_output_dir = "dist"

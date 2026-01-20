@@ -1,0 +1,22 @@
+# wrangler.pages.toml
+name = "smartpages-dashboard"
+compatibility_date = "2024-12-20"
+compatibility_flags = ["nodejs_compat"]
+
+# Build-Config für Cloudflare Pages
+[build]
+command = "npm run build"
+cwd = "."
+
+# Cloudflare Pages braucht dieses Feld
+pages_build_output_dir = "dist"
+
+# Environment: Produktion
+[env.production]
+vars = { 
+  ENVIRONMENT = "production",
+  PUBLIC_BASE_URL = "https://profi-marketing-llc.workers.dev" 
+}
+
+# Optional: KV + D1 werden von Pages automatisch erkannt,
+# wenn sie über das Dashboard gebunden sind (keine IDs nötig!)
