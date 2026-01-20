@@ -1,60 +1,56 @@
 import type { APIContext } from "astro";
 
 /**
- * 🔐 /api/status
- * Gibt aktuelle Benutzerdaten aus D1 zurück — oder einen sicheren Fallback.
+ * ✅ /api/status (v3.0)
+ * Liefert aktuelle Benutzer-Session-Informationen
+ * über den SmartCore-Endpunkt /api/session/userinfo
+ * --------------------------------------------------
+ * Kompatibel mit neuem Middleware-System (locals.user)
  */
+
 export async function GET(context: APIContext): Promise<Response> {
-  const { locals, env } = context;
+  const cookie = context.request.headers.get("cookie") || "";
 
   try {
-    const session = locals.session;
-    const db = env.DB; // Dein D1 Binding
+    // 🔄 Anfrage an den Core Worker
+    const res = await fetch("https://api.smartpages.online/api/session/userinfo", {
+      headers: { Cookie: cookie, Accept: "application/json" },
+    });
 
-    // 🚧 Kein Auth vorhanden → Fallback
-    if (!session?.user_id) {
+    if (!res.ok) {
       return new Response(
         JSON.stringify({
           ok: false,
           fallback: true,
-          lang: locals.lang || "de",
-          firstName: null,
-          lastName: null,
-          companyName: null,
-          isBusiness: 0,
-          plan: "trial",
-          trialEnd: null,
+          lang: "de",
+          error: `Core responded ${res.status}`,
         }),
         { status: 200, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // ✅ Userdaten aus D1 lesen
-    const user = await db
-      .prepare(
-        `SELECT first_name, last_name, company_name, is_business, plan, trial_end 
-         FROM users WHERE user_id = ? LIMIT 1`
-      )
-      .bind(session.user_id)
-      .first();
+    const json = await res.json();
+    const user = json?.user || null;
 
-    if (!user) {
+    if (!json.ok || !user) {
       return new Response(
         JSON.stringify({
           ok: false,
           fallback: true,
-          lang: locals.lang || "de",
+          lang: "de",
+          error: "No user data found",
         }),
         { status: 200, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // 🧠 Antwort zurückgeben
+    // 🧠 Erfolgreiche Session
     return new Response(
       JSON.stringify({
         ok: true,
-        lang: locals.lang || "de",
-        ...user,
+        fallback: false,
+        lang: user.language || "de",
+        user,
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
@@ -64,8 +60,8 @@ export async function GET(context: APIContext): Promise<Response> {
       JSON.stringify({
         ok: false,
         fallback: true,
-        lang: locals.lang || "de",
-        error: "Server error",
+        lang: "de",
+        error: (err as Error).message || "Server error",
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
