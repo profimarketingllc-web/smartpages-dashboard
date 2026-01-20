@@ -1,41 +1,51 @@
-import type { MiddlewareHandler } from "astro/middleware";
-
-/**
- * 🧠 User-Session Middleware (v7.1)
- * --------------------------------------------------
- * ✅ Ruft den SmartCore-Endpunkt /api/session/userinfo auf
- * ✅ Liest Userdaten aus gültiger Session
- * ✅ Speichert sie in locals.user und locals.lang
- */
+// src/middleware/user-session.ts
+import type { MiddlewareHandler } from "astro";
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
-  const cookie = context.request.headers.get("cookie") || "";
-  if (!cookie.includes("session=")) {
-    return next();
-  }
+  const { request, locals } = context;
 
   try {
-    const res = await fetch("https://api.smartpages.online/api/session/userinfo", {
+    // Session-Cookie extrahieren
+    const cookieHeader = request.headers.get("cookie") || "";
+    const sessionCookie = cookieHeader
+      .split(";")
+      .map(c => c.trim())
+      .find(c => c.startsWith("session_id="));
+
+    if (!sessionCookie) {
+      locals.user = null;
+      return next();
+    }
+
+    const sessionId = sessionCookie.split("=")[1];
+    if (!sessionId) {
+      locals.user = null;
+      return next();
+    }
+
+    // User-Daten von deiner API abrufen
+    const apiUrl = "https://api.smartpages.online/api/session/userinfo";
+    const response = await fetch(apiUrl, {
       headers: {
-        Cookie: cookie,
-        Accept: "application/json",
+        "Cookie": `session_id=${sessionId}`,
       },
     });
 
-    if (res.ok) {
-      const json = await res.json();
-      if (json.ok && json.user) {
-        context.locals.user = json.user;
-        context.locals.lang = json.user.language || "de";
-        console.log("[SmartPages] ✅ Userdaten in locals gesetzt:", json.user.email);
-      } else {
-        console.warn("[SmartPages] ⚠️ Keine gültigen Userdaten:", json);
-      }
-    } else {
-      console.warn("[SmartPages] ⚠️ Session UserInfo Fehler:", res.status);
+    if (!response.ok) {
+      locals.user = null;
+      return next();
     }
+
+    const data = await response.json();
+    if (data?.ok && data?.user) {
+      locals.user = data.user;
+    } else {
+      locals.user = null;
+    }
+
   } catch (err) {
-    console.error("[SmartPages] ❌ Fehler in user-session Middleware:", err);
+    console.error("⚠️ user-session middleware error:", err);
+    locals.user = null;
   }
 
   return next();

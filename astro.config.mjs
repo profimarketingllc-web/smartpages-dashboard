@@ -14,8 +14,7 @@ export default defineConfig({
     mode: isCloudflare ? "directory" : "advanced",
     functionPerRoute: isCloudflare, // wichtig für Pages
     platformProxy: { enabled: false },
-    // Bilder werden beim Build kompiliert (nicht zur Laufzeit!)
-    imageService: "compile",
+    imageService: "compile", // Bilder werden beim Build kompiliert
   }),
 
   image: {
@@ -37,15 +36,16 @@ export default defineConfig({
         "@middleware": new URL("./src/middleware", import.meta.url).pathname,
       },
     },
-    // ⚙️ Wenn du lokal baust, aktiviere volle Node-Kompatibilität
     define: {
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "development"),
     },
   },
 
-  // 🟢 Middleware hier explizit einbinden
-  middleware: [
-    "@middleware/user-session",
-    "@middleware/lang", // wenn du Sprachlogik nutzt
-  ],
+  // 🟢 Wichtig: Middleware muss in `server` stehen (nicht top-level)
+  server: {
+    middleware: [
+      "@middleware/lang",        // deine Sprach-Middleware
+      "@middleware/user-session" // User-Session-Middleware
+    ],
+  },
 });
