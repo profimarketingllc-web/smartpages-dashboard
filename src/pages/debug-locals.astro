@@ -1,37 +1,30 @@
 ---
-/**
- * 🧩 SmartPages Debug Locals
- * ------------------------------------------
- * Zeigt den aktuellen Inhalt von Astro.locals
- * (z. B. user, lang, systemMessage)
- */
-
-const debugData = {
-  url: Astro.url.toString(),
-  locals: Astro.locals,
-  runtime: Astro.runtime,
-};
+const { user, lang } = Astro.locals;
 ---
 
-<html lang="de">
-  <head>
-    <meta charset="utf-8" />
-    <title>🧩 Middleware Locals Debug</title>
-    <style>
-      body {
-        background: #000;
-        color: #00ff00;
-        font-family: monospace;
-        padding: 20px;
-        white-space: pre-wrap;
-      }
-      h1 {
-        color: #0ff;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>🧩 Middleware Locals Debug</h1>
-    <pre>{JSON.stringify(debugData, null, 2)}</pre>
-  </body>
-</html>
+<h2 style="color: #3b82f6;">🧩 Middleware Locals Debug</h2>
+
+{user ? (
+  <>
+    <h3>👤 Benutzer</h3>
+    <pre>{JSON.stringify(user, null, 2)}</pre>
+  </>
+) : (
+  <p>❌ Kein Benutzer gefunden</p>
+)}
+
+{lang ? (
+  <>
+    <h3>🌍 Sprache</h3>
+    <p>{lang}</p>
+  </>
+) : (
+  <p>🌍 Keine Sprache gesetzt</p>
+)}
+
+<hr />
+
+<details>
+  <summary>📦 Gesamte Locals (optional)</summary>
+  <pre>{JSON.stringify(Astro.locals, null, 2)}</pre>
+</details>
