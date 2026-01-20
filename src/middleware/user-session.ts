@@ -1,26 +1,21 @@
 import type { MiddlewareHandler } from "astro/middleware";
 
 /**
- * 🧠 User-Session Middleware (v7.0)
+ * 🧠 User-Session Middleware (v7.1)
  * --------------------------------------------------
- * ✅ Holt Userdaten über SmartCore-Endpunkt /api/session/userinfo
- * ✅ Keine interne Worker-Verbindung erforderlich
- * ✅ Befüllt locals.user und locals.lang für alle Templates
+ * ✅ Ruft den SmartCore-Endpunkt /api/session/userinfo auf
+ * ✅ Liest Userdaten aus gültiger Session
+ * ✅ Speichert sie in locals.user und locals.lang
  */
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
   const cookie = context.request.headers.get("cookie") || "";
-  const hasSession = cookie.includes("session=");
-
-  if (!hasSession) {
-    // Kein Cookie → kein Login
+  if (!cookie.includes("session=")) {
     return next();
   }
 
   try {
-    // 🌐 Neue API-Abfrage über SmartCore
     const res = await fetch("https://api.smartpages.online/api/session/userinfo", {
-      method: "GET",
       headers: {
         Cookie: cookie,
         Accept: "application/json",
@@ -29,19 +24,18 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
     if (res.ok) {
       const json = await res.json();
-      const user = json?.user || null;
-
-      if (user) {
-        context.locals.user = user;
-        context.locals.lang = user.language || user.lang || "de";
+      if (json.ok && json.user) {
+        context.locals.user = json.user;
+        context.locals.lang = json.user.language || "de";
+        console.log("[SmartPages] ✅ Userdaten in locals gesetzt:", json.user.email);
       } else {
-        console.warn("[SmartPages] ⚠️ Kein Userobjekt erhalten:", json);
+        console.warn("[SmartPages] ⚠️ Keine gültigen Userdaten:", json);
       }
     } else {
-      console.warn(`[SmartPages] ⚠️ Session UserInfo Fehler (${res.status})`);
+      console.warn("[SmartPages] ⚠️ Session UserInfo Fehler:", res.status);
     }
   } catch (err) {
-    console.error("❌ Fehler beim Abrufen der Userdaten:", err);
+    console.error("[SmartPages] ❌ Fehler in user-session Middleware:", err);
   }
 
   return next();
