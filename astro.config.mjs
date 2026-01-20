@@ -10,11 +10,10 @@ export default defineConfig({
   output: "server",
 
   adapter: cloudflare({
-    // Wenn auf Cloudflare (Pages oder Worker), dann Server-Mode
     mode: isCloudflare ? "directory" : "advanced",
-    functionPerRoute: isCloudflare, // wichtig für Pages
+    functionPerRoute: isCloudflare,
     platformProxy: { enabled: false },
-    imageService: "compile", // Bilder werden beim Build kompiliert
+    imageService: "compile",
   }),
 
   image: {
@@ -39,13 +38,5 @@ export default defineConfig({
     define: {
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV || "development"),
     },
-  },
-
-  // 🟢 Wichtig: Middleware muss in `server` stehen (nicht top-level)
-  server: {
-    middleware: [
-      "@middleware/lang",        // deine Sprach-Middleware
-      "@middleware/user-session" // User-Session-Middleware
-    ],
   },
 });
