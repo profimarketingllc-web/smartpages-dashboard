@@ -7,12 +7,14 @@ export default defineConfig({
   output: "server",
 
   adapter: cloudflare({
-    // Erzwinge den neuen Directory-Mode für Cloudflare Pages SSR
-    mode: "directory",
-    platformProxy: {
-      enabled: false, // <<< muss aus sein, sonst fällt er zurück auf dist!
-    },
+    mode: "directory", // 🧩 erzwingt .output/functions
+    functionPerRoute: true, // wichtig für Cloudflare Pages
+    platformProxy: { enabled: false },
   }),
+
+  image: {
+    service: { entrypoint: "astro/assets/services/compile" },
+  },
 
   integrations: [solid(), tailwind()],
 
