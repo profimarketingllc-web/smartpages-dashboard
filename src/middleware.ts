@@ -1,17 +1,18 @@
-import type { MiddlewareHandler } from "astro/middleware";
-import { onRequest as userSessionMiddleware } from "@middleware/user-session";
+import { sequence } from "astro/middleware";
+import { onRequest as userSession } from "./middleware/user-session";
 
 /**
- * 🧩 SmartPages Combined Middleware v6.5
+ * 🧩 SmartPages Combined Middleware v7.0
  * -------------------------------------
- * ✅ Einheitliche Middleware für alle Seiten
- * ✅ Prüft Session, lädt Userdaten aus KV
- * ✅ Führt Weiterleitungen aus (Login etc.)
+ * ✅ Lädt Userdaten über Core (/api/session/userinfo)
+ * ✅ Prüft Session & leitet ggf. auf Login
+ * ✅ Läuft vollständig im Astro Context (locals bleiben erhalten)
  */
-export const onRequest: MiddlewareHandler = async (context, next) => {
+
+export const onRequest = sequence(userSession, async (context, next) => {
   const path = context.url.pathname;
 
-  // 🩺 Health Check (funktioniert wie gehabt)
+  // 🩺 Health Check
   if (path === "/health") {
     return new Response("✅ Middleware aktiv", {
       status: 200,
@@ -19,10 +20,10 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     });
   }
 
-  // 🚫 Nie blockieren bei öffentlichen Pfaden
+  // 🚫 Öffentliche Pfade überspringen
   if (
     path.startsWith("/api/") ||
-    path.startsWith("/debug") || 
+    path.startsWith("/debug") ||
     path.includes("/login") ||
     path.startsWith("/redirect") ||
     path.startsWith("/_astro/") ||
@@ -42,9 +43,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     return Response.redirect(`https://desk.smartpages.online/${lang}/login`);
   }
 
-  // 🧠 Userdaten aus KV via user-session.ts laden
-  await userSessionMiddleware(context, async () => {});
-
-  // ✅ Zugriff erlaubt
+  // ✅ Zugriff erlaubt → Userdaten bereits durch userSession gesetzt
   return next();
-};
+});
