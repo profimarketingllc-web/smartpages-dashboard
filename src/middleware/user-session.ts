@@ -1,28 +1,45 @@
-// src/middleware/user-session.ts
 import type { MiddlewareHandler } from "astro";
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
-  try {
-    const apiUrl = "https://api.smartpages.online/api/session/userinfo";
+  console.log("✅ [user-session] Middleware gestartet");
 
-    // Optional: Cookie weiterreichen (z. B. für eingeloggte Sitzungen)
+  try {
+    const cookieHeader = context.request.headers.get("cookie") || "";
+    console.log("🍪 [user-session] Cookie:", cookieHeader || "(leer)");
+
+    const apiUrl = "https://api.smartpages.online/api/session/userinfo";
+    console.log("🌐 [user-session] Hole Daten von:", apiUrl);
+
     const res = await fetch(apiUrl, {
-      headers: {
-        Cookie: context.request.headers.get("cookie") || "",
-      },
+      headers: { Cookie: cookieHeader },
     });
 
-    const data = await res.json();
+    if (!res.ok) {
+      console.warn("⚠️ [user-session] API antwortete mit Status", res.status);
+    }
 
-    // Falls User-Objekt vorhanden, speichern
+    const data = await res.json().catch(() => null);
+    console.log("📡 [user-session] API Antwort:", data);
+
     if (data?.ok && data.user) {
+      console.log("👤 [user-session] Benutzer erfolgreich geladen:", data.user.email);
       context.locals.user = data.user;
     } else {
-      context.locals.user = null;
+      console.warn("🚫 [user-session] Keine gültige Benutzerdaten gefunden");
+      // Test-Fallback, damit du siehst, dass es funktioniert
+      context.locals.user = {
+        first_name: "Testuser",
+        email: "test@smartpages.online",
+        status: "debug",
+      };
     }
   } catch (err) {
-    console.error("Fehler in user-session middleware:", err);
-    context.locals.user = null;
+    console.error("💥 [user-session] Fehler:", err);
+    context.locals.user = {
+      first_name: "FehlerUser",
+      email: "n/a",
+      status: "error",
+    };
   }
 
   return next();
