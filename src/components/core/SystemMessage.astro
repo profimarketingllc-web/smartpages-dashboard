@@ -1,6 +1,10 @@
 ---
 import { t } from "~/utils/i18n/i18n";
 
+console.log("🧩 SystemMessage.locals:", Astro.locals.user);
+const user = Astro.locals?.user || {};
+---
+
 // 🧠 Hole Daten direkt aus Middleware (locals.user)
 const user = Astro.locals?.user || {};
 const {
