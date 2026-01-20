@@ -17,6 +17,9 @@ const cookie = Astro.request.headers.get("cookie") || "";
 if (!cookie.includes("session=")) {
   return Astro.redirect("/de/login");
 }
+
+// 🟢 Hole User aus locals (kommt aus Middleware user-session.ts)
+const user = Astro.locals.user;
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true} lang="de">
@@ -31,7 +34,7 @@ if (!cookie.includes("session=")) {
       </DashboardCardWide>
 
       <div class="system-message">
-        <SystemMessage lang="de" />
+        <SystemMessage lang="de" user={user} />
       </div>
     </section>
 

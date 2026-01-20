@@ -4,13 +4,14 @@ import { t } from "~/utils/i18n/i18n";
 // 🧠 Hole Daten direkt aus Middleware (locals.user)
 const user = Astro.locals?.user || {};
 const {
-  lang = "de",
-  firstName = "",
-  companyName = "",
-  isBusiness = 0,
+  language: lang = "de",
+  first_name = "",
+  company_name = "",
+  is_business = 0,
   plan = "trial",
-  trialEnd = null,
-  hasToken = false,
+  trial_end = null,
+  status = "",
+  email = "",
 } = user;
 
 // 🧩 Standardwerte
@@ -19,9 +20,9 @@ let messageKey = "neutralGreeting";
 let messageVars = "";
 
 // 🧮 Prüfe Status
-if (hasToken && plan === "trial" && trialEnd) {
+if (plan === "trial" && trial_end) {
   const daysLeft = Math.ceil(
-    (new Date(trialEnd).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    (new Date(trial_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
   );
 
   if (daysLeft <= 0) {
@@ -39,15 +40,20 @@ if (hasToken && plan === "trial" && trialEnd) {
 }
 
 // 🏢 Business-Kunden
-if (hasToken && isBusiness) {
+if (is_business) {
   messageKey = "businessGreeting";
-  messageVars = companyName || "";
+  messageVars = company_name || "";
 }
 
 // 🧍‍♂️ Private Kunden
-if (hasToken && !isBusiness) {
+if (!is_business && first_name) {
   messageKey = "personalized";
-  messageVars = firstName || "";
+  messageVars = first_name;
+}
+
+// Wenn kein Name, fallback auf E-Mail
+if (!messageVars && email) {
+  messageVars = email.split("@")[0];
 }
 
 // 📩 Übersetzung abrufen
