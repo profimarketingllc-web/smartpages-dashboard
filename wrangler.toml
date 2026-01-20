@@ -1,31 +1,43 @@
 name = "smartpages-dashboard"
 main = "dist/_worker.js"
-compatibility_date = "2025-12-01"
+compatibility_date = "2024-12-20"
 compatibility_flags = ["nodejs_compat"]
 
-# ❌ Entfernt: [site] block – weil SSR Worker kein client bucket braucht
-# [site]
-# bucket = "dist/client"
+# ---- Account ----
+account_id = "595aede2251ad4bda349801970b7adcf"
+workers_dev = true
 
+# ⚠️ Entfernt: route / zone_id / usage_model
+# → Diese Felder gelten nur für "classic workers" (nicht für Astro + Pages)
+# route = ""
+# zone_id = ""
+# usage_model = "bundled"
+
+# ---- Build ----
+# Cloudflare erwartet hier kein "watch_dir" mehr — entfernt.
 [build]
 command = "npm run build"
+cwd = "."
 
-[vars]
+# ---- Environment: Produktion ----
+[env.production]
+name = "smartpages-dashboard"
+main = "dist/server/entry.mjs"
+
+# KV Namespaces
+kv_namespaces = [
+  { binding = "SESSION", id = "3ab700118c7d4b41bfefbc3cbeafe527" },
+  { binding = "CACHE_PROFILES", id = "80d7b2f13c0446479830cae45d8347e4" },
+  { binding = "Fokus_KV", id = "e3950940e30649839fac040cdd7e538d" }
+]
+
+# D1 Databases
+d1_databases = [
+  { binding = "CORE_DB", database_name = "smartcore-db_eu", database_id = "f4c72bb3-9d56-4013-8404-47ad64808d5a" },
+  { binding = "AUTH_DB", database_name = "smartpages_auth_eu", database_id = "afe58dd1-98d3-459c-8112-aeea65b53916" }
+]
+
+# Umgebungsvariablen
+[env.production.vars]
 ENVIRONMENT = "production"
-
-[[kv_namespaces]]
-binding = "SESSION"
-id = "3ab700118c7d4b41bfefbc3cbeafe527"
-
-[[d1_databases]]
-binding = "AUTH_DB"
-database_name = "smartpages_auth_eu"
-database_id = "afe58dd1-98d3-459c-8112-aeea65b53916"
-
-[[d1_databases]]
-binding = "CORE_DB"
-database_name = "smartcore-db_eu"
-database_id = "f4c72bb3-9d56-4013-8404-47ad64808d5a"
-
-[observability]
-enabled = true
+PUBLIC_BASE_URL = "https://profi-marketing-llc.workers.dev"
