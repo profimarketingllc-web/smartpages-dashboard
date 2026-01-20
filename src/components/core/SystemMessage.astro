@@ -1,12 +1,10 @@
 ---
 import { t } from "~/utils/i18n/i18n";
 
-console.log("🧩 SystemMessage.locals:", Astro.locals.user);
+// 🧠 Hole Daten aus Middleware (locals.user)
 const user = Astro.locals?.user || {};
----
 
-// 🧠 Hole Daten direkt aus Middleware (locals.user)
-const user = Astro.locals?.user || {};
+// Felder auslesen (mit API-kompatiblen Namen)
 const {
   language: lang = "de",
   first_name = "",
@@ -14,16 +12,16 @@ const {
   is_business = 0,
   plan = "trial",
   trial_end = null,
-  status = "",
   email = "",
+  status = "",
 } = user;
 
-// 🧩 Standardwerte
+// 🔹 Standardwerte
 let type = "info";
 let messageKey = "neutralGreeting";
 let messageVars = "";
 
-// 🧮 Prüfe Status
+// 🧮 Prüfe Status / Trial-Zeitraum
 if (plan === "trial" && trial_end) {
   const daysLeft = Math.ceil(
     (new Date(trial_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
@@ -55,13 +53,16 @@ if (!is_business && first_name) {
   messageVars = first_name;
 }
 
-// Wenn kein Name, fallback auf E-Mail
+// 📩 Fallback auf E-Mail, wenn kein Name vorhanden
 if (!messageVars && email) {
   messageVars = email.split("@")[0];
 }
 
-// 📩 Übersetzung abrufen
+// 📬 Übersetzung abrufen
 const finalMessage = t(lang, messageKey, "messages", messageVars);
+
+// 🔍 Debug optional aktivieren
+// console.log("🧩 SystemMessage.locals.user:", user);
 ---
 
 <div class="system-message-container relative flex flex-col justify-center">
