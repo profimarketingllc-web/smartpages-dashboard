@@ -1,61 +1,103 @@
 ---
 /**
- * 🔁 SmartPages Redirect Page (stabiler Login-Flow)
- * Version 2.0 – kompatibel mit SmartCore v9.x
+ * 🔁 SmartPages Redirect Page – v2 (Cookie-stabil & Core-integriert)
+ * Funktioniert mit SmartCore Worker v8.9.2+
  */
 ---
 
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <title>SmartPages Login</title>
+    <title>SmartPages Anmeldung</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        background: #0b0d17;
+        color: white;
+        font-family: sans-serif;
+        text-align: center;
+        margin-top: 20vh;
+      }
+      .msg {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+      .loader {
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-left-color: #3b82f6;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        margin: 20px auto;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </head>
 
-  <body style="background-color:#0b0d17;color:white;font-family:sans-serif;text-align:center;margin-top:20vh;">
+  <body>
     <h2>🔐 Anmeldung wird überprüft...</h2>
+    <div class="loader"></div>
+    <p class="msg" id="statusText">Bitte warten...</p>
 
     <script is:inline>
       (async () => {
         const url = new URL(window.location.href);
         const token = url.searchParams.get("token");
         const lang = url.searchParams.get("lang") || "de";
+        const statusText = document.getElementById("statusText");
 
-        const message = (txt) => {
-          document.body.innerHTML =
-            `<p style="font-family:sans-serif;text-align:center;margin-top:20vh;">${txt}</p>`;
+        const showMessage = (msg, color = "#ccc") => {
+          statusText.textContent = msg;
+          statusText.style.color = color;
         };
 
-        if (!token) return message("❌ Kein Token gefunden.");
+        if (!token) {
+          showMessage("❌ Kein Token gefunden.", "#ef4444");
+          return;
+        }
 
         try {
-          // 1️⃣ Verify-Request (mit Credentials!)
+          // 1️⃣ Token verifizieren
           const verifyRes = await fetch(
             `https://api.smartpages.online/api/auth/verify?token=${token}&lang=${lang}`,
             { credentials: "include" }
           );
           const verifyData = await verifyRes.json();
-          if (!verifyData.ok || !verifyData.redirect)
-            return message("⚠️ Token ungültig oder abgelaufen.");
 
-          // 2️⃣ Confirm-Request (setzt Session-Cookie)
+          if (!verifyData.ok || !verifyData.redirect) {
+            showMessage("⚠️ Token ungültig oder abgelaufen.", "#facc15");
+            return;
+          }
+
+          showMessage("Token geprüft – Session wird erstellt...");
+
+          // 2️⃣ Session bestätigen (setzt Cookie)
           const confirmRes = await fetch(
             `https://api.smartpages.online${verifyData.redirect}`,
             { credentials: "include" }
           );
           const confirmData = await confirmRes.json();
 
-          if (confirmData.ok && confirmData.redirect) {
-            // 3️⃣ Kurzer Delay, damit das Session-Cookie sicher geschrieben ist
-            await new Promise((res) => setTimeout(res, 300));
+          if (confirmData.ok && confirmData.message === "session_set") {
+            showMessage("✅ Anmeldung erfolgreich! Leite weiter...");
 
-            // 4️⃣ Redirect ins Dashboard
-            window.location.href = confirmData.redirect;
+            // 3️⃣ Kurze Pause, dann Redirect ins Dashboard
+            setTimeout(() => {
+              window.location.href =
+                confirmData.redirect ||
+                `https://desk.smartpages.online/${lang}/dashboard`;
+            }, 1200);
           } else {
-            message("⚠️ Fehler beim Bestätigen der Anmeldung.");
+            showMessage("⚠️ Fehler beim Bestätigen der Anmeldung.", "#facc15");
           }
         } catch (err) {
-          message(`❌ Fehler: ${err.message}`);
+          console.error(err);
+          showMessage(`❌ Fehler: ${err.message}`, "#ef4444");
         }
       })();
     </script>

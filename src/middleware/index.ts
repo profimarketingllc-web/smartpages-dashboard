@@ -1,11 +1,17 @@
 import { onRequest as userSession } from "./user-session";
 import { onRequest as lang } from "./lang";
+import { onRequest as roleCheck } from "./role-check";
 
 export const onRequest = async (context, next) => {
-  // Erst Session holen
+  // 1️⃣ Session vom Core holen
   await userSession(context, async () => {});
-  // Dann Sprache bestimmen
+
+  // 2️⃣ Sprache setzen
   await lang(context, async () => {});
-  // Weiter zur Route
+
+  // 3️⃣ Rollenprüfung und Weiterleitung
+  await roleCheck(context, async () => {});
+
+  // 4️⃣ Weiter zur Route
   return next();
 };

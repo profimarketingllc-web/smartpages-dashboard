@@ -4,7 +4,10 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   console.log("✅ [user-session] Middleware gestartet");
 
   try {
-    const cookieHeader = context.request.headers.get("cookie") || "";
+    const cookieHeader =
+      context.request.headers.get("cookie") ||
+      context.request.headers.get("Cookie") ||
+      "";
     console.log("🍪 [user-session] Cookie:", cookieHeader || "(leer)");
 
     const apiUrl = "https://api.smartpages.online/api/session/userinfo";
@@ -12,6 +15,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
     const res = await fetch(apiUrl, {
       headers: { Cookie: cookieHeader },
+      credentials: "include",
     });
 
     if (!res.ok) {
@@ -22,24 +26,24 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     console.log("📡 [user-session] API Antwort:", data);
 
     if (data?.ok && data.user) {
-      console.log("👤 [user-session] Benutzer erfolgreich geladen:", data.user.email);
-      context.locals.user = data.user;
-    } else {
-      console.warn("🚫 [user-session] Keine gültige Benutzerdaten gefunden");
-      // Test-Fallback, damit du siehst, dass es funktioniert
+      console.log(
+        `👤 [user-session] Benutzer geladen: ${data.user.email} (${data.user.role || "keine Rolle"})`
+      );
+
       context.locals.user = {
-        first_name: "Testuser",
-        email: "test@smartpages.online",
-        status: "debug",
+        email: data.user.email,
+        first_name: data.user.first_name || null,
+        plan: data.user.plan || "trial",
+        role: data.user.role || "user",
+        lang: data.user.lang || "de",
       };
+    } else {
+      console.warn("🚫 [user-session] Keine gültigen Benutzerdaten gefunden");
+      context.locals.user = null;
     }
   } catch (err) {
     console.error("💥 [user-session] Fehler:", err);
-    context.locals.user = {
-      first_name: "FehlerUser",
-      email: "n/a",
-      status: "error",
-    };
+    context.locals.user = null;
   }
 
   return next();
