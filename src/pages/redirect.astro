@@ -1,103 +1,98 @@
 ---
-/**
- * 🔁 SmartPages Redirect Page – v2 (Cookie-stabil & Core-integriert)
- * Funktioniert mit SmartCore Worker v8.9.2+
- */
+const { lang = "de" } = Astro.params || {};
+const messages = {
+  de: {
+    title: "Anmeldung wird überprüft...",
+    success: "Willkommen zurück!",
+    error: "Fehler bei der Anmeldung.",
+  },
+  en: {
+    title: "Checking your login...",
+    success: "Welcome back!",
+    error: "Login error.",
+  },
+};
+const t = messages[lang] || messages.de;
 ---
 
-<html lang="de">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
-    <title>SmartPages Anmeldung</title>
+    <title>{t.title} | SmartPages</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
       body {
-        background: #0b0d17;
+        background-color: #0b0d17;
         color: white;
-        font-family: sans-serif;
+        font-family: "Inter", system-ui, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
         text-align: center;
-        margin-top: 20vh;
       }
-      .msg {
-        font-size: 1.1rem;
-        opacity: 0.9;
+      img {
+        width: 90px;
+        margin-bottom: 1.5rem;
+        animation: pulse 1.5s infinite alternate;
       }
-      .loader {
-        border: 4px solid rgba(255, 255, 255, 0.1);
-        border-left-color: #3b82f6;
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        margin: 20px auto;
-        animation: spin 1s linear infinite;
+      @keyframes pulse {
+        from { opacity: 0.6; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1.05); }
       }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
+      .status {
+        margin-top: 1rem;
+        font-size: 1rem;
+        opacity: 0.8;
       }
     </style>
   </head>
 
   <body>
-    <h2>🔐 Anmeldung wird überprüft...</h2>
-    <div class="loader"></div>
-    <p class="msg" id="statusText">Bitte warten...</p>
+    <img src="/assets/SmartPages_icon_transparent.png" alt="SmartPages Logo" />
+    <h2 id="statusText">{t.title}</h2>
+    <p class="status">Bitte warten...</p>
 
     <script is:inline>
       (async () => {
         const url = new URL(window.location.href);
         const token = url.searchParams.get("token");
         const lang = url.searchParams.get("lang") || "de";
-        const statusText = document.getElementById("statusText");
-
-        const showMessage = (msg, color = "#ccc") => {
-          statusText.textContent = msg;
-          statusText.style.color = color;
-        };
+        const statusEl = document.getElementById("statusText");
 
         if (!token) {
-          showMessage("❌ Kein Token gefunden.", "#ef4444");
+          statusEl.textContent = "❌ Kein Token gefunden.";
           return;
         }
 
         try {
-          // 1️⃣ Token verifizieren
           const verifyRes = await fetch(
-            `https://api.smartpages.online/api/auth/verify?token=${token}&lang=${lang}`,
-            { credentials: "include" }
+            `https://api.smartpages.online/api/auth/verify?token=${token}&lang=${lang}`
           );
           const verifyData = await verifyRes.json();
-
           if (!verifyData.ok || !verifyData.redirect) {
-            showMessage("⚠️ Token ungültig oder abgelaufen.", "#facc15");
+            statusEl.textContent = "⚠️ Token ungültig oder abgelaufen.";
             return;
           }
 
-          showMessage("Token geprüft – Session wird erstellt...");
-
-          // 2️⃣ Session bestätigen (setzt Cookie)
           const confirmRes = await fetch(
             `https://api.smartpages.online${verifyData.redirect}`,
             { credentials: "include" }
           );
           const confirmData = await confirmRes.json();
 
-          if (confirmData.ok && confirmData.message === "session_set") {
-            showMessage("✅ Anmeldung erfolgreich! Leite weiter...");
-
-            // 3️⃣ Kurze Pause, dann Redirect ins Dashboard
+          if (confirmData.ok && confirmData.redirect) {
+            statusEl.textContent = "{t.success}";
             setTimeout(() => {
-              window.location.href =
-                confirmData.redirect ||
-                `https://desk.smartpages.online/${lang}/dashboard`;
+              window.location.href = confirmData.redirect;
             }, 1200);
           } else {
-            showMessage("⚠️ Fehler beim Bestätigen der Anmeldung.", "#facc15");
+            statusEl.textContent = "{t.error}";
           }
         } catch (err) {
-          console.error(err);
-          showMessage(`❌ Fehler: ${err.message}`, "#ef4444");
+          statusEl.textContent = "❌ Fehler: " + err.message;
         }
       })();
     </script>
