@@ -1,0 +1,374 @@
+--5d147557cc52274e8c2d40872010f2dccae024411cd000cbb670467cd20a
+Content-Disposition: form-data; name="worker.js"
+
+/**
+ * ===========================================================
+ * 🧭 FOKUS GPT – MENTOR WORKER v2.9d (Upsert Stable)
+ * ===========================================================
+ * Zweck: GPT-gestützte Wochenberichte, Reflexion & Marketing-Auswertung
+ * Datenquelle: D1 (env.Fokus_GPT)
+ * -----------------------------------------------------------
+ * Letzte Revision: 19.01.2026
+ * Autor: Frank Hüser + GPT-5
+ * ===========================================================
+ *
+ * 📘 ENDPUNKTE:
+ * -----------------------------------------------------------
+ * 🔹 GET  /health                  → Systemstatus
+ * 🔹 GET  /weekly/raw              → Liefert Daten aus abgeschlossener Woche (KW -1)
+ * 🔹 POST /weekly/report           → Speichert oder aktualisiert Weekplan in weekly_reports
+ * 🔹 POST /weekly/mentoring        → Speichert Mentoringbericht in mentoring_reports
+ * 🔹 POST /weekly/marketing        → Speichert Marketingbericht in marketing_reports
+ * 🔹 CRON (Samstag 05:00 UTC)      → Holt Weekreport aus Core Worker & speichert als Summary
+ * ===========================================================
+ */
+
+////////////////////////////////////////////////////////////
+// Hilfsfunktionen
+////////////////////////////////////////////////////////////
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data, null, 2), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8" }
+  });
+}
+
+function handleCORS(req) {
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, X-Ingest-Secret"
+      }
+    });
+  }
+  return null;
+}
+
+// 📅 Liefert immer die letzte vollständig abgeschlossene Woche (Sa–Fr)
+function getPreviousWeekRange() {
+  const today = new Date();
+  const day = today.getUTCDay(); // 0=So, 6=Sa
+  const daysSinceFriday = day === 6 ? 1 : day === 0 ? 2 : day + 1;
+  const lastFriday = new Date(today.getTime() - daysSinceFriday * 86400000);
+  const lastSaturday = new Date(lastFriday.getTime() - 6 * 86400000);
+  return {
+    start: lastSaturday.toISOString().slice(0, 10),
+    end: lastFriday.toISOString().slice(0, 10)
+  };
+}
+
+// 🧮 Berechnet ISO-Woche & Jahr (Cloudflare-kompatibel)
+function getWeekMeta(dateStr) {
+  try {
+    const date = new Date(dateStr);
+    const target = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    target.setUTCDate(target.getUTCDate() + 4 - (target.getUTCDay() || 7));
+
+    const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+    const diffMs = target.getTime() - yearStart.getTime();
+    const weekNumber = Math.ceil((diffMs / 86400000 + 1) / 7);
+    const weekYear = target.getUTCFullYear();
+
+    return { week_year: weekYear, week_number: weekNumber };
+  } catch (err) {
+    console.error("[mentor-worker] WeekMeta calculation failed:", err);
+    return { week_year: 0, week_number: 0 };
+  }
+}
+
+////////////////////////////////////////////////////////////
+// GET-Endpunkte
+////////////////////////////////////////////////////////////
+
+async function getHealth() {
+  return jsonResponse({
+    status: "ok",
+    version: "v2.9d",
+    service: "mentor-worker",
+    message: "System aktiv und D1-verbunden"
+  });
+}
+
+async function getWeeklyRaw(env) {
+  const db = env.Fokus_GPT;
+  const range = getPreviousWeekRange();
+
+  const [days, projectDay, projects, weeklyReport] = await Promise.all([
+    db.prepare("SELECT * FROM days WHERE day_date BETWEEN ? AND ?")
+      .bind(range.start, range.end)
+      .all(),
+    db.prepare(
+      `SELECT pd.*, d.day_date 
+       FROM project_day pd 
+       JOIN days d ON d.id = pd.day_id 
+       WHERE d.day_date BETWEEN ? AND ?`
+    )
+      .bind(range.start, range.end)
+      .all(),
+    db.prepare("SELECT * FROM projects").all(),
+    db.prepare(
+      "SELECT * FROM weekly_reports WHERE report_type = 'weekreport' AND (week_start = ? OR week_end = ?) ORDER BY created_at DESC LIMIT 1"
+    )
+      .bind(range.start, range.end)
+      .first()
+  ]);
+
+  return jsonResponse({
+    status: "ok",
+    mode: "retrospective",
+    week_start: range.start,
+    week_end: range.end,
+    days: days.results,
+    project_day: projectDay.results,
+    projects: projects.results,
+    weekly_report: weeklyReport || null
+  });
+}
+
+////////////////////////////////////////////////////////////
+// POST-Endpunkte
+////////////////////////////////////////////////////////////
+
+// 🆕 Weekplan mit UPSERT (Insert oder Update)
+async function saveWeekplan(req, env) {
+  const db = env.Fokus_GPT;
+  const payload = await req.json();
+  console.log("[mentor-worker][Weekplan] Payload received:", JSON.stringify(payload, null, 2));
+
+  if (!payload.week_start || !payload.week_end || !payload.content) {
+    return jsonResponse(
+      { status: "error", message: "Pflichtfelder fehlen: week_start, week_end, content." },
+      400
+    );
+  }
+
+  const { week_year, week_number } = getWeekMeta(payload.week_start);
+  const contentJson = JSON.stringify(payload.content);
+  const reportType = payload.report_type || "weekplan";
+
+  try {
+    const existing = await db
+      .prepare("SELECT id FROM weekly_reports WHERE week_start = ? AND report_type = ?")
+      .bind(payload.week_start, reportType)
+      .first();
+
+    if (existing) {
+      await db
+        .prepare(
+          `UPDATE weekly_reports
+           SET week_end = ?, week_year = ?, week_number = ?, content_json = ?, updated_at = datetime('now')
+           WHERE week_start = ? AND report_type = ?`
+        )
+        .bind(
+          payload.week_end,
+          week_year,
+          week_number,
+          contentJson,
+          payload.week_start,
+          reportType
+        )
+        .run();
+
+      console.log(
+        `[mentor-worker][Weekplan] Updated existing report for ${payload.week_start} (KW ${week_number}/${week_year})`
+      );
+      return jsonResponse({
+        status: "ok",
+        message: "Weekplan erfolgreich aktualisiert.",
+        meta: { week_year, week_number, mode: "update" }
+      });
+    }
+
+    await db
+      .prepare(
+        `INSERT INTO weekly_reports 
+         (week_start, week_end, week_year, week_number, report_type, content_json, created_at)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, datetime('now'))`
+      )
+      .bind(
+        payload.week_start,
+        payload.week_end,
+        week_year,
+        week_number,
+        reportType,
+        contentJson
+      )
+      .run();
+
+    console.log(
+      `[mentor-worker][Weekplan] Inserted new report for ${payload.week_start} (KW ${week_number}/${week_year})`
+    );
+    return jsonResponse({
+      status: "ok",
+      message: "Weekplan erfolgreich gespeichert.",
+      meta: { week_year, week_number, mode: "insert" }
+    });
+  } catch (err) {
+    console.error("[mentor-worker][Weekplan] Insert/Update failed:", err);
+    return jsonResponse({ status: "error", message: err.message }, 500);
+  }
+}
+
+// Mentoring-Report
+async function saveMentoringReport(req, env) {
+  const db = env.Fokus_GPT;
+  const payload = await req.json();
+  console.log("[mentor-worker][Mentoring] Payload received:", JSON.stringify(payload, null, 2));
+
+  if (!payload.week_start || !payload.week_end || !payload.content) {
+    return jsonResponse(
+      { status: "error", message: "Pflichtfelder fehlen: week_start, week_end, content." },
+      400
+    );
+  }
+
+  const { week_year, week_number } = getWeekMeta(payload.week_start);
+  const contentJson = JSON.stringify(payload.content);
+
+  try {
+    await db
+      .prepare(
+        `INSERT INTO mentoring_reports 
+         (week_start, week_end, week_year, week_number, content_json, created_at)
+         VALUES (?1, ?2, ?3, ?4, ?5, datetime('now'))`
+      )
+      .bind(payload.week_start, payload.week_end, week_year, week_number, contentJson)
+      .run();
+
+    console.log(
+      `[mentor-worker][Mentoring] Stored: ${payload.week_start} → ${payload.week_end} (KW ${week_number}/${week_year})`
+    );
+    return jsonResponse({
+      status: "ok",
+      message: "Mentoringbericht vollständig gespeichert.",
+      meta: { week_year, week_number }
+    });
+  } catch (err) {
+    console.error("[mentor-worker][Mentoring] Insert failed:", err);
+    return jsonResponse({ status: "error", message: err.message }, 500);
+  }
+}
+
+// Marketing-Report
+async function saveMarketingReport(req, env) {
+  const db = env.Fokus_GPT;
+  const payload = await req.json();
+  console.log("[mentor-worker][Marketing] Payload received:", JSON.stringify(payload, null, 2));
+
+  if (!payload.week_start || !payload.week_end || !payload.content) {
+    return jsonResponse(
+      { status: "error", message: "Pflichtfelder fehlen: week_start, week_end, content." },
+      400
+    );
+  }
+
+  const { week_year, week_number } = getWeekMeta(payload.week_start);
+  const contentJson = JSON.stringify(payload.content);
+  const projectSlug = payload.project_slug || "smart";
+  const reportType = payload.report_type || "marketing_weekreport";
+  const language = payload.language || "de";
+
+  try {
+    await db
+      .prepare(
+        `INSERT INTO marketing_reports 
+         (week_start, week_end, week_year, week_number, project_slug, report_type, content, created_at, language)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, datetime('now'), ?8)`
+      )
+      .bind(
+        payload.week_start,
+        payload.week_end,
+        week_year,
+        week_number,
+        projectSlug,
+        reportType,
+        contentJson,
+        language
+      )
+      .run();
+
+    console.log(
+      `[mentor-worker][Marketing] Stored: ${payload.week_start} → ${payload.week_end} (KW ${week_number}/${week_year})`
+    );
+    return jsonResponse({
+      status: "ok",
+      message: "Marketingbericht vollständig gespeichert.",
+      meta: { week_year, week_number }
+    });
+  } catch (err) {
+    console.error("[mentor-worker][Marketing] Insert failed:", err);
+    return jsonResponse({ status: "error", message: err.message }, 500);
+  }
+}
+
+////////////////////////////////////////////////////////////
+// CRON-JOB
+////////////////////////////////////////////////////////////
+
+async function runWeeklySync(env) {
+  const CORE_URL = "https://fokus-data-core.profi-marketing-llc.workers.dev/weekly/raw";
+  const db = env.Fokus_GPT;
+
+  try {
+    const res = await fetch(CORE_URL);
+    if (!res.ok) throw new Error(`Core Worker error: ${res.status}`);
+    const data = await res.json();
+
+    const week_start = data.week_start;
+    const week_end = data.week_end;
+    const payload = JSON.stringify(data);
+
+    await db
+      .prepare(
+        `INSERT INTO mentoring_reports 
+         (week_start, week_end, content_json, report_type, created_at)
+         VALUES (?1, ?2, ?3, 'summary', datetime('now'))`
+      )
+      .bind(week_start, week_end, payload)
+      .run();
+
+    console.log(`[cron] Weekreport imported: ${week_start} → ${week_end}`);
+  } catch (err) {
+    console.error("[cron] Sync failed:", err);
+  }
+}
+
+////////////////////////////////////////////////////////////
+// Worker Entry
+////////////////////////////////////////////////////////////
+
+export default {
+  async fetch(req, env) {
+    const cors = handleCORS(req);
+    if (cors) return cors;
+
+    const url = new URL(req.url);
+    const path = url.pathname;
+
+    try {
+      if (path === "/health") return getHealth();
+      if (path === "/weekly/raw") return getWeeklyRaw(env);
+      if (path === "/weekly/report" && req.method === "POST")
+        return saveWeekplan(req, env);
+      if (path === "/weekly/mentoring" && req.method === "POST")
+        return saveMentoringReport(req, env);
+      if (path === "/weekly/marketing" && req.method === "POST")
+        return saveMarketingReport(req, env);
+
+      return jsonResponse({ error: "Endpoint nicht gefunden", path }, 404);
+    } catch (err) {
+      console.error("Worker error:", err);
+      return jsonResponse({ error: err.message, path }, 500);
+    }
+  },
+
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(runWeeklySync(env));
+  }
+};
+
+--5d147557cc52274e8c2d40872010f2dccae024411cd000cbb670467cd20a--
