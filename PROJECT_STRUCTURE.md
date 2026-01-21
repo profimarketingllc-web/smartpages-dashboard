@@ -1,91 +1,141 @@
-# 🧩 SmartPages Dashboard – Projektstruktur (v1.9)
+# 🧩 SmartPages Dashboard – Projektstruktur (v2.0 Final)
 
-**Stand:** Januar 2026  
-**Status:** Production Stable  
-**Core Worker:** v8.5 (Cloudflare)  
-**Customer Worker:** v5.1 (Internal Service Binding)  
-**Astro Build:** v6 SSR (Stable Release)
+**Stand:** 21. January 2026  
+**Status:** MVP  
+**Deployment:** Cloudflare Pages + Wrangler  
+**Sprachen:** Deutsch 🇩🇪 & Englisch 🇬🇧  
+**Middleware:** aktiviert  
+
+---
+
+## 📂 Root
 
 ```
 smartpages-dashboard/
 │
-├── public/                             # Statische Assets, Icons, Favicon, Logos
+├── .astro/
+├── .github/
+├── .vscode/
+├── .wrangler/
+│
+├── backups/
+├── dist/
+├── node_modules/
+├── public/
+├── scripts/
+│   ├── predeploy.mjs
+│   ├── switch-wrangler.mjs
 │
 ├── src/
-│   ├── assets/                         # Bilder, Schriftarten, Logos
+│   ├── assets/
 │   │
 │   ├── components/
-│   │   ├── core/                       # Dashboard UI-Komponenten (Astro)
+│   │   ├── core/
+│   │   │   ├── DashboardCardWide.astro
+│   │   │   ├── ProductCard.astro
+│   │   │   ├── ProductGrid.astro
+│   │   │   ├── ProductHeader.astro
+│   │   │   ├── ProductPill.astro
 │   │   │   ├── SmartHeader.astro
 │   │   │   ├── SmartSidebar.astro
-│   │   │   ├── DashboardCardWide.astro
-│   │   │   ├── ProductGrid.astro
-│   │   │   └── SystemMessage.astro
-│   │   ├── solid/                      # JSX-Komponenten (Solid.js)
-│   │   │   ├── CustomerCard.jsx        # Funktioniert mit Core & Customer Worker
-│   │   │   ├── ImprintCard.jsx         # Muss noch angepasst werden
+│   │   │   ├── SystemMessage.astro
+│   │   │   └── SmartPages_Core_README.md
+│   │   │
+│   │   ├── solid/
+│   │   │   ├── CustomerCard.jsx
+│   │   │   ├── ImprintCard.jsx
+│   │   │   ├── PrivacyCard.jsx
 │   │   │   ├── EditCustomerModal.jsx
 │   │   │   ├── EditImprintModal.jsx
+│   │   │   ├── EditPrivacyModal.jsx
 │   │   │   └── ModalWrapper.jsx
-│   │   ├── ui/                         # Basiselemente (Formulare, Buttons)
+│   │   │
+│   │   ├── ui/
 │   │   │   ├── Button.astro
 │   │   │   ├── Card.astro
 │   │   │   ├── Input.astro
 │   │   │   └── Textarea.astro
-│   │   └── admin/                      # Geplante Admin-Komponenten
 │   │
-│   ├── layouts/                        # Globale Layout-Komponenten
-│   │   └── PageLayout.astro            # Universales Layout für Seiten
-│   │
-│   ├── middleware.ts                   # Session-Check & Weiterleitung (global)
-│   │
+│   │   └── admin/
+│
+│   ├── layouts/
+│   │   └── PageLayout.astro
+│
+│   ├── middleware/
+│   │   ├── index.ts
+│   │   ├── user-session.ts
+│   │   └── lang.ts
+│
 │   ├── pages/
-│   │   ├── api/                        # API-Endpunkte (Proxy zum Core Worker)
-│   │   │   ├── auth/                   # Authentifizierung
-│   │   │   │   ├── start.ts
-│   │   │   │   ├── verify.ts
+│   │   ├── api/
+│   │   │   ├── auth/
 │   │   │   │   ├── confirm.ts
-│   │   │   │   └── logout.ts
-│   │   │   ├── customer/               # Kundendaten-Endpunkte
-│   │   │   │   ├── customer.ts         # Profil abrufen
-│   │   │   │   ├── customeredit.ts     # Profil bearbeiten
-│   │   │   │   ├── imprint.ts          # Impressum abrufen
-│   │   │   │   └── imprintedit.ts      # Impressum bearbeiten
-│   │   │   ├── paywall.ts              # Zugriffsbeschränkungen / Tarife
-│   │   │   ├── status.ts               # Systemstatus-Abfrage
-│   │   │   └── index.ts                # Fallback / Catch-All für API
-│   │   ├── de/                         # Deutsche Version
-│   │   │   ├── login.astro             # Login-Seite (DE)
-│   │   │   └── dashboard.astro         # Haupt-Dashboard (DE)
-│   │   ├── en/                         # Englische Version
-│   │   │   ├── login.astro             # Login-Seite (EN)
-│   │   │   └── dashboard.astro         # Haupt-Dashboard (EN)
-│   │   ├── redirect.astro              # Gemeinsame Token-/Magic-Link-Seite
-│   │   ├── 404.astro                   # Fehlerseite für ungültige Routen
-│   │   ├── error.astro                 # UI-Fehlerseite (Runtime Errors)
-│   │   └── index.astro                 # Einstiegspunkt (Root-Router)
+│   │   │   │   ├── logout.ts
+│   │   │   │   ├── start.ts
+│   │   │   │   └── verify.ts
+│   │   │   ├── customer/
+│   │   │   │   ├── customer.ts
+│   │   │   │   ├── customeredit.ts
+│   │   │   │   ├── imprint.ts
+│   │   │   │   ├── imprintedit.ts
+│   │   │   │   ├── privacy.ts
+│   │   │   │   └── privacyedit.ts
+│   │   │   ├── paywall.ts
+│   │   │   └── status.ts
+│   │   │
+│   │   ├── de/
+│   │   │   ├── dashboard.astro
+│   │   │   ├── login.astro
+│   │   │   ├── smartdomain.astro
+│   │   │   ├── smartpage.astro
+│   │   │   └── smartprofile.astro
+│   │   │
+│   │   ├── en/
+│   │   │   ├── dashboard.astro
+│   │   │   ├── login.astro
+│   │   │   ├── smartdomain.astro
+│   │   │   ├── smartpage.astro
+│   │   │   └── smartprofile.astro
 │   │
-│   ├── styles/                         # Globale Stylesheets
-│   │   └── global.css                  # Hauptstylesheet (Tailwind + Custom)
+│   │   ├── 404.astro
+│   │   ├── debug-locals.astro
+│   │   ├── error.astro
+│   │   ├── index.astro
+│   │   └── redirect.astro
+│
+│   ├── styles/
+│   │   └── global.css
 │   │
 │   └── utils/
-│       └── i18n.ts                     # Sprachunterstützung & Übersetzungen
+│       └── i18n/
+│           ├── de.ts
+│           ├── en.ts
+│           └── i18n.ts
 │
-├── package.json
+├── .gitignore
 ├── astro.config.mjs
 ├── tailwind.config.cjs
 ├── tsconfig.json
-├── publish.ps1                         # Deployment Script für Cloudflare Pages
-├── README.md                           # Projektdokumentation
-└── PROJECT_STRUCTURE.md                # Diese Datei (aktualisiert)
+│
+├── package.json
+├── package-lock.json
+│
+├── wrangler.toml
+├── wrangler.pages.toml
+│
+├── publish.ps1
+├── README.md
+└── PROJECT_STRUCTURE.md
 ```
 
 ---
 
-### 💡 Änderungen in Version 1.9:
-- **Layouts:** Nur `PageLayout.astro` vorhanden (zentrale Layout-Datei).
-- **Middleware:** Liegt im `/src`-Hauptverzeichnis, nicht mehr in eigenem Ordner.
-- **API:** Enthält jetzt auch `paywall.ts` und `status.ts` als System-Endpunkte.
-- **Styles:** Nur `global.css` aktiv, `components.css` wurde entfernt.
-- **Ordner `session` & `system`:** Entfernt, da diese Endpunkte in `/api/` integriert sind.
-- **Redirect:** Nur eine globale `redirect.astro` für alle Sprachen.
+## 🧠 Änderungen gegenüber ursprünglicher Version
+
+| Kategorie | Änderung | Beschreibung |
+|------------|-----------|---------------|
+| 📁 `src/pages/api/` | Korrekte Struktur mit `auth/`, `customer/`, `paywall.ts`, `status.ts` | Deckt reale API-Architektur ab |
+| 🧩 `debug-locals.astro` | Auf Root-Level in `/src/pages/` | Richtige Position |
+| ⚙️ `wrangler.pages.toml` | Im Root enthalten | Für Cloudflare Pages |
+| 🧱 `core/` | Erweiterte UI-Komponenten | Alle Product- und Smart-Komponenten enthalten |
+| 🔹 Version | v2.0 (Final) | MVP-Release-Struktur |

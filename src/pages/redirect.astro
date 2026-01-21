@@ -1,6 +1,7 @@
 ---
 /**
  * 🔁 SmartPages Redirect Page (stabiler Login-Flow)
+ * Version 2.0 – kompatibel mit SmartCore v9.x
  */
 ---
 
@@ -28,15 +29,16 @@
         if (!token) return message("❌ Kein Token gefunden.");
 
         try {
-          // 1️⃣ Verify
+          // 1️⃣ Verify-Request (mit Credentials!)
           const verifyRes = await fetch(
-            `https://api.smartpages.online/api/auth/verify?token=${token}&lang=${lang}`
+            `https://api.smartpages.online/api/auth/verify?token=${token}&lang=${lang}`,
+            { credentials: "include" }
           );
           const verifyData = await verifyRes.json();
           if (!verifyData.ok || !verifyData.redirect)
             return message("⚠️ Token ungültig oder abgelaufen.");
 
-          // 2️⃣ Confirm (setzt Session-Cookie)
+          // 2️⃣ Confirm-Request (setzt Session-Cookie)
           const confirmRes = await fetch(
             `https://api.smartpages.online${verifyData.redirect}`,
             { credentials: "include" }
@@ -44,7 +46,10 @@
           const confirmData = await confirmRes.json();
 
           if (confirmData.ok && confirmData.redirect) {
-            // 3️⃣ Redirect ins Dashboard
+            // 3️⃣ Kurzer Delay, damit das Session-Cookie sicher geschrieben ist
+            await new Promise((res) => setTimeout(res, 300));
+
+            // 4️⃣ Redirect ins Dashboard
             window.location.href = confirmData.redirect;
           } else {
             message("⚠️ Fehler beim Bestätigen der Anmeldung.");
@@ -56,4 +61,3 @@
     </script>
   </body>
 </html>
-
