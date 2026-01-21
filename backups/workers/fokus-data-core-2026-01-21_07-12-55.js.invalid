@@ -1,0 +1,98 @@
+--030667435b138370076479254bf4e673b1ce58ee857f758ee260fdf866f4
+Content-Disposition: form-data; name="index.js"
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const origin = request.headers.get("Origin") || "*";
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": origin,
+      "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, X-Ingest-Secret",
+    };
+
+    // --- OPTIONS (CORS preflight)
+    if (request.method === "OPTIONS") {
+      return new Response(null, {  // 🔧 KEIN Body, sonst 500 Fehler
+        status: 204,
+        headers: corsHeaders,
+      });
+    }
+
+    try {
+      // --- POST /mood → Tagesdaten speichern
+      if (url.pathname === "/mood" && request.method === "POST") {
+        const secret = request.headers.get("x-ingest-secret");
+        if (secret !== "Hartenfelsstr.9,47929Grefrath") {
+          return new Response(JSON.stringify({ error: "Unauthorized" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const data = await request.json();
+        const stmt = env.Fokus_GPT.prepare(`
+          INSERT INTO days (day_date, mood, energy, focus, motivation, notes, mood_good, mood_blocker)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `);
+        await stmt
+          .bind(
+            data.day_date,
+            data.mood,
+            data.energy,
+            data.focus,
+            data.motivation,
+            data.notes,
+            data.mood_good,
+            data.mood_blocker
+          )
+          .run();
+
+        return new Response(
+          JSON.stringify({ message: "Tagesdaten erfolgreich gespeichert." }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // --- GET /weekly/summary_friday → Wochenbericht abrufen
+      if (url.pathname === "/weekly/summary_friday" && request.method === "GET") {
+        const now = new Date();
+        const day = now.getUTCDay();
+        const diff = day === 6 ? 0 : day + 1;
+        const end = new Date(now.getTime() - diff * 86400000);
+        const start = new Date(end.getTime() - 6 * 86400000);
+
+        const result = await env.Fokus_GPT.prepare(`
+          SELECT day_date, mood, energy, focus, motivation
+          FROM days
+          WHERE day_date BETWEEN ? AND ?
+          ORDER BY day_date ASC
+        `)
+          .bind(start.toISOString().split("T")[0], end.toISOString().split("T")[0])
+          .all();
+
+        return new Response(
+          JSON.stringify({
+            week_start: start.toISOString().split("T")[0],
+            week_end: end.toISOString().split("T")[0],
+            content: result.results,
+          }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // --- Fallback
+      return new Response("Endpoint not found", {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "text/plain" },
+      });
+    } catch (err) {
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  },
+};
+
+--030667435b138370076479254bf4e673b1ce58ee857f758ee260fdf866f4--

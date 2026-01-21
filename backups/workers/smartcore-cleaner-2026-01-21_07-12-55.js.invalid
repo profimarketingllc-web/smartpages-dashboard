@@ -1,0 +1,47 @@
+--34929805c066d19f262115ca2214f89d7b75e1b114edf185df0f7341142d
+Content-Disposition: form-data; name="worker.js"
+
+// smartcore-cleaner.js
+// Nightly-Cleanup für SmartPages (users, magic_tokens, ...)
+
+export default {
+  async fetch(request, env) {
+    // optionaler Healthcheck-Endpunkt
+    if (new URL(request.url).pathname === "/health") {
+      return new Response("OK", { status: 200 });
+    }
+    return new Response("smartcore-cleaner", { status: 200 });
+  },
+
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(runCleanup(env));
+  },
+};
+
+async function runCleanup(env) {
+  const CORE_DB = env.DB; // gleiche D1 wie im smartcore-worker
+  const AUTH_DB = env.AUTH_DB || env["SmartPages-Anmeldung"];
+
+  // 1) Pending-User älter als 7 Tage löschen
+  await CORE_DB.prepare(
+    "DELETE FROM users " +
+      "WHERE status = 'pending' " +
+      "  AND created_at < datetime('now','-7 days')"
+  ).run();
+
+  // 2) Abgelaufene Magic-Tokens in der AUTH-DB löschen
+  //    (falls du sie nicht ewig aufheben willst)
+  await AUTH_DB.prepare(
+    "DELETE FROM magic_tokens " +
+      "WHERE expires_at < strftime('%s','now')"
+  ).run();
+
+  // 3) Beispiel: alte verarbeitete Queue-Einträge aufräumen (optional)
+  // await CORE_DB.prepare(
+  //   "DELETE FROM crm_sync_queue " +
+  //     "WHERE processed = 1 " +
+  //     "  AND created_at < datetime('now','-30 days')"
+  // ).run();
+}
+
+--34929805c066d19f262115ca2214f89d7b75e1b114edf185df0f7341142d--
