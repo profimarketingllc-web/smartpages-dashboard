@@ -6,11 +6,13 @@ const texts = {
     title: "Upgrade erfolgreich 🎉",
     message: "Dein SmartPages-Konto wurde erfolgreich aktualisiert. Vielen Dank für dein Vertrauen!",
     button: "Weiter zum Dashboard",
+    loading: "Sitzung wird überprüft...",
   },
   en: {
     title: "Upgrade Successful 🎉",
     message: "Your SmartPages account has been successfully upgraded. Thank you for your trust!",
     button: "Go to Dashboard",
+    loading: "Checking your session...",
   },
 };
 
@@ -24,7 +26,7 @@ const t = texts[lang] || texts.de;
     <title>{t.title} – SmartPages</title>
     <style>
       body {
-        font-family: system-ui, sans-serif;
+        font-family: "Inter", system-ui, sans-serif;
         background: #0b0d17;
         color: white;
         display: flex;
@@ -34,44 +36,85 @@ const t = texts[lang] || texts.de;
         margin: 0;
       }
       .card {
-        background: #1a1d29;
-        border-radius: 16px;
-        padding: 2rem 3rem;
+        background: rgba(30, 35, 48, 0.7);
+        border-radius: 20px;
+        padding: 2.5rem 3rem;
         text-align: center;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(12px);
         max-width: 480px;
+        transition: all 0.3s ease-in-out;
+      }
+      .card:hover {
+        transform: scale(1.02);
       }
       img {
-        width: 72px;
-        margin-bottom: 1rem;
+        width: 84px;
+        margin-bottom: 1.2rem;
+        filter: drop-shadow(0 0 10px rgba(255, 200, 100, 0.3));
       }
       h1 {
         margin-bottom: 0.5rem;
       }
       p {
         margin-bottom: 1.5rem;
+        opacity: 0.85;
       }
       a.button {
         display: inline-block;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        background: linear-gradient(90deg, #4676ff, #5a8bff);
-        color: white;
+        padding: 0.9rem 1.7rem;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #ffb347, #ffcc33);
+        color: #0b0d17;
+        font-weight: 600;
         text-decoration: none;
-        transition: opacity 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
       }
       a.button:hover {
+        opacity: 0.9;
+        transform: scale(1.03);
+      }
+      .status {
+        margin-top: 1rem;
+        font-size: 0.95rem;
         opacity: 0.8;
       }
     </style>
   </head>
 
   <body>
-    <div class="card">
-      <img src="/assets/SmartPages_icon_transparent.png" alt="SmartPages Logo" />
+    <div class="card" id="card">
+      <img src="/SmartPages_icon_transparent.png" alt="SmartPages Logo" />
       <h1>{t.title}</h1>
       <p>{t.message}</p>
-      <a href={`/${lang}/dashboard`} class="button">{t.button}</a>
+      <a href="#" id="continue" class="button">{t.button}</a>
+      <p class="status" id="status">{t.loading}</p>
     </div>
+
+    <script is:inline>
+      (async () => {
+        const lang = "{lang}";
+        const status = document.getElementById("status");
+        const btn = document.getElementById("continue");
+
+        try {
+          const res = await fetch("https://desk.smartpages.online/api/session/userinfo", {
+            credentials: "include"
+          });
+          const data = await res.json();
+
+          if (data.ok && data.user) {
+            status.textContent = "✅ Session aktiv – du kannst fortfahren.";
+            btn.href = `/${lang}/dashboard`;
+          } else {
+            status.textContent = "⚠️ Keine aktive Sitzung. Bitte erneut anmelden.";
+            btn.href = `/${lang}/login`;
+          }
+        } catch (err) {
+          status.textContent = "❌ Verbindung fehlgeschlagen.";
+          btn.href = `/${lang}/login`;
+        }
+      })();
+    </script>
   </body>
 </html>
