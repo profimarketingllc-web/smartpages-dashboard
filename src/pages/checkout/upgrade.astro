@@ -1,0 +1,104 @@
+---
+const { lang = "de" } = Astro.params || {};
+
+const texts = {
+  de: {
+    title: "SmartPages Upgrade",
+    message: "Wähle dein gewünschtes Paket, um dein Konto zu erweitern.",
+    button: "Jetzt upgraden",
+    error: "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+  },
+  en: {
+    title: "SmartPages Upgrade",
+    message: "Select your desired plan to upgrade your account.",
+    button: "Upgrade now",
+    error: "Something went wrong. Please try again.",
+  },
+};
+
+const t = texts[lang] || texts.de;
+
+const handleCheckout = async () => {
+  try {
+    const res = await fetch("/api/billing/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        price_id: "price_test_12345", // Stripe Test Price-ID
+        success_url: `https://desk.smartpages.online/${lang}/checkout/success`,
+        cancel_url: `https://desk.smartpages.online/${lang}/checkout/cancel`,
+      }),
+    });
+
+    const data = await res.json();
+    if (data?.url) {
+      window.location.href = data.url;
+    } else {
+      alert(t.error);
+    }
+  } catch (err) {
+    console.error("❌ Checkout-Fehler:", err);
+    alert(t.error);
+  }
+};
+---
+
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{t.title} – SmartPages</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        background: #0b0d17;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .card {
+        background: #1a1d29;
+        border-radius: 16px;
+        padding: 2rem 3rem;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        max-width: 480px;
+      }
+      img {
+        width: 72px;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        margin-bottom: 0.5rem;
+      }
+      p {
+        margin-bottom: 1.5rem;
+      }
+      button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #4676ff, #5a8bff);
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: opacity 0.2s ease-in-out;
+      }
+      button:hover {
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <img src="/assets/SmartPages_icon_transparent.png" alt="SmartPages Logo" />
+      <h1>{t.title}</h1>
+      <p>{t.message}</p>
+      <button onClick={handleCheckout}>{t.button}</button>
+    </div>
+  </body>
+</html>

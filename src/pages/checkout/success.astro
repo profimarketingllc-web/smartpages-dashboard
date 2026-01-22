@@ -3,14 +3,14 @@ const { lang = "de" } = Astro.params || {};
 
 const texts = {
   de: {
-    title: "Zugriff verweigert",
-    message: "Du hast keine Berechtigung, auf diese Seite zuzugreifen.",
-    button: "Zurück zur Startseite",
+    title: "Upgrade erfolgreich 🎉",
+    message: "Vielen Dank für dein Upgrade! Deine Premium-Funktionen sind jetzt aktiv.",
+    button: "Zum Dashboard",
   },
   en: {
-    title: "Access Denied",
-    message: "You don't have permission to access this page.",
-    button: "Back to Home",
+    title: "Upgrade Successful 🎉",
+    message: "Thank you for upgrading! Your premium features are now active.",
+    button: "Go to Dashboard",
   },
 };
 
@@ -28,10 +28,6 @@ const t = texts[lang] || texts.de;
         --card-bg: #131722;
         --accent: #4676ff;
         --accent-light: #5a8bff;
-      }
-
-      * {
-        box-sizing: border-box;
       }
 
       body {
@@ -52,7 +48,7 @@ const t = texts[lang] || texts.de;
         text-align: center;
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
                     inset 0 0 15px rgba(255, 255, 255, 0.05);
-        max-width: 420px;
+        max-width: 440px;
         animation: fadeIn 0.5s ease-in-out;
       }
 
@@ -70,7 +66,6 @@ const t = texts[lang] || texts.de;
       h1 {
         font-size: 1.6rem;
         margin-bottom: 0.5rem;
-        color: #fff;
       }
 
       p {
@@ -102,7 +97,7 @@ const t = texts[lang] || texts.de;
       <img src="/assets/SmartPages_icon_transparent.png" alt="SmartPages Logo" />
       <h1>{t.title}</h1>
       <p>{t.message}</p>
-      <a href="/" class="button">{t.button}</a>
+      <a href={`/${lang}/dashboard`} class="button">{t.button}</a>
     </div>
   </body>
 </html>

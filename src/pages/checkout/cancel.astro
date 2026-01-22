@@ -3,14 +3,14 @@ const { lang = "de" } = Astro.params || {};
 
 const texts = {
   de: {
-    title: "Zugriff verweigert",
-    message: "Du hast keine Berechtigung, auf diese Seite zuzugreifen.",
-    button: "Zurück zur Startseite",
+    title: "Upgrade abgebrochen",
+    message: "Du hast den Upgrade-Vorgang abgebrochen. Keine Sorge, du kannst es jederzeit erneut versuchen.",
+    button: "Zurück zum Dashboard",
   },
   en: {
-    title: "Access Denied",
-    message: "You don't have permission to access this page.",
-    button: "Back to Home",
+    title: "Upgrade Cancelled",
+    message: "You cancelled the upgrade process. No worries, you can try again anytime.",
+    button: "Back to Dashboard",
   },
 };
 
@@ -26,12 +26,8 @@ const t = texts[lang] || texts.de;
       :root {
         --bg-dark: #0b0d17;
         --card-bg: #131722;
-        --accent: #4676ff;
-        --accent-light: #5a8bff;
-      }
-
-      * {
-        box-sizing: border-box;
+        --accent: #ff5a5a;
+        --accent-light: #ff7777;
       }
 
       body {
@@ -52,7 +48,7 @@ const t = texts[lang] || texts.de;
         text-align: center;
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
                     inset 0 0 15px rgba(255, 255, 255, 0.05);
-        max-width: 420px;
+        max-width: 440px;
         animation: fadeIn 0.5s ease-in-out;
       }
 
@@ -64,13 +60,12 @@ const t = texts[lang] || texts.de;
       img {
         width: 90px;
         margin-bottom: 1.2rem;
-        filter: drop-shadow(0 4px 8px rgba(70, 118, 255, 0.4));
+        filter: drop-shadow(0 4px 8px rgba(255, 90, 90, 0.4));
       }
 
       h1 {
         font-size: 1.6rem;
         margin-bottom: 0.5rem;
-        color: #fff;
       }
 
       p {
@@ -86,13 +81,13 @@ const t = texts[lang] || texts.de;
         color: white;
         font-weight: 500;
         text-decoration: none;
-        box-shadow: 0 4px 10px rgba(70, 118, 255, 0.4);
+        box-shadow: 0 4px 10px rgba(255, 90, 90, 0.4);
         transition: all 0.25s ease-in-out;
       }
 
       a.button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(70, 118, 255, 0.5);
+        box-shadow: 0 8px 20px rgba(255, 90, 90, 0.5);
       }
     </style>
   </head>
@@ -102,7 +97,7 @@ const t = texts[lang] || texts.de;
       <img src="/assets/SmartPages_icon_transparent.png" alt="SmartPages Logo" />
       <h1>{t.title}</h1>
       <p>{t.message}</p>
-      <a href="/" class="button">{t.button}</a>
+      <a href={`/${lang}/dashboard`} class="button">{t.button}</a>
     </div>
   </body>
 </html>
