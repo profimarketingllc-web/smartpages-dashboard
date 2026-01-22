@@ -1,19 +1,27 @@
 ---
 const { lang = "de" } = Astro.params || {};
+
 const messages = {
   de: {
     title: "Anmeldung wird überprüft...",
     success: "Willkommen zurück!",
     error: "Fehler bei der Anmeldung.",
     waiting: "Bitte warten...",
+    connecting: "Wird verbunden...",
+    notFound: "❌ Kein Token gefunden.",
+    invalid: "⚠️ Token ungültig oder abgelaufen.",
   },
   en: {
     title: "Checking your login...",
     success: "Welcome back!",
     error: "Login error.",
     waiting: "Please wait...",
+    connecting: "Connecting...",
+    notFound: "❌ No token found.",
+    invalid: "⚠️ Invalid or expired token.",
   },
 };
+
 const t = messages[lang] || messages.de;
 ---
 
@@ -34,27 +42,56 @@ const t = messages[lang] || messages.de;
         height: 100vh;
         margin: 0;
         text-align: center;
+        transition: opacity 0.4s ease;
       }
+
       img {
-        width: 90px;
-        margin-bottom: 1.5rem;
-        animation: pulse 1.5s infinite alternate;
+        width: 96px;
+        margin-bottom: 1.8rem;
+        animation: pulse 1.6s infinite alternate;
+        filter: drop-shadow(0 0 10px rgba(245, 180, 0, 0.25));
       }
+
       @keyframes pulse {
-        from { opacity: 0.6; transform: scale(0.95); }
-        to { opacity: 1; transform: scale(1.05); }
+        from {
+          opacity: 0.7;
+          transform: scale(0.94);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1.04);
+        }
       }
+
+      h2 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 0.4rem;
+      }
+
       .status {
-        margin-top: 1rem;
+        margin-top: 0.5rem;
         font-size: 1rem;
         opacity: 0.8;
+        transition: opacity 0.3s;
+      }
+
+      .fade-out {
+        opacity: 0;
       }
     </style>
   </head>
 
   <body>
-    <!-- 🟢 Logo wird jetzt direkt angezeigt -->
-    <img src="/SmartPages_icon_transparent.png" alt="SmartPages Logo" loading="eager" />
+    <!-- 🟢 Logo aus /public -->
+    <img
+      src="/SmartPages_icon_transparent.png"
+      alt="SmartPages Logo"
+      width="96"
+      height="96"
+      loading="eager"
+      decoding="async"
+    />
     <h2 id="statusText">{t.title}</h2>
     <p class="status" id="subText">{t.waiting}</p>
 
@@ -67,35 +104,39 @@ const t = messages[lang] || messages.de;
         const subEl = document.getElementById("subText");
 
         if (!token) {
-          statusEl.textContent = "❌ Kein Token gefunden.";
+          statusEl.textContent = t.notFound;
           subEl.textContent = "";
           return;
         }
 
         try {
-          // Schnell: Parallel prüfen und vorladen
           const verifyUrl = `https://api.smartpages.online/api/auth/verify?token=${token}&lang=${lang}`;
           const verifyRes = await fetch(verifyUrl);
           const verifyData = await verifyRes.json();
 
           if (!verifyData.ok || !verifyData.redirect) {
-            statusEl.textContent = "⚠️ Token ungültig oder abgelaufen.";
+            statusEl.textContent = t.invalid;
             subEl.textContent = "";
             return;
           }
 
-          // ✅ Sofortiger Redirect-Start – Logo bleibt sichtbar
-          subEl.textContent = "Wird verbunden...";
-          window.history.replaceState(null, "", verifyUrl); // saubere URL im Verlauf
+          // Zeige Verbindungsstatus
+          subEl.textContent = t.connecting;
 
-          // Session setzen, aber im Hintergrund
-          fetch(`https://api.smartpages.online${verifyData.redirect}`, { credentials: "include" })
+          // Session erstellen im Hintergrund
+          fetch(`https://api.smartpages.online${verifyData.redirect}`, {
+            credentials: "include",
+          })
             .then(async (confirmRes) => {
               const confirmData = await confirmRes.json();
+
               if (confirmData.ok && confirmData.redirect) {
                 statusEl.textContent = t.success;
-                subEl.textContent = "";
-                setTimeout(() => (window.location.href = confirmData.redirect), 800);
+                subEl.classList.add("fade-out");
+                setTimeout(() => {
+                  document.body.classList.add("fade-out");
+                  window.location.href = confirmData.redirect;
+                }, 700);
               } else {
                 statusEl.textContent = t.error;
                 subEl.textContent = "";
