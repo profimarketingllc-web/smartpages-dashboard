@@ -1,4 +1,4 @@
-# wrangler.toml
+# wrangler.toml – SmartCore Worker (api.smartpages.online)
 name = "smartpages-dashboard"
 main = "dist/_worker.js"
 compatibility_date = "2024-12-20"
@@ -18,7 +18,8 @@ main = "dist/server/entry.mjs"
 kv_namespaces = [
   { binding = "SESSION", id = "3ab700118c7d4b41bfefbc3cbeafe527" },
   { binding = "CACHE_PROFILES", id = "80d7b2f13c0446479830cae45d8347e4" },
-  { binding = "Fokus_KV", id = "e3950940e30649839fac040cdd7e538d" }
+  { binding = "Fokus_KV", id = "e3950940e30649839fac040cdd7e538d" },
+  { binding = "STAGING", id = "e3950940e30649839fac040cdd7e538d" } # ➕ hinzugefügt
 ]
 
 d1_databases = [
@@ -26,6 +27,20 @@ d1_databases = [
   { binding = "AUTH_DB", database_name = "smartpages_auth_eu", database_id = "afe58dd1-98d3-459c-8112-aeea65b53916" }
 ]
 
+r2_buckets = [
+  { binding = "LEGAL", bucket_name = "smartpages-legal" } # ➕ hinzugefügt
+]
+
+services = [
+  { binding = "CUSTOMER", service = "smart-customer", environment = "production" },
+  { binding = "MAILER", service = "smartpages-mailer", environment = "production" },
+  { binding = "BILLING_TEST", service = "smart-billing-test", environment = "test" },
+  { binding = "BILLING", service = "smart-billing", environment = "production" }
+]
+
 [env.production.vars]
 ENVIRONMENT = "production"
 PUBLIC_BASE_URL = "https://profi-marketing-llc.workers.dev"
+COOKIE_DOMAIN = ".smartpages.online"
+FE_ORIGIN = "https://desk.smartpages.online"
+MODE = "test"
