@@ -4,12 +4,12 @@ const { lang = "de" } = Astro.params || {};
 const texts = {
   de: {
     title: "Upgrade erfolgreich 🎉",
-    message: "Vielen Dank für dein Upgrade! Deine Premium-Funktionen sind jetzt aktiv.",
-    button: "Zum Dashboard",
+    message: "Dein SmartPages-Konto wurde erfolgreich aktualisiert. Vielen Dank für dein Vertrauen!",
+    button: "Weiter zum Dashboard",
   },
   en: {
     title: "Upgrade Successful 🎉",
-    message: "Thank you for upgrading! Your premium features are now active.",
+    message: "Your SmartPages account has been successfully upgraded. Thank you for your trust!",
     button: "Go to Dashboard",
   },
 };
@@ -23,16 +23,9 @@ const t = texts[lang] || texts.de;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{t.title} – SmartPages</title>
     <style>
-      :root {
-        --bg-dark: #0b0d17;
-        --card-bg: #131722;
-        --accent: #4676ff;
-        --accent-light: #5a8bff;
-      }
-
       body {
-        font-family: 'Inter', system-ui, sans-serif;
-        background: radial-gradient(circle at 30% 30%, #111626, #0b0d17);
+        font-family: system-ui, sans-serif;
+        background: #0b0d17;
         color: white;
         display: flex;
         align-items: center;
@@ -40,54 +33,35 @@ const t = texts[lang] || texts.de;
         height: 100vh;
         margin: 0;
       }
-
       .card {
-        background: var(--card-bg);
-        border-radius: 20px;
-        padding: 3rem 4rem;
+        background: #1a1d29;
+        border-radius: 16px;
+        padding: 2rem 3rem;
         text-align: center;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
-                    inset 0 0 15px rgba(255, 255, 255, 0.05);
-        max-width: 440px;
-        animation: fadeIn 0.5s ease-in-out;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        max-width: 480px;
       }
-
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-
       img {
-        width: 90px;
-        margin-bottom: 1.2rem;
-        filter: drop-shadow(0 4px 8px rgba(70, 118, 255, 0.4));
+        width: 72px;
+        margin-bottom: 1rem;
       }
-
       h1 {
-        font-size: 1.6rem;
         margin-bottom: 0.5rem;
       }
-
       p {
-        color: #ccc;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
       }
-
       a.button {
         display: inline-block;
-        padding: 0.75rem 1.75rem;
-        border-radius: 10px;
-        background: linear-gradient(90deg, var(--accent), var(--accent-light));
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        background: linear-gradient(90deg, #4676ff, #5a8bff);
         color: white;
-        font-weight: 500;
         text-decoration: none;
-        box-shadow: 0 4px 10px rgba(70, 118, 255, 0.4);
-        transition: all 0.25s ease-in-out;
+        transition: opacity 0.2s ease-in-out;
       }
-
       a.button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(70, 118, 255, 0.5);
+        opacity: 0.8;
       }
     </style>
   </head>
