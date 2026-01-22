@@ -1,5 +1,10 @@
 ---
-const { lang = "de" } = Astro.params || {};
+const url = new URL(Astro.request.url);
+
+let lang: "de" | "en" = "de";
+if (url.pathname.startsWith("/en/") || url.searchParams.get("lang") === "en") {
+  lang = "en";
+}
 
 const messages = {
   de: {
@@ -32,7 +37,7 @@ const t = messages[lang] || messages.de;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
       body {
-        background-color: #0b0d17;
+        background: radial-gradient(circle at 50% 50%, #10131a, #0b0d17);
         color: white;
         font-family: "Inter", system-ui, sans-serif;
         display: flex;
@@ -42,24 +47,80 @@ const t = messages[lang] || messages.de;
         height: 100vh;
         margin: 0;
         text-align: center;
-        transition: opacity 0.4s ease;
+        overflow: hidden;
       }
 
-      img {
-        width: 96px;
-        margin-bottom: 1.8rem;
-        animation: pulse 1.6s infinite alternate;
-        filter: drop-shadow(0 0 10px rgba(245, 180, 0, 0.25));
+      /* === Glass Loader Container === */
+      .glass-loader {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 0 0 30px rgba(245, 180, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin-bottom: 2.2rem;
+      }
+
+      /* Farbverlauf-Ring */
+      .glass-loader::before {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        background: conic-gradient(
+          from 0deg,
+          #3b82f6,
+          #facc15,
+          #8b5cf6,
+          #3b82f6
+        );
+        animation: spin 2.4s linear infinite;
+        mask: radial-gradient(transparent 68%, black 70%);
+        -webkit-mask: radial-gradient(transparent 68%, black 70%);
+      }
+
+      /* Glow Effekt innen */
+      .glass-loader::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 30% 30%,
+          rgba(255, 255, 255, 0.25),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      /* Pulsierendes Logo */
+      .glass-loader img {
+        width: 60px;
+        filter: drop-shadow(0 0 8px rgba(245, 180, 0, 0.3));
+        animation: pulse 2.8s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       @keyframes pulse {
-        from {
-          opacity: 0.7;
-          transform: scale(0.94);
-        }
-        to {
+        0%, 100% {
+          transform: scale(1);
           opacity: 1;
-          transform: scale(1.04);
+        }
+        50% {
+          transform: scale(1.05);
+          opacity: 0.9;
         }
       }
 
@@ -70,7 +131,6 @@ const t = messages[lang] || messages.de;
       }
 
       .status {
-        margin-top: 0.5rem;
         font-size: 1rem;
         opacity: 0.8;
         transition: opacity 0.3s;
@@ -83,25 +143,29 @@ const t = messages[lang] || messages.de;
   </head>
 
   <body>
-    <!-- 🟢 Logo aus /public -->
-    <img
-      src="/SmartPages_icon_transparent.png"
-      alt="SmartPages Logo"
-      width="96"
-      height="96"
-      loading="eager"
-      decoding="async"
-    />
+    <div class="glass-loader">
+      <img src="/SmartPages_icon_transparent.png" alt="SmartPages Logo" loading="eager" decoding="async" />
+    </div>
+
     <h2 id="statusText">{t.title}</h2>
     <p class="status" id="subText">{t.waiting}</p>
 
     <script is:inline>
       (async () => {
-        const url = new URL(window.location.href);
-        const token = url.searchParams.get("token");
-        const lang = url.searchParams.get("lang") || "de";
+        const lang = "{lang}";
+        const t = {
+          success: "{t.success}",
+          error: "{t.error}",
+          waiting: "{t.waiting}",
+          connecting: "{t.connecting}",
+          notFound: "{t.notFound}",
+          invalid: "{t.invalid}",
+        };
+
         const statusEl = document.getElementById("statusText");
         const subEl = document.getElementById("subText");
+        const url = new URL(window.location.href);
+        const token = url.searchParams.get("token");
 
         if (!token) {
           statusEl.textContent = t.notFound;
@@ -120,32 +184,25 @@ const t = messages[lang] || messages.de;
             return;
           }
 
-          // Zeige Verbindungsstatus
           subEl.textContent = t.connecting;
 
-          // Session erstellen im Hintergrund
-          fetch(`https://api.smartpages.online${verifyData.redirect}`, {
-            credentials: "include",
-          })
-            .then(async (confirmRes) => {
-              const confirmData = await confirmRes.json();
+          const confirmRes = await fetch(
+            `https://api.smartpages.online${verifyData.redirect}`,
+            { credentials: "include" }
+          );
+          const confirmData = await confirmRes.json();
 
-              if (confirmData.ok && confirmData.redirect) {
-                statusEl.textContent = t.success;
-                subEl.classList.add("fade-out");
-                setTimeout(() => {
-                  document.body.classList.add("fade-out");
-                  window.location.href = confirmData.redirect;
-                }, 700);
-              } else {
-                statusEl.textContent = t.error;
-                subEl.textContent = "";
-              }
-            })
-            .catch((err) => {
-              statusEl.textContent = "❌ Fehler: " + err.message;
-              subEl.textContent = "";
-            });
+          if (confirmData.ok && confirmData.redirect) {
+            statusEl.textContent = t.success;
+            subEl.classList.add("fade-out");
+            setTimeout(() => {
+              document.body.classList.add("fade-out");
+              window.location.href = confirmData.redirect;
+            }, 800);
+          } else {
+            statusEl.textContent = t.error;
+            subEl.textContent = "";
+          }
         } catch (err) {
           statusEl.textContent = "❌ Fehler: " + err.message;
           subEl.textContent = "";
