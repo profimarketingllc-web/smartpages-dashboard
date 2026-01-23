@@ -3,17 +3,13 @@ import cloudflare from "@astrojs/cloudflare";
 import solid from "@astrojs/solid-js";
 import tailwind from "@astrojs/tailwind";
 
-// 🔧 Automatische Erkennung der Umgebung
-const isCloudflare = process.env.CF_PAGES === "1" || process.env.CF_ACCOUNT_ID;
-
+// 🌐 Cloudflare Pages-ready configuration
 export default defineConfig({
   output: "server",
 
   adapter: cloudflare({
-    mode: isCloudflare ? "directory" : "advanced",
-    functionPerRoute: isCloudflare,
-    platformProxy: { enabled: false },
-    imageService: "compile",
+    mode: "directory",
+    imageService: "compile"
   }),
 
   image: {
@@ -24,10 +20,7 @@ export default defineConfig({
 
   vite: {
     ssr: {
-      noExternal: [
-        "@astrojs/cloudflare",
-        "@astrojs/solid-js",
-      ],
+      noExternal: ["@astrojs/cloudflare", "@astrojs/solid-js"],
     },
     resolve: {
       alias: {

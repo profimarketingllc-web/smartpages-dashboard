@@ -2,13 +2,13 @@
   "name": "smartpages-dashboard",
   "type": "module",
   "version": "0.0.1",
+  "description": "SmartPages Dashboard – Cloudflare Pages + Astro + SolidJS",
   "scripts": {
     "dev": "astro dev",
-    "build": "node ./scripts/switch-wrangler.mjs && astro build",
+    "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "predeploy": "node ./scripts/predeploy.mjs",
-    "deploy": "npm run predeploy && wrangler deploy"
+    "check": "astro check"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.12",
@@ -24,5 +24,9 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
     "typescript": "^5.9.3"
-  }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "UNLICENSED"
 }
