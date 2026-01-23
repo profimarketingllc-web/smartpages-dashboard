@@ -1,9 +1,43 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
+import ProductPill from "~/components/core/ProductPill.astro";
+import ProductForm from "~/components/editor/ProductForm.astro";
+import ProductPreview from "~/components/editor/ProductPreview.astro";
+
+// 🔹 Schema für SmartLinks
+const schema = [
+  { key: "link_title", label: "Link Title", type: "text" },
+  { key: "link_url", label: "Target URL", type: "text" },
+  { key: "category", label: "Category", type: "text" },
+  { key: "status", label: "Status", type: "text" },
+];
+
+// 🔹 Demo-Daten
+const smartlinks = {
+  link_title: "My Main Website",
+  link_url: "https://example.com",
+  category: "Personal Branding",
+  status: "active",
+  slug: "my-links",
+};
 ---
 
 <PageLayout title="SmartLinks – SmartPages" sidebar={true} header={true}>
-  <h1 class="text-2xl font-bold text-smart-full-links mt-10 text-center">
-    ✅ SmartLinks Page funktioniert!
-  </h1>
+  <!-- 🌿 Produkt-Pill oben -->
+  <div class="flex justify-center mt-8">
+    <ProductPill label="SmartLinks" color="links" />
+  </div>
+
+  <!-- 🧱 Inhalt -->
+  <div class="max-w-4xl mx-auto mt-10 space-y-10">
+    <section class="p-6 bg-white rounded-2xl shadow-card border border-smart-links/30">
+      <h2 class="text-xl font-semibold text-smart-full-links mb-4">Manage Links</h2>
+      <ProductForm schema={schema} data={smartlinks} />
+    </section>
+
+    <section class="p-6 bg-white rounded-2xl shadow-card border border-smart-links/30">
+      <h2 class="text-xl font-semibold text-smart-full-links mb-4">Preview</h2>
+      <ProductPreview slug={smartlinks.slug} />
+    </section>
+  </div>
 </PageLayout>
