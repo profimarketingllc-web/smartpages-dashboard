@@ -24,6 +24,7 @@ export default defineConfig({
     },
     resolve: {
       alias: {
+        "@": new URL("./src", import.meta.url).pathname,
         "~": new URL("./src", import.meta.url).pathname,
         "@middleware": new URL("./src/middleware", import.meta.url).pathname,
       },
