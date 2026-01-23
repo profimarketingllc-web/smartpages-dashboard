@@ -12,24 +12,26 @@ import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 import EditPrivacyModal from "~/components/solid/EditPrivacyModal.jsx";
 
-// 🔹 SSR-seitige Sessionprüfung
+// 🔹 SSR Sessionprüfung
+// Nur prüfen, ob Cookie existiert, aber kein sofortiger Redirect bei Edge-Problemen
 const cookie = Astro.request.headers.get("cookie") || "";
 if (!cookie.includes("session=")) {
+  // Nutzer hat keine Session → zurück zum Login
   return Astro.redirect("/de/login");
 }
 
-// 🟢 Hole User aus locals (kommt aus Middleware user-session.ts)
-const user = Astro.locals.user;
+// 🔹 Userobjekt aus Middleware (wird gesetzt vom Core Worker)
+const user = Astro.locals?.user || null;
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true} lang="de">
   <main
     class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
   >
-
     <!-- 🔹 Benutzerinfo + Systemstatus -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
       <DashboardCardWide>
+        <!-- ✅ Kundendaten werden über CustomerCard (SolidJS) geladen -->
         <CustomerCard client:only="solid-js" lang="de" />
       </DashboardCardWide>
 
@@ -60,26 +62,27 @@ const user = Astro.locals.user;
   </main>
 </PageLayout>
 
+<!-- 🔧 Clientseitige Session-Validierung -->
 <script>
   window.addEventListener("DOMContentLoaded", async () => {
-    console.log("🇩🇪 Dashboard aktiv — Prüfe Session & lade Daten ...");
+    console.log("🇩🇪 Dashboard geladen — prüfe Session und lade Daten...");
 
-    // 🔹 Sessionprüfung beim Laden
     try {
-      const res = await fetch("https://api.smartpages.online/api/session/check", {
-        credentials: "include"
+      const res = await fetch("https://api.smartpages.online/api/session/userinfo", {
+        credentials: "include",
       });
       const data = await res.json();
-      if (!data.ok) {
-        console.warn("⚠️ Keine gültige Session, redirect ...");
+
+      if (!data.ok || !data.user) {
+        console.warn("⚠️ Keine gültige Session erkannt – Redirect zum Login");
         window.location.href = "/de/login";
-      } else {
-        console.log("✅ Session OK:", data.session.email);
+        return;
       }
+
+      console.log("✅ Session aktiv für:", data.user.email);
     } catch (e) {
-      console.error("❌ Sessionprüfung fehlgeschlagen:", e);
+      console.error("❌ Fehler bei der Sessionprüfung:", e);
       window.location.href = "/de/login";
     }
   });
 </script>
-
