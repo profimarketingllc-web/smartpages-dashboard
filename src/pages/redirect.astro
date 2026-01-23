@@ -12,7 +12,7 @@ const messages = {
     success: "Willkommen zurück!",
     error: "Fehler bei der Anmeldung.",
     waiting: "Bitte warten...",
-    connecting: "Wird verbunden...",
+    connecting: "Wir bereiten Ihre Daten vor...",
     notFound: "❌ Kein Token gefunden.",
     invalid: "⚠️ Token ungültig oder abgelaufen.",
   },
@@ -21,7 +21,7 @@ const messages = {
     success: "Welcome back!",
     error: "Login error.",
     waiting: "Please wait...",
-    connecting: "Connecting...",
+    connecting: "Preparing your data...",
     notFound: "❌ No token found.",
     invalid: "⚠️ Invalid or expired token.",
   },
@@ -44,27 +44,25 @@ const t = messages[lang] || messages.de;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 150vh;
+        height: 100vh;
         margin: 0;
         text-align: center;
         overflow: hidden;
       }
 
-      /* === Glass Loader Container === */
+      /* === Loader Container === */
       .glass-loader {
         position: relative;
-        width: 180px;
-        height: 180px;
+        width: 240px;
+        height: 240px;
         border-radius: 50%;
         backdrop-filter: blur(16px) saturate(180%);
-        -webkit-backdrop-filter: blur(16px) saturate(180%);
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.08);
         border: 1px solid rgba(255, 255, 255, 0.25);
-        box-shadow: 0 0 30px rgba(245, 180, 0, 0.15);
+        box-shadow: 0 0 40px rgba(245, 180, 0, 0.2);
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
         margin-bottom: 2.2rem;
       }
 
@@ -72,38 +70,19 @@ const t = messages[lang] || messages.de;
       .glass-loader::before {
         content: "";
         position: absolute;
-        inset: -4px;
+        inset: -6px;
         border-radius: 50%;
-        background: conic-gradient(
-          from 0deg,
-          #3b82f6,
-          #facc15,
-          #8b5cf6,
-          #3b82f6
-        );
+        background: conic-gradient(from 0deg, #3b82f6, #facc15, #8b5cf6, #3b82f6);
         animation: spin 2.4s linear infinite;
-        mask: radial-gradient(transparent 68%, black 70%);
-        -webkit-mask: radial-gradient(transparent 68%, black 70%);
+        mask: radial-gradient(transparent 70%, black 72%);
+        -webkit-mask: radial-gradient(transparent 70%, black 72%);
       }
 
-      /* Glow Effekt innen */
-      .glass-loader::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: 50%;
-        background: radial-gradient(
-          circle at 30% 30%,
-          rgba(255, 255, 255, 0.25),
-          transparent 70%
-        );
-        pointer-events: none;
-      }
-
-      /* Pulsierendes Logo */
+      /* Logo (zentriert & groß) */
       .glass-loader img {
-        width: 50%;
-        max-width: 100px;
+        width: 65%;
+        max-width: 180px;
+        animation: pulse 2.4s ease-in-out infinite;
       }
 
       @keyframes spin {
@@ -118,20 +97,20 @@ const t = messages[lang] || messages.de;
           opacity: 1;
         }
         50% {
-          transform: scale(1.05);
+          transform: scale(1.06);
           opacity: 0.9;
         }
       }
 
       h2 {
-        font-size: 1.4rem;
+        font-size: 1.6rem;
         font-weight: 600;
-        margin-bottom: 0.4rem;
+        margin-bottom: 0.6rem;
       }
 
       .status {
-        font-size: 1rem;
-        opacity: 0.8;
+        font-size: 1.1rem;
+        opacity: 0.85;
         transition: opacity 0.3s;
       }
 
