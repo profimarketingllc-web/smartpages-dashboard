@@ -1,48 +1,53 @@
-import { createSignal, onMount, onCleanup } from "solid-js";
+import { createResource, createSignal, onMount, onCleanup } from "solid-js";
 import { t, useLang } from "~/utils/i18n/i18n";
 
+/**
+ * 🧠 CustomerCard (SmartPages v5.8)
+ * -------------------------------------------------------
+ * ✅ Einheitliches API-Verhalten (via /api/customer/customer)
+ * ✅ i18n getrennt (de/en über ~/utils/i18n/)
+ * ✅ Sauberer Fetch-Flow mit Session-Cookie
+ * ✅ Kompatibel mit Cloudflare + SSR
+ */
+
 export default function CustomerCard(props) {
-  const [lang, setLang] = createSignal(props.lang || "de");
-  const [customer, setCustomer] = createSignal({
-    firstName: "",
-    lastName: "",
-    company: "",
-    plan: "—",
-    status: t(lang(), "loggedOut", "system"),
-    activeUntil: "—",
-    lastLogin: "—",
-    is_business: 0,
-  });
+  // 🌍 Sprache erkennen
+  const [lang, setLang] = createSignal(
+    props.lang || useLang(typeof window !== "undefined" ? "de" : "de")
+  );
 
-  // 🧭 Basis-URL für alle Requests
-  const API_BASE = "https://api.smartpages.online";
-
+  // 🧭 Sprache beim Mounten prüfen
   onMount(() => {
-    setLang(window.location.pathname.includes("/en/") ? "en" : "de");
+    if (typeof window !== "undefined") {
+      setLang(window.location.pathname.includes("/en/") ? "en" : "de");
+    }
   });
 
-  const loadCustomer = async () => {
+  // 🔗 Kundendaten abrufen
+  const fetchCustomer = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/customer`, {
+      const res = await fetch("/api/customer/customer", {
         method: "GET",
         credentials: "include",
         headers: { Accept: "application/json" },
       });
 
       if (!res.ok) {
-        console.warn("❌ Customer API Fehler:", res.status);
-        return;
+        if (res.status === 401) {
+          console.warn("⚠️ Nicht eingeloggt oder Session abgelaufen");
+          return { status: t(lang(), "loggedOut", "system") };
+        }
+        throw new Error(`API-Fehler ${res.status}`);
       }
 
       const result = await res.json();
       const u = result.data || result.user || null;
 
       if (!result.ok || !u) {
-        console.warn("⚠️ Keine gültigen Kundendaten empfangen:", result);
-        return;
+        return { status: t(lang(), "loggedOut", "system") };
       }
 
-      setCustomer({
+      return {
         firstName: u.first_name || "",
         lastName: u.last_name || "",
         company: u.company_name || "",
@@ -54,48 +59,28 @@ export default function CustomerCard(props) {
             : t(lang(), "loggedOut", "system"),
         activeUntil: u.trial_end || "—",
         lastLogin: u.last_login || "—",
-      });
-
-      console.log("✅ Kundendaten geladen:", u);
+      };
     } catch (err) {
       console.error("❌ Fehler beim Laden der Kundendaten:", err);
+      return { status: t(lang(), "loggedOut", "system") };
     }
   };
 
+  // 🗂️ Resource + automatisches Refetching
+  const [customer, { refetch }] = createResource(fetchCustomer);
+
   onMount(() => {
-    const checkAndLoad = async () => {
-      for (let i = 0; i < 5; i++) {
-        try {
-          const sessionRes = await fetch(`${API_BASE}/api/session/userinfo`, {
-            credentials: "include",
-          });
-          const sessionData = await sessionRes.json();
-          if (sessionData.ok && sessionData.user) {
-            console.log("🟢 Session aktiv, lade Kundendaten...");
-            await loadCustomer();
-            return;
-          }
-        } catch (e) {
-          console.warn("⏳ Session noch nicht aktiv, neuer Versuch...");
-        }
-        await new Promise((r) => setTimeout(r, 600));
-      }
-      console.error("❌ Session konnte nicht bestätigt werden.");
-    };
-
-    checkAndLoad();
-
-    const refreshHandler = () => {
+    if (typeof window === "undefined") return;
+    const handler = () => {
       console.log("🔁 CustomerCard: Daten werden aktualisiert …");
-      loadCustomer();
+      refetch();
     };
-    window.addEventListener("refresh-customer-data", refreshHandler);
-    onCleanup(() =>
-      window.removeEventListener("refresh-customer-data", refreshHandler)
-    );
+    window.addEventListener("refresh-customer-data", handler);
+    onCleanup(() => window.removeEventListener("refresh-customer-data", handler));
   });
 
-  const data = () => customer();
+  // 🧩 Helper
+  const data = () => customer() || {};
   const displayValue = (val) => (val && val !== "" ? val : "—");
 
   const displayHeader = () => {
@@ -123,8 +108,10 @@ export default function CustomerCard(props) {
     }
   };
 
+  // 🧱 UI Rendering
   return (
     <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5 transition-all duration-300">
+      {/* 🟢 Statusanzeige */}
       <div class="absolute top-4 right-10 md:right-14">
         <span
           class={`inline-block px-4 py-1 text-sm font-medium rounded-full border transition-all duration-200
@@ -138,12 +125,15 @@ export default function CustomerCard(props) {
         </span>
       </div>
 
+      {/* 🔹 Titel */}
       <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-2 text-center md:text-left">
         {t(lang(), "title", "customer")}
       </h2>
 
+      {/* 👤 Name / Firma */}
       {displayHeader()}
 
+      {/* 📋 Details */}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8 mt-5">
         <div>
           <span class="font-medium text-gray-800">
@@ -171,6 +161,7 @@ export default function CustomerCard(props) {
         </div>
       </div>
 
+      {/* 🟠 Bearbeiten-Button */}
       <div class="flex justify-end items-center mt-6">
         <button
           aria-label={t(lang(), "button", "customer")}
