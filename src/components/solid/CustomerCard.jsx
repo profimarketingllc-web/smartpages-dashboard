@@ -14,15 +14,16 @@ export default function CustomerCard(props) {
     is_business: 0,
   });
 
-  // Sprache setzen
+  // 🧭 Basis-URL für alle Requests
+  const API_BASE = "https://api.smartpages.online";
+
   onMount(() => {
     setLang(window.location.pathname.includes("/en/") ? "en" : "de");
   });
 
-  // Daten abrufen
   const loadCustomer = async () => {
     try {
-      const res = await fetch("/api/customer", {
+      const res = await fetch(`${API_BASE}/api/customer`, {
         method: "GET",
         credentials: "include",
         headers: { Accept: "application/json" },
@@ -61,12 +62,11 @@ export default function CustomerCard(props) {
     }
   };
 
-  // Nach dem Mount sicher nachladen (inkl. Session-Ready Check)
   onMount(() => {
     const checkAndLoad = async () => {
       for (let i = 0; i < 5; i++) {
         try {
-          const sessionRes = await fetch("/api/session/userinfo", {
+          const sessionRes = await fetch(`${API_BASE}/api/session/userinfo`, {
             credentials: "include",
           });
           const sessionData = await sessionRes.json();
@@ -78,14 +78,13 @@ export default function CustomerCard(props) {
         } catch (e) {
           console.warn("⏳ Session noch nicht aktiv, neuer Versuch...");
         }
-        await new Promise((r) => setTimeout(r, 600)); // 0,6s Pause
+        await new Promise((r) => setTimeout(r, 600));
       }
       console.error("❌ Session konnte nicht bestätigt werden.");
     };
 
     checkAndLoad();
 
-    // Re-Load bei Events
     const refreshHandler = () => {
       console.log("🔁 CustomerCard: Daten werden aktualisiert …");
       loadCustomer();
@@ -124,7 +123,6 @@ export default function CustomerCard(props) {
     }
   };
 
-  // 🧱 UI
   return (
     <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5 transition-all duration-300">
       <div class="absolute top-4 right-10 md:right-14">
