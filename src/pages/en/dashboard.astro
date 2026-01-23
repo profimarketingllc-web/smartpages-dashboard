@@ -12,11 +12,15 @@ import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 import EditPrivacyModal from "~/components/solid/EditPrivacyModal.jsx";
 
-// 🧩 SSR Session Check
+// 🧩 SSR Session Check (via Cookie)
 const cookie = Astro.request.headers.get("cookie") || "";
 if (!cookie.includes("session=")) {
+  // No active session → redirect to English login
   return Astro.redirect("/en/login");
 }
+
+// 🔹 Get user object from middleware (set by Core Worker)
+const user = Astro.locals?.user || null;
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true} lang="en">
@@ -27,11 +31,13 @@ if (!cookie.includes("session=")) {
     <!-- 🧭 TOP SECTION -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
       <DashboardCardWide>
+        <!-- ✅ Customer data is loaded via CustomerCard (SolidJS) -->
         <CustomerCard client:only="solid-js" lang="en" />
       </DashboardCardWide>
 
       <div class="system-message">
-        <SystemMessage lang="en" />
+        <!-- ✅ System message (personalized by locals.user) -->
+        <SystemMessage lang="en" user={user} />
       </div>
     </section>
 
@@ -57,5 +63,27 @@ if (!cookie.includes("session=")) {
   </main>
 </PageLayout>
 
-<script
+<!-- 🔧 Client-side Session Validation -->
+<script>
+  window.addEventListener("DOMContentLoaded", async () => {
+    console.log("🇬🇧 Dashboard loaded — checking active session...");
 
+    try {
+      const res = await fetch("https://api.smartpages.online/api/session/userinfo", {
+        credentials: "include",
+      });
+      const data = await res.json();
+
+      if (!data.ok || !data.user) {
+        console.warn("⚠️ No valid session — redirecting to login page...");
+        window.location.href = "/en/login";
+        return;
+      }
+
+      console.log("✅ Active session for:", data.user.email);
+    } catch (e) {
+      console.error("❌ Error checking session:", e);
+      window.location.href = "/en/login";
+    }
+  });
+</script>

@@ -38,8 +38,10 @@ const products = [
     />
   </head>
 
-  <body class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden">
-    <!-- 🧭 Zentrierter Header -->
+  <body
+    class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden"
+  >
+    <!-- 🧭 Header -->
     <header
       class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50"
     >
@@ -58,7 +60,7 @@ const products = [
       </div>
     </header>
 
-    <!-- 💡 Hauptbereich – kompakt, above-the-fold -->
+    <!-- 💡 Hauptbereich -->
     <section
       class="w-full max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-8 lg:px-12 mt-8 items-start"
     >
@@ -68,24 +70,30 @@ const products = [
           Willkommen bei SmartPages
         </h2>
         <p class="mb-3">
-          Mit <strong>SmartPages</strong> erstellst du deine professionelle Online-Präsenz in nur
-          <strong>10 Minuten</strong> – ohne technisches Wissen oder komplizierte Einrichtung.
-          Alles wird sicher in <strong>Europa</strong> gehostet und ist vollständig
+          Mit <strong>SmartPages</strong> erstellst du deine professionelle
+          Online-Präsenz in nur <strong>10 Minuten</strong> – ohne technisches
+          Wissen oder komplizierte Einrichtung. Alles wird sicher in
+          <strong>Europa</strong> gehostet und ist vollständig
           <strong>DSGVO-konform</strong>.
         </p>
         <p class="mb-3">
-          Wenn sich dein Publikum oder deine Kunden in der EU befinden, ist Datenschutz keine Option,
-          sondern Pflicht. SmartPages erfüllt diese Anforderungen automatisch – vom ersten Klick an.
+          Wenn sich dein Publikum oder deine Kunden in der EU befinden, ist
+          Datenschutz keine Option, sondern Pflicht. SmartPages erfüllt diese
+          Anforderungen automatisch – vom ersten Klick an.
         </p>
         <p>
-          Gib unten einfach deine Kontaktdaten ein, und wir senden dir deinen persönlichen
-          <strong>Magic Link</strong> – ohne Passwort, ohne Tracking, ohne Datensammlung.
+          Gib unten einfach deine Kontaktdaten ein, und wir senden dir deinen
+          persönlichen <strong>Magic Link</strong> – ohne Passwort, ohne
+          Tracking, ohne Datensammlung.
         </p>
       </div>
 
       <!-- Rechte Loginbox -->
       <div class="bg-[#f6f8fb] shadow-lg p-8 rounded-2xl border border-gray-100">
-        <form id="magicForm" class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm">
+        <form
+          id="magicForm"
+          class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm"
+        >
           <label class="block text-sm text-gray-600 mb-1">Vorname *</label>
           <input
             type="text"
@@ -111,7 +119,9 @@ const products = [
 
           <div class="flex items-center gap-2">
             <input type="checkbox" id="is_business" name="is_business" />
-            <label for="is_business" class="text-sm text-gray-600">Geschäftskonto</label>
+            <label for="is_business" class="text-sm text-gray-600"
+              >Geschäftskonto</label
+            >
           </div>
 
           <div id="company_field" class="hidden">
@@ -134,7 +144,7 @@ const products = [
       </div>
     </section>
 
-    <!-- 🧱 ProductGrid (kompakt & bündig) -->
+    <!-- 🧱 ProductGrid -->
     <section class="mt-4 mb-8">
       <div class="w-full max-w-[1400px] mx-auto">
         <ProductGrid {products} compact />
@@ -143,7 +153,8 @@ const products = [
 
     <!-- Footer -->
     <footer class="text-center text-sm text-gray-600 py-3 bg-[#f5f5f5]">
-      © 2025 SmartPages · Profi Marketing LLC · Gehostet in Europa · DSGVO-konform
+      © 2026 SmartPages · Profi Marketing LLC · Gehostet in Europa ·
+      DSGVO-konform
     </footer>
 
     <!-- Popup -->
@@ -152,27 +163,41 @@ const products = [
       class="hidden fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
     ></div>
 
+    <!-- ⚙️ Optimiertes Script -->
     <script>
       const API_URL = "https://api.smartpages.online/api/auth/start";
       const popup = document.getElementById("popup");
       const form = document.getElementById("magicForm");
       const submitBtn = document.getElementById("submitBtn");
 
-      function showPopup(message, type = "success") {
+      function showPopup(message, type = "info", autoClose = true, delay = 5000) {
         popup.innerHTML = message;
         popup.className =
-          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
+          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-8 py-6 rounded-2xl shadow-2xl text-center text-base font-semibold z-50 backdrop-blur-md bg-white/90 border-l-8 transition-all duration-500 opacity-100 " +
           (type === "success"
-            ? "border-green-500 text-green-700"
+            ? "border-green-500 text-green-800"
             : type === "warning"
-            ? "border-yellow-400 text-yellow-700"
-            : "border-red-500 text-red-700");
+            ? "border-yellow-400 text-yellow-800"
+            : type === "error"
+            ? "border-red-500 text-red-700"
+            : "border-blue-500 text-blue-700");
+
         popup.classList.remove("hidden");
-        setTimeout(() => popup.classList.add("hidden"), 7000);
+        popup.style.opacity = "1";
+
+        if (autoClose) {
+          setTimeout(() => closePopup(), delay);
+        }
+      }
+
+      function closePopup() {
+        popup.style.opacity = "0";
+        setTimeout(() => popup.classList.add("hidden"), 400);
       }
 
       form?.addEventListener("submit", async (e) => {
         e.preventDefault();
+
         const data = {
           first_name: form.first_name.value.trim(),
           last_name: form.last_name.value.trim(),
@@ -182,33 +207,13 @@ const products = [
         };
 
         submitBtn.disabled = true;
-        showPopup("⏳ Sende deinen Magic Link...<br><span class='text-sm opacity-80'>Einen Moment bitte.</span>", "warning");
+
+        // 1️⃣ Startnachricht (persistent)
+        showPopup(
+          "⏳ <strong>Dein Magic Link wird vorbereitet...</strong><br><span class='text-sm opacity-80'>Bitte habe einen Moment Geduld.</span>",
+          "warning",
+          false
+        );
 
         try {
           const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          });
-          const result = await res.json();
-          if (result.ok) {
-            showPopup("✅ Magic Link gesendet! Bitte überprüfe dein Postfach.", "success");
-          } else {
-            showPopup("⚠️ Ein Fehler ist aufgetreten. Bitte überprüfe deine Eingaben.", "error");
-          }
-        } catch {
-          showPopup("⚠️ Netzwerkfehler. Bitte überprüfe deine Internetverbindung.", "error");
-        } finally {
-          submitBtn.disabled = false;
-        }
-      });
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const cb = document.getElementById("is_business");
-        const field = document.getElementById("company_field");
-        cb?.addEventListener("change", () => field.classList.toggle("hidden", !cb.checked));
-      });
-    </script>
-  </body>
-</html>
-

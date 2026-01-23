@@ -8,6 +8,10 @@ const navItems = [
   { label: "SmartProfile", icon: "👤", path: "smartprofile" },
   { label: "SmartPage", icon: "📄", path: "smartpage" },
   { label: "SmartDomain", icon: "🌐", path: "smartdomain" },
+  // 🌿 Neuer Eintrag: SmartLinks
+  { label: "SmartLinks", icon: "🔗", path: "smartlinks" },
+  // 💳 Neuer Eintrag: Mein Abo / My Subscription
+  { label: currentLang === "en" ? "My Subscription" : "Mein Abo", icon: "💳", path: "billing" },
 ];
 
 const adjustedNavItems = navItems.map((item) => ({
@@ -46,6 +50,15 @@ const adjustedNavItems = navItems.map((item) => ({
         case "SmartDomain":
           gradientClasses =
             "hover:from-[#8B5CFF] hover:to-[#A076FF] hover:shadow-[0_0_20px_rgba(139,92,255,0.4)]";
+          break;
+        case "SmartLinks":
+          gradientClasses =
+            "hover:from-[#A8D5BA] hover:to-[#8EBB9F] hover:shadow-[0_0_20px_rgba(168,213,186,0.4)]";
+          break;
+        case "Mein Abo":
+        case "My Subscription":
+          gradientClasses =
+            "hover:from-[#9CA3AF] hover:to-[#6B7280] hover:shadow-[0_0_20px_rgba(156,163,175,0.4)]";
           break;
         default:
           gradientClasses =
@@ -119,17 +132,15 @@ const adjustedNavItems = navItems.map((item) => ({
     scrollbar-width: none;
   }
 
-  /* 🔧 Fix für volle Höhe & glatten Übergang */
   html,
   body {
     height: 100%;
   }
 
   #sidebar {
-    height: 100vh; /* Sidebar über gesamte Viewport-Höhe */
+    height: 100vh;
   }
 
-  /* optional: sorgt für optischen Abschluss zum Footer */
   #sidebar::after {
     content: "";
     display: block;
@@ -137,4 +148,3 @@ const adjustedNavItems = navItems.map((item) => ({
     background: linear-gradient(to top, #1E2A45, transparent);
   }
 </style>
-

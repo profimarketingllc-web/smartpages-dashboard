@@ -6,7 +6,7 @@ const products = [
   {
     title: "SmartProfile",
     label: "COMING SOON",
-    text: "Your personal online profile that reflects your brand identity — securely hosted in Europe, optimized for visibility, credibility and full GDPR compliance across all digital channels.",
+    text: "Your personal online profile that reflects your brand identity — securely hosted in Europe, optimized for visibility, credibility, and full GDPR compliance across all digital channels.",
     gradient: "from-[#3D4CFF] to-[#6A5FFF]",
     glow: "hover:shadow-[0_0_30px_#3D4CFF80]",
   },
@@ -20,7 +20,7 @@ const products = [
   {
     title: "SmartDomain",
     label: "COMING SOON",
-    text: "Secure your own domain, protect your brand, and stay GDPR-compliant from the very beginning. SmartDomain makes managing your online identity effortless — privacy-first, secure, and hosted in Europe.",
+    text: "Secure your own domain, protect your brand, and stay GDPR-compliant from day one. SmartDomain makes managing your online identity effortless — privacy-first, secure, and hosted in Europe.",
     gradient: "from-[#9D3DFF] to-[#6A3AFF]",
     glow: "hover:shadow-[0_0_30px_#9D3DFF80]",
   },
@@ -39,7 +39,7 @@ const products = [
   </head>
 
   <body class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden">
-    <!-- 🧭 Centered Header -->
+    <!-- 🧭 Header -->
     <header
       class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50"
     >
@@ -58,35 +58,36 @@ const products = [
       </div>
     </header>
 
-    <!-- 💡 Main Section – compact, above the fold -->
+    <!-- 💡 Main Section -->
     <section
       class="w-full max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-8 lg:px-12 mt-8 items-start"
     >
-      <!-- Left Info Card -->
+      <!-- Info Card -->
       <div class="bg-white shadow-lg p-8 rounded-2xl border border-gray-100">
         <h2 class="text-2xl font-extrabold text-[#F5B400] mb-5">
           Welcome to SmartPages
         </h2>
         <p class="mb-3">
-          With <strong>SmartPages</strong>, you can create your professional online presence in just
-          <strong>10 minutes</strong> – without any technical skills or complicated setup.
-          Everything is securely hosted in <strong>Europe</strong> and fully
-          <strong>GDPR-compliant</strong>.
+          With <strong>SmartPages</strong>, you can build your professional online presence in just
+          <strong>10 minutes</strong> – no technical skills required. Everything is securely hosted
+          in <strong>Europe</strong> and fully <strong>GDPR-compliant</strong>.
         </p>
         <p class="mb-3">
-          If your audience or customers are located in the EU, privacy isn’t an option — it’s a
-          requirement. SmartPages meets these standards automatically from the very first click.
+          If your audience or customers are in the EU, privacy isn’t optional — it’s a must.
+          SmartPages meets these requirements automatically from the very first click.
         </p>
         <p>
-          Simply enter your contact details below, and we’ll send you a personal
-          <strong>Magic Link</strong> for instant, secure access to your SmartPages dashboard —
-          no passwords, no tracking, no data collection.
+          Just enter your contact details below, and we’ll send you your personal
+          <strong>Magic Link</strong> – no password, no tracking, no data collection.
         </p>
       </div>
 
-      <!-- Right Login Card -->
+      <!-- Login Form -->
       <div class="bg-[#f6f8fb] shadow-lg p-8 rounded-2xl border border-gray-100">
-        <form id="magicForm" class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm">
+        <form
+          id="magicForm"
+          class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm"
+        >
           <label class="block text-sm text-gray-600 mb-1">First name *</label>
           <input
             type="text"
@@ -135,81 +136,4 @@ const products = [
       </div>
     </section>
 
-    <!-- 🧱 ProductGrid (compact & aligned) -->
-    <section class="mt-4 mb-8">
-      <div class="w-full max-w-[1400px] mx-auto">
-        <ProductGrid {products} compact />
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="text-center text-sm text-gray-600 py-3 bg-[#f5f5f5]">
-      © 2025 SmartPages · Profi Marketing LLC · Hosted in Europe · GDPR-compliant
-    </footer>
-
-    <!-- Popup -->
-    <div
-      id="popup"
-      class="hidden fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-    ></div>
-
-    <script>
-      const API_URL = "https://api.smartpages.online/api/auth/start";
-      const popup = document.getElementById("popup");
-      const form = document.getElementById("magicForm");
-      const submitBtn = document.getElementById("submitBtn");
-
-      function showPopup(message, type = "success") {
-        popup.innerHTML = message;
-        popup.className =
-          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-6 py-4 rounded-lg shadow-xl text-center text-base font-semibold z-50 bg-white border-l-8 " +
-          (type === "success"
-            ? "border-green-500 text-green-700"
-            : type === "warning"
-            ? "border-yellow-400 text-yellow-700"
-            : "border-red-500 text-red-700");
-        popup.classList.remove("hidden");
-        setTimeout(() => popup.classList.add("hidden"), 7000);
-      }
-
-      form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const data = {
-          first_name: form.first_name.value.trim(),
-          last_name: form.last_name.value.trim(),
-          email: form.email.value.trim(),
-          company_name: form.company_name?.value.trim() || "",
-          is_business: form.is_business.checked,
-        };
-
-        submitBtn.disabled = true;
-        showPopup("⏳ Sending your Magic Link...<br><span class='text-sm opacity-80'>Please wait a moment.</span>", "warning");
-
-        try {
-          const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          });
-          const result = await res.json();
-          if (result.ok) {
-            showPopup("✅ Magic Link sent! Please check your inbox.", "success");
-          } else {
-            showPopup("⚠️ An error occurred. Please check your input.", "error");
-          }
-        } catch {
-          showPopup("⚠️ Network error. Please check your internet connection.", "error");
-        } finally {
-          submitBtn.disabled = false;
-        }
-      });
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const cb = document.getElementById("is_business");
-        const field = document.getElementById("company_field");
-        cb?.addEventListener("change", () => field.classList.toggle("hidden", !cb.checked));
-      });
-    </script>
-  </body>
-</html>
-
+    <!-- 🧱 ProductGrid -->
