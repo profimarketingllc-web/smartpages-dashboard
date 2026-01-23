@@ -1,34 +1,35 @@
 ---
-import PageLayout from "@/layouts/PageLayout.astro";
-import ProductPill from "@/components/core/ProductPill.astro";
-import Card from "@/components/ui/Card.astro";
-import ProductForm from "@/components/editor/ProductForm.astro";
-import ProductPreview from "@/components/editor/ProductPreview.astro";
+import PageLayout from "~/layouts/PageLayout.astro";
+import ProductPill from "~/components/core/ProductPill.astro";
+import Card from "~/components/ui/Card.astro";
+import ProductForm from "~/components/editor/ProductForm.astro";
+import ProductPreview from "~/components/editor/ProductPreview.astro";
 
 const schema = [
-  { key: "title", label: "Link-Titel", type: "text" },
-  { key: "url", label: "Ziel-URL", type: "text" },
-  { key: "description", label: "Beschreibung (optional)", type: "textarea", rows: 3 },
+  { key: "domain_name", label: "Domain Name", type: "text" },
+  { key: "redirect_url", label: "Target URL", type: "text" },
+  { key: "plan", label: "Plan / Package", type: "text" },
+  { key: "status", label: "Status", type: "text" },
 ];
 
-const smartlink = {
-  title: "Mein Lieblingslink",
-  url: "https://example.com",
-  description: "Hier findest du alle wichtigen Infos zu meinem Projekt.",
-  slug: "mein-link",
+const domain = {
+  domain_name: "www.my-domain.online",
+  redirect_url: "https://example.com",
+  plan: "Business",
+  status: "active",
+  slug: "my-domain",
 };
 ---
 
 <PageLayout title="SmartLinks – SmartPages" sidebar={true} header={true}>
-  <ProductPill label="SmartLinks" color="#91C7A0" />
+  <ProductPill label="SmartLinks" color="purple" />
 
   <div class="max-w-4xl mx-auto mt-10 space-y-8">
-    <Card title="Link bearbeiten">
-      <ProductForm schema={schema} data={smartlink} />
+    <Card title="Edit Domain">
+      <ProductForm schema={schema} data={domain} />
     </Card>
-
-    <Card title="Vorschau">
-      <ProductPreview slug={smartlink.slug} />
+    <Card title="Preview">
+      <ProductPreview slug={domain.slug} />
     </Card>
   </div>
 </PageLayout>

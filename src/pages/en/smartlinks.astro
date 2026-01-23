@@ -21,12 +21,15 @@ const domain = {
 };
 ---
 
-<PageLayout title="SmartLink – SmartPages" sidebar={true} header={true}>
-  <ProductPill label="SmartLink" color="purple" />
+<PageLayout title="SmartLinks – SmartPages" sidebar={true} header={true}>
+  <ProductPill label="SmartLinks" color="purple" />
 
   <div class="max-w-4xl mx-auto mt-10 space-y-8">
     <Card title="Edit Domain">
       <ProductForm schema={schema} data={domain} />
+    </Card>
+    <Card title="Preview">
+      <ProductPreview slug={domain.slug} />
     </Card>
   </div>
 </PageLayout>
