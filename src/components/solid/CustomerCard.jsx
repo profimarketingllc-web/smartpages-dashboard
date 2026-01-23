@@ -26,7 +26,7 @@ export default function CustomerCard(props) {
   // 🔗 Kundendaten abrufen
   const fetchCustomer = async () => {
     try {
-      const res = await fetch("/api/customer/customer", {
+      const res = await fetch("/api/customer", {
         method: "GET",
         credentials: "include",
         headers: { Accept: "application/json" },

@@ -12,26 +12,21 @@ import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 import EditPrivacyModal from "~/components/solid/EditPrivacyModal.jsx";
 
-// 🔹 SSR Sessionprüfung
-// Nur prüfen, ob Cookie existiert, aber kein sofortiger Redirect bei Edge-Problemen
+// 🔹 SSR Sessionprüfung – nur Cookie prüfen
 const cookie = Astro.request.headers.get("cookie") || "";
 if (!cookie.includes("session=")) {
-  // Nutzer hat keine Session → zurück zum Login
   return Astro.redirect("/de/login");
 }
 
-// 🔹 Userobjekt aus Middleware (wird gesetzt vom Core Worker)
+// 🔹 Userobjekt aus Middleware (Core Worker)
 const user = Astro.locals?.user || null;
 ---
 
 <PageLayout title="SmartPages Dashboard" sidebar={true} header={true} lang="de">
-  <main
-    class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
-  >
+  <main class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300">
     <!-- 🔹 Benutzerinfo + Systemstatus -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
       <DashboardCardWide>
-        <!-- ✅ Kundendaten werden über CustomerCard (SolidJS) geladen -->
         <CustomerCard client:only="solid-js" lang="de" />
       </DashboardCardWide>
 
@@ -62,10 +57,26 @@ const user = Astro.locals?.user || null;
   </main>
 </PageLayout>
 
-<!-- 🔧 Clientseitige Session-Validierung -->
+<!-- 🔧 Clientseitige Session-Validierung & Cache -->
 <script>
   window.addEventListener("DOMContentLoaded", async () => {
-    console.log("🇩🇪 Dashboard geladen — prüfe Session und lade Daten...");
+    console.log("🇩🇪 Dashboard geladen — prüfe Session...");
+
+    // 🚫 Mehrfachprüfung verhindern
+    if (window.__SESSION_CHECK_DONE__) {
+      console.log("⚙️ Sessionprüfung bereits ausgeführt, überspringe erneut.");
+      return;
+    }
+    window.__SESSION_CHECK_DONE__ = true;
+
+    // 🧠 Falls Session bereits im Cache ist → direkt nutzen
+    if (window.__SESSION_INFO__) {
+      console.log("✅ Verwende gecachte Session:", window.__SESSION_INFO__);
+      window.dispatchEvent(
+        new CustomEvent("session-info-ready", { detail: window.__SESSION_INFO__ })
+      );
+      return;
+    }
 
     try {
       const res = await fetch("https://api.smartpages.online/api/session/userinfo", {
@@ -80,6 +91,12 @@ const user = Astro.locals?.user || null;
       }
 
       console.log("✅ Session aktiv für:", data.user.email);
+      window.__SESSION_INFO__ = data.user;
+
+      // 🔁 Event für Solid-Komponenten senden
+      window.dispatchEvent(
+        new CustomEvent("session-info-ready", { detail: data.user })
+      );
     } catch (e) {
       console.error("❌ Fehler bei der Sessionprüfung:", e);
       window.location.href = "/de/login";

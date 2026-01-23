@@ -12,14 +12,11 @@ import EditCustomerModal from "~/components/solid/EditCustomerModal.jsx";
 import EditImprintModal from "~/components/solid/EditImprintModal.jsx";
 import EditPrivacyModal from "~/components/solid/EditPrivacyModal.jsx";
 
-// 🧩 SSR Session Check (via Cookie)
 const cookie = Astro.request.headers.get("cookie") || "";
 if (!cookie.includes("session=")) {
-  // No active session → redirect to English login
   return Astro.redirect("/en/login");
 }
 
-// 🔹 Get user object from middleware (set by Core Worker)
 const user = Astro.locals?.user || null;
 ---
 
@@ -27,46 +24,51 @@ const user = Astro.locals?.user || null;
   <main
     class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
   >
-
-    <!-- 🧭 TOP SECTION -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
       <DashboardCardWide>
-        <!-- ✅ Customer data is loaded via CustomerCard (SolidJS) -->
         <CustomerCard client:only="solid-js" lang="en" />
       </DashboardCardWide>
 
       <div class="system-message">
-        <!-- ✅ System message (personalized by locals.user) -->
         <SystemMessage lang="en" user={user} />
       </div>
     </section>
 
-    <!-- 🏢 IMPRINT SECTION -->
     <DashboardCardWide>
       <ImprintCard client:only="solid-js" lang="en" />
     </DashboardCardWide>
 
-    <!-- 🔒 PRIVACY SECTION -->
     <DashboardCardWide>
       <PrivacyCard client:only="solid-js" lang="en" />
     </DashboardCardWide>
 
-    <!-- 💼 PRODUCT GRID -->
     <section class="mt-4 md:mt-6">
       <ProductGrid lang="en" />
     </section>
 
-    <!-- 🧩 MODALS -->
     <EditCustomerModal client:only="solid-js" lang="en" />
     <EditImprintModal client:only="solid-js" lang="en" />
     <EditPrivacyModal client:only="solid-js" lang="en" />
   </main>
 </PageLayout>
 
-<!-- 🔧 Client-side Session Validation -->
 <script>
   window.addEventListener("DOMContentLoaded", async () => {
-    console.log("🇬🇧 Dashboard loaded — checking active session...");
+    console.log("🇬🇧 Dashboard loaded — checking session...");
+
+    if (window.__SESSION_CHECK_DONE__) {
+      console.log("⚙️ Session check already done, skipping duplicate call.");
+      return;
+    }
+    window.__SESSION_CHECK_DONE__ = true;
+
+    if (window.__SESSION_INFO__) {
+      console.log("✅ Using cached session:", window.__SESSION_INFO__);
+      window.dispatchEvent(
+        new CustomEvent("session-info-ready", { detail: window.__SESSION_INFO__ })
+      );
+      return;
+    }
 
     try {
       const res = await fetch("https://api.smartpages.online/api/session/userinfo", {
@@ -75,14 +77,19 @@ const user = Astro.locals?.user || null;
       const data = await res.json();
 
       if (!data.ok || !data.user) {
-        console.warn("⚠️ No valid session — redirecting to login page...");
+        console.warn("⚠️ No valid session found – redirecting to login");
         window.location.href = "/en/login";
         return;
       }
 
       console.log("✅ Active session for:", data.user.email);
+      window.__SESSION_INFO__ = data.user;
+
+      window.dispatchEvent(
+        new CustomEvent("session-info-ready", { detail: data.user })
+      );
     } catch (e) {
-      console.error("❌ Error checking session:", e);
+      console.error("❌ Error while checking session:", e);
       window.location.href = "/en/login";
     }
   });
