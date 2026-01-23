@@ -1,36 +1,19 @@
 ---
-import PageLayout from "~/layouts/PageLayout.astro";
-import ProductPill from "~/components/core/ProductPill.astro";
-import Card from "~/components/ui/Card.astro";
-// ✅ Wir testen zunächst nur mit einfachen Komponenten
-
-console.log("✅ SmartLinks page loaded");
+console.log("✅ SmartLinks rendering started");
 
 const schema = [
   { key: "title", label: "Link Title", type: "text" },
   { key: "url", label: "URL", type: "text" },
-  { key: "description", label: "Description (optional)", type: "textarea", rows: 3 },
 ];
-
-const smartlinks = {
-  title: "My Favorite Link",
-  url: "https://example.com",
-  description: "Here you’ll find all the important info about my work.",
-  slug: "my-link",
-};
 ---
 
-<PageLayout title="SmartLinks – SmartPages" sidebar={true} header={true}>
-  <ProductPill label="SmartLinks" color="#A8D5BA" />
-
-  <div class="max-w-4xl mx-auto mt-10 space-y-8">
-    <Card title="Edit SmartLink">
-      <p class="text-gray-700">
-        ✅ SmartLinks page is rendering correctly.
-      </p>
-      <p class="text-sm text-gray-500">
-        If you see this, the issue was caused by one of the editor components.
-      </p>
-    </Card>
-  </div>
-</PageLayout>
+<html lang="en">
+  <head>
+    <title>SmartLinks Debug</title>
+  </head>
+  <body style="font-family: system-ui; padding: 2rem; background: #fafafa;">
+    <h1>✅ SmartLinks page basic render test</h1>
+    <p>If you see this, the Astro route works perfectly.</p>
+    <pre>{JSON.stringify(schema, null, 2)}</pre>
+  </body>
+</html>
