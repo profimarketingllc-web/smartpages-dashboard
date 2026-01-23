@@ -1,5 +1,5 @@
 ---
-import PageLayout from "~/layouts/PageLayout.astro";
+import PageLayout from "@/layouts/PageLayout.astro";
 import ProductPill from "@/components/core/ProductPill.astro";
 import Card from "@/components/ui/Card.astro";
 import ProductForm from "@/components/editor/ProductForm.astro";
@@ -11,23 +11,24 @@ const schema = [
   { key: "description", label: "Beschreibung (optional)", type: "textarea", rows: 3 },
 ];
 
-const smartlinks = {
-  title: "Mein Lieblings-Link",
+const smartlink = {
+  title: "Mein Lieblingslink",
   url: "https://example.com",
-  description: "Hier findest du alle wichtigen Informationen über meine Arbeit.",
+  description: "Hier findest du alle wichtigen Infos zu meinem Projekt.",
   slug: "mein-link",
 };
 ---
 
 <PageLayout title="SmartLinks – SmartPages" sidebar={true} header={true}>
-  <ProductPill label="SmartLinks" color="#A8D5BA" />
+  <ProductPill label="SmartLinks" color="#91C7A0" />
 
   <div class="max-w-4xl mx-auto mt-10 space-y-8">
-    <Card title="SmartLink bearbeiten">
-      <ProductForm schema={schema} data={smartlinks} />
+    <Card title="Link bearbeiten">
+      <ProductForm schema={schema} data={smartlink} />
     </Card>
+
     <Card title="Vorschau">
-      <ProductPreview slug={smartlinks.slug} />
+      <ProductPreview slug={smartlink.slug} />
     </Card>
   </div>
 </PageLayout>
