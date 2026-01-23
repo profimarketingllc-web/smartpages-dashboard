@@ -6,30 +6,38 @@ import ProductForm from "~/components/editor/ProductForm.astro";
 import ProductPreview from "~/components/editor/ProductPreview.astro";
 
 const schema = [
-  { key: "domain_name", label: "Domain Name", type: "text" },
-  { key: "redirect_url", label: "Target URL", type: "text" },
-  { key: "plan", label: "Plan / Package", type: "text" },
+  { key: "link_title", label: "Link Title", type: "text" },
+  { key: "link_url", label: "Target URL", type: "text" },
+  { key: "category", label: "Category", type: "text" },
   { key: "status", label: "Status", type: "text" },
 ];
 
-const domain = {
-  domain_name: "www.my-domain.online",
-  redirect_url: "https://example.com",
-  plan: "Business",
+const smartlinks = {
+  link_title: "My Main Website",
+  link_url: "https://example.com",
+  category: "Personal Branding",
   status: "active",
-  slug: "my-domain",
+  slug: "my-links",
 };
 ---
 
 <PageLayout title="SmartLinks – SmartPages" sidebar={true} header={true}>
-  <ProductPill label="SmartLinks" color="purple" />
+  <!-- 🌿 Salbei Pill -->
+  <ProductPill label="SmartLinks" color="links" />
 
   <div class="max-w-4xl mx-auto mt-10 space-y-8">
-    <Card title="Edit Domain">
-      <ProductForm schema={schema} data={domain} />
+    <Card 
+      title="Manage Links"
+      class="border border-smart-links shadow-card bg-white rounded-2xl"
+    >
+      <ProductForm schema={schema} data={smartlinks} />
     </Card>
-    <Card title="Preview">
-      <ProductPreview slug={domain.slug} />
+
+    <Card 
+      title="Preview"
+      class="border border-smart-full-links bg-smart-links/10 rounded-2xl"
+    >
+      <ProductPreview slug={smartlinks.slug} />
     </Card>
   </div>
 </PageLayout>
