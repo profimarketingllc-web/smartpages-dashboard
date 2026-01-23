@@ -1,36 +1,16 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
-import ProductPill from "@/components/core/ProductPill.astro";
-import Card from "@/components/ui/Card.astro";
-import ProductForm from "@/components/editor/ProductForm.astro";
-import ProductPreview from "@/components/editor/ProductPreview.astro";
+import ProductPill from "~/components/core/ProductPill.astro";
 
-const schema = [
-  { key: "domain_name", label: "Domain Name", type: "text" },
-  { key: "redirect_url", label: "Redirect URL", type: "text" },
-  { key: "plan", label: "Plan / Package", type: "text" },
-  { key: "status", label: "Status", type: "text" },
-];
-
-const domain = {
-  domain_name: "www.mybusiness.online",
-  redirect_url: "https://example.com",
-  plan: "Business",
-  status: "active",
-  slug: "mybusiness",
-};
+// 🔧 Debug-Check
+console.log("✅ SmartLinks minimal page loaded");
 ---
 
-<PageLayout title="SmartDomain – SmartPages" sidebar={true} header={true}>
-  <ProductPill label="SmartDomain" color="purple" />
-
-  <div class="max-w-4xl mx-auto mt-10 space-y-8">
-    <Card title="Manage Domain">
-      <ProductForm schema={schema} data={domain} />
-    </Card>
-    <Card title="Preview">
-      <ProductPreview slug={domain.slug} />
-    </Card>
-  </div>
+<PageLayout title="SmartLinks – SmartPages" sidebar={true} header={true}>
+  <section class="text-center py-20">
+    <ProductPill label="SmartLinks" color="green" />
+    <p class="mt-6 text-gray-700 text-lg">
+      🧩 SmartLinks basic layout render successful.
+    </p>
+  </section>
 </PageLayout>
-
