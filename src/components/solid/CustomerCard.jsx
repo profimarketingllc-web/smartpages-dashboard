@@ -1,33 +1,26 @@
-import { createResource, createSignal, onMount, onCleanup } from "solid-js";
+import { createSignal, onMount, onCleanup } from "solid-js";
 import { t, useLang } from "~/utils/i18n/i18n";
 
 export default function CustomerCard(props) {
   const [lang, setLang] = createSignal(props.lang || "de");
-  const [sessionReady, setSessionReady] = createSignal(false);
-
-  onMount(() => {
-    setLang(window.location.pathname.includes("/en/") ? "en" : "de");
-
-    // ⏳ Session prüfen und Event abfeuern
-    const checkSession = async () => {
-      try {
-        const res = await fetch("/api/session/userinfo", { credentials: "include" });
-        const data = await res.json();
-        if (data.ok && data.user) {
-          window.__SESSION_INFO__ = data.user;
-          window.dispatchEvent(new CustomEvent("session-info-ready", { detail: data.user }));
-          setSessionReady(true);
-        }
-      } catch (err) {
-        console.warn("⚠️ Session-Check fehlgeschlagen:", err);
-      }
-    };
-
-    checkSession();
+  const [customer, setCustomer] = createSignal({
+    firstName: "",
+    lastName: "",
+    company: "",
+    plan: "—",
+    status: t(lang(), "loggedOut", "system"),
+    activeUntil: "—",
+    lastLogin: "—",
+    is_business: 0,
   });
 
-  // 🔗 Kundendaten abrufen
-  const fetchCustomer = async () => {
+  // Sprache setzen
+  onMount(() => {
+    setLang(window.location.pathname.includes("/en/") ? "en" : "de");
+  });
+
+  // Daten abrufen
+  const loadCustomer = async () => {
     try {
       const res = await fetch("/api/customer", {
         method: "GET",
@@ -36,54 +29,74 @@ export default function CustomerCard(props) {
       });
 
       if (!res.ok) {
-        if (res.status === 401) return { status: t(lang(), "loggedOut", "system") };
-        throw new Error(`API-Fehler ${res.status}`);
+        console.warn("❌ Customer API Fehler:", res.status);
+        return;
       }
 
       const result = await res.json();
       const u = result.data || result.user || null;
 
-      if (!result.ok || !u) return { status: t(lang(), "loggedOut", "system") };
+      if (!result.ok || !u) {
+        console.warn("⚠️ Keine gültigen Kundendaten empfangen:", result);
+        return;
+      }
 
-      return {
+      setCustomer({
         firstName: u.first_name || "",
         lastName: u.last_name || "",
         company: u.company_name || "",
         is_business: u.is_business || 0,
         plan: u.plan || "—",
-        status: u.status === "active"
-          ? t(lang(), "statusActive", "system")
-          : t(lang(), "loggedOut", "system"),
+        status:
+          u.status === "active"
+            ? t(lang(), "statusActive", "system")
+            : t(lang(), "loggedOut", "system"),
         activeUntil: u.trial_end || "—",
         lastLogin: u.last_login || "—",
-      };
+      });
+
+      console.log("✅ Kundendaten geladen:", u);
     } catch (err) {
       console.error("❌ Fehler beim Laden der Kundendaten:", err);
-      return { status: t(lang(), "loggedOut", "system") };
     }
   };
 
-  const [customer, { refetch }] = createResource(sessionReady, fetchCustomer);
-
+  // Nach dem Mount sicher nachladen (inkl. Session-Ready Check)
   onMount(() => {
-    if (typeof window === "undefined") return;
-
-    // Re-Fetch bei Session-Refresh
-    const handler = () => {
-      console.log("🔁 CustomerCard: Daten werden aktualisiert …");
-      refetch();
+    const checkAndLoad = async () => {
+      for (let i = 0; i < 5; i++) {
+        try {
+          const sessionRes = await fetch("/api/session/userinfo", {
+            credentials: "include",
+          });
+          const sessionData = await sessionRes.json();
+          if (sessionData.ok && sessionData.user) {
+            console.log("🟢 Session aktiv, lade Kundendaten...");
+            await loadCustomer();
+            return;
+          }
+        } catch (e) {
+          console.warn("⏳ Session noch nicht aktiv, neuer Versuch...");
+        }
+        await new Promise((r) => setTimeout(r, 600)); // 0,6s Pause
+      }
+      console.error("❌ Session konnte nicht bestätigt werden.");
     };
-    window.addEventListener("refresh-customer-data", handler);
-    onCleanup(() => window.removeEventListener("refresh-customer-data", handler));
 
-    // Laden, wenn Session bereit
-    window.addEventListener("session-info-ready", () => {
-      setSessionReady(true);
-      refetch();
-    });
+    checkAndLoad();
+
+    // Re-Load bei Events
+    const refreshHandler = () => {
+      console.log("🔁 CustomerCard: Daten werden aktualisiert …");
+      loadCustomer();
+    };
+    window.addEventListener("refresh-customer-data", refreshHandler);
+    onCleanup(() =>
+      window.removeEventListener("refresh-customer-data", refreshHandler)
+    );
   });
 
-  const data = () => customer() || {};
+  const data = () => customer();
   const displayValue = (val) => (val && val !== "" ? val : "—");
 
   const displayHeader = () => {
@@ -94,19 +107,24 @@ export default function CustomerCard(props) {
     if (data().is_business && data().company) {
       return (
         <div class="mt-2">
-          <p class="text-lg font-semibold text-[#1E2A45] leading-tight">{data().company}</p>
+          <p class="text-lg font-semibold text-[#1E2A45] leading-tight">
+            {data().company}
+          </p>
           <p class="text-gray-500 text-sm">{fullName}</p>
         </div>
       );
     } else {
       return (
         <div class="mt-2">
-          <p class="text-lg font-semibold text-[#1E2A45] leading-tight">{fullName || "—"}</p>
+          <p class="text-lg font-semibold text-[#1E2A45] leading-tight">
+            {fullName || "—"}
+          </p>
         </div>
       );
     }
   };
 
+  // 🧱 UI
   return (
     <div class="relative w-full text-sm text-gray-700 px-7 md:px-9 py-4 md:py-5 transition-all duration-300">
       <div class="absolute top-4 right-10 md:right-14">
@@ -130,19 +148,27 @@ export default function CustomerCard(props) {
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8 mt-5">
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "status", "customer")}:</span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "status", "customer")}:
+          </span>
           <p class="text-gray-600">{displayValue(data().status)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "plan", "customer")}:</span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "plan", "customer")}:
+          </span>
           <p class="text-gray-600">{displayValue(data().plan)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "activeUntil", "customer")}:</span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "activeUntil", "customer")}:
+          </span>
           <p class="text-gray-600">{displayValue(data().activeUntil)}</p>
         </div>
         <div>
-          <span class="font-medium text-gray-800">{t(lang(), "lastLogin", "customer")}:</span>
+          <span class="font-medium text-gray-800">
+            {t(lang(), "lastLogin", "customer")}:
+          </span>
           <p class="text-gray-600">{displayValue(data().lastLogin)}</p>
         </div>
       </div>
