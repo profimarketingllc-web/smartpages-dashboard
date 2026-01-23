@@ -8,24 +8,27 @@ const navItems = [
   { label: "SmartProfile", icon: "👤", path: "smartprofile" },
   { label: "SmartPage", icon: "📄", path: "smartpage" },
   { label: "SmartDomain", icon: "🌐", path: "smartdomain" },
-  // 🌿 Neuer Eintrag: SmartLinks
-  { label: "SmartLinks", icon: "🔗", path: "smartlinks" },
-  // 💳 Neuer Eintrag: Mein Abo / My Subscription
-  { label: currentLang === "en" ? "My Subscription" : "Mein Abo", icon: "💳", path: "billing" },
+  { label: "SmartLinks", icon: "🔗", path: "smartlinks" }, // Neu eingefügt
+];
+
+const managementItems = [
+  { label: currentLang === "en" ? "My Plan" : "Mein Abo", icon: "💳", path: "billing" },
 ];
 
 const adjustedNavItems = navItems.map((item) => ({
   ...item,
   link: `/${currentLang}/${item.path}`,
 }));
+
+const adjustedManagementItems = managementItems.map((item) => ({
+  ...item,
+  link: `/${currentLang}/${item.path}`,
+}));
 ---
 
-<!-- 🔹 Sidebar Container -->
 <aside
   id="sidebar"
-  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white 
-         shadow-xl flex flex-col justify-between transition-transform duration-300 ease-in-out
-         -translate-x-full md:translate-x-0 z-50"
+  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl flex flex-col justify-between transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 z-50"
 >
   <!-- 🔸 Header -->
   <div class="h-20 flex items-center justify-center border-b border-white/10 shrink-0">
@@ -40,29 +43,19 @@ const adjustedNavItems = navItems.map((item) => ({
       let gradientClasses = "";
       switch (item.label) {
         case "SmartProfile":
-          gradientClasses =
-            "hover:from-[#4E6BFF] hover:to-[#657AFF] hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]";
+          gradientClasses = "hover:from-[#4E6BFF] hover:to-[#657AFF] hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]";
           break;
         case "SmartPage":
-          gradientClasses =
-            "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]";
+          gradientClasses = "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]";
           break;
         case "SmartDomain":
-          gradientClasses =
-            "hover:from-[#8B5CFF] hover:to-[#A076FF] hover:shadow-[0_0_20px_rgba(139,92,255,0.4)]";
+          gradientClasses = "hover:from-[#8B5CFF] hover:to-[#A076FF] hover:shadow-[0_0_20px_rgba(139,92,255,0.4)]";
           break;
         case "SmartLinks":
-          gradientClasses =
-            "hover:from-[#A8D5BA] hover:to-[#8EBB9F] hover:shadow-[0_0_20px_rgba(168,213,186,0.4)]";
-          break;
-        case "Mein Abo":
-        case "My Subscription":
-          gradientClasses =
-            "hover:from-[#9CA3AF] hover:to-[#6B7280] hover:shadow-[0_0_20px_rgba(156,163,175,0.4)]";
+          gradientClasses = "hover:from-[#A8D5BA] hover:to-[#91C7A0] hover:shadow-[0_0_20px_rgba(168,213,186,0.4)]";
           break;
         default:
-          gradientClasses =
-            "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]";
+          gradientClasses = "hover:from-[#F5B400] hover:to-[#E47E00]";
       }
 
       return (
@@ -78,9 +71,26 @@ const adjustedNavItems = navItems.map((item) => ({
         </a>
       );
     })}
+
+    <!-- 🔹 Trennlinie -->
+    <hr class="border-t border-white/10 my-5" />
+
+    <!-- 🧾 Verwaltungsbereich -->
+    {adjustedManagementItems.map((item) => (
+      <a
+        href={item.link}
+        class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
+                bg-[#f6f8fb] text-[#1E2A45]
+                hover:bg-gradient-to-r hover:from-[#C0C0C0] hover:to-[#E0E0E0] hover:text-[#1E2A45]
+                shadow-md transition-all duration-300 ease-in-out`}
+      >
+        <span class="text-lg">{item.icon}</span>
+        <span>{item.label}</span>
+      </a>
+    ))}
   </nav>
 
-  <!-- 🔸 Footer (immer am unteren Rand) -->
+  <!-- 🔸 Footer -->
   <div class="p-4 border-t border-white/10 bg-[#1E2A45]/95 backdrop-blur-sm mt-auto">
     <a
       href="mailto:support@smartpages.online"
@@ -95,18 +105,10 @@ const adjustedNavItems = navItems.map((item) => ({
 </aside>
 
 <!-- 🔹 Overlay (Mobile) -->
-<div
-  id="overlay"
-  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"
-></div>
+<div id="overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"></div>
 
 <!-- 🔹 Toggle Button -->
-<button
-  id="openSidebar"
-  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50"
->
-  ☰
-</button>
+<button id="openSidebar" class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50">☰</button>
 
 <script>
   const sidebar = document.getElementById("sidebar");
@@ -124,22 +126,12 @@ const adjustedNavItems = navItems.map((item) => ({
 </script>
 
 <style>
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-  html,
-  body {
-    height: 100%;
-  }
+  html, body { height: 100%; }
 
-  #sidebar {
-    height: 100vh;
-  }
+  #sidebar { height: 100vh; }
 
   #sidebar::after {
     content: "";
