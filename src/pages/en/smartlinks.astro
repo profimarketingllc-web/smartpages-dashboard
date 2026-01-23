@@ -1,9 +1,10 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
-import ProductPill from "@/components/core/ProductPill.astro";
-import Card from "@/components/ui/Card.astro";
-import ProductForm from "@/components/editor/ProductForm.astro";
-import ProductPreview from "@/components/editor/ProductPreview.astro";
+import ProductPill from "~/components/core/ProductPill.astro";
+import Card from "~/components/ui/Card.astro";
+// ✅ Wir testen zunächst nur mit einfachen Komponenten
+
+console.log("✅ SmartLinks page loaded");
 
 const schema = [
   { key: "title", label: "Link Title", type: "text" },
@@ -24,10 +25,12 @@ const smartlinks = {
 
   <div class="max-w-4xl mx-auto mt-10 space-y-8">
     <Card title="Edit SmartLink">
-      <ProductForm schema={schema} data={smartlinks} />
-    </Card>
-    <Card title="Preview">
-      <ProductPreview slug={smartlinks.slug} />
+      <p class="text-gray-700">
+        ✅ SmartLinks page is rendering correctly.
+      </p>
+      <p class="text-sm text-gray-500">
+        If you see this, the issue was caused by one of the editor components.
+      </p>
     </Card>
   </div>
 </PageLayout>
