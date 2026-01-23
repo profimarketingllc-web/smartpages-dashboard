@@ -1,0 +1,33 @@
+---
+import PageLayout from "~/layouts/PageLayout.astro";
+import ProductPill from "@/components/core/ProductPill.astro";
+import Card from "@/components/ui/Card.astro";
+import ProductForm from "@/components/editor/ProductForm.astro";
+import ProductPreview from "@/components/editor/ProductPreview.astro";
+
+const schema = [
+  { key: "title", label: "Link-Titel", type: "text" },
+  { key: "url", label: "Ziel-URL", type: "text" },
+  { key: "description", label: "Beschreibung (optional)", type: "textarea", rows: 3 },
+];
+
+const smartlinks = {
+  title: "Mein Lieblings-Link",
+  url: "https://example.com",
+  description: "Hier findest du alle wichtigen Informationen über meine Arbeit.",
+  slug: "mein-link",
+};
+---
+
+<PageLayout title="SmartLinks – SmartPages" sidebar={true} header={true}>
+  <ProductPill label="SmartLinks" color="#A8D5BA" />
+
+  <div class="max-w-4xl mx-auto mt-10 space-y-8">
+    <Card title="SmartLink bearbeiten">
+      <ProductForm schema={schema} data={smartlinks} />
+    </Card>
+    <Card title="Vorschau">
+      <ProductPreview slug={smartlinks.slug} />
+    </Card>
+  </div>
+</PageLayout>

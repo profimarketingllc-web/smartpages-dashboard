@@ -8,22 +8,14 @@ const navItems = [
   { label: "SmartProfile", icon: "👤", path: "smartprofile" },
   { label: "SmartPage", icon: "📄", path: "smartpage" },
   { label: "SmartDomain", icon: "🌐", path: "smartdomain" },
-  { label: "SmartLinks", icon: "🔗", path: "smartlinks" }, // Neu eingefügt
+  { label: "SmartLinks", icon: "🔗", path: "smartlinks" },
 ];
 
-const managementItems = [
-  { label: currentLang === "en" ? "My Plan" : "Mein Abo", icon: "💳", path: "billing" },
-];
-
-const adjustedNavItems = navItems.map((item) => ({
-  ...item,
-  link: `/${currentLang}/${item.path}`,
-}));
-
-const adjustedManagementItems = managementItems.map((item) => ({
-  ...item,
-  link: `/${currentLang}/${item.path}`,
-}));
+const managementItem = {
+  label: currentLang === "en" ? "My Plan" : "Mein Abo",
+  icon: "💳",
+  link: `/${currentLang}/billing`,
+};
 ---
 
 <aside
@@ -39,7 +31,7 @@ const adjustedManagementItems = managementItems.map((item) => ({
 
   <!-- 🔸 Navigation -->
   <nav class="flex-1 mt-10 space-y-4 overflow-y-auto scrollbar-hide px-3 pb-4">
-    {adjustedNavItems.map((item) => {
+    {navItems.map((item) => {
       let gradientClasses = "";
       switch (item.label) {
         case "SmartProfile":
@@ -60,7 +52,7 @@ const adjustedManagementItems = managementItems.map((item) => ({
 
       return (
         <a
-          href={item.link}
+          href={`/${currentLang}/${item.path}`}
           class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
                   bg-[#f6f8fb] text-[#1E2A45]
                   hover:bg-gradient-to-r hover:text-white shadow-md transition-all duration-300 ease-in-out
@@ -71,32 +63,27 @@ const adjustedManagementItems = managementItems.map((item) => ({
         </a>
       );
     })}
-
-    <!-- 🔹 Trennlinie -->
-    <hr class="border-t border-white/10 my-5" />
-
-    <!-- 🧾 Verwaltungsbereich -->
-    {adjustedManagementItems.map((item) => (
-      <a
-        href={item.link}
-        class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-                bg-[#f6f8fb] text-[#1E2A45]
-                hover:bg-gradient-to-r hover:from-[#C0C0C0] hover:to-[#E0E0E0] hover:text-[#1E2A45]
-                shadow-md transition-all duration-300 ease-in-out`}
-      >
-        <span class="text-lg">{item.icon}</span>
-        <span>{item.label}</span>
-      </a>
-    ))}
   </nav>
 
-  <!-- 🔸 Footer -->
-  <div class="p-4 border-t border-white/10 bg-[#1E2A45]/95 backdrop-blur-sm mt-auto">
+  <!-- 🔹 Untere Aktionen -->
+  <div class="p-4 border-t border-white/10 bg-[#1E2A45]/95 backdrop-blur-sm mt-auto space-y-3">
+    <!-- 💳 Mein Abo -->
+    <a
+      href={managementItem.link}
+      class="block w-full text-center rounded-2xl py-3 font-medium
+             bg-[#f6f8fb] text-[#1E2A45]
+             hover:bg-gradient-to-r hover:from-[#C0C0C0] hover:to-[#E0E0E0] hover:text-[#1E2A45]
+             transition-all duration-300 shadow-md"
+    >
+      {managementItem.icon} {managementItem.label}
+    </a>
+
+    <!-- 💬 Nachricht an das Team -->
     <a
       href="mailto:support@smartpages.online"
       class="block w-full text-center rounded-2xl py-3 font-medium
-             bg-[#4F6EF7] text-white
-             hover:bg-white hover:text-[#1E2A45]
+             bg-white text-[#1E2A45] border border-[#4F6EF7]
+             hover:bg-[#4F6EF7] hover:text-white
              transition-all duration-300 shadow-md"
     >
       {footerLabel}
