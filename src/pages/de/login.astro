@@ -216,4 +216,50 @@ const products = [
         );
 
         try {
-          const res = await fetch(API_URL, {
+                    const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          const result = await res.json();
+
+          if (result.ok) {
+            showPopup(
+              "✅ <strong>Magic Link gesendet!</strong><br><span class='text-sm opacity-80'>Bitte überprüfe dein Postfach.</span>",
+              "success",
+              true,
+              5000
+            );
+          } else {
+            showPopup(
+              "⚠️ <strong>Ein Fehler ist aufgetreten.</strong><br><span class='text-sm opacity-80'>Bitte überprüfe deine Eingaben.</span>",
+              "error"
+            );
+          }
+        } catch (err) {
+          showPopup(
+            "❌ <strong>Netzwerkfehler:</strong><br><span class='text-sm opacity-80'>" +
+              (err.message || "Verbindung fehlgeschlagen.") +
+              "</span>",
+            "error"
+          );
+        } finally {
+          submitBtn.disabled = false;
+          // Popup nach 5 Sekunden automatisch schließen
+          setTimeout(() => closePopup(), 5000);
+        }
+      });
+
+      // 🧩 Checkbox-Logik für Geschäftskonten
+      document.addEventListener("DOMContentLoaded", () => {
+        const cb = document.getElementById("is_business");
+        const field = document.getElementById("company_field");
+        cb?.addEventListener("change", () =>
+          field.classList.toggle("hidden", !cb.checked)
+        );
+      });
+    </script>
+  </body>
+</html>
+
