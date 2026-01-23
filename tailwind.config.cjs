@@ -16,11 +16,15 @@ module.exports = {
         'smart-pages': '#F9E293',      // SmartPages (Gelb, Kreativität)
         'smart-domains': '#C0A8F7',    // SmartDomains (Violett, Innovation)
         'smart-profile': '#A1D0F2',    // SmartProfile (Hellblau, Klarheit)
+        'smart-links': '#A8D5BA',      // SmartLinks (Salbei, Natürlichkeit)
+        'smart-billing': '#D9D9D9',    // SmartBilling (Silber, Neutralität)
 
         // 🌈 Akzentfarben (volle CI-Farben)
         'smart-full-pages': '#F2B623',    // SmartPages Akzent
         'smart-full-domains': '#6C3FD8',  // SmartDomains Akzent
         'smart-full-profile': '#2D83D0',  // SmartProfile Akzent
+        'smart-full-links': '#7EA685',    // SmartLinks Akzent (kräftiger Salbei)
+        'smart-full-billing': '#B0B0B0',  // SmartBilling Akzent (helles Silber)
 
         // ⚙️ Neutrale Töne & Feedbackfarben
         'smart-gray': '#E5E7EB',
