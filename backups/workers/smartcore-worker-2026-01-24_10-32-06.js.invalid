@@ -1,0 +1,339 @@
+--18b6d82999dd6b439eb46e66efd5b79f5dc52962fe379caf6a94e0a0c71a
+Content-Disposition: form-data; name="worker.js"
+
+/**
+ * 🚀 SmartCore Worker – v9.5.3
+ * ---------------------------------------------------------------
+ * ✅ Magic-Link Auth mit Mailer-Anbindung
+ * ✅ Session-Management via KV
+ * ✅ Proxy-Routing zu CUSTOMER, MAILER, BILLING
+ * ✅ Stabil mit Cloudflare Bindings
+ * ✅ Korrigiertes Routing für /api/customer/customer
+ */
+
+export default {
+  async fetch(req, env, ctx) {
+    const url = new URL(req.url);
+    const path = url.pathname;
+
+    // ---------- CORS / OPTIONS ----------
+    if (req.method === "OPTIONS")
+      return new Response(null, { status: 204, headers: cors(env) });
+
+    try {
+      // ============================================================
+      // 1️⃣ AUTH START – Magic-Link anfordern
+      // ============================================================
+      if (path === "/api/auth/start" && req.method === "POST") {
+        const body = await req.json().catch(() => ({}));
+        const email = body.email;
+        const lang = ["de", "en"].includes(body.lang) ? body.lang : "de";
+        if (!email)
+          return json({ ok: false, error: "missing_email" }, 400, env);
+
+        const token = crypto.randomUUID();
+        const verifyUrl = `https://desk.smartpages.online/redirect?token=${token}&lang=${lang}`;
+
+        // 🔐 Token speichern
+        await env.AUTH_DB.prepare(`
+          INSERT INTO magic_tokens (email, token, created_at, expires_at)
+          VALUES (?, ?, unixepoch(), unixepoch('now', '+5 minutes'))
+        `)
+          .bind(email, token)
+          .run();
+
+        // 📧 Interner Aufruf Mailer
+        const mailUrl = new URL("/api/send", req.url);
+        const mailReq = new Request(mailUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "magic_link",
+            email,
+            lang,
+            data: { token, verifyUrl, validMinutes: 5 },
+          }),
+        });
+
+        try {
+          const mailResponse = await env.MAILER.fetch(mailReq);
+          if (!mailResponse.ok) {
+            const text = await mailResponse.text();
+            console.error("[AuthStart] Mailer returned error:", text);
+            return json({ ok: false, error: "mailer_failed" }, 500, env);
+          }
+          console.log(`[AuthStart] Magic Link gesendet an ${email}`);
+          return json({ ok: true, message: "magic_link_sent" }, 200, env);
+        } catch (err) {
+          console.error("[AuthStart] Mailer call failed:", err);
+          return json({ ok: false, error: err.message }, 500, env);
+        }
+      }
+
+      // ============================================================
+      // 2️⃣ AUTH VERIFY – Token prüfen
+      // ============================================================
+      if (path === "/api/auth/verify" && req.method === "GET") {
+        const token = url.searchParams.get("token");
+        const lang = url.searchParams.get("lang") || "de";
+        if (!token)
+          return json({ ok: false, error: "missing_token" }, 400, env);
+
+        const magic = await env.AUTH_DB.prepare(`
+          SELECT email FROM magic_tokens
+          WHERE token = ? AND used_at IS NULL AND expires_at > unixepoch()
+        `)
+          .bind(token)
+          .first();
+
+        if (!magic)
+          return json({ ok: false, error: "invalid_or_expired_token" }, 401, env);
+
+        await env.STAGING.put(
+          token,
+          JSON.stringify({ email: magic.email, lang }),
+          { expirationTtl: 300 }
+        );
+
+        return json(
+          {
+            ok: true,
+            step: "verify_done",
+            redirect: `/api/auth/confirm?token=${token}`,
+          },
+          200,
+          env
+        );
+      }
+
+      // ============================================================
+      // 3️⃣ AUTH CONFIRM – Session erstellen + Cookie setzen
+      // ============================================================
+      if (path === "/api/auth/confirm" && req.method === "GET") {
+        const token = url.searchParams.get("token");
+        if (!token)
+          return json({ ok: false, error: "missing_token" }, 400, env);
+
+        const staging = await env.STAGING.get(token, { type: "json" });
+        if (!staging?.email)
+          return json({ ok: false, error: "staging_not_found" }, 401, env);
+
+        const sessionId = crypto.randomUUID();
+        const sessionData = {
+          email: staging.email,
+          lang: staging.lang || "de",
+          created: Date.now(),
+        };
+
+        await env.SESSION.put(sessionId, JSON.stringify(sessionData), {
+          expirationTtl: 43200,
+        });
+
+        await env.STAGING.delete(token);
+        await env.AUTH_DB.prepare(
+          `UPDATE magic_tokens SET used_at = unixepoch() WHERE token = ?`
+        )
+          .bind(token)
+          .run();
+
+        const cookieValue = [
+          `session=${sessionId}`,
+          "Path=/",
+          `Domain=${env.COOKIE_DOMAIN || ".smartpages.online"}`,
+          "Secure",
+          "HttpOnly",
+          "SameSite=Lax",
+          `Max-Age=${12 * 60 * 60}`,
+        ].join("; ");
+
+        const redirectLang = sessionData.lang === "en" ? "en" : "de";
+
+        console.log(`[AuthConfirm] Session erstellt für ${staging.email}`);
+
+        return new Response(
+          JSON.stringify({
+            ok: true,
+            step: "confirm_done",
+            redirect: `https://desk.smartpages.online/${redirectLang}/dashboard`,
+            redirect_delay: 1200,
+          }),
+          {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json",
+              "Set-Cookie": cookieValue,
+              ...cors(env),
+            },
+          }
+        );
+      }
+
+      // ============================================================
+      // 4️⃣ SESSION USERINFO
+      // ============================================================
+      if (path === "/api/session/userinfo" && req.method === "GET") {
+        const session = await getSession(req, env);
+        if (!session || !session.email) {
+          return json({ ok: false, user: null }, 200, env);
+        }
+
+        const user = await env.CUSTOMER.fetch(
+          new Request("https://internal/customer", {
+            method: "GET",
+            headers: { "x-session-email": session.email },
+          })
+        ).then((r) => r.json().catch(() => null));
+
+        if (!user?.ok) {
+          return json({ ok: false, user: null }, 200, env);
+        }
+
+        const trialDays = 7;
+        const trialEndDate =
+          user.data?.trial_end ||
+          new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000).toISOString();
+
+        return json(
+          {
+            ok: true,
+            user: {
+              email: session.email,
+              first_name: user.data?.first_name || "",
+              last_name: user.data?.last_name || "",
+              role: user.data?.role || "user",
+              plan: user.data?.plan || "trial",
+              language: user.data?.language || "de",
+              status: user.data?.status || "active",
+              active_products: user.data?.active_products || [],
+              trial_end: trialEndDate,
+            },
+          },
+          200,
+          env
+        );
+      }
+
+      // ============================================================
+      // 5️⃣ CUSTOMER PROXY – Interner Dienst (Service Binding)
+      // ============================================================
+      if (path.startsWith("/api/customer")) {
+        const session = await getSession(req, env);
+        if (!session?.email)
+          return json({ ok: false, error: "unauthorized" }, 401, env);
+
+        // 🔧 interne Route bestimmen
+        // "/api/customer/customer" → "/customer"
+        // "/api/customer/imprint" → "/imprint"
+        // "/api/customer/privacy" → "/privacy"
+        let internalPath = path.replace(/^\/api\/customer/, "");
+        if (internalPath === "" || internalPath === "/") {
+          internalPath = "/customer";
+        }
+
+        const targetUrl = new URL(internalPath, "https://internal");
+
+        const proxiedReq = new Request(targetUrl, {
+          method: req.method,
+          headers: {
+            "x-session-email": session.email,
+            "x-session-lang": session.lang || "de",
+            "content-type": "application/json",
+          },
+          body: req.method !== "GET" ? await req.text() : undefined,
+        });
+
+        try {
+          const proxiedRes = await env.CUSTOMER.fetch(proxiedReq);
+          const text = await proxiedRes.text();
+          return new Response(text, {
+            status: proxiedRes.status,
+            headers: {
+              "content-type": "application/json",
+              ...cors(env),
+            },
+          });
+        } catch (err) {
+          console.error("[Core→Customer] Proxy Error:", err);
+          return json({ ok: false, error: err.message }, 500, env);
+        }
+      }
+
+      // ============================================================
+      // 6️⃣ BILLING PROXY
+      // ============================================================
+      if (path.startsWith("/api/billing")) {
+        const session = await getSession(req, env);
+        if (!session?.email)
+          return json({ ok: false, error: "unauthorized" }, 401, env);
+
+        const proxyUrl = new URL(path.replace("/api", ""), req.url);
+        const proxiedReq = new Request(proxyUrl, {
+          method: req.method,
+          headers: {
+            "x-session-email": session.email,
+            "x-session-lang": session.lang || "de",
+            "Content-Type": "application/json",
+          },
+          body: req.method !== "GET" ? await req.text() : undefined,
+        });
+
+        const target = env.BILLING_TEST || env.BILLING;
+        const proxied = await target.fetch(proxiedReq);
+
+        return new Response(await proxied.text(), {
+          status: proxied.status,
+          headers: { "Content-Type": "application/json", ...cors(env) },
+        });
+      }
+
+      // ============================================================
+      // 7️⃣ HEALTH CHECK
+      // ============================================================
+      if (path === "/ping")
+        return json(
+          { ok: true, service: "smartcore", version: "9.5.3" },
+          200,
+          env
+        );
+
+      // ============================================================
+      // ❌ Fallback
+      // ============================================================
+      return json({ ok: false, error: "not_found" }, 404, env);
+    } catch (err) {
+      console.error("SmartCore Worker Error:", err);
+      return json({ ok: false, error: err.message }, 500, env);
+    }
+  },
+};
+
+// ============================================================
+// 🔧 Helper Functions
+// ============================================================
+function cors(env) {
+  return {
+    "Access-Control-Allow-Origin":
+      env.FE_ORIGIN || "https://desk.smartpages.online",
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+    "Access-Control-Allow-Headers":
+      "content-type, cookie, x-session-email, x-session-lang",
+  };
+}
+
+async function getSession(req, env) {
+  const cookie = req.headers.get("cookie") || "";
+  const match = cookie.match(/session=([^;]+)/);
+  if (!match) return null;
+  const session = await env.SESSION.get(match[1], { type: "json" });
+  return session || null;
+}
+
+function json(obj, status, env) {
+  return new Response(JSON.stringify(obj, null, 2), {
+    status,
+    headers: { "content-type": "application/json", ...cors(env) },
+  });
+}
+
+--18b6d82999dd6b439eb46e66efd5b79f5dc52962fe379caf6a94e0a0c71a--

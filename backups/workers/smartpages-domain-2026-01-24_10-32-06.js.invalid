@@ -1,0 +1,60 @@
+--2043966cf739643e23c451f91230604df5e3fe82649fe38372955bddbae5
+Content-Disposition: form-data; name="worker.js"
+
+/**
+ * SmartPages Domain Worker
+ * -----------------------------------------
+ * Routing-Worker für:
+ * - Basisprodukt: smartpages.online/u/slug
+ * - Mid-Price: slug.smartpages.online
+ * - Premium: eigene Domain (über D1)
+ */
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const host = url.hostname;
+    let targetPath = null;
+
+    // 1️⃣ Basisprodukt (smartpages.online/u/slug)
+    if (host === "smartpages.online" || host === "www.smartpages.online") {
+      // System-Host → Seiten direkt ausliefern
+      return fetch(`https://pages.smartpages.online${url.pathname}`, request);
+    }
+
+    // 2️⃣ Mid-Price (slug.smartpages.online)
+    if (host.endsWith(".smartpages.online")) {
+      const slug = host.split(".")[0];
+      const subPath = url.pathname === "/" ? "" : url.pathname;
+      targetPath = `/u/${slug}${subPath}`;
+      return fetch(`https://pages.smartpages.online${targetPath}`, request);
+    }
+
+    // 3️⃣ Premium-Domain → D1 prüfen
+    try {
+      const result = await env.DB.prepare(
+        "SELECT target_path FROM domains WHERE domain_name = ?"
+      ).bind(host).first();
+
+      if (result && result.target_path) {
+        // Domain gefunden → Weiterleitung auf Seiten-Host
+        const fullTarget = `https://pages.smartpages.online${result.target_path}`;
+        return Response.redirect(fullTarget, 302);
+      }
+
+      // Keine Domain gefunden → 404
+      return new Response("Domain nicht verbunden oder inaktiv.", {
+        status: 404,
+        headers: { "Content-Type": "text/plain" },
+      });
+    } catch (err) {
+      console.error("D1 Lookup Error:", err);
+      return new Response("Interner Fehler beim Domain Lookup.", {
+        status: 500,
+        headers: { "Content-Type": "text/plain" },
+      });
+    }
+  },
+};
+
+--2043966cf739643e23c451f91230604df5e3fe82649fe38372955bddbae5--
