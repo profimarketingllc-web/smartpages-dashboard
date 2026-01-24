@@ -1,42 +1,32 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
-import ProductPill from "@/components/core/ProductPill.astro";
-import Card from "@/components/ui/Card.astro";
-
-const subscription = {
-  plan: "Trial",
-  status: "Active",
-  trial_end: "2026-01-31",
-  next_billing: "—",
-};
+import ProductPill from "~/components/core/ProductPill.astro";
+import DashboardCardWide from "~/components/ui/DashboardCardWide.astro";
 ---
 
-<PageLayout title="My Plan – SmartPages" sidebar={true} header={true}>
-  <ProductPill label="My Plan" color="#C0C0C0" />
+<PageLayout title="Mein Abo – SmartPages" sidebar={true} header={true}>
+  <!-- 🔹 Pill -->
+  <ProductPill label="Mein Abo" color="blue" />
 
-  <div class="max-w-4xl mx-auto mt-10 space-y-8">
-    <Card title="Subscription Overview">
-      <div class="space-y-3 text-gray-700 text-sm">
-        <p><strong>Plan:</strong> {subscription.plan}</p>
-        <p><strong>Status:</strong> {subscription.status}</p>
-        <p><strong>Active until:</strong> {subscription.trial_end}</p>
-        <p><strong>Next billing:</strong> {subscription.next_billing}</p>
-      </div>
-    </Card>
+  <!-- 🔹 Content -->
+  <section class="mt-10">
+    <DashboardCardWide title="Abo & Abrechnung">
+      <div class="flex flex-col items-center justify-center text-center py-10 gap-4">
+        <p class="text-gray-600 max-w-xl">
+          Hier verwaltest du künftig dein SmartPages-Abo, Rechnungen und Upgrades.
+        </p>
 
-    <Card title="Manage Subscription">
-      <div class="flex flex-col sm:flex-row gap-4 mt-4">
-        <button
-          class="flex-1 bg-gradient-to-r from-gray-100 to-gray-300 text-gray-800 py-2.5 rounded-xl font-medium shadow-md hover:from-gray-200 hover:to-gray-400 transition-all duration-300"
-        >
-          Cancel Subscription
-        </button>
-        <button
-          class="flex-1 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 py-2.5 rounded-xl font-medium shadow-md hover:from-gray-400 hover:to-gray-500 transition-all duration-300"
-        >
-          Upgrade Plan
-        </button>
+        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                     bg-blue-50 text-blue-600 text-sm font-medium">
+          💳 Billing-Funktionen in Vorbereitung
+        </span>
+
+        <!-- Platzhalter für SOLID / Stripe -->
+        <div class="mt-6 w-full max-w-md rounded-xl border border-dashed
+                    border-gray-300 bg-gray-50 py-8 text-gray-400 text-sm">
+          SOLID Billing Card (Stripe) – coming soon
+        </div>
       </div>
-    </Card>
-  </div>
+    </DashboardCardWide>
+  </section>
 </PageLayout>
