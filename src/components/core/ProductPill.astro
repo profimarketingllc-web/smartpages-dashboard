@@ -1,7 +1,7 @@
 ---
 const { color = "blue", label = "SmartProduct", glow = true } = Astro.props;
 
-// Farbdefinitionen (Tailwind-Klassen dynamisch)
+// 🎨 Zentrale Farbdefinitionen
 const colorMap = {
   blue: {
     from: "from-[#4E6BFF]",
@@ -18,18 +18,34 @@ const colorMap = {
     to: "to-[#A076FF]",
     shadow: "shadow-[0_4px_12px_rgba(139,92,255,0.25)]",
   },
+
+  // 🌿 SmartLinks – Salbei
+  sage: {
+    from: "from-[#9EC5AB]",
+    to: "to-[#7FAF96]",
+    shadow: "shadow-[0_4px_12px_rgba(158,197,171,0.35)]",
+  },
+
+  // 💳 Billing – Silber
+  silver: {
+    from: "from-[#E5E7EB]",
+    to: "to-[#C7CBD1]",
+    shadow: "shadow-[0_4px_12px_rgba(180,180,180,0.35)]",
+  },
 };
+
+// 🛡️ FAIL-SAFE: immer gültige Farbe
+const safeColor = colorMap[color] ?? colorMap.blue;
 ---
 
 <div class="max-w-4xl mx-auto mt-6 text-center">
   <span
     class={`inline-block px-6 py-2 rounded-full text-white text-lg font-semibold
-      bg-gradient-to-r ${colorMap[color].from} ${colorMap[color].to}
-      ${glow ? colorMap[color].shadow : ""}
+      bg-gradient-to-r ${safeColor.from} ${safeColor.to}
+      ${glow ? safeColor.shadow : ""}
       transition-all duration-300 hover:scale-105
     `}
   >
     {label}
   </span>
 </div>
-
