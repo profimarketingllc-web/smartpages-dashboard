@@ -1,6 +1,5 @@
 ---
 const currentLang = Astro.url.pathname.startsWith("/en") ? "en" : "de";
-
 const footerLabel =
   currentLang === "en" ? "💬 Message the Team" : "💬 Nachricht an das Team";
 
@@ -11,58 +10,57 @@ const navItems = [
   { label: "SmartDomain", icon: "🌐", path: "smartdomain" },
   { label: "SmartLinks", icon: "🔗", path: "smartlinks" },
 ];
+
+const managementItem = {
+  label: currentLang === "en" ? "My Plan" : "Mein Abo",
+  icon: "💳",
+  link: `/${currentLang}/billing`,
+};
 ---
 
 <aside
   id="sidebar"
-  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl
-         flex flex-col justify-between transition-transform duration-300
-         ease-in-out -translate-x-full md:translate-x-0 z-50"
+  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl flex flex-col justify-between transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 z-50"
 >
-  <!-- Header -->
+  <!-- 🔸 Header -->
   <div class="h-20 flex items-center justify-center border-b border-white/10 shrink-0">
-    <h2 class="text-xl font-extrabold tracking-wide text-[#F5B400]">
+    <h2 class="text-xl font-extrabold tracking-wide text-[#F5B400] drop-shadow-[0_0_6px_rgba(245,180,0,0.3)]">
       SmartCenter
     </h2>
   </div>
 
-  <!-- Navigation -->
-  <nav class="flex-1 mt-10 space-y-4 overflow-y-auto px-3 pb-4 scrollbar-hide">
+  <!-- 🔸 Navigation -->
+  <nav class="flex-1 mt-10 space-y-4 overflow-y-auto scrollbar-hide px-3 pb-4">
     {navItems.map((item) => {
-      let gradient = "";
-
+      let gradientClasses = "";
       switch (item.label) {
         case "SmartProfile":
-          gradient =
-            "hover:from-[#2D83D0] hover:to-[#5FA8E8] hover:shadow-[0_0_20px_rgba(45,131,208,0.4)]";
+          gradientClasses =
+            "hover:from-[#4E6BFF] hover:to-[#657AFF] hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]";
           break;
-
         case "SmartPage":
-          gradient =
+          gradientClasses =
             "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]";
           break;
-
         case "SmartDomain":
-          gradient =
+          gradientClasses =
             "hover:from-[#8B5CFF] hover:to-[#A076FF] hover:shadow-[0_0_20px_rgba(139,92,255,0.4)]";
           break;
-
         case "SmartLinks":
-          gradient =
+          gradientClasses =
             "hover:from-[#A8D5BA] hover:to-[#91C7A0] hover:shadow-[0_0_20px_rgba(168,213,186,0.4)]";
           break;
-
         default:
-          gradient = "";
+          gradientClasses = "hover:from-[#F5B400] hover:to-[#E47E00]";
       }
 
       return (
         <a
           href={`/${currentLang}/${item.path}`}
           class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-                  bg-[#F6F8FB] text-[#1E2A45]
-                  hover:bg-gradient-to-r hover:text-white
-                  transition-all duration-300 shadow-md ${gradient}`}
+                  bg-[#f6f8fb] text-[#1E2A45]
+                  hover:bg-gradient-to-r hover:text-white shadow-md transition-all duration-300 ease-in-out
+                  ${gradientClasses}`}
         >
           <span class="text-lg">{item.icon}</span>
           <span>{item.label}</span>
@@ -71,41 +69,43 @@ const navItems = [
     })}
   </nav>
 
-  <!-- Unterer Bereich -->
-  <div class="p-4 border-t border-white/25 bg-[#1E2A45]/95 space-y-3">
-    <!-- Mein Abo -->
-    <a
-      href={`/${currentLang}/billing`}
-      class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-             bg-[#F6F8FB] text-[#1E2A45]
-             hover:bg-gradient-to-r hover:from-[#4E6BFF] hover:to-[#657AFF]
-             hover:text-white transition-all duration-300 shadow-md"
-    >
-      <span class="text-lg">💳</span>
-      <span>{currentLang === "en" ? "My Plan" : "Mein Abo"}</span>
-    </a>
+  <!-- 🔹 Deutlichere Trennlinie -->
+  <hr class="border-t-2 border-white/20 mx-4 my-4" />
 
-    <!-- Nachricht an Team -->
+  <!-- 🔹 Untere Aktionen -->
+  <div class="p-4 bg-[#1E2A45]/95 backdrop-blur-sm mt-auto space-y-3">
+    <!-- 💳 Mein Abo (links bündig wie Navigation) -->
     <a
-      href="mailto:support@smartpages.online"
+      href={managementItem.link}
       class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-             bg-white text-[#1E2A45] border border-[#4E6BFF]
-             hover:bg-[#4E6BFF] hover:text-white
+             bg-[#f6f8fb] text-[#1E2A45]
+             hover:bg-gradient-to-r hover:from-[#C0C0C0] hover:to-[#E0E0E0]
              transition-all duration-300 shadow-md"
     >
-      <span class="text-lg">💬</span>
-      <span>{footerLabel}</span>
+      <span class="text-lg">{managementItem.icon}</span>
+      <span>{managementItem.label}</span>
+    </a>
+
+    <!-- 💬 Nachricht an das Team -->
+    <a
+      href="mailto:support@smartpages.online"
+      class="block w-full text-center rounded-2xl py-3 font-medium
+             bg-white text-[#1E2A45] border border-[#4F6EF7]
+             hover:bg-[#4F6EF7] hover:text-white
+             transition-all duration-300 shadow-md"
+    >
+      {footerLabel}
     </a>
   </div>
 </aside>
 
-<!-- Overlay (Mobile) -->
+<!-- 🔹 Overlay (Mobile) -->
 <div
   id="overlay"
-  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden"
+  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"
 ></div>
 
-<!-- Toggle Button -->
+<!-- 🔹 Toggle Button -->
 <button
   id="openSidebar"
   class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50"
@@ -119,9 +119,9 @@ const navItems = [
   const openBtn = document.getElementById("openSidebar");
 
   const toggleSidebar = () => {
-    const hidden = sidebar.classList.contains("-translate-x-full");
-    sidebar.classList.toggle("-translate-x-full", !hidden);
-    overlay.classList.toggle("hidden", !hidden);
+    const isHidden = sidebar.classList.contains("-translate-x-full");
+    sidebar.classList.toggle("-translate-x-full", !isHidden);
+    overlay.classList.toggle("hidden", !isHidden);
   };
 
   openBtn?.addEventListener("click", toggleSidebar);
@@ -135,5 +135,21 @@ const navItems = [
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  #sidebar {
+    height: 100vh;
+  }
+
+  #sidebar::after {
+    content: "";
+    display: block;
+    height: 0.5rem;
+    background: linear-gradient(to top, #1E2A45, transparent);
   }
 </style>
