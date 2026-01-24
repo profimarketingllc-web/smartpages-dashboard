@@ -1,155 +1,29 @@
----
-const currentLang = Astro.url.pathname.startsWith("/en") ? "en" : "de";
-const footerLabel =
-  currentLang === "en" ? "💬 Message the Team" : "💬 Nachricht an das Team";
+<!-- 🔹 Untere Aktionen -->
+<div class="p-4 bg-[#1E2A45]/95 backdrop-blur-sm mt-auto space-y-4">
 
-const navItems = [
-  { label: "Cockpit", icon: "🛫", path: "dashboard" },
-  { label: "SmartProfile", icon: "👤", path: "smartprofile" },
-  { label: "SmartPage", icon: "📄", path: "smartpage" },
-  { label: "SmartDomain", icon: "🌐", path: "smartdomain" },
-  { label: "SmartLinks", icon: "🔗", path: "smartlinks" },
-];
+  <!-- 🔸 Deutlichere Trennlinie -->
+  <div class="h-px bg-white/30 mx-2"></div>
 
-const managementItem = {
-  label: currentLang === "en" ? "My Plan" : "Mein Abo",
-  icon: "💳",
-  link: `/${currentLang}/billing`,
-};
----
+  <!-- 💳 Mein Abo (einheitliches Blau, linksbündig) -->
+  <a
+    href={managementItem.link}
+    class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
+           bg-[#4F6EF7] text-white
+           hover:bg-[#3E5CE0]
+           transition-all duration-300 shadow-md"
+  >
+    <span class="text-lg">{managementItem.icon}</span>
+    <span>{managementItem.label}</span>
+  </a>
 
-<aside
-  id="sidebar"
-  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl flex flex-col justify-between transition-transform duration-300 ease-in-out -translate-x-full md:translate-x-0 z-50"
->
-  <!-- 🔸 Header -->
-  <div class="h-20 flex items-center justify-center border-b border-white/10 shrink-0">
-    <h2 class="text-xl font-extrabold tracking-wide text-[#F5B400] drop-shadow-[0_0_6px_rgba(245,180,0,0.3)]">
-      SmartCenter
-    </h2>
-  </div>
-
-  <!-- 🔸 Navigation -->
-  <nav class="flex-1 mt-10 space-y-4 overflow-y-auto scrollbar-hide px-3 pb-4">
-    {navItems.map((item) => {
-      let gradientClasses = "";
-      switch (item.label) {
-        case "SmartProfile":
-          gradientClasses =
-            "hover:from-[#4E6BFF] hover:to-[#657AFF] hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]";
-          break;
-        case "SmartPage":
-          gradientClasses =
-            "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]";
-          break;
-        case "SmartDomain":
-          gradientClasses =
-            "hover:from-[#8B5CFF] hover:to-[#A076FF] hover:shadow-[0_0_20px_rgba(139,92,255,0.4)]";
-          break;
-        case "SmartLinks":
-          gradientClasses =
-            "hover:from-[#A8D5BA] hover:to-[#91C7A0] hover:shadow-[0_0_20px_rgba(168,213,186,0.4)]";
-          break;
-        default:
-          gradientClasses = "hover:from-[#F5B400] hover:to-[#E47E00]";
-      }
-
-      return (
-        <a
-          href={`/${currentLang}/${item.path}`}
-          class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-                  bg-[#f6f8fb] text-[#1E2A45]
-                  hover:bg-gradient-to-r hover:text-white shadow-md transition-all duration-300 ease-in-out
-                  ${gradientClasses}`}
-        >
-          <span class="text-lg">{item.icon}</span>
-          <span>{item.label}</span>
-        </a>
-      );
-    })}
-  </nav>
-
-  <!-- 🔹 Deutlichere Trennlinie -->
-  <hr class="border-t-2 border-white/20 mx-4 my-4" />
-
-  <!-- 🔹 Untere Aktionen -->
-  <div class="p-4 bg-[#1E2A45]/95 backdrop-blur-sm mt-auto space-y-3">
-    <!-- 💳 Mein Abo (links bündig wie Navigation) -->
-    <a
-      href={managementItem.link}
-      class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-             bg-[#f6f8fb] text-[#1E2A45]
-             hover:bg-gradient-to-r hover:from-[#C0C0C0] hover:to-[#E0E0E0]
-             transition-all duration-300 shadow-md"
-    >
-      <span class="text-lg">{managementItem.icon}</span>
-      <span>{managementItem.label}</span>
-    </a>
-
-    <!-- 💬 Nachricht an das Team -->
-    <a
-      href="mailto:support@smartpages.online"
-      class="block w-full text-center rounded-2xl py-3 font-medium
-             bg-white text-[#1E2A45] border border-[#4F6EF7]
-             hover:bg-[#4F6EF7] hover:text-white
-             transition-all duration-300 shadow-md"
-    >
-      {footerLabel}
-    </a>
-  </div>
-</aside>
-
-<!-- 🔹 Overlay (Mobile) -->
-<div
-  id="overlay"
-  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"
-></div>
-
-<!-- 🔹 Toggle Button -->
-<button
-  id="openSidebar"
-  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50"
->
-  ☰
-</button>
-
-<script>
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-  const openBtn = document.getElementById("openSidebar");
-
-  const toggleSidebar = () => {
-    const isHidden = sidebar.classList.contains("-translate-x-full");
-    sidebar.classList.toggle("-translate-x-full", !isHidden);
-    overlay.classList.toggle("hidden", !isHidden);
-  };
-
-  openBtn?.addEventListener("click", toggleSidebar);
-  overlay?.addEventListener("click", toggleSidebar);
-</script>
-
-<style>
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  html,
-  body {
-    height: 100%;
-  }
-
-  #sidebar {
-    height: 100vh;
-  }
-
-  #sidebar::after {
-    content: "";
-    display: block;
-    height: 0.5rem;
-    background: linear-gradient(to top, #1E2A45, transparent);
-  }
-</style>
+  <!-- 💬 Nachricht an das Team (weiß → blau beim Hover) -->
+  <a
+    href="mailto:support@smartpages.online"
+    class="block w-full text-center rounded-2xl py-3 font-medium
+           bg-white text-[#1E2A45] border border-[#4F6EF7]
+           hover:bg-[#4F6EF7] hover:text-white
+           transition-all duration-300 shadow-md"
+  >
+    {footerLabel}
+  </a>
+</div>

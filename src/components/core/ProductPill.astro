@@ -1,52 +1,29 @@
----
-const { color = "blue", label = "SmartProduct", glow = true } = Astro.props;
+<!-- 🔹 Untere Aktionen -->
+<div class="p-4 bg-[#1E2A45]/95 backdrop-blur-sm mt-auto space-y-4">
 
-// 🎨 Farbdefinitionen (Tailwind-Klassen)
-const colorMap = {
-  blue: {
-    from: "from-[#4E6BFF]",
-    to: "to-[#657AFF]",
-    shadow: "shadow-[0_4px_12px_rgba(78,107,255,0.25)]",
-  },
-  orange: {
-    from: "from-[#F5B400]",
-    to: "to-[#E47E00]",
-    shadow: "shadow-[0_4px_12px_rgba(245,180,0,0.25)]",
-  },
-  purple: {
-    from: "from-[#8B5CFF]",
-    to: "to-[#A076FF]",
-    shadow: "shadow-[0_4px_12px_rgba(139,92,255,0.25)]",
-  },
+  <!-- 🔸 Deutlichere Trennlinie -->
+  <div class="h-px bg-white/30 mx-2"></div>
 
-  // 🌿 Optional: SmartLinks (Salbei)
-  sage: {
-    from: "from-[#9DB8A0]",
-    to: "to-[#7FAF8B]",
-    shadow: "shadow-[0_4px_12px_rgba(127,175,139,0.25)]",
-  },
-
-  // 🩶 Optional: Billing (Silber)
-  silver: {
-    from: "from-[#C9CCD3]",
-    to: "to-[#AEB3BD]",
-    shadow: "shadow-[0_4px_12px_rgba(174,179,189,0.25)]",
-  },
-};
-
-// 🛡️ Fallback-Schutz (WICHTIG!)
-const safeColor = colorMap[color] ? color : "blue";
-const activeColor = colorMap[safeColor];
----
-
-<div class="max-w-4xl mx-auto mt-6 text-center">
-  <span
-    class={`inline-block px-6 py-2 rounded-full text-white text-lg font-semibold
-      bg-gradient-to-r ${activeColor.from} ${activeColor.to}
-      ${glow ? activeColor.shadow : ""}
-      transition-all duration-300 hover:scale-105
-    `}
+  <!-- 💳 Mein Abo (einheitliches Blau, linksbündig) -->
+  <a
+    href={managementItem.link}
+    class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
+           bg-[#4F6EF7] text-white
+           hover:bg-[#3E5CE0]
+           transition-all duration-300 shadow-md"
   >
-    {label}
-  </span>
+    <span class="text-lg">{managementItem.icon}</span>
+    <span>{managementItem.label}</span>
+  </a>
+
+  <!-- 💬 Nachricht an das Team (weiß → blau beim Hover) -->
+  <a
+    href="mailto:support@smartpages.online"
+    class="block w-full text-center rounded-2xl py-3 font-medium
+           bg-white text-[#1E2A45] border border-[#4F6EF7]
+           hover:bg-[#4F6EF7] hover:text-white
+           transition-all duration-300 shadow-md"
+  >
+    {footerLabel}
+  </a>
 </div>
