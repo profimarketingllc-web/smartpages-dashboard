@@ -1,0 +1,129 @@
+--3b0d0445ffdbf3f21f1e027d640e519ac8d90faf133e38add206fa8011ef
+Content-Disposition: form-data; name="worker.js"
+
+/**
+ * SmartBilling Worker v1.1
+ * -----------------------------------------
+ * Cloudflare-kompatibel (CORE_DB Binding).
+ * Keine Node-Abhängigkeiten, kein Stripe SDK.
+ * Nutzt D1 über env.CORE_DB.
+ */
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+
+    // Health Check
+    if (url.pathname === "/" || url.pathname === "/health") {
+      return jsonResponse({ ok: true, service: "smart-billing", version: "1.1" });
+    }
+
+    if (request.method !== "POST") {
+      return new Response("Method Not Allowed", { status: 405 });
+    }
+
+    try {
+      const body = await request.text();
+      const data = JSON.parse(body);
+      const eventType = data.type || "manual_event";
+
+      switch (eventType) {
+        case "invoice.created":
+          await handleInvoiceCreated(data.data?.object, env);
+          break;
+        case "invoice.payment_succeeded":
+          await handlePaymentSucceeded(data.data?.object, env);
+          break;
+        case "customer.subscription.created":
+        case "customer.subscription.updated":
+          await handleSubscriptionUpdated(data.data?.object, env);
+          break;
+        case "customer.subscription.deleted":
+          await handleSubscriptionCanceled(data.data?.object, env);
+          break;
+        default:
+          console.log("Unhandled event:", eventType);
+      }
+
+      return jsonResponse({ ok: true, event: eventType });
+    } catch (err) {
+      console.error("Billing Worker Error:", err);
+      return jsonResponse({ ok: false, error: err.message }, 500);
+    }
+  },
+};
+
+/* ---------------- Helper Functions ---------------- */
+
+async function handleInvoiceCreated(invoice, env) {
+  if (!invoice) return;
+  await env.CORE_DB.prepare(`
+    INSERT INTO invoices (id, user_id, subscription_id, provider, amount_total, currency, status, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+  `).bind(
+    invoice.id,
+    invoice.customer || "unknown",
+    invoice.subscription || null,
+    "stripe",
+    invoice.amount_due || 0,
+    invoice.currency || "eur",
+    invoice.status || "draft"
+  ).run();
+}
+
+async function handlePaymentSucceeded(invoice, env) {
+  if (!invoice) return;
+  await env.CORE_DB.prepare(`
+    INSERT INTO payments (id, user_id, subscription_id, amount_total, currency, status, created_at)
+    VALUES (?, ?, ?, ?, ?, 'succeeded', CURRENT_TIMESTAMP)
+  `).bind(
+    invoice.payment_intent || `pi_${Date.now()}`,
+    invoice.customer || "unknown",
+    invoice.subscription || null,
+    invoice.amount_paid || 0,
+    invoice.currency || "eur"
+  ).run();
+
+  await env.CORE_DB.prepare(`UPDATE users SET status='active' WHERE user_id=?`)
+    .bind(invoice.customer || "unknown")
+    .run();
+}
+
+async function handleSubscriptionUpdated(sub, env) {
+  if (!sub) return;
+  await env.CORE_DB.prepare(`
+    INSERT INTO subscriptions (id, user_id, price_id, status, current_period_start, current_period_end)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE 
+      SET status=excluded.status, current_period_end=excluded.current_period_end
+  `).bind(
+    sub.id || `sub_${Date.now()}`,
+    sub.customer || "unknown",
+    sub.items?.data?.[0]?.price?.id || "price_manual",
+    sub.status || "active",
+    sub.current_period_start || Date.now(),
+    sub.current_period_end || Date.now()
+  ).run();
+}
+
+async function handleSubscriptionCanceled(sub, env) {
+  if (!sub) return;
+  await env.CORE_DB.prepare(`UPDATE subscriptions SET status='canceled' WHERE id=?`)
+    .bind(sub.id || `sub_${Date.now()}`)
+    .run();
+
+  await env.CORE_DB.prepare(`UPDATE users SET status='expired' WHERE user_id=?`)
+    .bind(sub.customer || "unknown")
+    .run();
+}
+
+/* ---------------- Utility ---------------- */
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data, null, 2), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+--3b0d0445ffdbf3f21f1e027d640e519ac8d90faf133e38add206fa8011ef--

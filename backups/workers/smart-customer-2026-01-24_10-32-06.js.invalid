@@ -1,0 +1,260 @@
+--a4a1d79d9c32ec5913352557e3badc89ecb74575ecde4320ac2fcf158630
+Content-Disposition: form-data; name="worker.js"
+
+// ============================================================
+// 🌟 SmartPages CUSTOMER Worker – v5.4 (Legal Extended)
+// ============================================================
+// Endpunkte (Frontend-Matching):
+//   ✅ /customer        → Kundendaten abrufen (Card)
+//   ✅ /customeredit    → Kundendaten abrufen + speichern (Modal)
+//   ✅ /imprint         → Impressum abrufen (Card)
+//   ✅ /imprintedit     → Impressum speichern + optional R2 speichern
+//   ✅ /privacy         → Datenschutz abrufen (Card)
+//   ✅ /privacyedit     → Datenschutz speichern + optional R2 speichern
+// ============================================================
+
+export default {
+  async fetch(req, env, ctx) {
+    const url = new URL(req.url);
+    const { pathname } = url;
+
+    try {
+      // ============================================================
+      // 0️⃣ Health Check
+      // ============================================================
+      if (pathname === "/ping") {
+        return jsonResponse({
+          ok: true,
+          service: "customer-worker",
+          version: "5.4 (Legal Extended)",
+        });
+      }
+
+      // ============================================================
+      // 1️⃣ Authentifizierung
+      // ============================================================
+      const userEmail = req.headers.get("x-session-email");
+      if (!userEmail) {
+        console.warn("[CustomerWorker] ❌ Unauthorized access attempt");
+        return jsonResponse({ ok: false, error: "unauthorized" }, 401);
+      }
+
+      // ============================================================
+      // 2️⃣ CUSTOMER – Kundendaten abrufen (Card)
+      // ============================================================
+      if (pathname === "/customer" && req.method === "GET") {
+        const user = await env.CUSTOMER_DB.prepare(
+          `SELECT email, first_name, last_name, company_name, plan, status,
+                  language, is_business, customer_no, trial_end, last_login, created_at
+           FROM users WHERE email = ? LIMIT 1`
+        ).bind(userEmail).first();
+
+        if (!user)
+          return jsonResponse({ ok: false, message: "user_not_found" }, 404);
+
+        ctx.waitUntil(
+          env.CUSTOMER_DB.prepare(
+            `UPDATE users SET last_login = datetime('now') WHERE email = ?`
+          ).bind(userEmail).run()
+        );
+
+        return jsonResponse({ ok: true, data: user });
+      }
+
+      // ============================================================
+      // 3️⃣ CUSTOMEREDIT – Kundendaten abrufen (Modal)
+      // ============================================================
+      if (pathname === "/customeredit" && req.method === "GET") {
+        const user = await env.CUSTOMER_DB.prepare(
+          `SELECT email, first_name, last_name, company_name, plan, status,
+                  language, is_business, customer_no
+           FROM users WHERE email = ? LIMIT 1`
+        ).bind(userEmail).first();
+
+        if (!user)
+          return jsonResponse({ ok: false, message: "user_not_found" }, 404);
+
+        return jsonResponse({ ok: true, data: user });
+      }
+
+      // ============================================================
+      // 4️⃣ CUSTOMEREDIT – Kundendaten speichern (Modal)
+      // ============================================================
+      if (pathname === "/customeredit" && req.method === "POST") {
+        const body = await req.json().catch(() => null);
+        if (!body) return jsonResponse({ ok: false, error: "invalid_json" }, 400);
+
+        const { first_name, last_name, company_name, is_business } = body;
+
+        await env.CUSTOMER_DB.prepare(
+          `UPDATE users
+           SET first_name = ?, last_name = ?, company_name = ?, is_business = ?
+           WHERE email = ?`
+        ).bind(first_name, last_name, company_name, is_business ? 1 : 0, userEmail).run();
+
+        console.log(`[CustomerWorker] ✅ Kundendaten aktualisiert für: ${userEmail}`);
+        return jsonResponse({ ok: true, message: "customer_updated" });
+      }
+
+      // ============================================================
+      // 5️⃣ IMPRINT – Daten abrufen (Card)
+      // ============================================================
+      if (pathname === "/imprint" && req.method === "GET") {
+        const imprint = await env.CUSTOMER_DB.prepare(
+          `SELECT * FROM legal_info WHERE email = ? LIMIT 1`
+        ).bind(userEmail).first();
+
+        if (!imprint)
+          return jsonResponse({ ok: true, data: null, message: "no_imprint_found" });
+
+        // Wenn Custom-Imprint aktiv → aus R2 abrufen
+        if (imprint.use_custom_imprint && imprint.customer_no) {
+          const res = await fetch(
+            `https://api.smartpages.online/api/legal/imprint/${imprint.customer_no}`,
+            { headers: { "x-session-email": userEmail } }
+          );
+          const html = await res.text();
+          imprint.custom_html = html;
+        }
+
+        return jsonResponse({ ok: true, data: imprint });
+      }
+
+      // ============================================================
+      // 6️⃣ IMPRINTEDIT – Daten speichern (Modal)
+      // ============================================================
+      if (pathname === "/imprintedit" && req.method === "POST") {
+        const data = await req.json().catch(() => null);
+        if (!data) return jsonResponse({ ok: false, error: "invalid_json" }, 400);
+
+        const customer = await env.CUSTOMER_DB.prepare(
+          `SELECT customer_no FROM users WHERE email = ? LIMIT 1`
+        ).bind(userEmail).first();
+        const customer_no = customer?.customer_no;
+        if (!customer_no)
+          return jsonResponse({ ok: false, error: "customer_no_missing" }, 400);
+
+        // Flag setzen (Template oder Custom)
+        const useCustom = data.use_custom_imprint ? 1 : 0;
+
+        await env.CUSTOMER_DB.prepare(
+          `INSERT INTO legal_info (
+            customer_no, email, use_custom_imprint, imprint_template, updated_at
+          ) VALUES (?, ?, ?, ?, datetime('now'))
+          ON CONFLICT(email)
+          DO UPDATE SET
+            use_custom_imprint = excluded.use_custom_imprint,
+            imprint_template = excluded.imprint_template,
+            updated_at = datetime('now');`
+        ).bind(customer_no, userEmail, useCustom, data.imprint_template || "").run();
+
+        // Falls Custom aktiviert → Text in R2 speichern über Core Worker
+        if (useCustom && data.custom_html) {
+          await fetch("https://api.smartpages.online/api/legal/imprint/save", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-session-email": userEmail,
+            },
+            body: JSON.stringify({
+              html: data.custom_html,
+              customer_no,
+            }),
+          });
+        }
+
+        console.log(`[CustomerWorker] 💾 Imprint gespeichert (${useCustom ? "custom" : "template"}) für ${userEmail}`);
+        return jsonResponse({ ok: true, message: "imprint_updated" });
+      }
+
+      // ============================================================
+      // 7️⃣ PRIVACY – Daten abrufen (Card)
+      // ============================================================
+      if (pathname === "/privacy" && req.method === "GET") {
+        const privacy = await env.CUSTOMER_DB.prepare(
+          `SELECT * FROM legal_info WHERE email = ? LIMIT 1`
+        ).bind(userEmail).first();
+
+        if (!privacy)
+          return jsonResponse({ ok: true, data: null, message: "no_privacy_found" });
+
+        if (privacy.use_custom_privacy && privacy.customer_no) {
+          const res = await fetch(
+            `https://api.smartpages.online/api/legal/privacy/${privacy.customer_no}`,
+            { headers: { "x-session-email": userEmail } }
+          );
+          const html = await res.text();
+          privacy.custom_html = html;
+        }
+
+        return jsonResponse({ ok: true, data: privacy });
+      }
+
+      // ============================================================
+      // 8️⃣ PRIVACYEDIT – Daten speichern (Modal)
+      // ============================================================
+      if (pathname === "/privacyedit" && req.method === "POST") {
+        const data = await req.json().catch(() => null);
+        if (!data) return jsonResponse({ ok: false, error: "invalid_json" }, 400);
+
+        const customer = await env.CUSTOMER_DB.prepare(
+          `SELECT customer_no FROM users WHERE email = ? LIMIT 1`
+        ).bind(userEmail).first();
+        const customer_no = customer?.customer_no;
+        if (!customer_no)
+          return jsonResponse({ ok: false, error: "customer_no_missing" }, 400);
+
+        const useCustom = data.use_custom_privacy ? 1 : 0;
+
+        await env.CUSTOMER_DB.prepare(
+          `INSERT INTO legal_info (
+            customer_no, email, use_custom_privacy, privacy_template, updated_at
+          ) VALUES (?, ?, ?, ?, datetime('now'))
+          ON CONFLICT(email)
+          DO UPDATE SET
+            use_custom_privacy = excluded.use_custom_privacy,
+            privacy_template = excluded.privacy_template,
+            updated_at = datetime('now');`
+        ).bind(customer_no, userEmail, useCustom, data.privacy_template || "").run();
+
+        if (useCustom && data.custom_html) {
+          await fetch("https://api.smartpages.online/api/legal/privacy/save", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-session-email": userEmail,
+            },
+            body: JSON.stringify({
+              html: data.custom_html,
+              customer_no,
+            }),
+          });
+        }
+
+        console.log(`[CustomerWorker] 💾 Privacy gespeichert (${useCustom ? "custom" : "template"}) für ${userEmail}`);
+        return jsonResponse({ ok: true, message: "privacy_updated" });
+      }
+
+      // ============================================================
+      // ❌ Fallback
+      // ============================================================
+      return jsonResponse({ ok: false, error: "not_found" }, 404);
+
+    } catch (err) {
+      console.error("[CustomerWorker] ❌ Fehler:", err);
+      return jsonResponse({ ok: false, error: err.message }, 500);
+    }
+  },
+};
+
+// ============================================================
+// 🔧 Helper Functions
+// ============================================================
+function jsonResponse(obj, status = 200) {
+  return new Response(JSON.stringify(obj, null, 2), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+--a4a1d79d9c32ec5913352557e3badc89ecb74575ecde4320ac2fcf158630--

@@ -1,0 +1,68 @@
+--8dd9d7c16c20e845311a5d11cd6340995c654302dda6b2801324b50efecf
+Content-Disposition: form-data; name="worker.js"
+
+export default {
+  async fetch(request, env, ctx) {
+    const url  = new URL(request.url);
+    const host = url.hostname;
+    const clip = url.pathname.replace(/^\//, "");
+
+    if (clip === "__debug") {
+      return new Response(JSON.stringify({ version: "w-cache-1" }), {
+        status: 200,
+        headers: { "content-type": "application/json" }
+      });
+    }
+
+    if (!clip || clip === "favicon.ico" || clip === "robots.txt") {
+      return new Response(null, { status: 204 });
+    }
+
+    // Edge-Cache
+    const cache    = caches.default;
+    const cacheKey = new Request(`https://cache.key/${host}/${clip}`);
+    const hit      = await cache.match(cacheKey);
+    if (hit) return hit;
+
+    // Resolver
+    const qs = new URLSearchParams({
+      op: "resolve",
+      host,
+      clip,
+      ua: request.headers.get("user-agent") || "",
+      ref: request.headers.get("referer") || ""
+    });
+    if (env.RESOLVER_SECRET) qs.set("sig", env.RESOLVER_SECRET);
+
+    try {
+      const res  = await fetch(`${env.RESOLVER_URL}?${qs.toString()}`, {
+        headers: { accept: "application/json" }
+      });
+      const ct   = (res.headers.get("content-type") || "").toLowerCase();
+      const text = await res.text();
+
+      if (ct.includes("application/json")) {
+        const data = JSON.parse(text);
+        if (data.longUrl) {
+          // Redirect inkl. Cache-Control gleich beim Erzeugen
+          const response = new Response(null, {
+            status: 302,
+            headers: {
+              Location: data.longUrl,
+              "Cache-Control": "max-age=1800"
+            }
+          });
+          ctx.waitUntil(cache.put(cacheKey, response.clone()));
+          return response;
+        }
+        return new Response(data.error || "not found", { status: 404 });
+      }
+
+      return new Response(`Upstream ${res.status} ${res.statusText}\n${text.slice(0,500)}`, { status: 502 });
+    } catch (err) {
+      return new Response(`resolver error: ${String(err).slice(0,200)}`, { status: 502 });
+    }
+  }
+}
+
+--8dd9d7c16c20e845311a5d11cd6340995c654302dda6b2801324b50efecf--
