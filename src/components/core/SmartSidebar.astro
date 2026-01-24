@@ -35,16 +35,20 @@ const managementItem = {
       let gradientClasses = "";
       switch (item.label) {
         case "SmartProfile":
-          gradientClasses = "hover:from-[#4E6BFF] hover:to-[#657AFF] hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]";
+          gradientClasses =
+            "hover:from-[#4E6BFF] hover:to-[#657AFF] hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]";
           break;
         case "SmartPage":
-          gradientClasses = "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]";
+          gradientClasses =
+            "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]";
           break;
         case "SmartDomain":
-          gradientClasses = "hover:from-[#8B5CFF] hover:to-[#A076FF] hover:shadow-[0_0_20px_rgba(139,92,255,0.4)]";
+          gradientClasses =
+            "hover:from-[#8B5CFF] hover:to-[#A076FF] hover:shadow-[0_0_20px_rgba(139,92,255,0.4)]";
           break;
         case "SmartLinks":
-          gradientClasses = "hover:from-[#A8D5BA] hover:to-[#91C7A0] hover:shadow-[0_0_20px_rgba(168,213,186,0.4)]";
+          gradientClasses =
+            "hover:from-[#A8D5BA] hover:to-[#91C7A0] hover:shadow-[0_0_20px_rgba(168,213,186,0.4)]";
           break;
         default:
           gradientClasses = "hover:from-[#F5B400] hover:to-[#E47E00]";
@@ -65,17 +69,21 @@ const managementItem = {
     })}
   </nav>
 
+  <!-- 🔹 Deutlichere Trennlinie -->
+  <hr class="border-t-2 border-white/20 mx-4 my-4" />
+
   <!-- 🔹 Untere Aktionen -->
-  <div class="p-4 border-t border-white/10 bg-[#1E2A45]/95 backdrop-blur-sm mt-auto space-y-3">
-    <!-- 💳 Mein Abo -->
+  <div class="p-4 bg-[#1E2A45]/95 backdrop-blur-sm mt-auto space-y-3">
+    <!-- 💳 Mein Abo (links bündig wie Navigation) -->
     <a
       href={managementItem.link}
-      class="block w-full text-center rounded-2xl py-3 font-medium
+      class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
              bg-[#f6f8fb] text-[#1E2A45]
-             hover:bg-gradient-to-r hover:from-[#C0C0C0] hover:to-[#E0E0E0] hover:text-[#1E2A45]
+             hover:bg-gradient-to-r hover:from-[#C0C0C0] hover:to-[#E0E0E0]
              transition-all duration-300 shadow-md"
     >
-      {managementItem.icon} {managementItem.label}
+      <span class="text-lg">{managementItem.icon}</span>
+      <span>{managementItem.label}</span>
     </a>
 
     <!-- 💬 Nachricht an das Team -->
@@ -92,10 +100,18 @@ const managementItem = {
 </aside>
 
 <!-- 🔹 Overlay (Mobile) -->
-<div id="overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"></div>
+<div
+  id="overlay"
+  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"
+></div>
 
 <!-- 🔹 Toggle Button -->
-<button id="openSidebar" class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50">☰</button>
+<button
+  id="openSidebar"
+  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50"
+>
+  ☰
+</button>
 
 <script>
   const sidebar = document.getElementById("sidebar");
@@ -113,12 +129,22 @@ const managementItem = {
 </script>
 
 <style>
-  .scrollbar-hide::-webkit-scrollbar { display: none; }
-  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 
-  html, body { height: 100%; }
+  html,
+  body {
+    height: 100%;
+  }
 
-  #sidebar { height: 100vh; }
+  #sidebar {
+    height: 100vh;
+  }
 
   #sidebar::after {
     content: "";
