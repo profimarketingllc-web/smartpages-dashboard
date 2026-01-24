@@ -1,36 +1,40 @@
 ---
 import { t } from "~/utils/i18n/i18n";
 
-// 🧠 Hole Daten aus Middleware (locals.user)
-const user = Astro.locals?.user || {};
+// 🧠 User aus Middleware (IMMER Objekt)
+const user = Astro.locals?.user ?? {};
 
-// Felder auslesen (mit API-kompatiblen Namen)
+// Safe Destructuring
 const {
-  language: lang = "de",
+  language = "de",
   first_name = "",
   company_name = "",
   is_business = 0,
   plan = "trial",
   trial_end = null,
   email = "",
-  status = "",
+  status = "guest",
 } = user;
 
-// 🔹 Standardwerte
+// 🔹 Defaults
 let type = "info";
 let messageKey = "neutralGreeting";
 let messageVars = "";
 
-// 🧮 Prüfe Status / Trial-Zeitraum
+// ❌ Kein eingeloggter User → nichts anzeigen
+if (status === "guest") {
+  messageKey = "neutralGreeting";
+}
+
+// 🧮 Trial-Logik nur wenn Datum vorhanden
 if (plan === "trial" && trial_end) {
-  const daysLeft = Math.ceil(
-    (new Date(trial_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  );
+  const diff = new Date(trial_end).getTime() - Date.now();
+  const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
   if (daysLeft <= 0) {
     type = "error";
     messageKey = "trialExpired";
-  } else if (daysLeft === 1) {
+  } else if (daysLeft <= 1) {
     type = "warning";
     messageKey = "trialEndingTomorrow";
   } else if (daysLeft <= 3) {
@@ -41,40 +45,34 @@ if (plan === "trial" && trial_end) {
   }
 }
 
-// 🏢 Business-Kunden
-if (is_business) {
+// 🏢 Business
+if (is_business && company_name) {
   messageKey = "businessGreeting";
-  messageVars = company_name || "";
+  messageVars = company_name;
 }
 
-// 🧍‍♂️ Private Kunden
+// 👤 Privat
 if (!is_business && first_name) {
   messageKey = "personalized";
   messageVars = first_name;
 }
 
-// 📩 Fallback auf E-Mail, wenn kein Name vorhanden
+// 📩 Fallback
 if (!messageVars && email) {
   messageVars = email.split("@")[0];
 }
 
-// 📬 Übersetzung abrufen
-const finalMessage = t(lang, messageKey, "messages", messageVars);
-
-// 🔍 Debug optional aktivieren
-// console.log("🧩 SystemMessage.locals.user:", user);
+const finalMessage = t(language, messageKey, "messages", messageVars);
 ---
 
-<div class="system-message-container relative flex flex-col justify-center">
+<div class="system-message-container relative flex justify-center">
   <div
-    class={`relative flex flex-col justify-center p-5 rounded-2xl shadow-lg border border-white/20 bg-gradient-to-br text-white transition-all duration-300
-      ${type === "info" ? "from-blue-500 to-blue-600" : ""}
-      ${type === "warning" ? "from-yellow-500 to-orange-600" : ""}
-      ${type === "error" ? "from-red-500 to-red-600" : ""}
+    class={`px-5 py-3 rounded-2xl shadow-lg text-white text-sm font-medium
+      ${type === "info" && "bg-blue-600"}
+      ${type === "warning" && "bg-yellow-500"}
+      ${type === "error" && "bg-red-600"}
     `}
   >
-    <p class="text-sm leading-relaxed text-white/90 text-center font-medium">
-      {finalMessage}
-    </p>
+    {finalMessage}
   </div>
 </div>
