@@ -1,30 +1,35 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 import ProductPill from "~/components/core/ProductPill.astro";
-import DashboardCardWide from "~/components/ui/DashboardCardWide.astro";
+import DashboardCardWide from "~/components/core/DashboardCardWide.astro";
 ---
 
-<PageLayout title="Mein Abo – SmartPages" sidebar={true} header={true}>
+<PageLayout title="My Plan – SmartPages" sidebar={true} header={true}>
   <!-- 🔹 Pill -->
-  <ProductPill label="Mein Abo" color="blue" />
+  <ProductPill label="My Plan" color="blue" />
 
   <!-- 🔹 Content -->
   <section class="mt-10">
-    <DashboardCardWide title="Abo & Abrechnung">
+    <DashboardCardWide title="Subscription & Billing">
       <div class="flex flex-col items-center justify-center text-center py-10 gap-4">
         <p class="text-gray-600 max-w-xl">
-          Hier verwaltest du künftig dein SmartPages-Abo, Rechnungen und Upgrades.
+          This is where you’ll soon manage your SmartPages subscription,
+          invoices, and upgrades.
         </p>
 
-        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full
-                     bg-blue-50 text-blue-600 text-sm font-medium">
-          💳 Billing-Funktionen in Vorbereitung
+        <span
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                 bg-blue-50 text-blue-600 text-sm font-medium"
+        >
+          💳 Billing features coming soon
         </span>
 
-        <!-- Platzhalter für SOLID / Stripe -->
-        <div class="mt-6 w-full max-w-md rounded-xl border border-dashed
-                    border-gray-300 bg-gray-50 py-8 text-gray-400 text-sm">
-          SOLID Billing Card (Stripe) – coming soon
+        <!-- Placeholder for SOLID / Stripe -->
+        <div
+          class="mt-6 w-full max-w-md rounded-xl border border-dashed
+                 border-gray-300 bg-gray-50 py-8 text-gray-400 text-sm"
+        >
+          SOLID billing card (Stripe) – coming soon
         </div>
       </div>
     </DashboardCardWide>
