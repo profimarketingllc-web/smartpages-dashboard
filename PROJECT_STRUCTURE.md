@@ -1,35 +1,31 @@
-# 🧩 SmartPages Dashboard – Projektstruktur (v2.0 Final)
+# 🧩 SmartPages Dashboard — PROJECT_STRUCTURE.md
 
-**Stand:** 21. January 2026  
-**Status:** MVP  
-**Deployment:** Cloudflare Pages + Wrangler  
-**Sprachen:** Deutsch 🇩🇪 & Englisch 🇬🇧  
-**Middleware:** aktiviert  
+**Projekt:** SmartPages  
+**Slug:** smart  
+**Stand:** 2026-01-24  
+**Status:** IST-Zustand (manuell verifiziert)
 
 ---
 
-## 📂 Root
+## 📂 Root-Struktur
 
 ```
 smartpages-dashboard/
-│
 ├── .astro/
 ├── .github/
 ├── .vscode/
-├── .wrangler/
-│
 ├── backups/
 ├── dist/
 ├── node_modules/
 ├── public/
-├── scripts/
-│   ├── predeploy.mjs
-│   ├── switch-wrangler.mjs
-│
+│   ├── favicon.ico
+│   └── SmartPages_icon_transparent.png
+├── scripts/          (leer)
 ├── src/
-│   ├── assets/
+│   ├── assets/       (leer)
 │   │
 │   ├── components/
+│   │   ├── admin/    (leer)
 │   │   ├── core/
 │   │   │   ├── DashboardCardWide.astro
 │   │   │   ├── ProductCard.astro
@@ -38,91 +34,97 @@ smartpages-dashboard/
 │   │   │   ├── ProductPill.astro
 │   │   │   ├── SmartHeader.astro
 │   │   │   ├── SmartSidebar.astro
-│   │   │   ├── SystemMessage.astro
-│   │   │   └── SmartPages_Core_README.md
-│   │   │
+│   │   │   └── SystemMessage.astro
+│   │   ├── editor/
+│   │   │   ├── ProductForm.astro
+│   │   │   └── ProductPreview.astro
 │   │   ├── solid/
 │   │   │   ├── CustomerCard.jsx
-│   │   │   ├── ImprintCard.jsx
-│   │   │   ├── PrivacyCard.jsx
 │   │   │   ├── EditCustomerModal.jsx
 │   │   │   ├── EditImprintModal.jsx
 │   │   │   ├── EditPrivacyModal.jsx
-│   │   │   └── ModalWrapper.jsx
-│   │   │
-│   │   ├── ui/
-│   │   │   ├── Button.astro
-│   │   │   ├── Card.astro
-│   │   │   ├── Input.astro
-│   │   │   └── Textarea.astro
+│   │   │   ├── ImprintCard.jsx
+│   │   │   ├── ModalWrapper.jsx
+│   │   │   └── PrivacyCard.jsx
+│   │   └── ui/
+│   │       ├── Button.astro
+│   │       ├── Card.astro
+│   │       ├── Input.astro
+│   │       └── Textarea.astro
 │   │
-│   │   └── admin/
-│
 │   ├── layouts/
 │   │   └── PageLayout.astro
-│
+│   │
 │   ├── middleware/
+│   │   ├── access.ts
 │   │   ├── index.ts
-│   │   ├── user-session.ts
-│   │   └── lang.ts
-│
+│   │   ├── lang.ts
+│   │   └── user-session.ts
+│   │
 │   ├── pages/
 │   │   ├── api/
 │   │   │   ├── auth/
-│   │   │   │   ├── confirm.ts
-│   │   │   │   ├── logout.ts
 │   │   │   │   ├── start.ts
-│   │   │   │   └── verify.ts
-│   │   │   ├── customer/
-│   │   │   │   ├── customer.ts
-│   │   │   │   ├── customeredit.ts
-│   │   │   │   ├── imprint.ts
-│   │   │   │   ├── imprintedit.ts
-│   │   │   │   ├── privacy.ts
-│   │   │   │   └── privacyedit.ts
-│   │   │   ├── paywall.ts
-│   │   │   └── status.ts
+│   │   │   │   ├── verify.ts
+│   │   │   │   ├── confirm.ts
+│   │   │   │   └── logout.ts
+│   │   │   ├── billing/
+│   │   │   │   └── checkout.ts
+│   │   │   └── customer/
+│   │   │       ├── customer.ts
+│   │   │       ├── customeredit.ts
+│   │   │       ├── imprint.ts
+│   │   │       ├── imprintedit.ts
+│   │   │       ├── privacy.ts
+│   │   │       └── privacyedit.ts
+│   │   │
+│   │   ├── checkout/
+│   │   │   ├── cancel.astro
+│   │   │   ├── success.astro
+│   │   │   └── upgrade.astro
 │   │   │
 │   │   ├── de/
+│   │   │   ├── billing.astro
 │   │   │   ├── dashboard.astro
 │   │   │   ├── login.astro
 │   │   │   ├── smartdomain.astro
+│   │   │   ├── smartlinks.astro
 │   │   │   ├── smartpage.astro
 │   │   │   └── smartprofile.astro
 │   │   │
 │   │   ├── en/
+│   │   │   ├── billing.astro
 │   │   │   ├── dashboard.astro
 │   │   │   ├── login.astro
 │   │   │   ├── smartdomain.astro
+│   │   │   ├── smartlinks.astro
 │   │   │   ├── smartpage.astro
 │   │   │   └── smartprofile.astro
-│   │
+│   │   │
 │   │   ├── 404.astro
 │   │   ├── debug-locals.astro
 │   │   ├── error.astro
+│   │   ├── forbidden.astro
 │   │   ├── index.astro
 │   │   └── redirect.astro
-│
+│   │
 │   ├── styles/
 │   │   └── global.css
 │   │
-│   └── utils/
-│       └── i18n/
-│           ├── de.ts
-│           ├── en.ts
-│           └── i18n.ts
+│   ├── utils/
+│   │   └── i18n/
+│   │       ├── de.ts
+│   │       ├── en.ts
+│   │       └── i18n.ts
+│   │
+│   └── middleware.ts
 │
 ├── .gitignore
 ├── astro.config.mjs
 ├── tailwind.config.cjs
 ├── tsconfig.json
-│
 ├── package.json
 ├── package-lock.json
-│
-├── wrangler.toml
-├── wrangler.pages.toml
-│
 ├── publish.ps1
 ├── README.md
 └── PROJECT_STRUCTURE.md
@@ -130,12 +132,8 @@ smartpages-dashboard/
 
 ---
 
-## 🧠 Änderungen gegenüber ursprünglicher Version
+## 🧭 Hinweise
 
-| Kategorie | Änderung | Beschreibung |
-|------------|-----------|---------------|
-| 📁 `src/pages/api/` | Korrekte Struktur mit `auth/`, `customer/`, `paywall.ts`, `status.ts` | Deckt reale API-Architektur ab |
-| 🧩 `debug-locals.astro` | Auf Root-Level in `/src/pages/` | Richtige Position |
-| ⚙️ `wrangler.pages.toml` | Im Root enthalten | Für Cloudflare Pages |
-| 🧱 `core/` | Erweiterte UI-Komponenten | Alle Product- und Smart-Komponenten enthalten |
-| 🔹 Version | v2.0 (Final) | MVP-Release-Struktur |
+- Diese Datei beschreibt **ausschließlich den verifizierten IST-Zustand**.
+- Keine Architekturentscheidungen, keine Zukunftsannahmen.
+- Dient als **Referenzbasis** für weitere technische Arbeit an SmartPages.
