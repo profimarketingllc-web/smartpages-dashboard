@@ -3,33 +3,41 @@ import Input from "@/components/ui/Input.astro";
 import Textarea from "@/components/ui/Textarea.astro";
 import Button from "@/components/ui/Button.astro";
 
-const { schema, data } = Astro.props;
+const { schema = [], data = {} } = Astro.props;
+
+// 🧠 Debug optional aktivieren
+// console.log("[ProductForm] Schema length:", schema?.length || 0);
 ---
 
 <form class="grid md:grid-cols-2 gap-4">
-  {schema.map((field) => (
-    field.type === "textarea" ? (
-      <div class={field.col === 2 ? "md:col-span-2" : ""}>
-        <Textarea
-          label={field.label}
-          value={data[field.key]}
-          placeholder={field.placeholder}
-          rows={field.rows || 3}
+  {Array.isArray(schema) && schema.length > 0 ? (
+    schema.map((field) => (
+      field.type === "textarea" ? (
+        <div class={field.col === 2 ? "md:col-span-2" : ""}>
+          <Textarea
+            label={field.label || ""}
+            value={data?.[field.key] || ""}
+            placeholder={field.placeholder || ""}
+            rows={field.rows || 3}
+          />
+        </div>
+      ) : (
+        <Input
+          label={field.label || ""}
+          value={data?.[field.key] || ""}
+          placeholder={field.placeholder || ""}
+          type={field.type || "text"}
+          required={field.required || false}
         />
-      </div>
-    ) : (
-      <Input
-        label={field.label}
-        value={data[field.key]}
-        placeholder={field.placeholder}
-        type={field.type}
-        required={field.required}
-      />
-    )
-  ))}
+      )
+    ))
+  ) : (
+    <p class="col-span-2 text-center text-gray-500 italic">
+      ⚠️ No form fields defined.
+    </p>
+  )}
 
   <div class="md:col-span-2 flex justify-end mt-4">
     <Button label="Änderungen speichern" variant="primary" type="submit" />
   </div>
 </form>
-

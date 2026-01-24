@@ -1,5 +1,8 @@
 ---
 const { slug = "preview", data = {} } = Astro.props;
+
+// ✅ Sicherstellen, dass "data" wirklich ein Objekt ist
+const safeData = typeof data === "object" && data !== null ? data : {};
 ---
 
 <div class="w-full grid md:grid-cols-2 gap-6 mt-4">
@@ -12,45 +15,45 @@ const { slug = "preview", data = {} } = Astro.props;
     >
       <div class="w-20 h-20 rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 mb-4"></div>
       <h3 class="font-bold text-lg mb-2 text-gray-800">
-        {data.title || data.name || "Your Name"}
+        {safeData.title || safeData.name || "Your Name"}
       </h3>
       <p class="text-gray-500 text-sm leading-relaxed mb-4">
-        {data.bio ||
-          data.subtitle ||
+        {safeData.bio ||
+          safeData.subtitle ||
           "Short description or tagline goes here."}
       </p>
 
       <div class="flex flex-col gap-2 w-full">
-        {(data.link_1 || data.cta_label) && (
+        {(safeData.link_1 || safeData.cta_label) && (
           <a
-            href={data.link_1 || data.cta_url || "#"}
+            href={safeData.link_1 || safeData.cta_url || "#"}
             class="w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full text-sm font-medium shadow hover:scale-[1.02] transition-transform"
           >
-            {data.cta_label || "Primary Link"}
+            {safeData.cta_label || "Primary Link"}
           </a>
         )}
 
-        {data.link_2 && (
+        {safeData.link_2 && (
           <a
-            href={data.link_2}
+            href={safeData.link_2}
             class="w-full py-2 px-4 bg-gray-200 text-gray-800 rounded-full text-sm font-medium hover:bg-gray-300 transition"
           >
-            {data.link_2.replace(/^https?:\/\//, "")}
+            {safeData.link_2?.replace?.(/^https?:\/\//, "") || safeData.link_2}
           </a>
         )}
 
-        {data.link_3 && (
+        {safeData.link_3 && (
           <a
-            href={data.link_3}
+            href={safeData.link_3}
             class="w-full py-2 px-4 bg-gray-200 text-gray-800 rounded-full text-sm font-medium hover:bg-gray-300 transition"
           >
-            {data.link_3.replace(/^https?:\/\//, "")}
+            {safeData.link_3?.replace?.(/^https?:\/\//, "") || safeData.link_3}
           </a>
         )}
       </div>
     </div>
 
-    <!-- Phone Frame Indicator -->
+    <!-- 📱 Phone Frame Indicator -->
     <div
       class="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-1.5 bg-gray-300 rounded-full"
     ></div>
@@ -62,23 +65,22 @@ const { slug = "preview", data = {} } = Astro.props;
   >
     <div class="bg-white rounded-2xl shadow-inner p-5">
       <h2 class="font-bold text-xl text-gray-800 mb-2">
-        {data.title || "Landing Page Title"}
+        {safeData.title || "Landing Page Title"}
       </h2>
       <p class="text-gray-500 mb-4">
-        {data.subtitle ||
-          data.bio ||
+        {safeData.subtitle ||
+          safeData.bio ||
           "A short paragraph explaining your service, product, or offer."}
       </p>
 
-      {(data.cta_label || data.link_1) && (
+      {(safeData.cta_label || safeData.link_1) && (
         <a
-          href={data.cta_url || data.link_1 || "#"}
+          href={safeData.cta_url || safeData.link_1 || "#"}
           class="inline-block px-5 py-2 rounded-full text-white font-semibold bg-gradient-to-r from-indigo-500 to-blue-500 shadow hover:scale-[1.03] transition"
         >
-          {data.cta_label || "Learn More"}
+          {safeData.cta_label || "Learn More"}
         </a>
       )}
     </div>
   </div>
 </div>
-
