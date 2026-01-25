@@ -62,7 +62,12 @@ const user = Astro.locals?.user || null;
       - Upsell-Texte kommen aus den Wrappern (/de/dashboard.astro, /en/dashboard.astro)
     -->
     <section class="mt-4 md:mt-6">
-      <ProductGrid lang={lang} />
+     <ProductGrid
+       lang={lang}
+       variant="upsell"
+       products={Astro.props?.upsellProducts}
+     />
+
     </section>
 
     <!-- MODALS -->
