@@ -40,9 +40,9 @@ const dashboard = {
       plan: "Plan",
       activeUntil: "Aktiv bis",
       lastLogin: "Letzter Login",
+      company_name: "Firma",
       firstName: "Vorname",
       lastName: "Nachname",
-      company: "Firma",
       loadError: "Kundendaten konnten nicht geladen werden.",
     },
 
@@ -136,9 +136,9 @@ const dashboard = {
       plan: "Plan",
       activeUntil: "Active until",
       lastLogin: "Last login",
+      company_name: "Company",
       firstName: "First name",
       lastName: "Last name",
-      company: "Company",
       loadError: "Customer data could not be loaded.",
     },
 
