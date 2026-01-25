@@ -1,5 +1,6 @@
 ---
-import { redirect } from "astro/runtime/server";
+export const prerender = false;
 
-return redirect("/dashboard");
+// Einfacher Wrapper → leitet auf zentrale Seite
+return Astro.redirect("/dashboard");
 ---
