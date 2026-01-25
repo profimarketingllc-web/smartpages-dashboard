@@ -1,7 +1,11 @@
 // src/utils/i18n/dashboard.ts
 
 const dashboard = {
-  de: {
+   de: {
+    page: {
+      title: "SmartPages Dashboard",
+    },
+
     /* ---------------- SYSTEM & GLOBAL ---------------- */
     system: {
       saveButton: "Speichern",
@@ -18,7 +22,7 @@ const dashboard = {
     /* ---------------- SYSTEM MESSAGES (TOP BAR) ---------------- */
     messages: {
       neutralGreeting: "Willkommen bei SmartPages 👋",
-      personalized: (name: string) => `Willkommen zurück, ${name}!`,
+      personalized: (name: string) => `Willkommen zurück, ${name}! 👋`,
       businessGreeting: (company: string) =>
         `Willkommen zurück, ${company}!`,
       trialExpired: "Dein Testzeitraum ist abgelaufen.",
@@ -93,6 +97,10 @@ const dashboard = {
   /* ===================================================================== */
 
   en: {
+    page: {
+      title: "SmartPages Dashboard",
+    },
+
     /* ---------------- SYSTEM & GLOBAL ---------------- */
     system: {
       saveButton: "Save",
@@ -109,7 +117,7 @@ const dashboard = {
     /* ---------------- SYSTEM MESSAGES (TOP BAR) ---------------- */
     messages: {
       neutralGreeting: "Welcome to SmartPages 👋",
-      personalized: (name: string) => `Welcome back, ${name}!`,
+      personalized: (name: string) => `Welcome back, ${name}! 👋`,
       businessGreeting: (company: string) =>
         `Welcome back, ${company}!`,
       trialExpired: "Your trial has expired.",
