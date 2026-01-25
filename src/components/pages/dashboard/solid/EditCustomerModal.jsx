@@ -2,14 +2,6 @@ import { createSignal, onMount, onCleanup } from "solid-js";
 import ModalWrapper from "./ModalWrapper";
 import { t, useLang } from "~/utils/i18n/i18n";
 
-/**
- * 🧱 EditCustomerModal (SmartPages v5.9)
- * -------------------------------------------------------
- * ✅ Dashboard-spezifische i18n (page = "dashboard")
- * ✅ Lädt & speichert Kundendaten (GET + POST)
- * ✅ SSR-sicher
- */
-
 export default function EditCustomerModal(props) {
   const [showModal, setShowModal] = createSignal(false);
   const [formData, setFormData] = createSignal({
@@ -23,7 +15,7 @@ export default function EditCustomerModal(props) {
   const [error, setError] = createSignal("");
   const [success, setSuccess] = createSignal(false);
 
-  // 🌍 Sprache bestimmen
+  // 🌍 Sprache (SSR-sicher)
   const [lang, setLang] = createSignal(props.lang || useLang("de"));
 
   onMount(() => {
@@ -70,9 +62,7 @@ export default function EditCustomerModal(props) {
       setDataLoaded(true);
     } catch (err) {
       console.error("❌ Fehler beim Laden:", err);
-      setError(
-        t(lang(), "dashboard", "customer", "loadError")
-      );
+      setError(t(lang(), "loadError", "customer"));
     } finally {
       setLoading(false);
     }
@@ -110,9 +100,7 @@ export default function EditCustomerModal(props) {
       setTimeout(() => setShowModal(false), 800);
     } catch (err) {
       console.error("❌ Fehler beim Speichern:", err);
-      setError(
-        t(lang(), "dashboard", "system", "error")
-      );
+      setError(t(lang(), "error", "system"));
     } finally {
       setLoading(false);
     }
@@ -120,97 +108,86 @@ export default function EditCustomerModal(props) {
 
   const handleClose = () => setShowModal(false);
 
-  // 🧱 UI
   return (
     <ModalWrapper show={showModal()} onClose={handleClose} lang={lang()}>
       <h2 class="text-xl font-bold text-[#1E2A45] mb-4">
-        {t(lang(), "dashboard", "customer", "editTitle")}
+        {t(lang(), "editTitle", "customer")}
       </h2>
 
-      {/* ❌ Fehler */}
       {error() && (
         <p class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-2">
           {error()}
         </p>
       )}
 
-      {/* Formular */}
       <div class="space-y-4 mt-3">
-        {/* Firma */}
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            {t(lang(), "dashboard", "imprint", "company")}
+            {t(lang(), "company", "imprint")}
           </label>
           <input
             type="text"
             name="company_name"
             value={formData().company_name}
             onInput={handleInput}
-            placeholder={t(lang(), "dashboard", "imprint", "company")}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2"
           />
         </div>
 
-        {/* Vorname */}
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            {t(lang(), "dashboard", "customer", "firstName")} *
+            {t(lang(), "firstName", "customer")} *
           </label>
           <input
             type="text"
             name="firstName"
             value={formData().firstName}
             onInput={handleInput}
-            placeholder={t(lang(), "dashboard", "customer", "firstName")}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2"
           />
         </div>
 
-        {/* Nachname */}
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            {t(lang(), "dashboard", "customer", "lastName")} *
+            {t(lang(), "lastName", "customer")} *
           </label>
           <input
             type="text"
             name="lastName"
             value={formData().lastName}
             onInput={handleInput}
-            placeholder={t(lang(), "dashboard", "customer", "lastName")}
-            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2"
           />
         </div>
       </div>
 
-      {/* ✅ Erfolg */}
       {success() && (
         <p class="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg p-2 mt-3">
-          {t(lang(), "dashboard", "system", "success")}
+          {t(lang(), "success", "system")}
         </p>
       )}
 
-      {/* 🔘 Buttons */}
       <div class="mt-6 flex justify-end gap-3">
         <button
-          class="px-4 py-2 bg-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-300 transition"
+          class="px-4 py-2 bg-gray-200 rounded-lg"
           onClick={handleClose}
           disabled={loading()}
         >
-          {t(lang(), "dashboard", "system", "cancelButton")}
+          {t(lang(), "cancelButton", "system")}
         </button>
 
         <button
-          class={`px-5 py-2 rounded-lg text-sm font-medium shadow transition-transform duration-200 ${
+          class={`px-5 py-2 rounded-lg text-white ${
             loading() || !dataLoaded()
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:scale-105"
+              ? "bg-gray-400"
+              : "bg-gradient-to-r from-[#F5B400] to-[#E47E00]"
           }`}
           onClick={handleSave}
           disabled={loading() || !dataLoaded()}
         >
           {loading()
-            ? t(lang(), "dashboard", "system", "saving")
-            : t(lang(), "dashboard", "system", "saveButton")}
+            ? t(lang(), "saving", "system")
+            : t(lang(), "saveButton", "system")}
         </button>
       </div>
     </ModalWrapper>
