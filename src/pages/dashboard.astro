@@ -12,9 +12,9 @@ import EditCustomerModal from "~/components/pages/dashboard/solid/EditCustomerMo
 import EditImprintModal from "~/components/pages/dashboard/solid/EditImprintModal.jsx";
 import EditPrivacyModal from "~/components/pages/dashboard/solid/EditPrivacyModal.jsx";
 
-import { useLang, t } from "~/utils/i18n/i18n";
+import { t } from "~/utils/i18n/i18n";
 
-// ✅ Sprache kommt aus Middleware
+// 🌍 Sprache aus Middleware
 const lang = Astro.locals?.language || "de";
 
 // 🔐 SSR Session Check
@@ -24,6 +24,28 @@ if (!cookie.includes("session=")) {
 }
 
 const user = Astro.locals?.user || null;
+
+// 🟡 DASHBOARD UPSELL PRODUKTE (aus i18n)
+const upsellProducts = [
+  {
+    key: "smartprofile",
+    title: t(lang, "dashboard", "upsell", "smartprofile", "title"),
+    text: t(lang, "dashboard", "upsell", "smartprofile", "text"),
+    action: "/paywall?product=profile",
+  },
+  {
+    key: "smartpage",
+    title: t(lang, "dashboard", "upsell", "smartpage", "title"),
+    text: t(lang, "dashboard", "upsell", "smartpage", "text"),
+    action: "/paywall?product=page",
+  },
+  {
+    key: "smartdomain",
+    title: t(lang, "dashboard", "upsell", "smartdomain", "title"),
+    text: t(lang, "dashboard", "upsell", "smartdomain", "text"),
+    action: "/paywall?product=domain",
+  },
+];
 ---
 
 <PageLayout
@@ -32,7 +54,7 @@ const user = Astro.locals?.user || null;
   header={true}
   lang={lang}
 >
-  <main class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300">
+  <main class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20">
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
       <DashboardCardWide>
         <CustomerCard client:only="solid-js" lang={lang} />
@@ -51,8 +73,13 @@ const user = Astro.locals?.user || null;
       <PrivacyCard client:only="solid-js" lang={lang} />
     </DashboardCardWide>
 
+    {/* ✅ HIER DER ENTSCHEIDENDE PUNKT */}
     <section class="mt-4 md:mt-6">
-      <ProductGrid lang={lang} />
+      <ProductGrid
+        lang={lang}
+        products={upsellProducts}
+        variant="upsell"
+      />
     </section>
 
     <EditCustomerModal client:only="solid-js" lang={lang} />
@@ -60,37 +87,3 @@ const user = Astro.locals?.user || null;
     <EditPrivacyModal client:only="solid-js" lang={lang} />
   </main>
 </PageLayout>
-
-<script>
-  window.addEventListener("DOMContentLoaded", async () => {
-    if (window.__SESSION_CHECK_DONE__) return;
-    window.__SESSION_CHECK_DONE__ = true;
-
-    if (window.__SESSION_INFO__) {
-      window.dispatchEvent(
-        new CustomEvent("session-info-ready", { detail: window.__SESSION_INFO__ })
-      );
-      return;
-    }
-
-    try {
-      const res = await fetch(
-        "https://api.smartpages.online/api/session/userinfo",
-        { credentials: "include" }
-      );
-      const data = await res.json();
-
-      if (!data.ok || !data.user) {
-        window.location.href = `/${window.location.pathname.includes("/en/") ? "en" : "de"}/login`;
-        return;
-      }
-
-      window.__SESSION_INFO__ = data.user;
-      window.dispatchEvent(
-        new CustomEvent("session-info-ready", { detail: data.user })
-      );
-    } catch {
-      window.location.href = `/${window.location.pathname.includes("/en/") ? "en" : "de"}/login`;
-    }
-  });
-</script>
