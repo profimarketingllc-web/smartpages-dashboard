@@ -1,29 +1,32 @@
 ---
 export const prerender = false;
 
-import DashboardPage from "~/pages/dashboard/index.astro";
+import DashboardPage from "~/pages/dashboard.astro";
 import { t } from "~/utils/i18n/i18n";
 
 const lang = "de";
 
-// 🔐 optional: Session-Check kann hier bleiben oder zentral erfolgen
-
+/**
+ * Dashboard-Upsell-Produkte (DE)
+ * → Texte kommen aus dashboard.ts
+ * → Wrapper baut nur Daten, keine UI
+ */
 const upsellProducts = [
   {
     key: "smartprofile",
-    title: "SmartProfile",
+    title: t(lang, "dashboard", "upsell", "smartprofile", "title"),
     text: t(lang, "dashboard", "upsell", "smartprofile", "text"),
     action: "/paywall?product=profile",
   },
   {
     key: "smartpage",
-    title: "SmartPage",
+    title: t(lang, "dashboard", "upsell", "smartpage", "title"),
     text: t(lang, "dashboard", "upsell", "smartpage", "text"),
     action: "/paywall?product=page",
   },
   {
     key: "smartdomain",
-    title: "SmartDomain",
+    title: t(lang, "dashboard", "upsell", "smartdomain", "title"),
     text: t(lang, "dashboard", "upsell", "smartdomain", "text"),
     action: "/paywall?product=domain",
   },
