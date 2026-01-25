@@ -1,0 +1,95 @@
+---
+export const prerender = false;
+
+import PageLayout from "~/layouts/PageLayout.astro";
+import DashboardCardWide from "~/components/shared/DashboardCardWide.astro";
+import CustomerCard from "~/components/pages/dashboard/solid/CustomerCard.jsx";
+import ImprintCard from "~/components/pages/dashboard/solid/ImprintCard.jsx";
+import PrivacyCard from "~/components/pages/dashboard/solid/PrivacyCard.jsx";
+import ProductGrid from "~/components/shared/ProductGrid.astro";
+import SystemMessage from "~/components/pages/dashboard/astro/SystemMessage.astro";
+import EditCustomerModal from "~/components/pages/dashboard/solid/EditCustomerModal.jsx";
+import EditImprintModal from "~/components/pages/dashboard/solid/EditImprintModal.jsx";
+import EditPrivacyModal from "~/components/pages/dashboard/solid/EditPrivacyModal.jsx";
+
+import { useLang, t } from "~/utils/i18n/i18n";
+
+const lang = useLang();
+
+// 🔐 SSR Session Check
+const cookie = Astro.request.headers.get("cookie") || "";
+if (!cookie.includes("session=")) {
+  return Astro.redirect(`/${lang}/login`);
+}
+
+const user = Astro.locals?.user || null;
+---
+
+<PageLayout
+  title={t(lang, "dashboard", "page", "title")}
+  sidebar={true}
+  header={true}
+  lang={lang}
+>
+  <main class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300">
+    <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
+      <DashboardCardWide>
+        <CustomerCard client:only="solid-js" lang={lang} />
+      </DashboardCardWide>
+
+      <div class="system-message">
+        <SystemMessage lang={lang} user={user} />
+      </div>
+    </section>
+
+    <DashboardCardWide>
+      <ImprintCard client:only="solid-js" lang={lang} />
+    </DashboardCardWide>
+
+    <DashboardCardWide>
+      <PrivacyCard client:only="solid-js" lang={lang} />
+    </DashboardCardWide>
+
+    <section class="mt-4 md:mt-6">
+      <ProductGrid lang={lang} />
+    </section>
+
+    <EditCustomerModal client:only="solid-js" lang={lang} />
+    <EditImprintModal client:only="solid-js" lang={lang} />
+    <EditPrivacyModal client:only="solid-js" lang={lang} />
+  </main>
+</PageLayout>
+
+<script>
+  window.addEventListener("DOMContentLoaded", async () => {
+    if (window.__SESSION_CHECK_DONE__) return;
+    window.__SESSION_CHECK_DONE__ = true;
+
+    if (window.__SESSION_INFO__) {
+      window.dispatchEvent(
+        new CustomEvent("session-info-ready", { detail: window.__SESSION_INFO__ })
+      );
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        "https://api.smartpages.online/api/session/userinfo",
+        { credentials: "include" }
+      );
+      const data = await res.json();
+
+      if (!data.ok || !data.user) {
+        window.location.href = `/${window.location.pathname.includes("/en/") ? "en" : "de"}/login`;
+        return;
+      }
+
+      window.__SESSION_INFO__ = data.user;
+      window.dispatchEvent(
+        new CustomEvent("session-info-ready", { detail: data.user })
+      );
+    } catch {
+      window.location.href = `/${window.location.pathname.includes("/en/") ? "en" : "de"}/login`;
+    }
+  });
+</script>

@@ -1,0 +1,73 @@
+---
+import PageLayout from "~/layouts/PageLayout.astro";
+import ProductPill from "@/components/shared/ProductPill.astro";
+import Card from "@/components/ui/Card.astro";
+import ProductForm from "@/components/editor/ProductForm.astro";
+import ProductPreview from "@/components/editor/ProductPreview.astro";
+
+import { t, useLang } from "~/utils/i18n/i18n";
+
+// 🌍 Sprache automatisch aus URL
+const lang = useLang();
+
+// 🧩 Formularschema (i18n-angebunden)
+const schema = [
+  {
+    key: "name",
+    label: t(lang, "smartprofile", "form", "name"),
+    type: "text",
+  },
+  {
+    key: "bio",
+    label: t(lang, "smartprofile", "form", "bio"),
+    type: "textarea",
+    rows: 5,
+  },
+  {
+    key: "link_1",
+    label: t(lang, "smartprofile", "form", "link_1"),
+    type: "text",
+  },
+  {
+    key: "link_2",
+    label: t(lang, "smartprofile", "form", "link_2"),
+    type: "text",
+  },
+  {
+    key: "link_3",
+    label: t(lang, "smartprofile", "form", "link_3"),
+    type: "text",
+  },
+];
+
+// 🔧 Beispiel-Daten (später API)
+const profile = {
+  name: "Max Mustermann",
+  bio: "—",
+  link_1: "",
+  link_2: "",
+  link_3: "",
+  slug: "max-mustermann",
+};
+---
+
+<PageLayout
+  title={t(lang, "smartprofile", "page", "title")}
+  sidebar={true}
+  header={true}
+>
+  <ProductPill
+    label={t(lang, "smartprofile", "pill", "label")}
+    color="blue"
+  />
+
+  <div class="max-w-4xl mx-auto mt-10 space-y-8">
+    <Card title={t(lang, "smartprofile", "card", "edit")}>
+      <ProductForm schema={schema} data={profile} />
+    </Card>
+
+    <Card title={t(lang, "smartprofile", "card", "preview")}>
+      <ProductPreview slug={profile.slug} />
+    </Card>
+  </div>
+</PageLayout>
