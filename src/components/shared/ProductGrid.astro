@@ -1,31 +1,20 @@
-/**
- * ProductGrid.astro
- * ------------------------------------------------------------------------
- * ✓ Teaser-Texte fest integriert (für Login & öffentliche Seiten)
- * ✓ Upsell-Texte kommen ausschließlich über Props
- * ✓ Sprachlogik automatisch (de / en)
- * ✓ Build-sicher & SSR-kompatibel
- */
-
+---
 import ProductCard from "./ProductCard.astro";
 
 /* -------------------------------------------------------
- * Sprache erkennen (Fallback)
+ * Sprache erkennen
  * ----------------------------------------------------- */
-const currentPath = Astro.url.pathname.toLowerCase();
-const detectedLang = currentPath.includes("/en/") ? "en" : "de";
+const path = Astro.url.pathname.toLowerCase();
+const lang = path.includes("/en/") ? "en" : "de";
 
 /* -------------------------------------------------------
- * Props
+ * Props (ohne Destructuring!)
  * ----------------------------------------------------- */
-const {
-  products = null, // ← WICHTIG: Wenn gesetzt → Upsell aus Wrapper
-  lang = detectedLang,
-  compact = false,
-} = Astro.props;
+const productsProp = Astro.props.products;
+const compact = Astro.props.compact === true;
 
 /* -------------------------------------------------------
- * FESTE TEASER-TEXTE (Login / Public)
+ * TEASER-TEXTE (bleiben HIER wegen Login)
  * ----------------------------------------------------- */
 const teaserProducts = {
   de: [
@@ -90,19 +79,21 @@ const teaserProducts = {
 };
 
 /* -------------------------------------------------------
- * Finale Produktliste
+ * Finale Items – bewusst simpel
  * ----------------------------------------------------- */
-const items = products && Array.isArray(products)
-  ? products
-  : teaserProducts[lang] || teaserProducts.de;
+let items = teaserProducts[lang];
+
+if (Array.isArray(productsProp) && productsProp.length > 0) {
+  items = productsProp;
+}
 ---
 
 <section
-  class={`${
+  class={
     compact
       ? "w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch justify-items-center animate-fadeIn"
       : "max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-6 py-4 md:py-5 items-stretch justify-items-center animate-fadeIn"
-  }`}
+  }
 >
   {items.map((p) => (
     <div class="w-full flex justify-center">
@@ -136,12 +127,5 @@ const items = products && Array.isArray(products)
 
   section {
     align-items: stretch;
-  }
-
-  @media (max-width: 768px) {
-    section {
-      gap: 1rem;
-      padding: 0.75rem 1rem;
-    }
   }
 </style>
