@@ -1,7 +1,8 @@
 // src/utils/i18n/dashboard.ts
 
 const dashboard = {
-   de: {
+  /* ===================================================================== */
+  de: {
     page: {
       title: "SmartPages Dashboard",
     },
@@ -79,6 +80,7 @@ const dashboard = {
       editTitle: "Datenschutz bearbeiten",
       useOwnPrivacy: "Ich verwende eine eigene Datenschutzerklärung",
       customTextLabel: "Eigener Datenschutz-Text",
+
       privacy_contact: "Datenschutzkontakt",
       email: "E-Mail",
       phone: "Telefon",
@@ -96,7 +98,6 @@ const dashboard = {
   },
 
   /* ===================================================================== */
-
   en: {
     page: {
       title: "SmartPages Dashboard",
@@ -173,8 +174,9 @@ const dashboard = {
       title: "Privacy policy",
       button: "Edit privacy policy",
       editTitle: "Edit privacy policy",
-      useOwnPrivacy: "I use my own privacy policy"
-      customTextLabel: "My Privacy Policy"
+      useOwnPrivacy: "I use my own privacy policy",
+      customTextLabel: "My privacy policy text",
+
       privacy_contact: "Privacy contact",
       email: "Email",
       phone: "Phone",

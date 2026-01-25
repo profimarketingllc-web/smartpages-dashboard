@@ -2,13 +2,12 @@ import { createResource, createSignal, onMount, Show } from "solid-js";
 import { t, useLang } from "~/utils/i18n/i18n";
 
 /**
- * 🔒 PrivacyCard (SmartPages v6.0)
+ * 🔐 PrivacyCard (SmartPages v6.0)
  * -------------------------------------------------------
- * ✅ Layout identisch zur ImprintCard
- * ✅ Graue Toggle-Box + Beschriftung
- * ✅ Custom-Text Bereich korrekt benannt
- * ✅ Modal-Button rechts oben
- * ✅ Seitenbasierte i18n (dashboard / privacy)
+ * ✅ Design 1:1 wie ImprintCard
+ * ✅ Einheitlicher Toggle + Custom-Text Flow
+ * ✅ Dashboard-i18n (dashboard / privacy)
+ * ✅ Modal-Button integriert
  */
 
 export default function PrivacyCard(props) {
@@ -25,7 +24,7 @@ export default function PrivacyCard(props) {
     }
   });
 
-  // 🔗 Datenschutz-Daten laden
+  // 🔗 Daten laden
   const fetchPrivacy = async () => {
     try {
       const res = await fetch("/api/customer/privacy", {
@@ -49,7 +48,7 @@ export default function PrivacyCard(props) {
         country: p.country || "—",
       };
     } catch (err) {
-      console.error("❌ Fehler beim Laden der Datenschutzerklärung:", err);
+      console.error("❌ Fehler beim Laden der Privacy-Daten:", err);
       return {};
     }
   };
@@ -81,7 +80,7 @@ export default function PrivacyCard(props) {
           ? active
             ? t(lang(), "dashboard", "privacy", "customEnabled")
             : t(lang(), "dashboard", "privacy", "customDisabled")
-          : t(lang(), "dashboard", "privacy", "updateError")
+          : t(lang(), "dashboard", "privacy", "saveError")
       );
 
       if (json.ok) {
@@ -92,7 +91,7 @@ export default function PrivacyCard(props) {
     }
   };
 
-  // 💾 Custom Text speichern
+  // 💾 Custom speichern
   const handleSave = async () => {
     if (!customText().trim()) {
       setMessage(t(lang(), "dashboard", "privacy", "emptyText"));
@@ -141,38 +140,37 @@ export default function PrivacyCard(props) {
         </button>
       </div>
 
-      {/* 🔘 Toggle Box */}
-      <div class="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 mb-5">
+      {/* 🔘 Toggle */}
+      <div class="mb-4 p-4 rounded-xl border bg-gray-50 flex items-center gap-3">
         <input
           type="checkbox"
           checked={useCustom()}
           onChange={handleToggle}
+          class="h-4 w-4"
         />
-        <span class="font-medium text-gray-800">
+        <span class="font-medium">
           {t(lang(), "dashboard", "privacy", "useOwnPrivacy")}
         </span>
       </div>
 
-      {/* ✏️ Eigener Text */}
+      {/* ✍️ Custom Text */}
       <Show when={useCustom()}>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">
+        <div>
+          <label class="block font-medium mb-2">
             {t(lang(), "dashboard", "privacy", "customTextLabel")}
           </label>
+
           <textarea
-            class="w-full h-44 border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
+            class="w-full h-44 border rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
             value={customText()}
             onInput={(e) => setCustomText(e.currentTarget.value)}
           />
+
           <div class="flex justify-end mt-3">
             <button
               disabled={saving()}
               onClick={handleSave}
-              class={`px-5 py-2 rounded-lg text-sm font-medium shadow transition ${
-                saving()
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:scale-105"
-              }`}
+              class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2 rounded-xl shadow hover:scale-105 transition-transform"
             >
               {saving()
                 ? t(lang(), "dashboard", "system", "saving")
@@ -182,23 +180,23 @@ export default function PrivacyCard(props) {
         </div>
       </Show>
 
-      {/* 📄 Standard-Daten */}
+      {/* 📋 Standard View */}
       <Show when={!useCustom()}>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4 border border-gray-200 rounded-xl p-5">
-          {Object.entries(data()).map(([k, v]) => (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 border rounded-xl p-4">
+          {Object.entries(data()).map(([key, value]) => (
             <div>
-              <span class="font-medium text-gray-800">
-                {t(lang(), "dashboard", "privacy", k)}
+              <span class="font-semibold">
+                {t(lang(), "dashboard", "privacy", key)}
               </span>
-              <p class="text-gray-600">{display(v)}</p>
+              <p>{display(value)}</p>
             </div>
           ))}
         </div>
       </Show>
 
-      {/* 🟡 Status */}
+      {/* 💬 Status */}
       <Show when={message()}>
-        <p class="mt-4 text-sm text-gray-600">{message()}</p>
+        <p class="mt-3 text-sm text-gray-600">{message()}</p>
       </Show>
     </div>
   );
