@@ -1,37 +1,34 @@
 ---
 /**
- * ProductGrid.astro
- * -------------------------------------------------------
- * ✅ Teaser-Texte bleiben hier (Login / Landing)
- * ✅ Upsell-Texte kommen über Props (Dashboard)
- * ✅ Keine i18n-Abhängigkeit
- * ✅ Astro-Compiler-safe
+ * ProductGrid.astro – stabile Version
+ * -----------------------------------
+ * ✔ Teaser-Texte bleiben hier
+ * ✔ Upsell kommt IMMER über Props
+ * ✔ Kein null / undefined mehr
+ * ✔ Astro-Compiler-sicher
  */
 
 import ProductCard from "./ProductCard.astro";
 
-// URL & Sprache
-const currentPath = Astro.url.pathname.toLowerCase();
-const detectedLang = currentPath.includes("/en") ? "en" : "de";
+// URL-basierte Sprach-Erkennung (nur Fallback)
+const pathname = Astro.url.pathname.toLowerCase();
+const detectedLang = pathname.includes("/en/") ? "en" : "de";
 
 // Props
 const {
-  products = null,          // 👈 wird vom Dashboard übergeben (Upsell)
-  variant = "teaser",       // teaser | upsell
+  products = [],        // ❗ WICHTIG: niemals null
+  variant = "teaser",   // teaser | upsell
   lang = detectedLang,
   compact = false,
 } = Astro.props;
 
-/* -------------------------------------------------------
- * TEASER-TEXTE (bleiben hier, bis Login getrennt ist)
- * ----------------------------------------------------- */
+// ---------------- TEASER TEXTE (bleiben hier!) ----------------
 const teaserProducts = {
   de: [
     {
       title: "SmartProfile",
       label: "Bald verfügbar",
-      text:
-        "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
+      text: "Erstelle Dein professionelles Profil mit nur wenigen Klicks – perfekt für Freelancer, Coaches und Unternehmer.",
       gradient: "from-[#4E6BFF] to-[#657AFF]",
       glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
       action: null,
@@ -39,8 +36,7 @@ const teaserProducts = {
     {
       title: "SmartPage",
       label: "Bald verfügbar",
-      text:
-        "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
+      text: "Erstelle beeindruckende, konversionsoptimierte Seiten in Minuten – einfach, schnell und professionell.",
       gradient: "from-[#F5B400] to-[#E47E00]",
       glow: "hover:shadow-[0_0_30px_#F5B40080]",
       action: null,
@@ -48,8 +44,7 @@ const teaserProducts = {
     {
       title: "SmartDomain",
       label: "Bald verfügbar",
-      text:
-        "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
+      text: "Sichere Dir Deine eigene Domain direkt in SmartPages – professionell, einfach und DSGVO-konform.",
       gradient: "from-[#8B5CFF] to-[#A076FF]",
       glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
       action: null,
@@ -59,8 +54,7 @@ const teaserProducts = {
     {
       title: "SmartProfile",
       label: "Coming soon",
-      text:
-        "Create your professional profile in just a few clicks – ideal for freelancers, coaches, and entrepreneurs.",
+      text: "Create your professional profile in just a few clicks – ideal for freelancers, coaches, and entrepreneurs.",
       gradient: "from-[#4E6BFF] to-[#657AFF]",
       glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
       action: null,
@@ -68,8 +62,7 @@ const teaserProducts = {
     {
       title: "SmartPage",
       label: "Coming soon",
-      text:
-        "Build stunning, conversion-optimized pages in minutes – simple, fast, and professional.",
+      text: "Build stunning, conversion-optimized pages in minutes – simple, fast, and professional.",
       gradient: "from-[#F5B400] to-[#E47E00]",
       glow: "hover:shadow-[0_0_30px_#F5B40080]",
       action: null,
@@ -77,8 +70,7 @@ const teaserProducts = {
     {
       title: "SmartDomain",
       label: "Coming soon",
-      text:
-        "Secure your own domain directly within SmartPages – professional, easy, and GDPR-compliant.",
+      text: "Secure your own domain directly within SmartPages – professional, easy, and GDPR-compliant.",
       gradient: "from-[#8B5CFF] to-[#A076FF]",
       glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
       action: null,
@@ -86,30 +78,23 @@ const teaserProducts = {
   ],
 };
 
-// Finale Items bestimmen
+// ---------------- PRODUKTE AUSWÄHLEN ----------------
 const items =
-  variant === "upsell" && Array.isArray(products)
-    ? products
-    : teaserProducts[lang] || teaserProducts.de;
+  variant === "upsell"
+    ? products                 // 🔐 kommt IMMER vom Wrapper
+    : teaserProducts[lang] ?? teaserProducts.de;
 ---
 
 <section
   class={`${
     compact
-      ? "w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch justify-items-center animate-fadeIn"
-      : "max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-6 py-4 md:py-5 items-stretch justify-items-center animate-fadeIn"
-  }`}
+      ? "w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch"
+      : "max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-6 py-4 md:py-5 items-stretch"
+  } animate-fadeIn`}
 >
   {items.map((p) => (
     <div class="w-full flex justify-center">
-      <ProductCard
-        title={p.title}
-        label={p.label}
-        text={p.text}
-        gradient={p.gradient}
-        glow={p.glow}
-        action={p.action}
-      />
+      <ProductCard {...p} />
     </div>
   ))}
 </section>
@@ -118,7 +103,7 @@ const items =
   @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateY(15px);
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
@@ -127,6 +112,6 @@ const items =
   }
 
   .animate-fadeIn {
-    animation: fadeIn 0.6s ease-out both;
+    animation: fadeIn 0.5s ease-out both;
   }
 </style>
