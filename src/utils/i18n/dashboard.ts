@@ -77,7 +77,8 @@ const dashboard = {
       title: "Datenschutzerklärung",
       button: "Datenschutz bearbeiten",
       editTitle: "Datenschutz bearbeiten",
-
+      useOwnPrivacy: "Ich verwende eine eigene Datenschutzerklärung",
+      customTextLabel: "Eigener Datenschutz-Text",
       privacy_contact: "Datenschutzkontakt",
       email: "E-Mail",
       phone: "Telefon",
@@ -172,7 +173,8 @@ const dashboard = {
       title: "Privacy policy",
       button: "Edit privacy policy",
       editTitle: "Edit privacy policy",
-
+      useOwnPrivacy: "I use my own privacy policy"
+      customTextLabel: "My Privacy Policy"
       privacy_contact: "Privacy contact",
       email: "Email",
       phone: "Phone",
@@ -184,8 +186,8 @@ const dashboard = {
       saveError: "Error saving privacy.",
       customEnabled: "Custom privacy enabled.",
       customDisabled: "Custom privacy disabled.",
-      emptyText: "Please enter a text.",
       unexpectedError: "Unexpected error.",
+      emptyText: "Please enter a text.",
     },
   },
 };
