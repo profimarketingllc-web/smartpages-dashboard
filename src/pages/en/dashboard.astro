@@ -2,15 +2,15 @@
 export const prerender = false;
 
 import PageLayout from "~/layouts/PageLayout.astro";
-import DashboardCardWide from "~/components/shared/DashboardCardWide.astro";
-import CustomerCard from "~/components/dashboard/solid/CustomerCard.jsx";
-import ImprintCard from "~/components/dashboard/solid/ImprintCard.jsx";
-import PrivacyCard from "~/components/dashboard/solid/PrivacyCard.jsx";
-import ProductGrid from "~/components/shared/ProductGrid.astro";
-import SystemMessage from "~/components/dashboard/astro/SystemMessage.astro";
-import EditCustomerModal from "~/components/dashboard/solid/EditCustomerModal.jsx";
-import EditImprintModal from "~/components/dashboard/solid/EditImprintModal.jsx";
-import EditPrivacyModal from "~/components/dashboard/solid/EditPrivacyModal.jsx";
+import DashboardCardWide from "~/components/pages/shared/DashboardCardWide.astro";
+import CustomerCard from "~/components/pages/dashboard/solid/CustomerCard.jsx";
+import ImprintCard from "~/components/pages/dashboard/solid/ImprintCard.jsx";
+import PrivacyCard from "~/components/pages/dashboard/solid/PrivacyCard.jsx";
+import ProductGrid from "~/components/pages/shared/ProductGrid.astro";
+import SystemMessage from "~/components/pages/dashboard/astro/SystemMessage.astro";
+import EditCustomerModal from "~/components/pages/dashboard/solid/EditCustomerModal.jsx";
+import EditImprintModal from "~/components/pages/dashboard/solid/EditImprintModal.jsx";
+import EditPrivacyModal from "~/components/pages/dashboard/solid/EditPrivacyModal.jsx";
 
 const cookie = Astro.request.headers.get("cookie") || "";
 if (!cookie.includes("session=")) {
