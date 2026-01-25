@@ -5,16 +5,16 @@ import { t, useLang } from "~/utils/i18n/i18n";
 /**
  * 🧾 EditImprintModal (SmartPages v5.9)
  * -------------------------------------------------------
- * ✅ Lädt & speichert Impressumsdaten
- * ✅ i18n je Section ("imprint", "system")
- * ✅ SSR-sicher
- * ✅ feuert refresh-imprint-data nach Save
+ * ✅ Einheitliches Design (wie vorher)
+ * ✅ Korrekte i18n-Nutzung (dashboard / imprint / system)
+ * ✅ Buttons + Footer wieder da
+ * ✅ Kein undefined mehr
  */
 
 export default function EditImprintModal(props) {
   const [showModal, setShowModal] = createSignal(false);
   const [loading, setLoading] = createSignal(false);
-  const [message, setMessage] = createSignal("");
+  const [message, setMessage] = createSignal(null);
 
   const [form, setForm] = createSignal({
     company: "",
@@ -30,7 +30,7 @@ export default function EditImprintModal(props) {
     registerNumber: "",
   });
 
-  // 🌍 Sprache (SSR-sicher)
+  // 🌍 Sprache
   const [lang, setLang] = createSignal(props.lang || useLang("de"));
 
   onMount(() => {
@@ -39,7 +39,7 @@ export default function EditImprintModal(props) {
     }
 
     const openHandler = () => {
-      setMessage("");
+      setMessage(null);
       setShowModal(true);
       loadImprint();
     };
@@ -50,22 +50,18 @@ export default function EditImprintModal(props) {
     );
   });
 
-  // 🗂️ Daten laden
+  // 🔄 Daten laden
   const loadImprint = async () => {
     try {
       setLoading(true);
       const res = await fetch("/api/customer/imprint", {
-        method: "GET",
         credentials: "include",
         headers: { Accept: "application/json" },
       });
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
+      if (!res.ok) throw new Error("load_failed");
       const result = await res.json();
-      if (!result?.ok || !result.data) {
-        throw new Error("invalid_imprint_data");
-      }
+      if (!result?.ok || !result.data) throw new Error("invalid_data");
 
       const i = result.data;
       setForm({
@@ -81,15 +77,14 @@ export default function EditImprintModal(props) {
         registerCourt: i.register_court || "",
         registerNumber: i.register_number || "",
       });
-    } catch (err) {
-      console.error("❌ Fehler beim Laden des Impressums:", err);
-      setMessage(t(lang(), "loadError", "imprint"));
+    } catch {
+      setMessage(t(lang(), "dashboard", "imprint", "loadError"));
     } finally {
       setLoading(false);
     }
   };
 
-  // ✏️ Feld aktualisieren
+  // ✏️ Feld ändern
   const updateField = (key, value) =>
     setForm({ ...form(), [key]: value });
 
@@ -97,12 +92,12 @@ export default function EditImprintModal(props) {
   const handleSave = async () => {
     try {
       setLoading(true);
-      setMessage("");
+      setMessage(null);
 
       const res = await fetch("/api/customer/imprintedit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           company_name: form().company,
           contact_name: form().contact,
@@ -118,17 +113,14 @@ export default function EditImprintModal(props) {
         }),
       });
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      if (!json.ok) throw new Error();
 
-      const result = await res.json();
-      if (!result?.ok) throw new Error("save_failed");
-
-      setMessage(t(lang(), "saveSuccess", "imprint"));
+      setMessage(t(lang(), "dashboard", "imprint", "saveSuccess"));
       window.dispatchEvent(new Event("refresh-imprint-data"));
       setTimeout(() => setShowModal(false), 800);
-    } catch (err) {
-      console.error("❌ Fehler beim Speichern:", err);
-      setMessage(t(lang(), "saveError", "imprint"));
+    } catch {
+      setMessage(t(lang(), "dashboard", "imprint", "saveError"));
     } finally {
       setLoading(false);
     }
@@ -136,20 +128,22 @@ export default function EditImprintModal(props) {
 
   const handleClose = () => setShowModal(false);
 
-  // 🧱 UI
   return (
     <ModalWrapper show={showModal()} onClose={handleClose} lang={lang()}>
+      {/* 🧾 Titel */}
       <h2 class="text-xl font-bold text-[#1E2A45] mb-4">
-        {t(lang(), "editTitle", "imprint")}
+        {t(lang(), "dashboard", "imprint", "editTitle")}
       </h2>
 
+      {/* 🟡 Status */}
       {message() && (
         <div class="text-sm mb-3 text-[#E47E00] font-medium">
           {message()}
         </div>
       )}
 
-      <div class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
+      {/* 📋 Formular */}
+      <div class="space-y-3 max-h-[65vh] overflow-y-auto pr-2">
         {[
           ["company", true],
           ["contact", true],
@@ -164,42 +158,46 @@ export default function EditImprintModal(props) {
           ["registerNumber", false],
         ].map(([key, required]) => (
           <Field
-            key={key}
-            label={`${t(lang(), key, "imprint")}${required ? " *" : ""}`}
+            keyName={key}
+            required={required}
             value={form()[key]}
-            onInput={(val) => updateField(key, val)}
+            label={`${t(lang(), "dashboard", "imprint", key)}${
+              required ? " *" : ""
+            }`}
+            onInput={updateField}
           />
         ))}
       </div>
 
+      {/* 🔘 Footer Buttons */}
       <div class="mt-6 flex justify-end gap-3">
         <button
-          class="px-4 py-2 bg-gray-200 rounded-lg text-sm"
+          class="px-4 py-2 bg-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-300 transition"
           onClick={handleClose}
           disabled={loading()}
         >
-          {t(lang(), "cancelButton", "system")}
+          {t(lang(), "dashboard", "system", "cancelButton")}
         </button>
 
         <button
-          class={`px-5 py-2 rounded-lg text-sm font-medium text-white ${
+          class={`px-5 py-2 rounded-lg text-sm font-medium shadow transition-transform duration-200 ${
             loading()
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-gradient-to-r from-[#F5B400] to-[#E47E00] hover:scale-105"
+              : "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:scale-105"
           }`}
           onClick={handleSave}
           disabled={loading()}
         >
           {loading()
-            ? t(lang(), "saving", "system")
-            : t(lang(), "saveButton", "system")}
+            ? t(lang(), "dashboard", "system", "saving")
+            : t(lang(), "dashboard", "system", "saveButton")}
         </button>
       </div>
     </ModalWrapper>
   );
 }
 
-// 🔹 Feld-Komponente
+/* 🔹 Feld-Komponente */
 function Field(props) {
   return (
     <div>
@@ -209,7 +207,9 @@ function Field(props) {
       <input
         type="text"
         value={props.value}
-        onInput={(e) => props.onInput(e.target.value)}
+        onInput={(e) =>
+          props.onInput(props.keyName, e.target.value)
+        }
         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
       />
     </div>
