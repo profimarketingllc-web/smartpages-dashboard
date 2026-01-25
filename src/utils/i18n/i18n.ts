@@ -1,6 +1,6 @@
 import dashboard from "./dashboard";
 import billing from "./billing";
-import login from "./login";
+//import login from "./login";
 // später:
 // import smartpage from "./smartpage";
 // import smartprofile from "./smartprofile";
@@ -10,7 +10,7 @@ import login from "./login";
 const dictionaries: Record<string, any> = {
   dashboard,
   billing,
-  login,
+  // login,
   // smartpage,
   // smartprofile,
   // smartdomain,
