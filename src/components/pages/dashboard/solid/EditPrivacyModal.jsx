@@ -3,11 +3,11 @@ import ModalWrapper from "./ModalWrapper";
 import { t, useLang } from "~/utils/i18n/i18n";
 
 /**
- * 🔒 EditPrivacyModal (SmartPages v5.8)
+ * 🔒 EditPrivacyModal (SmartPages v5.9)
  * -------------------------------------------------------
- * ✅ i18n-System integriert (~/utils/i18n/i18n)
+ * ✅ Dashboard-spezifische i18n (page = "dashboard")
  * ✅ SSR-sicher
- * ✅ lädt / speichert korrekt via API
+ * ✅ Lädt / speichert korrekt via API
  * ✅ feuert refresh-privacy-data nach Save
  */
 
@@ -23,7 +23,7 @@ export default function EditPrivacyModal(props) {
   });
   const [message, setMessage] = createSignal(null);
 
-  // 🌍 SSR-kompatible Sprache
+  // 🌍 Sprache
   const [lang, setLang] = createSignal(props.lang || useLang("de"));
 
   onMount(() => {
@@ -32,16 +32,18 @@ export default function EditPrivacyModal(props) {
     }
 
     const openHandler = () => {
-      console.log("🟢 open-privacy-modal empfangen");
       setMessage(null);
       setShowModal(true);
       loadPrivacy();
     };
+
     window.addEventListener("open-privacy-modal", openHandler);
-    onCleanup(() => window.removeEventListener("open-privacy-modal", openHandler));
+    onCleanup(() =>
+      window.removeEventListener("open-privacy-modal", openHandler)
+    );
   });
 
-  // 🗂️ Datenschutz-Daten laden
+  // 🗂️ Daten laden
   const loadPrivacy = async () => {
     try {
       setLoading(true);
@@ -52,9 +54,8 @@ export default function EditPrivacyModal(props) {
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
       const result = await res.json();
-      if (!result?.ok || !result.data) throw new Error("Invalid privacy data");
+      if (!result?.ok || !result.data) throw new Error("invalid_data");
 
       const i = result.data;
       setForm({
@@ -64,19 +65,21 @@ export default function EditPrivacyModal(props) {
         address: i.address || "",
         country: i.country || "",
       });
-      console.log("📥 Privacy-Daten erfolgreich geladen:", i);
     } catch (err) {
-      console.warn("⚠️ Fehler beim Laden der Privacy-Daten:", err);
-      setMessage(t(lang(), "loadError", "privacy") || "Fehler beim Laden der Daten.");
+      console.error("❌ Fehler beim Laden:", err);
+      setMessage(
+        t(lang(), "dashboard", "privacy", "loadError")
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // ✏️ Eingaben aktualisieren
-  const updateField = (key, value) => setForm({ ...form(), [key]: value });
+  // ✏️ Eingabe
+  const updateField = (key, value) =>
+    setForm({ ...form(), [key]: value });
 
-  // 💾 Änderungen speichern
+  // 💾 Speichern
   const handleSave = async () => {
     try {
       setLoading(true);
@@ -96,19 +99,19 @@ export default function EditPrivacyModal(props) {
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
       const result = await res.json();
-      if (!result?.ok) throw new Error(result?.error || "unknown");
+      if (!result?.ok) throw new Error("save_failed");
 
-      console.log("✅ Privacy erfolgreich gespeichert");
-      setMessage(t(lang(), "saveSuccess", "privacy") || "Gespeichert.");
-
-      // 🔁 Card aktualisieren
+      setMessage(
+        t(lang(), "dashboard", "privacy", "saveSuccess")
+      );
       window.dispatchEvent(new Event("refresh-privacy-data"));
       setTimeout(() => setShowModal(false), 800);
     } catch (err) {
       console.error("❌ Fehler beim Speichern:", err);
-      setMessage(t(lang(), "saveError", "privacy") || "Fehler beim Speichern.");
+      setMessage(
+        t(lang(), "dashboard", "privacy", "saveError")
+      );
     } finally {
       setLoading(false);
     }
@@ -120,16 +123,17 @@ export default function EditPrivacyModal(props) {
   return (
     <ModalWrapper show={showModal()} onClose={handleClose} lang={lang()}>
       <h2 class="text-xl font-bold text-[#1E2A45] mb-4">
-        {t(lang(), "editTitle", "privacy") ||
-          "Datenschutzerklärung bearbeiten"}
+        {t(lang(), "dashboard", "privacy", "editTitle")}
       </h2>
 
-      {/* 🟡 Statusmeldung */}
+      {/* 🟡 Status */}
       {message() && (
-        <div class="text-sm mb-3 text-[#E47E00] font-medium">{message()}</div>
+        <div class="text-sm mb-3 text-[#E47E00] font-medium">
+          {message()}
+        </div>
       )}
 
-      {/* Formularfelder */}
+      {/* Formular */}
       <div class="space-y-3 max-h-[70vh] overflow-y-auto pr-2">
         {[
           ["privacy_contact", true],
@@ -139,7 +143,9 @@ export default function EditPrivacyModal(props) {
           ["country", false],
         ].map(([key, required]) => (
           <Field
-            label={`${t(lang(), key, "privacy")}${required ? " *" : ""}`}
+            label={`${t(lang(), "dashboard", "privacy", key)}${
+              required ? " *" : ""
+            }`}
             keyName={key}
             value={form()[key]}
             onInput={updateField}
@@ -154,10 +160,11 @@ export default function EditPrivacyModal(props) {
           onClick={handleClose}
           disabled={loading()}
         >
-          {t(lang(), "cancelButton", "system")}
+          {t(lang(), "dashboard", "system", "cancelButton")}
         </button>
+
         <button
-          class={`px-5 py-2 rounded-lg text-sm font-medium shadow transition-transform duration-200 will-change-transform ${
+          class={`px-5 py-2 rounded-lg text-sm font-medium shadow transition-transform duration-200 ${
             loading()
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white hover:scale-105"
@@ -166,15 +173,15 @@ export default function EditPrivacyModal(props) {
           disabled={loading()}
         >
           {loading()
-            ? t(lang(), "saving", "system") || "Speichert..."
-            : t(lang(), "saveButton", "system") || "Speichern"}
+            ? t(lang(), "dashboard", "system", "saving")
+            : t(lang(), "dashboard", "system", "saveButton")}
         </button>
       </div>
     </ModalWrapper>
   );
 }
 
-// 🔹 Wiederverwendbares Eingabefeld
+// 🔹 Eingabefeld
 function Field(props) {
   return (
     <div>
@@ -184,10 +191,11 @@ function Field(props) {
       <input
         type="text"
         value={props.value}
-        onInput={(e) => props.onInput(props.keyName, e.target.value)}
+        onInput={(e) =>
+          props.onInput(props.keyName, e.target.value)
+        }
         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E47E00]"
       />
     </div>
   );
 }
-

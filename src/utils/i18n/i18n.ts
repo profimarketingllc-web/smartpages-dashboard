@@ -1,27 +1,50 @@
-import { i18n_de } from "./de";
-import { i18n_en } from "./en";
+import dashboard from "./dashboard";
+import billing from "./billing";
+import login from "./login";
+// später:
+// import smartpage from "./smartpage";
+// import smartprofile from "./smartprofile";
+// import smartdomain from "./smartdomain";
+// import smartlinks from "./smartlinks";
 
-const dictionaries = {
-  de: i18n_de,
-  en: i18n_en,
+const dictionaries: Record<string, any> = {
+  dashboard,
+  billing,
+  login,
+  // smartpage,
+  // smartprofile,
+  // smartdomain,
+  // smartlinks,
 };
 
 /**
- * 🌍 Mehrsprachige Übersetzungsfunktion
- * Unterstützt mehrere Platzhalter {0}, {1}, {2} usw.
+ * 🌍 Übersetzungsfunktion (seitenbasiert)
+ *
+ * @param lang     "de" | "en"
+ * @param page     z.B. "dashboard"
+ * @param section  z.B. "customer", "system"
+ * @param key      z.B. "title", "button"
  */
-export function t(lang: string, key: string, section: string, params?: any): string {
+export function t(
+  lang: string,
+  page: keyof typeof dictionaries,
+  section: string,
+  key: string,
+  params?: any
+): string {
   try {
     const safeLang = lang === "en" ? "en" : "de";
-    const dict = dictionaries[safeLang];
-    const sectionData = dict?.[section];
+    const pageDict = dictionaries[page];
+    if (!pageDict) return key;
+
+    const sectionData = pageDict[safeLang]?.[section];
     if (!sectionData) return key;
 
     let value = sectionData[key];
     if (typeof value === "function") value = value(params);
     if (typeof value !== "string") return key;
 
-    // 🔄 Einzel- oder Mehrfachparameter ersetzen
+    // Platzhalter ersetzen
     if (params !== undefined) {
       if (Array.isArray(params)) {
         params.forEach((p, i) => {

@@ -62,7 +62,7 @@ if (!messageVars && email) {
   messageVars = email.split("@")[0];
 }
 
-const finalMessage = t(language, messageKey, "messages", messageVars);
+const finalMessage = t(language, "dashboard", "messages", messageKey, messageVars);
 ---
 
 <div class="system-message-container relative flex justify-center">

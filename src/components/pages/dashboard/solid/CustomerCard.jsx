@@ -2,10 +2,10 @@ import { createResource, createSignal, onMount, onCleanup } from "solid-js";
 import { t, useLang } from "~/utils/i18n/i18n";
 
 /**
- * 🧠 CustomerCard (SmartPages v5.8)
+ * 🧠 CustomerCard (SmartPages v5.9)
  * -------------------------------------------------------
- * ✅ Einheitliches API-Verhalten (via /api/customer/customer)
- * ✅ i18n getrennt (de/en über ~/utils/i18n/)
+ * ✅ Dashboard-spezifische i18n (page = "dashboard")
+ * ✅ Einheitliches API-Verhalten (/api/customer/customer)
  * ✅ Sauberer Fetch-Flow mit Session-Cookie
  * ✅ Kompatibel mit Cloudflare + SSR
  */
@@ -35,7 +35,9 @@ export default function CustomerCard(props) {
       if (!res.ok) {
         if (res.status === 401) {
           console.warn("⚠️ Nicht eingeloggt oder Session abgelaufen");
-          return { status: t(lang(), "loggedOut", "system") };
+          return {
+            status: t(lang(), "dashboard", "system", "loggedOut"),
+          };
         }
         throw new Error(`API-Fehler ${res.status}`);
       }
@@ -44,7 +46,9 @@ export default function CustomerCard(props) {
       const u = result.data || result.user || null;
 
       if (!result.ok || !u) {
-        return { status: t(lang(), "loggedOut", "system") };
+        return {
+          status: t(lang(), "dashboard", "system", "loggedOut"),
+        };
       }
 
       return {
@@ -55,14 +59,16 @@ export default function CustomerCard(props) {
         plan: u.plan || "—",
         status:
           u.status === "active"
-            ? t(lang(), "statusActive", "system")
-            : t(lang(), "loggedOut", "system"),
+            ? t(lang(), "dashboard", "system", "statusActive")
+            : t(lang(), "dashboard", "system", "loggedOut"),
         activeUntil: u.trial_end || "—",
         lastLogin: u.last_login || "—",
       };
     } catch (err) {
       console.error("❌ Fehler beim Laden der Kundendaten:", err);
-      return { status: t(lang(), "loggedOut", "system") };
+      return {
+        status: t(lang(), "dashboard", "system", "loggedOut"),
+      };
     }
   };
 
@@ -76,7 +82,9 @@ export default function CustomerCard(props) {
       refetch();
     };
     window.addEventListener("refresh-customer-data", handler);
-    onCleanup(() => window.removeEventListener("refresh-customer-data", handler));
+    onCleanup(() =>
+      window.removeEventListener("refresh-customer-data", handler)
+    );
   });
 
   // 🧩 Helper
@@ -116,7 +124,8 @@ export default function CustomerCard(props) {
         <span
           class={`inline-block px-4 py-1 text-sm font-medium rounded-full border transition-all duration-200
             ${
-              data().status === t(lang(), "statusActive", "system")
+              data().status ===
+              t(lang(), "dashboard", "system", "statusActive")
                 ? "bg-[#C8F3C1] text-[#1E2A45] border-[#B1E6AA]"
                 : "bg-[#F8D7DA] text-[#8B1A1A] border-[#E6A1A1]"
             }`}
@@ -127,7 +136,7 @@ export default function CustomerCard(props) {
 
       {/* 🔹 Titel */}
       <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45] mb-2 text-center md:text-left">
-        {t(lang(), "title", "customer")}
+        {t(lang(), "dashboard", "customer", "title")}
       </h2>
 
       {/* 👤 Name / Firma */}
@@ -137,25 +146,25 @@ export default function CustomerCard(props) {
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8 mt-5">
         <div>
           <span class="font-medium text-gray-800">
-            {t(lang(), "status", "customer")}:
+            {t(lang(), "dashboard", "customer", "status")}:
           </span>
           <p class="text-gray-600">{displayValue(data().status)}</p>
         </div>
         <div>
           <span class="font-medium text-gray-800">
-            {t(lang(), "plan", "customer")}:
+            {t(lang(), "dashboard", "customer", "plan")}:
           </span>
           <p class="text-gray-600">{displayValue(data().plan)}</p>
         </div>
         <div>
           <span class="font-medium text-gray-800">
-            {t(lang(), "activeUntil", "customer")}:
+            {t(lang(), "dashboard", "customer", "activeUntil")}:
           </span>
           <p class="text-gray-600">{displayValue(data().activeUntil)}</p>
         </div>
         <div>
           <span class="font-medium text-gray-800">
-            {t(lang(), "lastLogin", "customer")}:
+            {t(lang(), "dashboard", "customer", "lastLogin")}:
           </span>
           <p class="text-gray-600">{displayValue(data().lastLogin)}</p>
         </div>
@@ -164,11 +173,13 @@ export default function CustomerCard(props) {
       {/* 🟠 Bearbeiten-Button */}
       <div class="flex justify-end items-center mt-6">
         <button
-          aria-label={t(lang(), "button", "customer")}
-          onClick={() => window.dispatchEvent(new Event("open-customer-modal"))}
+          aria-label={t(lang(), "dashboard", "customer", "button")}
+          onClick={() =>
+            window.dispatchEvent(new Event("open-customer-modal"))
+          }
           class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-6 py-2.5 rounded-xl shadow-md hover:scale-105 transition-transform duration-200"
         >
-          {t(lang(), "button", "customer")}
+          {t(lang(), "dashboard", "customer", "button")}
         </button>
       </div>
     </div>
