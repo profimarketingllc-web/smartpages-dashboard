@@ -1,55 +1,59 @@
-export const prerender = false;
-
-import PageLayout from "~/layouts/PageLayout.astro";
-import DashboardCardWide from "~/components/shared/DashboardCardWide.astro";
-import CustomerCard from "~/components/pages/dashboard/solid/CustomerCard.jsx";
-import ImprintCard from "~/components/pages/dashboard/solid/ImprintCard.jsx";
-import PrivacyCard from "~/components/pages/dashboard/solid/PrivacyCard.jsx";
-import ProductGrid from "~/components/shared/ProductGrid.astro";
-import SystemMessage from "~/components/pages/dashboard/astro/SystemMessage.astro";
-import EditCustomerModal from "~/components/pages/dashboard/solid/EditCustomerModal.jsx";
-import EditImprintModal from "~/components/pages/dashboard/solid/EditImprintModal.jsx";
-import EditPrivacyModal from "~/components/pages/dashboard/solid/EditPrivacyModal.jsx";
-
-import { t } from "~/utils/i18n/i18n";
-
-// ✅ Sprache aus Middleware
-const lang = Astro.locals?.language || "de";
-
-// 🔐 Session Check
-const cookie = Astro.request.headers.get("cookie") || "";
-if (!cookie.includes("session=")) {
-  return Astro.redirect(`/${lang}/login`);
-}
-
-const user = Astro.locals?.user || null;
-
-/* ================================
-   DASHBOARD UPSELL PRODUKTE
-   ================================ */
-const upsellProducts = [
-  {
-    title: "SmartProfile",
-    label: "",
-    text: t(lang, "dashboard", "upsell", "smartprofile", "text"),
-    gradient: "from-[#4E6BFF] to-[#657AFF]",
-    glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
-    action: "/paywall?product=profile",
-  },
-  {
-    title: "SmartPage",
-    label: "",
-    text: t(lang, "dashboard", "upsell", "smartpage", "text"),
-    gradient: "from-[#F5B400] to-[#E47E00]",
-    glow: "hover:shadow-[0_0_30px_#F5B40080]",
-    action: "/paywall?product=page",
-  },
-  {
-    title: "SmartDomain",
-    label: "",
-    text: t(lang, "dashboard", "upsell", "smartdomain", "text"),
-    gradient: "from-[#8B5CFF] to-[#A076FF]",
-    glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
-    action: "/paywall?product=domain",
-  },
-];
+2026-01-25T17:22:37.297442Z	Cloning repository...
+2026-01-25T17:22:38.010997Z	From https://github.com/profimarketingllc-web/smartpages-dashboard
+2026-01-25T17:22:38.011815Z	 * branch            bf17b411a3341fa1c5c43c19246129ea5cfbd39a -> FETCH_HEAD
+2026-01-25T17:22:38.01194Z	
+2026-01-25T17:22:38.067685Z	HEAD is now at bf17b41 Update dashboard.astro
+2026-01-25T17:22:38.068125Z	
+2026-01-25T17:22:38.140688Z	
+2026-01-25T17:22:38.141148Z	Using v2 root directory strategy
+2026-01-25T17:22:38.160268Z	Success: Finished cloning repository files
+2026-01-25T17:22:39.885507Z	Checking for configuration in a Wrangler configuration file (BETA)
+2026-01-25T17:22:39.886705Z	
+2026-01-25T17:22:40.991448Z	No wrangler.toml file found. Continuing.
+2026-01-25T17:22:41.057338Z	Detected the following tools from environment: npm@10.9.2, nodejs@22.16.0
+2026-01-25T17:22:41.058192Z	Installing project dependencies: npm clean-install --progress=false
+2026-01-25T17:22:52.387303Z	
+2026-01-25T17:22:52.387932Z	added 530 packages, and audited 531 packages in 11s
+2026-01-25T17:22:52.388082Z	
+2026-01-25T17:22:52.388288Z	195 packages are looking for funding
+2026-01-25T17:22:52.3884Z	  run `npm fund` for details
+2026-01-25T17:22:52.451548Z	
+2026-01-25T17:22:52.451784Z	11 vulnerabilities (7 moderate, 4 high)
+2026-01-25T17:22:52.452163Z	
+2026-01-25T17:22:52.452283Z	To address issues that do not require attention, run:
+2026-01-25T17:22:52.452344Z	  npm audit fix
+2026-01-25T17:22:52.452625Z	
+2026-01-25T17:22:52.452716Z	To address all issues (including breaking changes), run:
+2026-01-25T17:22:52.452776Z	  npm audit fix --force
+2026-01-25T17:22:52.452836Z	
+2026-01-25T17:22:52.453208Z	Run `npm audit` for details.
+2026-01-25T17:22:52.481599Z	Executing user command: npm run build
+2026-01-25T17:22:52.83474Z	
+2026-01-25T17:22:52.834946Z	> smartpages-dashboard@0.0.1 build
+2026-01-25T17:22:52.835107Z	> astro build
+2026-01-25T17:22:52.835226Z	
+2026-01-25T17:22:55.156889Z	[2m17:22:55[22m [34m[@astrojs/cloudflare][39m Enabling sessions with Cloudflare KV with the "SESSION" KV binding.
+2026-01-25T17:22:55.157226Z	[2m17:22:55[22m [34m[@astrojs/cloudflare][39m If you see the error "Invalid binding `SESSION`" in your build output, you need to add the binding to your wrangler config file.
+2026-01-25T17:22:55.356407Z	[2m17:22:55[22m [34m[content][39m Syncing content
+2026-01-25T17:22:55.360571Z	[2m17:22:55[22m [34m[content][39m Synced content
+2026-01-25T17:22:55.361282Z	[2m17:22:55[22m [34m[types][39m Generated [2m129ms[22m
+2026-01-25T17:22:55.361675Z	[2m17:22:55[22m [34m[build][39m output: [34m"server"[39m
+2026-01-25T17:22:55.361811Z	[2m17:22:55[22m [34m[build][39m mode: [34m"server"[39m
+2026-01-25T17:22:55.361981Z	[2m17:22:55[22m [34m[build][39m directory: [34m/opt/buildhome/repo/dist/[39m
+2026-01-25T17:22:55.362087Z	[2m17:22:55[22m [34m[build][39m adapter: [32m@astrojs/cloudflare[39m
+2026-01-25T17:22:55.362345Z	[2m17:22:55[22m [34m[build][39m Collecting build info...
+2026-01-25T17:22:55.362534Z	[2m17:22:55[22m [34m[build][39m [32m✓ Completed in 207ms.[39m
+2026-01-25T17:22:55.363759Z	[2m17:22:55[22m [34m[build][39m Building server entrypoints...
+2026-01-25T17:22:56.408852Z	[31m[1m17:22:56[22m [ERROR] [vite][39m [31m✗[39m Build failed in 1.01s
+2026-01-25T17:22:56.789101Z	Unexpected "return"
+2026-01-25T17:22:56.789623Z	  [1mLocation:[22m
+2026-01-25T17:22:56.789753Z	    [4m/opt/buildhome/repo/src/pages/dashboard.astro:48:36[24m
+2026-01-25T17:22:56.789889Z	  [1mStack trace:[22m
+2026-01-25T17:22:56.790195Z	[2m    at failureErrorWithLog (/opt/buildhome/repo/node_modules/esbuild/lib/main.js:1467:15)
+2026-01-25T17:22:56.790481Z	    at responseCallbacks.<computed> (/opt/buildhome/repo/node_modules/esbuild/lib/main.js:603:9)
+2026-01-25T17:22:56.790575Z	    at Socket.readFromStdout (/opt/buildhome/repo/node_modules/esbuild/lib/main.js:581:7)
+2026-01-25T17:22:56.790642Z	    at Socket.emit (node:domain:489:12)
+2026-01-25T17:22:56.790706Z	    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)[22m
+2026-01-25T17:22:56.861688Z	Failed: Error while executing user command. Exited with error code: 1
+2026-01-25T17:22:56.872152Z	Failed: build command exited with code: 1
+2026-01-25T17:22:58.107947Z	Failed: error occurred while running build command
