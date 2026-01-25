@@ -2,12 +2,13 @@ import { createResource, createSignal, onMount, Show } from "solid-js";
 import { t, useLang } from "~/utils/i18n/i18n";
 
 /**
- * 🔐 PrivacyCard (SmartPages v5.9)
+ * 🔐 PrivacyCard (SmartPages v6.0)
  * -------------------------------------------------------
- * ✅ Dashboard-Layout restored
+ * ✅ Dashboard-Layout stabil
  * ✅ Toggle + Labels sichtbar
- * ✅ Modal-Button wieder da
+ * ✅ Modal-Button aktiv
  * ✅ Seitenbasierte i18n (dashboard / privacy)
+ * ✅ JSX-safe (keine Kommentar-Fallen)
  */
 
 export default function PrivacyCard(props) {
@@ -91,43 +92,12 @@ export default function PrivacyCard(props) {
     }
   };
 
-  // 💾 Custom speichern
-  const handleSave = async () => {
-    if (!customText().trim()) {
-      setMessage(t(lang(), "dashboard", "privacy", "emptyText"));
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const res = await fetch("/api/customer/privacyedit", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          use_custom_privacy: true,
-          custom_html: customText(),
-        }),
-      });
-
-      const json = await res.json();
-      setMessage(
-        json.ok
-          ? t(lang(), "dashboard", "privacy", "saveSuccess")
-          : t(lang(), "dashboard", "privacy", "saveError")
-      );
-    } catch {
-      setMessage(t(lang(), "dashboard", "privacy", "unexpectedError"));
-    }
-    setSaving(false);
-  };
-
   return (
     <div class="w-full text-sm text-gray-700 px-7 md:px-9 py-5 relative">
-      {/* 🔹 Header */}
+      {/* Header */}
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl md:text-2xl font-extrabold text-[#1E2A45]">
-          {t(lang(), "dashboard", "privacy", "title")}
+          🔐 {t(lang(), "dashboard", "privacy", "title")}
         </h2>
 
         <button
@@ -140,4 +110,45 @@ export default function PrivacyCard(props) {
         </button>
       </div>
 
-      {/
+      {/* Toggle */}
+      <div class="flex items-center gap-3 mb-4">
+        <input
+          type="checkbox"
+          checked={useCustom()}
+          onChange={handleToggle}
+        />
+        <span>
+          {t(lang(), "dashboard", "privacy", "useOwnPrivacy")}
+        </span>
+      </div>
+
+      {/* Standard-Daten */}
+      <Show when={!useCustom()}>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {Object.entries(data()).map(([key, value]) => (
+            <div>
+              <span class="font-medium text-gray-800">
+                {t(lang(), "dashboard", "privacy", key)}
+              </span>
+              <p class="text-gray-600">{display(value)}</p>
+            </div>
+          ))}
+        </div>
+      </Show>
+
+      {/* Eigener Text */}
+      <Show when={useCustom()}>
+        <textarea
+          class="w-full h-40 border rounded-lg p-3 text-sm"
+          value={customText()}
+          onInput={(e) => setCustomText(e.currentTarget.value)}
+        />
+      </Show>
+
+      {/* Status */}
+      <Show when={message()}>
+        <p class="mt-3 text-sm text-gray-600">{message()}</p>
+      </Show>
+    </div>
+  );
+}
