@@ -95,6 +95,25 @@ const dashboard = {
       emptyText: "Bitte gib einen Text ein.",
       unexpectedError: "Unerwarteter Fehler.",
     },
+
+    /* ---------------- DASHBOARD UPSELL ---------------- */
+    upsell: {
+      smartprofile: {
+        title: "SmartProfile",
+        text:
+          "Schalte Premium-Funktionen für Dein Profil frei – mehr Reichweite, Branding und Automatisierung.",
+      },
+      smartpage: {
+        title: "SmartPage",
+        text:
+          "Erstelle unbegrenzt Seiten mit erweiterten Templates, KI-Texten und Conversion-Boostern.",
+      },
+      smartdomain: {
+        title: "SmartDomain",
+        text:
+          "Profitiere von eigener Domain & SSL-Zertifikat für Dein SmartPages-Setup.",
+      },
+    },
   },
 
   /* ===================================================================== */
@@ -190,6 +209,25 @@ const dashboard = {
       customDisabled: "Custom privacy disabled.",
       unexpectedError: "Unexpected error.",
       emptyText: "Please enter a text.",
+    },
+
+    /* ---------------- DASHBOARD UPSELL ---------------- */
+    upsell: {
+      smartprofile: {
+        title: "SmartProfile",
+        text:
+          "Unlock premium features for your profile – more reach, branding, and automation.",
+      },
+      smartpage: {
+        title: "SmartPage",
+        text:
+          "Create unlimited pages with advanced templates, AI-powered content, and conversion boosters.",
+      },
+      smartdomain: {
+        title: "SmartDomain",
+        text:
+          "Benefit from your own domain & SSL certificate for your SmartPages setup.",
+      },
     },
   },
 };
