@@ -1,6 +1,33 @@
 ---
 export const prerender = false;
 
-// Einfacher Wrapper → leitet auf zentrale Seite
-return Astro.redirect("/dashboard");
+import DashboardPage from "~/pages/dashboard/index.astro";
+import { t } from "~/utils/i18n/i18n";
+
+const lang = "de";
+
+// 🔐 optional: Session-Check kann hier bleiben oder zentral erfolgen
+
+const upsellProducts = [
+  {
+    key: "smartprofile",
+    title: "SmartProfile",
+    text: t(lang, "dashboard", "upsell", "smartprofile", "text"),
+    action: "/paywall?product=profile",
+  },
+  {
+    key: "smartpage",
+    title: "SmartPage",
+    text: t(lang, "dashboard", "upsell", "smartpage", "text"),
+    action: "/paywall?product=page",
+  },
+  {
+    key: "smartdomain",
+    title: "SmartDomain",
+    text: t(lang, "dashboard", "upsell", "smartdomain", "text"),
+    action: "/paywall?product=domain",
+  },
+];
 ---
+
+<DashboardPage lang={lang} upsellProducts={upsellProducts} />

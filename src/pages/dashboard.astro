@@ -14,7 +14,8 @@ import EditPrivacyModal from "~/components/pages/dashboard/solid/EditPrivacyModa
 
 import { useLang, t } from "~/utils/i18n/i18n";
 
-const lang = useLang();
+// ✅ Sprache kommt aus Middleware
+const lang = Astro.locals?.language || "de";
 
 // 🔐 SSR Session Check
 const cookie = Astro.request.headers.get("cookie") || "";
