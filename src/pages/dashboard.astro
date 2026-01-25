@@ -1,4 +1,3 @@
----
 export const prerender = false;
 
 import PageLayout from "~/layouts/PageLayout.astro";
@@ -14,10 +13,10 @@ import EditPrivacyModal from "~/components/pages/dashboard/solid/EditPrivacyModa
 
 import { t } from "~/utils/i18n/i18n";
 
-// 🌍 Sprache aus Middleware
+// ✅ Sprache aus Middleware
 const lang = Astro.locals?.language || "de";
 
-// 🔐 SSR Session Check
+// 🔐 Session Check
 const cookie = Astro.request.headers.get("cookie") || "";
 if (!cookie.includes("session=")) {
   return Astro.redirect(`/${lang}/login`);
@@ -25,65 +24,32 @@ if (!cookie.includes("session=")) {
 
 const user = Astro.locals?.user || null;
 
-// 🟡 DASHBOARD UPSELL PRODUKTE (aus i18n)
+/* ================================
+   DASHBOARD UPSELL PRODUKTE
+   ================================ */
 const upsellProducts = [
   {
-    key: "smartprofile",
-    title: t(lang, "dashboard", "upsell", "smartprofile", "title"),
+    title: "SmartProfile",
+    label: "",
     text: t(lang, "dashboard", "upsell", "smartprofile", "text"),
+    gradient: "from-[#4E6BFF] to-[#657AFF]",
+    glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
     action: "/paywall?product=profile",
   },
   {
-    key: "smartpage",
-    title: t(lang, "dashboard", "upsell", "smartpage", "title"),
+    title: "SmartPage",
+    label: "",
     text: t(lang, "dashboard", "upsell", "smartpage", "text"),
+    gradient: "from-[#F5B400] to-[#E47E00]",
+    glow: "hover:shadow-[0_0_30px_#F5B40080]",
     action: "/paywall?product=page",
   },
   {
-    key: "smartdomain",
-    title: t(lang, "dashboard", "upsell", "smartdomain", "title"),
+    title: "SmartDomain",
+    label: "",
     text: t(lang, "dashboard", "upsell", "smartdomain", "text"),
+    gradient: "from-[#8B5CFF] to-[#A076FF]",
+    glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
     action: "/paywall?product=domain",
   },
 ];
----
-
-<PageLayout
-  title={t(lang, "dashboard", "page", "title")}
-  sidebar={true}
-  header={true}
-  lang={lang}
->
-  <main class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20">
-    <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
-      <DashboardCardWide>
-        <CustomerCard client:only="solid-js" lang={lang} />
-      </DashboardCardWide>
-
-      <div class="system-message">
-        <SystemMessage lang={lang} user={user} />
-      </div>
-    </section>
-
-    <DashboardCardWide>
-      <ImprintCard client:only="solid-js" lang={lang} />
-    </DashboardCardWide>
-
-    <DashboardCardWide>
-      <PrivacyCard client:only="solid-js" lang={lang} />
-    </DashboardCardWide>
-
-    {/* ✅ HIER DER ENTSCHEIDENDE PUNKT */}
-    <section class="mt-4 md:mt-6">
-      <ProductGrid
-        lang={lang}
-        products={upsellProducts}
-        variant="upsell"
-      />
-    </section>
-
-    <EditCustomerModal client:only="solid-js" lang={lang} />
-    <EditImprintModal client:only="solid-js" lang={lang} />
-    <EditPrivacyModal client:only="solid-js" lang={lang} />
-  </main>
-</PageLayout>
