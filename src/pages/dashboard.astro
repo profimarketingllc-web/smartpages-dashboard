@@ -12,22 +12,39 @@ import EditCustomerModal from "~/components/pages/dashboard/solid/EditCustomerMo
 import EditImprintModal from "~/components/pages/dashboard/solid/EditImprintModal.jsx";
 import EditPrivacyModal from "~/components/pages/dashboard/solid/EditPrivacyModal.jsx";
 
-import { t } from "~/utils/i18n/i18n";
+import dashboardI18n from "~/utils/i18n/dashboard";
 
-// ✅ Sprache kommt aus Middleware
+// ------------------------------------------------------------------
+// 🔐 Sprache & Session (aus Middleware)
+// ------------------------------------------------------------------
 const lang = Astro.locals?.language || "de";
 
-// 🔐 SSR Session Check (ASTRO-KORREKT)
+// SSR-Session-Check
 const cookie = Astro.request.headers.get("cookie") || "";
 if (!cookie.includes("session=")) {
   throw Astro.redirect(`/${lang}/login`);
 }
 
+// i18n für Dashboard
+const tDashboard = dashboardI18n[lang];
+
+// ------------------------------------------------------------------
+// 🧩 Upsell-Produkte aus i18n erzeugen
+// ------------------------------------------------------------------
+const upsellProducts = Object.values(tDashboard.upsell).map((p) => ({
+  title: p.title,
+  label: "Upgrade",
+  text: p.text,
+  gradient: p.gradient,
+  glow: p.glow,
+  action: null,
+}));
+
 const user = Astro.locals?.user || null;
 ---
 
 <PageLayout
-  title={t(lang, "dashboard", "page", "title")}
+  title={tDashboard.page.title}
   sidebar={true}
   header={true}
   lang={lang}
@@ -55,19 +72,9 @@ const user = Astro.locals?.user || null;
       <PrivacyCard client:only="solid-js" lang={lang} />
     </DashboardCardWide>
 
-    <!-- ✅ PRODUCT GRID -->
-    <!--
-      WICHTIG:
-      - Teaser-Texte bleiben INTERN im ProductGrid
-      - Upsell-Texte kommen aus den Wrappern (/de/dashboard.astro, /en/dashboard.astro)
-    -->
+    <!-- ✅ PRODUCT UPSELL GRID (i18n-driven) -->
     <section class="mt-4 md:mt-6">
-     <ProductGrid
-       lang={lang}
-       variant="upsell"
-       products={Astro.props?.upsellProducts}
-     />
-
+      <ProductGrid products={upsellProducts} />
     </section>
 
     <!-- MODALS -->
@@ -82,13 +89,6 @@ const user = Astro.locals?.user || null;
   window.addEventListener("DOMContentLoaded", async () => {
     if (window.__SESSION_CHECK_DONE__) return;
     window.__SESSION_CHECK_DONE__ = true;
-
-    if (window.__SESSION_INFO__) {
-      window.dispatchEvent(
-        new CustomEvent("session-info-ready", { detail: window.__SESSION_INFO__ })
-      );
-      return;
-    }
 
     try {
       const res = await fetch(
