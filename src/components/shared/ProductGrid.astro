@@ -1,76 +1,91 @@
 ---
 /**
- * ProductGrid.astro – FIXED DESIGN VERSION
- * ---------------------------------------
- * ✔ Design fix (Farben / Glow / Gradient)
- * ✔ Nur Text & Action von außen
- * ✔ Ganze Kachel klickbar
- * ✔ Immer 3 Produkte in einer Reihe
+ * ProductGrid.astro – STABLE VERSION
+ * ----------------------------------
+ * ✔ Fixes Design (Farben, Glow, Gradient)
+ * ✔ Login: interne Teaser-Texte
+ * ✔ Dashboard: Texte von außen (upsell)
+ * ✔ Kein dynamisches Mapping mehr
  */
 
 import ProductCard from "./ProductCard.astro";
 
 const {
-  products = [],
   lang = "de",
-  compact = false,
+  upsell = null, // { smartprofile, smartpage, smartdomain }
 } = Astro.props;
 
 /* -------------------------------------------------- */
-/* 🎨 FESTES PRODUKT-DESIGN (NICHT KONFIGURIERBAR)    */
+/* Fallback: Login / Teaser                           */
 /* -------------------------------------------------- */
-const DESIGN = {
-  smartprofile: {
-    gradient: "from-[#4E6BFF] to-[#657AFF]",
-    glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
+const teaser = {
+  de: {
+    smartprofile:
+      "Dein persönliches Online-Profil – sicher in Europa gehostet, optimiert für Sichtbarkeit & Vertrauen.",
+    smartpage:
+      "Erstelle beeindruckende, konversionsstarke Seiten in wenigen Minuten – ohne Programmierung.",
+    smartdomain:
+      "Sichere deine eigene Domain, bleib DSGVO-konform und stärke deine Marke.",
   },
-  smartpage: {
-    gradient: "from-[#F5B400] to-[#E47E00]",
-    glow: "hover:shadow-[0_0_30px_#F5B40080]",
-  },
-  smartdomain: {
-    gradient: "from-[#8B5CFF] to-[#A076FF]",
-    glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
+  en: {
+    smartprofile:
+      "Your personal online profile – securely hosted in Europe and optimized for visibility & trust.",
+    smartpage:
+      "Create stunning, conversion-focused pages in minutes – no coding required.",
+    smartdomain:
+      "Secure your own domain, stay GDPR-compliant and strengthen your brand.",
   },
 };
 
-/* -------------------------------------------------- */
-/* 🧠 PRODUKTE NORMALISIEREN                          */
-/* -------------------------------------------------- */
-const items = products.map((p) => {
-  const design = DESIGN[p.key];
-  if (!design) {
-    throw new Error(`Unknown product key: ${p.key}`);
-  }
+const t = teaser[lang] || teaser.de;
 
-  return {
-    ...p,
-    ...design,
-    label: "UPGRADE",
-  };
-});
+/* -------------------------------------------------- */
+/* Content resolution                                 */
+/* -------------------------------------------------- */
+const content = {
+  smartprofile: upsell?.smartprofile || {
+    title: "SmartProfile",
+    text: t.smartprofile,
+    badge: "BALD VERFÜGBAR",
+  },
+  smartpage: upsell?.smartpage || {
+    title: "SmartPage",
+    text: t.smartpage,
+    badge: "BALD VERFÜGBAR",
+  },
+  smartdomain: upsell?.smartdomain || {
+    title: "SmartDomain",
+    text: t.smartdomain,
+    badge: "BALD VERFÜGBAR",
+  },
+};
 ---
 
-<section
-  class={`${
-    compact
-      ? "grid grid-cols-1 md:grid-cols-3 gap-6"
-      : "max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 py-6"
-  }`}
->
-  {items.map((p) => (
-    <a
-      href={p.action}
-      class="block w-full focus:outline-none"
-      aria-label={p.title}
-    >
-      <ProductCard
-        title={p.title}
-        label={p.label}
-        text={p.text}
-        gradient={p.gradient}
-        glow={p.glow}
-      />
-    </a>
-  ))}
+<section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 py-6">
+  <ProductCard
+    title={content.smartprofile.title}
+    label={content.smartprofile.badge}
+    text={content.smartprofile.text}
+    gradient="from-[#4E6BFF] to-[#657AFF]"
+    glow="hover:shadow-[0_0_30px_#4E6BFF80]"
+    action="/features/smartprofile"
+  />
+
+  <ProductCard
+    title={content.smartpage.title}
+    label={content.smartpage.badge}
+    text={content.smartpage.text}
+    gradient="from-[#F5B400] to-[#E47E00]"
+    glow="hover:shadow-[0_0_30px_#F5B40080]"
+    action="/features/smartpage"
+  />
+
+  <ProductCard
+    title={content.smartdomain.title}
+    label={content.smartdomain.badge}
+    text={content.smartdomain.text}
+    gradient="from-[#8B5CFF] to-[#A076FF]"
+    glow="hover:shadow-[0_0_30px_#8B5CFF80]"
+    action="/features/smartdomain"
+  />
 </section>
