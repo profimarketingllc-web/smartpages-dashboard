@@ -23,8 +23,9 @@ const dashboard = {
     /* ---------------- SYSTEM MESSAGES (TOP BAR) ---------------- */
     messages: {
       neutralGreeting: "Willkommen bei SmartPages 👋",
-      personalized: (name) => `Willkommen zurück, ${name}! 👋`,
-      businessGreeting: (company) => `Willkommen zurück, ${company}!`,
+      personalized: (name: string) => `Willkommen zurück, ${name}! 👋`,
+      businessGreeting: (company: string) =>
+        `Willkommen zurück, ${company}!`,
       trialExpired: "Dein Testzeitraum ist abgelaufen.",
       trialEndingTomorrow: "Dein Testzeitraum endet morgen.",
       trialEndingSoon: "Dein Testzeitraum endet bald.",
@@ -96,22 +97,31 @@ const dashboard = {
       unexpectedError: "Unerwarteter Fehler.",
     },
 
-    /* ---------------- DASHBOARD UPSELL ---------------- */
+    /* ---------------- DASHBOARD UPSELL (AUTH USER) ---------------- */
     upsell: {
       smartprofile: {
         title: "SmartProfile",
         text:
-          "Schalte Premium-Funktionen für Dein Profil frei – mehr Reichweite, Branding und Automatisierung.",
+          "Erweitere Dein Profil um professionelles Branding, zusätzliche Module und Automatisierungen für eine konsistente und starke Online-Präsenz.",
+        href: "/features/smartprofile",
       },
       smartpage: {
         title: "SmartPage",
         text:
-          "Erstelle unbegrenzt Seiten mit erweiterten Templates, KI-Texten und Conversion-Boostern.",
+          "Erstelle zusätzliche Seiten mit erweiterten Layouts, optimierten Strukturen und intelligenten Inhalten für Kampagnen und Landingpages.",
+        href: "/features/smartpage",
       },
       smartdomain: {
         title: "SmartDomain",
         text:
-          "Profitiere von eigener Domain & SSL-Zertifikat für Dein SmartPages-Setup.",
+          "Nutze Deine eigene Domain inklusive SSL-Zertifikat und sorge für Vertrauen, Markenstärke und DSGVO-Konformität.",
+        href: "/features/smartdomain",
+      },
+      smartlinks: {
+        title: "SmartLinks",
+        text:
+          "Bündle alle wichtigen Links an einem Ort – ideal für Social Media, Profile und Kampagnen. Klar strukturiert, flexibel und datenschutzfreundlich.",
+        href: "/features/smartlinks",
       },
     },
   },
@@ -138,8 +148,9 @@ const dashboard = {
     /* ---------------- SYSTEM MESSAGES (TOP BAR) ---------------- */
     messages: {
       neutralGreeting: "Welcome to SmartPages 👋",
-      personalized: (name) => `Welcome back, ${name}! 👋`,
-      businessGreeting: (company) => `Welcome back, ${company}!`,
+      personalized: (name: string) => `Welcome back, ${name}! 👋`,
+      businessGreeting: (company: string) =>
+        `Welcome back, ${company}!`,
       trialExpired: "Your trial has expired.",
       trialEndingTomorrow: "Your trial ends tomorrow.",
       trialEndingSoon: "Your trial ends soon.",
@@ -211,22 +222,31 @@ const dashboard = {
       unexpectedError: "Unexpected error.",
     },
 
-    /* ---------------- DASHBOARD UPSELL ---------------- */
+    /* ---------------- DASHBOARD UPSELL (AUTH USER) ---------------- */
     upsell: {
       smartprofile: {
         title: "SmartProfile",
         text:
-          "Unlock premium features for your profile – more reach, branding, and automation.",
+          "Enhance your profile with professional branding, additional modules, and automation for a strong and consistent online presence.",
+        href: "/features/smartprofile",
       },
       smartpage: {
         title: "SmartPage",
         text:
-          "Create unlimited pages with advanced templates, AI-powered content, and conversion boosters.",
+          "Create additional pages with advanced layouts, optimized structures, and intelligent content for campaigns and landing pages.",
+        href: "/features/smartpage",
       },
       smartdomain: {
         title: "SmartDomain",
         text:
-          "Benefit from your own domain & SSL certificate for your SmartPages setup.",
+          "Use your own domain with SSL to build trust, strengthen your brand, and ensure GDPR compliance across your setup.",
+        href: "/features/smartdomain",
+      },
+      smartlinks: {
+        title: "SmartLinks",
+        text:
+          "Combine all your important links in one place – perfect for social profiles and campaigns. Clean, flexible, and privacy-first.",
+        href: "/features/smartlinks",
       },
     },
   },
