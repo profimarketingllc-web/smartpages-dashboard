@@ -1,61 +1,23 @@
+---
 /**
  * ProductGrid.astro – STABLE VERSION
- * -----------------------------------------------------
- * ✅ Design bleibt unverändert
- * ✅ Dashboard & Login funktionieren identisch
- * ✅ Ganze Kachel klickbar
+ * ---------------------------------
+ * ✔ Compiler-safe
+ * ✔ Login + Dashboard
+ * ✔ Design unverändert
+ * ✔ Ganze Kachel klickbar
  */
 
 import ProductCard from "./ProductCard.astro";
 
-// Sprache
-const currentPath = Astro.url.pathname.toLowerCase();
-const detectedLang = currentPath.includes("/en") ? "en" : "de";
-
-// Props
 const {
-  products = null,
-  lang = detectedLang,
+  products,
+  lang = "de",
   compact = false,
 } = Astro.props;
 
-/* ------------------------------------------------------------------ */
-/* 🎨 ZENTRALE DESIGN-DEFINITION (einmalig)                           */
-/* ------------------------------------------------------------------ */
-const designMap = {
-  smartprofile: {
-    gradient: "from-[#4E6BFF] to-[#657AFF]",
-    glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
-    defaultAction: "/features/smartprofile",
-  },
-  smartpage: {
-    gradient: "from-[#F5B400] to-[#E47E00]",
-    glow: "hover:shadow-[0_0_30px_#F5B40080]",
-    defaultAction: "/features/smartpage",
-  },
-  smartdomain: {
-    gradient: "from-[#8B5CFF] to-[#A076FF]",
-    glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
-    defaultAction: "/features/smartdomain",
-  },
-};
-
-/* ------------------------------------------------------------------ */
-/* 🧠 Daten normalisieren                                              */
-/* ------------------------------------------------------------------ */
-const items = (products || []).map((p) => {
-  const key = p.key?.toLowerCase() || p.title?.toLowerCase();
-
-  const design = designMap[key] || {};
-
-  return {
-    ...p,
-    label: p.label || "UPGRADE",
-    gradient: p.gradient || design.gradient,
-    glow: p.glow || design.glow,
-    action: p.action || design.defaultAction,
-  };
-});
+// ✅ IMMER Array erzwingen
+const items = Array.isArray(products) ? products : [];
 ---
 
 <section
@@ -67,9 +29,8 @@ const items = (products || []).map((p) => {
 >
   {items.map((p) => (
     <a
-      href={p.action}
-      class="block w-full h-full focus:outline-none"
-      aria-label={p.title}
+      href={p.action || "#"}
+      class="w-full block"
     >
       <ProductCard
         title={p.title}
@@ -77,7 +38,6 @@ const items = (products || []).map((p) => {
         text={p.text}
         gradient={p.gradient}
         glow={p.glow}
-        action={p.action}
       />
     </a>
   ))}
