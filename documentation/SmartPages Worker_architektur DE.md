@@ -19,27 +19,72 @@
 ## Diagramm
 
 ```mermaid
-flowchart LR
+flowchart TB
 
-%% Entry Points
-HubSpot[Marketing Website HubSpot] --> Frontend[SmartPages Frontend Astro Pages]
+%% User pool (full width impression)
+UserPool["USER · USER · USER"] 
 
-Frontend --> Core[Core Worker Public API Gateway Auth Session Paywall Proxy Middleware]
+%% Entry channels
+UserPool --> HubSpot
+UserPool --> Landing
+UserPool --> Funnel
 
-%% Core-gesteuerte Worker (intern)
-Core -. internal_service_binding .-> Customer[Customer Worker Profiles Pages Links]
-Core -. internal_service_binding .-> Billing[Billing Worker Stripe Subscriptions]
-Core -. internal_service_binding .-> Mailer[Mailer Worker Resend System Mails]
+HubSpot["Marketing Website HubSpot"]
+Landing["Landingpage"]
+Funnel["Sales Funnel"]
 
-%% Gemeinsame Infrastruktur
-Customer --> R2[R2 Bucket Customer Pages]
-Customer --> D1[D1 User and Product State]
-Core --> KV[KV Sessions Tokens]
+%% Portal
+HubSpot --> Portal
+Landing --> Portal
+Funnel --> Portal
 
-%% Domain Worker (separater öffentlicher Einstieg)
-R2 --> Domain[Domain Worker Public Edge Delivery Custom Domains HTTP]
-Domain --> Internet[Internet DNS]
+Portal["SmartPages Portal Page"]
 
-%% Externe Dienste
-Billing --> Stripe[Stripe]
-Mailer --> Resend[Resend]
+%% Public site
+Portal --> Website
+Website["www.smartpages.online"]
+
+%% Core Worker
+Website --> Core
+
+Core["CORE WORKER Public API Gateway Auth Session Paywall Proxy"]
+
+%% Internal worker system
+Core -->|internal service binding| InternalSystem
+
+subgraph InternalSystem["INTERNAL WORKER SYSTEM"]
+  Customer["Customer Worker"]
+  Billing["Billing Worker"]
+  Mailer["Mailer Worker"]
+end
+
+%% Worker responsibilities
+Customer --> R2
+Billing --> Stripe
+Mailer --> Resend
+
+%% Delivery path
+R2 --> Domain
+Domain --> Internet
+
+%% Infrastructure
+R2["R2 Storage"]
+Domain["Domain Worker Public"]
+Internet["Internet DNS"]
+Stripe["Stripe"]
+Resend["Resend"]
+
+%% Styling
+classDef worker fill:#1E3A8A,stroke:#020617,stroke-width:3px,color:#FFFFFF
+classDef workerGroup fill:#DBEAFE,stroke:#1E40AF,stroke-width:3px,color:#020617
+classDef user fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#92400E
+classDef entry fill:#F5F3FF,stroke:#7C3AED,stroke-width:2px,color:#1F2937
+classDef external fill:#ECFEFF,stroke:#0891B2,stroke-width:2px,color:#083344
+classDef infra fill:#F1F5F9,stroke:#475569,stroke-width:2px,color:#020617
+
+class Core,Customer,Billing,Mailer,Domain worker
+class InternalSystem workerGroup
+class UserPool user
+class HubSpot,Landing,Funnel,Portal,Website entry
+class Stripe,Resend external
+class R2,Internet infra
