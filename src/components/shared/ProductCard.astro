@@ -1,54 +1,83 @@
----
 /**
- * ProductCard.astro
- * Einheitliche Produktkarte mit Glow in Produktfarbe
+ * ProductGrid.astro – FINAL STABLE
+ * ----------------------------------
+ * ✔ Fixes Design (Farben, Glow, Gradient)
+ * ✔ Badge-Logik sauber im Grid
+ * ✔ Login: Teaser + Badge
+ * ✔ Dashboard: Upsell ohne Badge
+ * ✔ Ganze Kachel ist klickbar
  */
 
-const { title, label, text, gradient, glow, action } = Astro.props;
----
+import ProductCard from "./ProductCard.astro";
 
-<a
-  href={action || "#"}
-  class={`smart-tile relative block rounded-3xl text-white p-6 md:p-7 transition-all duration-300 
-          bg-gradient-to-r ${gradient} ${glow} hover:translate-y-[-3px]`}
->
-  {label && <span class="badge uppercase tracking-wide">{label}</span>}
+const {
+  lang = "de",
+  upsell = null, // kommt vom Dashboard (i18n)
+} = Astro.props;
 
-  <!-- 🔧 Kompakter Titel-Abstand -->
-  <h3 class="text-xl font-bold mb-2">{title}</h3>
+/* -------------------------------------------------- */
+/* Login-Teaser (Fallback)                            */
+/* -------------------------------------------------- */
+const teaser = {
+  de: {
+    smartprofile:
+      "Dein persönliches Online-Profil – sicher in Europa gehostet, optimiert für Sichtbarkeit & Vertrauen.",
+    smartpage:
+      "Erstelle beeindruckende, konversionsstarke Seiten in wenigen Minuten – ohne Programmierung.",
+    smartdomain:
+      "Sichere deine eigene Domain, bleib DSGVO-konform und stärke deine Marke.",
+    smartlinks:
+      "Bündle alle wichtigen Links an einem Ort – sauber, datenschutzkonform und markengerecht.",
+    badge: "BALD VERFÜGBAR",
+  },
+  en: {
+    smartprofile:
+      "Your personal online profile – securely hosted in Europe and optimized for visibility & trust.",
+    smartpage:
+      "Create stunning, conversion-focused pages in minutes – no coding required.",
+    smartdomain:
+      "Secure your own domain, stay GDPR-compliant and strengthen your brand.",
+    smartlinks:
+      "Bundle all your important links in one place – clean, privacy-first and on brand.",
+    badge: "COMING SOON",
+  },
+};
 
-  <!-- 🔧 Engere Zeilenhöhe, leicht erhöhte Lesbarkeit -->
-  <p class="text-sm leading-snug opacity-95">{text}</p>
-</a>
+const t = teaser[lang] || teaser.de;
 
-<style>
-  /* ✨ Grundlayout */
-  a {
-    min-height: 140px; /* vorher 200px – kompakter, aber gleichmäßig */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Inhalt sauber oben ausgerichtet */
-    transition: all 0.3s ease;
-  }
+/* -------------------------------------------------- */
+/* Content-Auflösung                                  */
+/* -------------------------------------------------- */
+const content = {
+  smartprofile: upsell?.smartprofile
+    ? { ...upsell.smartprofile, label: null }
+    : {
+        title: "SmartProfile",
+        text: t.smartprofile,
+        label: t.badge,
+      },
 
-  /* 💻 Desktop etwas großzügiger */
-  @media (min-width: 768px) {
-    a {
-      min-height: 160px; /* vorher 210px */
-      padding-top: 1.25rem;
-      padding-bottom: 1.25rem;
-    }
-  }
+  smartpage: upsell?.smartpage
+    ? { ...upsell.smartpage, label: null }
+    : {
+        title: "SmartPage",
+        text: t.smartpage,
+        label: t.badge,
+      },
 
-  /* 🪄 Interne Typografie-Feinschliff */
-  h3 {
-    margin-bottom: 0.4rem; /* vorher 0.75rem */
-    line-height: 1.3;
-  }
+  smartdomain: upsell?.smartdomain
+    ? { ...upsell.smartdomain, label: null }
+    : {
+        title: "SmartDomain",
+        text: t.smartdomain,
+        label: t.badge,
+      },
 
-  p {
-    line-height: 1.4;
-    margin-top: 0.25rem;
-  }
-</style>
-
+  smartlinks: upsell?.smartlinks
+    ? { ...upsell.smartlinks, label: null }
+    : {
+        title: "SmartLinks",
+        text: t.smartlinks,
+        label: t.badge,
+      },
+};
