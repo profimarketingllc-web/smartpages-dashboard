@@ -1,28 +1,33 @@
 ---
 import "~/styles/global.css";
 import ProductGrid from "~/components/shared/ProductGrid.astro";
+import { t } from "~/utils/i18n/i18n";
 
+const lang = "de";
+
+/* ------------------------------------------------------------------
+   ✅ Produkte kommen JETZT aus i18n (Login-Teaser)
+   ❌ KEIN Design hier
+   ❌ KEINE Farben hier
+------------------------------------------------------------------ */
 const products = [
   {
-    title: "SmartProfile",
-    label: "BALD VERFÜGBAR",
-    text: "Dein persönliches Online-Profil, das deine Markenidentität widerspiegelt — sicher in Europa gehostet, optimiert für Sichtbarkeit, Glaubwürdigkeit und vollständige DSGVO-Konformität auf allen digitalen Kanälen.",
-    gradient: "from-[#3D4CFF] to-[#6A5FFF]",
-    glow: "hover:shadow-[0_0_30px_#3D4CFF80]",
+    key: "smartprofile",
+    title: t(lang, "login", "products", "smartprofile", "title"),
+    label: t(lang, "login", "products", "smartprofile", "label"),
+    text: t(lang, "login", "products", "smartprofile", "text"),
   },
   {
-    title: "SmartPage",
-    label: "BALD VERFÜGBAR",
-    text: "Erstelle beeindruckende, konversionsstarke Seiten in wenigen Minuten — ganz ohne Programmierung. Entwickelt für Kreative, Unternehmer und kleine Teams, die elegantes Design und volle Kontrolle wollen, ohne Komplexität.",
-    gradient: "from-[#F5B400] to-[#E47E00]",
-    glow: "hover:shadow-[0_0_30px_#F5B40080]",
+    key: "smartpage",
+    title: t(lang, "login", "products", "smartpage", "title"),
+    label: t(lang, "login", "products", "smartpage", "label"),
+    text: t(lang, "login", "products", "smartpage", "text"),
   },
   {
-    title: "SmartDomain",
-    label: "BALD VERFÜGBAR",
-    text: "Sichere deine eigene Domain, schütze deine Marke und bleibe von Anfang an DSGVO-konform. SmartDomain macht das Verwalten deiner Online-Identität mühelos — datenschutzorientiert, sicher und in Europa gehostet.",
-    gradient: "from-[#9D3DFF] to-[#6A3AFF]",
-    glow: "hover:shadow-[0_0_30px_#9D3DFF80]",
+    key: "smartdomain",
+    title: t(lang, "login", "products", "smartdomain", "title"),
+    label: t(lang, "login", "products", "smartdomain", "label"),
+    text: t(lang, "login", "products", "smartdomain", "text"),
   },
 ];
 ---
@@ -72,19 +77,15 @@ const products = [
         <p class="mb-3">
           Mit <strong>SmartPages</strong> erstellst du deine professionelle
           Online-Präsenz in nur <strong>10 Minuten</strong> – ohne technisches
-          Wissen oder komplizierte Einrichtung. Alles wird sicher in
-          <strong>Europa</strong> gehostet und ist vollständig
-          <strong>DSGVO-konform</strong>.
+          Wissen oder komplizierte Einrichtung.
         </p>
         <p class="mb-3">
-          Wenn sich dein Publikum oder deine Kunden in der EU befinden, ist
-          Datenschutz keine Option, sondern Pflicht. SmartPages erfüllt diese
-          Anforderungen automatisch – vom ersten Klick an.
+          Alles wird sicher in <strong>Europa</strong> gehostet und ist vollständig
+          <strong>DSGVO-konform</strong>.
         </p>
         <p>
           Gib unten einfach deine Kontaktdaten ein, und wir senden dir deinen
-          persönlichen <strong>Magic Link</strong> – ohne Passwort, ohne
-          Tracking, ohne Datensammlung.
+          persönlichen <strong>Magic Link</strong>.
         </p>
       </div>
 
@@ -119,9 +120,9 @@ const products = [
 
           <div class="flex items-center gap-2">
             <input type="checkbox" id="is_business" name="is_business" />
-            <label for="is_business" class="text-sm text-gray-600"
-              >Geschäftskonto</label
-            >
+            <label for="is_business" class="text-sm text-gray-600">
+              Geschäftskonto
+            </label>
           </div>
 
           <div id="company_field" class="hidden">
@@ -147,119 +148,13 @@ const products = [
     <!-- 🧱 ProductGrid -->
     <section class="mt-4 mb-8">
       <div class="w-full max-w-[1400px] mx-auto">
-        <ProductGrid {products} compact />
+        <ProductGrid products={products} compact />
       </div>
     </section>
 
     <!-- Footer -->
     <footer class="text-center text-sm text-gray-600 py-3 bg-[#f5f5f5]">
-      © 2026 SmartPages · Profi Marketing LLC · Gehostet in Europa ·
-      DSGVO-konform
+      © 2026 SmartPages · Profi Marketing LLC · Gehostet in Europa · DSGVO-konform
     </footer>
-
-    <!-- Popup -->
-    <div
-      id="popup"
-      class="hidden fixed z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-    ></div>
-
-    <!-- ⚙️ Optimiertes Script -->
-    <script>
-      const API_URL = "https://api.smartpages.online/api/auth/start";
-      const popup = document.getElementById("popup");
-      const form = document.getElementById("magicForm");
-      const submitBtn = document.getElementById("submitBtn");
-
-      function showPopup(message, type = "info", autoClose = true, delay = 5000) {
-        popup.innerHTML = message;
-        popup.className =
-          "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-8 py-6 rounded-2xl shadow-2xl text-center text-base font-semibold z-50 backdrop-blur-md bg-white/90 border-l-8 transition-all duration-500 opacity-100 " +
-          (type === "success"
-            ? "border-green-500 text-green-800"
-            : type === "warning"
-            ? "border-yellow-400 text-yellow-800"
-            : type === "error"
-            ? "border-red-500 text-red-700"
-            : "border-blue-500 text-blue-700");
-
-        popup.classList.remove("hidden");
-        popup.style.opacity = "1";
-
-        if (autoClose) {
-          setTimeout(() => closePopup(), delay);
-        }
-      }
-
-      function closePopup() {
-        popup.style.opacity = "0";
-        setTimeout(() => popup.classList.add("hidden"), 400);
-      }
-
-      form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const data = {
-          first_name: form.first_name.value.trim(),
-          last_name: form.last_name.value.trim(),
-          email: form.email.value.trim(),
-          company_name: form.company_name?.value.trim() || "",
-          is_business: form.is_business.checked,
-        };
-
-        submitBtn.disabled = true;
-
-        // 1️⃣ Startnachricht (persistent)
-        showPopup(
-          "⏳ <strong>Dein Magic Link wird vorbereitet...</strong><br><span class='text-sm opacity-80'>Bitte habe einen Moment Geduld.</span>",
-          "warning",
-          false
-        );
-
-        try {
-                    const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          });
-
-          const result = await res.json();
-
-          if (result.ok) {
-            showPopup(
-              "✅ <strong>Magic Link gesendet!</strong><br><span class='text-sm opacity-80'>Bitte überprüfe dein Postfach.</span>",
-              "success",
-              true,
-              5000
-            );
-          } else {
-            showPopup(
-              "⚠️ <strong>Ein Fehler ist aufgetreten.</strong><br><span class='text-sm opacity-80'>Bitte überprüfe deine Eingaben.</span>",
-              "error"
-            );
-          }
-        } catch (err) {
-          showPopup(
-            "❌ <strong>Netzwerkfehler:</strong><br><span class='text-sm opacity-80'>" +
-              (err.message || "Verbindung fehlgeschlagen.") +
-              "</span>",
-            "error"
-          );
-        } finally {
-          submitBtn.disabled = false;
-          // Popup nach 5 Sekunden automatisch schließen
-          setTimeout(() => closePopup(), 5000);
-        }
-      });
-
-      // 🧩 Checkbox-Logik für Geschäftskonten
-      document.addEventListener("DOMContentLoaded", () => {
-        const cb = document.getElementById("is_business");
-        const field = document.getElementById("company_field");
-        cb?.addEventListener("change", () =>
-          field.classList.toggle("hidden", !cb.checked)
-        );
-      });
-    </script>
   </body>
 </html>
-
