@@ -1,11 +1,10 @@
 ---
 /**
- * ProductGrid.astro – FINAL STABLE VERSION
- * ---------------------------------------
- * ✔ Fixes Design (Farben, Glow, Gradient)
+ * ProductGrid.astro – FINAL STABLE
+ * --------------------------------
+ * ✔ Fixe Farben / Glow / Gradient
  * ✔ Login: interne Teaser-Texte
- * ✔ Dashboard: optionale Upsell-Texte via Props
- * ✔ Erweiterbar (SmartLinks vorbereitet)
+ * ✔ Dashboard: Upsell-Texte via Props
  * ✔ Jede Kachel ist komplett klickbar
  */
 
@@ -13,136 +12,56 @@ import ProductCard from "./ProductCard.astro";
 
 const {
   lang = "de",
-  upsell = null, // optional: { smartprofile, smartpage, smartdomain, smartlinks }
+  upsell = null,
 } = Astro.props;
 
 /* -------------------------------------------------- */
-/* 🔹 Teaser-Texte (Login / Marketing)                */
+/* Fallback-Texte (Login / Public)                    */
 /* -------------------------------------------------- */
 const teaser = {
   de: {
-    smartprofile:
-      "Dein persönliches Online-Profil – sicher in Europa gehostet, optimiert für Sichtbarkeit & Vertrauen.",
-    smartpage:
-      "Erstelle beeindruckende, konversionsstarke Seiten in wenigen Minuten – ohne Programmierung.",
-    smartdomain:
-      "Sichere deine eigene Domain, bleib DSGVO-konform und stärke deine Marke.",
-    smartlinks:
-      "Verwalte alle wichtigen Links an einem Ort – perfekt für Social Media, Bio-Links und Kampagnen.",
+    smartprofile: "Dein professionelles Online-Profil – sicher, sichtbar und DSGVO-konform.",
+    smartpage: "Conversion-starke Seiten in Minuten – ganz ohne Programmierung.",
+    smartdomain: "Eigene Domain, SSL & Datenschutz – alles aus einer Hand.",
+    smartlinks: "Datenschutzfreundliche Kurzlinks mit Analyse-Fokus.",
   },
   en: {
-    smartprofile:
-      "Your personal online profile – securely hosted in Europe and optimized for visibility & trust.",
-    smartpage:
-      "Create stunning, conversion-focused pages in minutes – no coding required.",
-    smartdomain:
-      "Secure your own domain, stay GDPR-compliant and strengthen your brand.",
-    smartlinks:
-      "Manage all your important links in one place – perfect for social media, bio links and campaigns.",
+    smartprofile: "Your professional online profile – secure, visible and GDPR-compliant.",
+    smartpage: "High-converting pages in minutes – no coding required.",
+    smartdomain: "Own domain, SSL & privacy – all in one.",
+    smartlinks: "Privacy-friendly short links with analytics focus.",
   },
 };
 
-const t = teaser[lang] || teaser.de;
+const t = teaser[lang] ?? teaser.de;
 
 /* -------------------------------------------------- */
-/* 🔹 Content-Auflösung                               */
-/* -------------------------------------------------- */
-const content = {
-  smartprofile: upsell?.smartprofile || {
-    title: "SmartProfile",
-    text: t.smartprofile,
-    badge: lang === "de" ? "BALD VERFÜGBAR" : "COMING SOON",
-  },
-  smartpage: upsell?.smartpage || {
-    title: "SmartPage",
-    text: t.smartpage,
-    badge: lang === "de" ? "BALD VERFÜGBAR" : "COMING SOON",
-  },
-  smartdomain: upsell?.smartdomain || {
-    title: "SmartDomain",
-    text: t.smartdomain,
-    badge: lang === "de" ? "BALD VERFÜGBAR" : "COMING SOON",
-  },
-  smartlinks: upsell?.smartlinks || {
-    title: "SmartLinks",
-    text: t.smartlinks,
-    badge: lang === "de" ? "---
-/**
- * ProductGrid.astro – FINAL STABLE VERSION
- * ---------------------------------------
- * ✔ Fixes Design (Farben, Glow, Gradient)
- * ✔ Login: interne Teaser-Texte
- * ✔ Dashboard: optionale Upsell-Texte via Props
- * ✔ Erweiterbar (SmartLinks vorbereitet)
- * ✔ Jede Kachel ist komplett klickbar
- */
-
-import ProductCard from "./ProductCard.astro";
-
-const {
-  lang = "de",
-  upsell = null, // optional: { smartprofile, smartpage, smartdomain, smartlinks }
-} = Astro.props;
-
-/* -------------------------------------------------- */
-/* 🔹 Teaser-Texte (Login / Marketing)                */
-/* -------------------------------------------------- */
-const teaser = {
-  de: {
-    smartprofile:
-      "Dein persönliches Online-Profil – sicher in Europa gehostet, optimiert für Sichtbarkeit & Vertrauen.",
-    smartpage:
-      "Erstelle beeindruckende, konversionsstarke Seiten in wenigen Minuten – ohne Programmierung.",
-    smartdomain:
-      "Sichere deine eigene Domain, bleib DSGVO-konform und stärke deine Marke.",
-    smartlinks:
-      "Verwalte alle wichtigen Links an einem Ort – perfekt für Social Media, Bio-Links und Kampagnen.",
-  },
-  en: {
-    smartprofile:
-      "Your personal online profile – securely hosted in Europe and optimized for visibility & trust.",
-    smartpage:
-      "Create stunning, conversion-focused pages in minutes – no coding required.",
-    smartdomain:
-      "Secure your own domain, stay GDPR-compliant and strengthen your brand.",
-    smartlinks:
-      "Manage all your important links in one place – perfect for social media, bio links and campaigns.",
-  },
-};
-
-const t = teaser[lang] || teaser.de;
-
-/* -------------------------------------------------- */
-/* 🔹 Content-Auflösung                               */
+/* Content-Auflösung                                  */
 /* -------------------------------------------------- */
 const content = {
-  smartprofile: upsell?.smartprofile || {
+  smartprofile: upsell?.smartprofile ?? {
     title: "SmartProfile",
     text: t.smartprofile,
-    badge: lang === "de" ? "BALD VERFÜGBAR" : "COMING SOON",
   },
-  smartpage: upsell?.smartpage || {
+  smartpage: upsell?.smartpage ?? {
     title: "SmartPage",
     text: t.smartpage,
-    badge: lang === "de" ? "BALD VERFÜGBAR" : "COMING SOON",
   },
-  smartdomain: upsell?.smartdomain || {
+  smartdomain: upsell?.smartdomain ?? {
     title: "SmartDomain",
     text: t.smartdomain,
-    badge: lang === "de" ? "BALD VERFÜGBAR" : "COMING SOON",
   },
-  smartlinks: upsell?.smartlinks || {
+  smartlinks: upsell?.smartlinks ?? {
     title: "SmartLinks",
     text: t.smartlinks,
-    badge: lang === "de" ? "BALD VERFÜGBAR" : "COMING SOON",
   },
 };
 ---
 
 <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 px-4 py-6">
+
   <ProductCard
     title={content.smartprofile.title}
-    label={content.smartprofile.badge}
     text={content.smartprofile.text}
     gradient="from-[#4E6BFF] to-[#657AFF]"
     glow="hover:shadow-[0_0_30px_#4E6BFF80]"
@@ -151,7 +70,6 @@ const content = {
 
   <ProductCard
     title={content.smartpage.title}
-    label={content.smartpage.badge}
     text={content.smartpage.text}
     gradient="from-[#F5B400] to-[#E47E00]"
     glow="hover:shadow-[0_0_30px_#F5B40080]"
@@ -160,7 +78,6 @@ const content = {
 
   <ProductCard
     title={content.smartdomain.title}
-    label={content.smartdomain.badge}
     text={content.smartdomain.text}
     gradient="from-[#8B5CFF] to-[#A076FF]"
     glow="hover:shadow-[0_0_30px_#8B5CFF80]"
@@ -169,52 +86,10 @@ const content = {
 
   <ProductCard
     title={content.smartlinks.title}
-    label={content.smartlinks.badge}
     text={content.smartlinks.text}
-    gradient="from-[#A8D5BA] to-[#7FBFA0]"
+    gradient="from-[#A8D5BA] to-[#7FBF9A]"
     glow="hover:shadow-[0_0_30px_#A8D5BA80]"
     action="/features/smartlinks"
   />
-</section>
-" : "NEW",
-  },
-};
----
 
-<section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 px-4 py-6">
-  <ProductCard
-    title={content.smartprofile.title}
-    label={content.smartprofile.badge}
-    text={content.smartprofile.text}
-    gradient="from-[#4E6BFF] to-[#657AFF]"
-    glow="hover:shadow-[0_0_30px_#4E6BFF80]"
-    action="/features/smartprofile"
-  />
-
-  <ProductCard
-    title={content.smartpage.title}
-    label={content.smartpage.badge}
-    text={content.smartpage.text}
-    gradient="from-[#F5B400] to-[#E47E00]"
-    glow="hover:shadow-[0_0_30px_#F5B40080]"
-    action="/features/smartpage"
-  />
-
-  <ProductCard
-    title={content.smartdomain.title}
-    label={content.smartdomain.badge}
-    text={content.smartdomain.text}
-    gradient="from-[#8B5CFF] to-[#A076FF]"
-    glow="hover:shadow-[0_0_30px_#8B5CFF80]"
-    action="/features/smartdomain"
-  />
-
-  <ProductCard
-    title={content.smartlinks.title}
-    label={content.smartlinks.badge}
-    text={content.smartlinks.text}
-    gradient="from-[#A8D5BA] to-[#7FBFA0]"
-    glow="hover:shadow-[0_0_30px_#A8D5BA80]"
-    action="/features/smartlinks"
-  />
 </section>

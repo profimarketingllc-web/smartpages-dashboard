@@ -1,0 +1,51 @@
+---
+export const prerender = false;
+
+import PageLayout from "~/layouts/PageLayout.astro";
+import SmartHeader from "~/components/shared/SmartHeader.astro";
+import ProductPill from "~/components/shared/ProductPill.astro";
+import { t } from "~/utils/i18n/i18n";
+import features from "~/utils/i18n/features";
+
+const lang = Astro.locals?.language || "de";
+const { product } = Astro.params;
+
+// Whitelist
+const allowed = ["smartprofile", "smartpage", "smartdomain", "smartlinks"];
+if (!allowed.includes(product)) {
+  throw Astro.redirect(`/${lang}/dashboard`);
+}
+
+const data = features[lang]?.[product];
+---
+
+<PageLayout title={data.title} sidebar header lang={lang}>
+  <SmartHeader />
+
+  <main class="max-w-4xl mx-auto px-6 py-10 flex flex-col gap-8">
+
+    <header class="flex flex-col gap-3">
+      <h1 class="text-3xl font-extrabold">{data.title}</h1>
+      <p class="text-lg opacity-80">{data.subtitle}</p>
+    </header>
+
+    <section class="bg-white rounded-2xl shadow p-6">
+      <p class="mb-6">{data.description}</p>
+
+      <ul class="list-disc pl-6 space-y-2">
+        {data.bullets.map((b) => <li>{b}</li>)}
+      </ul>
+    </section>
+
+    <!-- PAYWALL DUMMY -->
+    <section class="text-center mt-8">
+      <button
+        disabled
+        class="opacity-50 cursor-not-allowed bg-gray-300 text-gray-600 px-6 py-3 rounded-xl"
+      >
+        Upgrade (coming soon)
+      </button>
+    </section>
+
+  </main>
+</PageLayout>
