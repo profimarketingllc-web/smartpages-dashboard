@@ -29,13 +29,13 @@ UserPool --> HubSpot
 UserPool --> Landing
 UserPool --> Funnel
 
-HubSpot["Marketing Website HubSpot"]
+HubSpot["Marketing Website (HubSpot) www.smartpages.online"]
 Landing["Landingpage"]
 Funnel["Sales Funnel"]
 
 %% Portal
-HubSpot --> Portal
 Landing --> Portal
+HubSpot --> Portal
 Funnel --> Portal
 
 Portal["SmartPages Portal Page"]
