@@ -1,36 +1,68 @@
 ---
 /**
- * ProductGrid.astro – STABLE VERSION
- * ---------------------------------
- * ✔ Compiler-safe
- * ✔ Login + Dashboard
- * ✔ Design unverändert
+ * ProductGrid.astro – FIXED DESIGN VERSION
+ * ---------------------------------------
+ * ✔ Design fix (Farben / Glow / Gradient)
+ * ✔ Nur Text & Action von außen
  * ✔ Ganze Kachel klickbar
+ * ✔ Immer 3 Produkte in einer Reihe
  */
 
 import ProductCard from "./ProductCard.astro";
 
 const {
-  products,
+  products = [],
   lang = "de",
   compact = false,
 } = Astro.props;
 
-// ✅ IMMER Array erzwingen
-const items = Array.isArray(products) ? products : [];
+/* -------------------------------------------------- */
+/* 🎨 FESTES PRODUKT-DESIGN (NICHT KONFIGURIERBAR)    */
+/* -------------------------------------------------- */
+const DESIGN = {
+  smartprofile: {
+    gradient: "from-[#4E6BFF] to-[#657AFF]",
+    glow: "hover:shadow-[0_0_30px_#4E6BFF80]",
+  },
+  smartpage: {
+    gradient: "from-[#F5B400] to-[#E47E00]",
+    glow: "hover:shadow-[0_0_30px_#F5B40080]",
+  },
+  smartdomain: {
+    gradient: "from-[#8B5CFF] to-[#A076FF]",
+    glow: "hover:shadow-[0_0_30px_#8B5CFF80]",
+  },
+};
+
+/* -------------------------------------------------- */
+/* 🧠 PRODUKTE NORMALISIEREN                          */
+/* -------------------------------------------------- */
+const items = products.map((p) => {
+  const design = DESIGN[p.key];
+  if (!design) {
+    throw new Error(`Unknown product key: ${p.key}`);
+  }
+
+  return {
+    ...p,
+    ...design,
+    label: "UPGRADE",
+  };
+});
 ---
 
 <section
   class={`${
     compact
-      ? "w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-5"
-      : "max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-6 py-4 md:py-5"
+      ? "grid grid-cols-1 md:grid-cols-3 gap-6"
+      : "max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 py-6"
   }`}
 >
   {items.map((p) => (
     <a
-      href={p.action || "#"}
-      class="w-full block"
+      href={p.action}
+      class="block w-full focus:outline-none"
+      aria-label={p.title}
     >
       <ProductCard
         title={p.title}
