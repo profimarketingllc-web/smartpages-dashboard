@@ -5,9 +5,6 @@ import { t } from "~/utils/i18n/i18n";
 
 const lang = "en";
 
-/* ------------------------------------------------------------------
-   Products from i18n (Login Teaser)
------------------------------------------------------------------- */
 const products = [
   {
     key: "smartprofile",
@@ -29,7 +26,6 @@ const products = [
   },
 ];
 ---
-
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -42,8 +38,11 @@ const products = [
   </head>
 
   <body class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden">
+
     <!-- Header -->
-    <header class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50">
+    <header
+      class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50"
+    >
       <div class="flex items-center gap-5">
         <img
           src="/SmartPages_icon_transparent.png"
@@ -60,7 +59,9 @@ const products = [
     </header>
 
     <!-- Main -->
-    <section class="w-full max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-8 lg:px-12 mt-8 items-start">
+    <section
+      class="w-full max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-8 lg:px-12 mt-8 items-start"
+    >
       <!-- Info -->
       <div class="bg-white shadow-lg p-8 rounded-2xl border border-gray-100">
         <h2 class="text-2xl font-extrabold text-[#F5B400] mb-5">
@@ -71,36 +72,29 @@ const products = [
         <p>{t(lang, "login", "intro", "p3")}</p>
       </div>
 
-      <!-- Login -->
+      <!-- Login Form -->
       <div class="bg-[#f6f8fb] shadow-lg p-8 rounded-2xl border border-gray-100">
-        <form id="magicForm" class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm">
-          <label class="text-sm text-gray-600">First name *</label>
-          <input name="first_name" required class="border rounded-md p-2" />
+        <form
+          method="POST"
+          action="https://api.smartpages.online/api/auth/magic/start"
+          class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm"
+        >
+          <input type="hidden" name="lang" value="en" />
 
-          <label class="text-sm text-gray-600">Last name</label>
-          <input name="last_name" class="border rounded-md p-2" />
+          <label>First name *</label>
+          <input name="first_name" required />
 
-          <label class="text-sm text-gray-600">E-Mail *</label>
-          <input type="email" name="email" required class="border rounded-md p-2" />
+          <label>Last name</label>
+          <input name="last_name" />
 
-          <div class="flex items-center gap-2">
-            <input type="checkbox" id="is_business" name="is_business" />
-            <label for="is_business" class="text-sm text-gray-600">
-              Business account
-            </label>
-          </div>
-
-          <div id="company_field" class="hidden">
-            <label class="text-sm text-gray-600">Company</label>
-            <input name="company_name" class="border rounded-md p-2" />
-          </div>
+          <label>Email *</label>
+          <input type="email" name="email" required />
 
           <button
-            id="submitBtn"
             type="submit"
-            class="mt-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 rounded-lg"
+            class="mt-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg"
           >
-            Send Magic Link
+            Send magic link
           </button>
         </form>
       </div>
@@ -116,35 +110,5 @@ const products = [
     <footer class="text-center text-sm text-gray-600 py-3 bg-[#f5f5f5]">
       © 2026 SmartPages · Profi Marketing LLC · Hosted in Europe · GDPR-compliant
     </footer>
-
-    <!-- ✅ MAGIC LINK SCRIPT -->
-    <script>
-      const API_URL = "https://api.smartpages.online/api/auth/start";
-      const form = document.getElementById("magicForm");
-      const companyField = document.getElementById("company_field");
-      const isBusiness = document.getElementById("is_business");
-
-      isBusiness?.addEventListener("change", () => {
-        companyField.classList.toggle("hidden", !isBusiness.checked);
-      });
-
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const data = {
-          first_name: form.first_name.value.trim(),
-          last_name: form.last_name.value.trim(),
-          email: form.email.value.trim(),
-          company_name: form.company_name?.value.trim() || "",
-          is_business: isBusiness.checked,
-        };
-
-        await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-      });
-    </script>
   </body>
 </html>
