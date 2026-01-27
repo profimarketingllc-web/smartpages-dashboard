@@ -3,24 +3,32 @@ import "~/styles/global.css";
 import SmartHeader from "~/components/shared/SmartHeader.astro";
 import SmartSidebar from "~/components/shared/SmartSidebar.astro";
 
-// 🌍 Sprache direkt aus URL ermitteln (funktioniert auch bei SSR)
-const currentPath = Astro.url.pathname.toLowerCase();
+/* =========================================================
+   🔤 Sprache – Middleware FIRST, Props SECOND, URL LAST
+========================================================= */
 
-// 🔄 Props + automatische Spracherkennung kombinieren
 const {
   sidebar = true,
   header = true,
   sticky = true,
   headerOffset = "compact",
-  lang: propLang, // optionaler Sprach-Prop
+  lang: propLang,
   title = "SmartPages",
 } = Astro.props;
 
-// 🌍 Sprache aus URL ableiten, falls kein Prop gesetzt ist
-const detectedLang = propLang || (currentPath.includes("/en/") ? "en" : "de");
-const lang = detectedLang;
+// ✅ 1. Middleware
+const middlewareLang = Astro.locals?.language;
 
-// Kompaktere Abstände für Premium-Dashboard
+// ✅ 2. Prop
+const langFromProps = propLang;
+
+// ✅ 3. Fallback URL (nur Notnagel)
+const pathLang = Astro.url.pathname.includes("/en/") ? "en" : "de";
+
+// 🎯 FINAL
+const lang = middlewareLang || langFromProps || pathLang;
+
+// Layout helpers
 const headerOffsetClass = headerOffset === "compact" ? "mt-2 md:mt-3" : "mt-12";
 const stickyClass = sticky ? "sticky top-0 z-50" : "";
 ---
@@ -31,7 +39,6 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
 
-    <!-- 🌐 Meta -->
     <meta name="robots" content="noindex, nofollow" />
     <meta
       name="description"
@@ -42,7 +49,7 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
       }
     />
     <meta name="theme-color" content="#1E2A45" />
-    <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
+    <link rel="icon" href="/favicon.ico?v=2" />
     <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png?v=2" />
   </head>
 
@@ -50,133 +57,52 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
     {
       sidebar ? (
         <>
-          <!-- 🧭 Sidebar -->
           <SmartSidebar collapsible />
 
-          <!-- 🧱 Hauptinhalt -->
           <div class="flex-1 flex flex-col transition-all duration-300 bg-[#F7F8FA] md:ml-64">
             {header && (
               <div class={stickyClass}>
-                <SmartHeader />
+                <!-- ✅ LANG EXPLIZIT ÜBERGEBEN -->
+                <SmartHeader lang={lang} />
               </div>
             )}
 
-            <!-- 📄 Seiteninhalt -->
             <main
               class={`flex-1 px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-3 md:py-4 
-                      ${header ? headerOffsetClass : ""} 
-                      max-w-[1500px] w-full mx-auto transition-all duration-300`}
+                ${header ? headerOffsetClass : ""} 
+                max-w-[1500px] w-full mx-auto transition-all duration-300`}
             >
               <slot />
             </main>
 
-            <!-- ⚙️ Footer -->
-            <footer
-              class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-white/80 backdrop-blur-sm"
-            >
-              {lang === "de" ? (
-                <>© {new Date().getFullYear()} SmartPages · Gehostet in Europa · DSGVO-konform</>
-              ) : (
-                <>© {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant</>
-              )}
+            <footer class="text-center text-sm text-gray-500 py-4 border-t bg-white/80">
+              {lang === "de"
+                ? <>© {new Date().getFullYear()} SmartPages · Gehostet in Europa · DSGVO-konform</>
+                : <>© {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant</>
+              }
             </footer>
           </div>
         </>
       ) : (
-        <!-- 🪶 Layout ohne Sidebar -->
-        <div class="flex-1 flex flex-col min-h-screen bg-white text-smart-text">
+        <div class="flex-1 flex flex-col min-h-screen bg-white">
           {header && (
             <div class={stickyClass}>
-              <SmartHeader />
+              <SmartHeader lang={lang} />
             </div>
           )}
-          <main
-            class={`flex-1 px-4 md:px-8 lg:px-10 py-4 md:py-6 ${header ? headerOffsetClass : ""}`}
-          >
+
+          <main class={`flex-1 px-4 md:px-8 lg:px-10 py-4 md:py-6 ${header ? headerOffsetClass : ""}`}>
             <slot />
           </main>
 
-          <footer
-            class="text-center text-sm text-gray-500 py-4 border-t border-gray-200 bg-white/80 backdrop-blur-sm"
-          >
-            {lang === "de" ? (
-              <>© {new Date().getFullYear()} SmartPages · Gehostet in Europa · DSGVO-konform</>
-            ) : (
-              <>© {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant</>
-            )}
+          <footer class="text-center text-sm text-gray-500 py-4 border-t bg-white/80">
+            {lang === "de"
+              ? <>© {new Date().getFullYear()} SmartPages · Gehostet in Europa · DSGVO-konform</>
+              : <>© {new Date().getFullYear()} SmartPages · Hosted in Europe · GDPR-compliant</>
+            }
           </footer>
         </div>
       )
     }
   </body>
-
-  <style>
-    main {
-      margin: 0 auto;
-      padding-top: 0.4rem;
-      transition: all 0.3s ease-in-out;
-    }
-
-    @media (min-width: 1536px) {
-      main {
-        max-width: 1500px;
-        padding-left: 2rem;
-        padding-right: 2rem;
-      }
-    }
-
-    @media (min-width: 1280px) and (max-width: 1535px) {
-      main {
-        max-width: 1400px;
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-      }
-    }
-
-    @media (max-width: 1279px) {
-      main {
-        max-width: 100%;
-        padding-left: 1rem;
-        padding-right: 1rem;
-      }
-    }
-
-    @media (min-width: 1024px) {
-      main {
-        margin-left: 0.25rem;
-      }
-    }
-
-    @media (max-width: 768px) {
-      main {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-      }
-    }
-
-    main {
-      padding-top: 0.75rem !important;
-      padding-bottom: 1.75rem !important;
-    }
-
-    .dashboard-card {
-      padding-top: 1rem !important;
-      padding-bottom: 1rem !important;
-    }
-
-    section.w-full > section {
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-    }
-
-    main > section:last-of-type {
-      margin-bottom: 1.25rem;
-    }
-
-    /* 🔧 Reduziere Abstand zwischen ImprintCard und ProductGrid */
-    main > section + section {
-     margin-top: 0.5rem !important;   }
-
-  </style>
 </html>
-

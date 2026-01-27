@@ -1,7 +1,8 @@
 ---
 import { t } from "~/utils/i18n/i18n";
 
-const lang = Astro.locals?.language || "de";
+// ❗ Sprache kommt IMMER vom Parent (PageLayout)
+const { lang = "de" } = Astro.props;
 ---
 
 <header
