@@ -14,33 +14,34 @@ import EditPrivacyModal from "~/components/pages/dashboard/solid/EditPrivacyModa
 
 import dashboardI18n from "~/utils/i18n/dashboard";
 
-// ------------------------------------------------------------------
-// 🔐 Sprache & Session (aus Middleware)
-// ------------------------------------------------------------------
+/* ------------------------------------------------------------------
+   🌍 Sprache (Middleware optional, Fallback safe)
+------------------------------------------------------------------ */
 const lang = Astro.locals?.language || "de";
 
-// SSR-Session-Check
-const cookie = Astro.request.headers.get("cookie") || "";
-if (!cookie.includes("session=")) {
-  throw Astro.redirect(`/${lang}/login`);
-}
+/* ------------------------------------------------------------------
+   👤 User optional (KEIN Redirect!)
+------------------------------------------------------------------ */
+const user = Astro.locals?.user || null;
 
-// i18n für Dashboard
+/* ------------------------------------------------------------------
+   🌐 i18n
+------------------------------------------------------------------ */
 const tDashboard = dashboardI18n[lang];
 
-// ------------------------------------------------------------------
-// 🧩 Upsell-Produkte aus i18n erzeugen
-// ------------------------------------------------------------------
-const upsellProducts = Object.values(tDashboard.upsell).map((p) => ({
-  title: p.title,
-  label: "Upgrade",
-  text: p.text,
-  gradient: p.gradient,
-  glow: p.glow,
-  action: null,
-}));
-
-const user = Astro.locals?.user || null;
+/* ------------------------------------------------------------------
+   🧩 Upsell-Produkte (Dashboard-Version)
+   → KEINE Badges
+   → Ganze Kachel ist Button (Dummy-Link)
+------------------------------------------------------------------ */
+const upsellProducts = Object.entries(tDashboard.upsell).map(
+  ([key, p]) => ({
+    key,
+    title: p.title,
+    text: p.text,
+    action: `/features/${key}`, // Dummy / Feature-Seite
+  })
+);
 ---
 
 <PageLayout
@@ -49,9 +50,11 @@ const user = Astro.locals?.user || null;
   header={true}
   lang={lang}
 >
-  <main class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300">
+  <main
+    class="dashboard-wrapper flex flex-col gap-8 max-w-6xl mx-auto px-4 sm:px-6 mt-4 md:mt-6 mb-16 md:mb-20 transition-all duration-300"
+  >
 
-    <!-- TOP -->
+    <!-- 🧭 TOP -->
     <section class="dashboard-top grid grid-cols-1 xl:grid-cols-[2fr_1fr] gap-6 items-start">
       <DashboardCardWide>
         <CustomerCard client:only="solid-js" lang={lang} />
@@ -62,22 +65,30 @@ const user = Astro.locals?.user || null;
       </div>
     </section>
 
-    <!-- IMPRINT -->
+    <!-- 🧾 IMPRINT -->
     <DashboardCardWide>
       <ImprintCard client:only="solid-js" lang={lang} />
     </DashboardCardWide>
 
-    <!-- PRIVACY -->
+    <!-- 🔐 PRIVACY -->
     <DashboardCardWide>
       <PrivacyCard client:only="solid-js" lang={lang} />
     </DashboardCardWide>
 
-    <!-- ✅ PRODUCT UPSELL GRID (i18n-driven) -->
+    <!-- 🚀 PRODUCT UPSELL GRID -->
     <section class="mt-4 md:mt-6">
-      <ProductGrid products={upsellProducts} />
+      <ProductGrid
+        lang={lang}
+        upsell={{
+          smartprofile: upsellProducts.find(p => p.key === "smartprofile"),
+          smartpage: upsellProducts.find(p => p.key === "smartpage"),
+          smartdomain: upsellProducts.find(p => p.key === "smartdomain"),
+          smartlinks: upsellProducts.find(p => p.key === "smartlinks") || null
+        }}
+      />
     </section>
 
-    <!-- MODALS -->
+    <!-- 🪟 MODALS -->
     <EditCustomerModal client:only="solid-js" lang={lang} />
     <EditImprintModal client:only="solid-js" lang={lang} />
     <EditPrivacyModal client:only="solid-js" lang={lang} />
@@ -85,29 +96,28 @@ const user = Astro.locals?.user || null;
   </main>
 </PageLayout>
 
+<!-- ------------------------------------------------------------------
+     ℹ️ OPTIONALER SESSION-INFOPULL (NICHT REDIRECTEN!)
+------------------------------------------------------------------- -->
 <script>
   window.addEventListener("DOMContentLoaded", async () => {
-    if (window.__SESSION_CHECK_DONE__) return;
-    window.__SESSION_CHECK_DONE__ = true;
-
     try {
       const res = await fetch(
         "https://api.smartpages.online/api/session/userinfo",
         { credentials: "include" }
       );
+
       const data = await res.json();
 
-      if (!data.ok || !data.user) {
-        window.location.href = `/${window.location.pathname.includes("/en/") ? "en" : "de"}/login`;
-        return;
+      if (data?.ok && data.user) {
+        window.__SESSION_INFO__ = data.user;
+        window.dispatchEvent(
+          new CustomEvent("session-info-ready", { detail: data.user })
+        );
       }
-
-      window.__SESSION_INFO__ = data.user;
-      window.dispatchEvent(
-        new CustomEvent("session-info-ready", { detail: data.user })
-      );
     } catch {
-      window.location.href = `/${window.location.pathname.includes("/en/") ? "en" : "de"}/login`;
+      // ❌ bewusst leer
+      // Dashboard bleibt sichtbar
     }
   });
 </script>
