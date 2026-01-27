@@ -6,9 +6,7 @@ import { t } from "~/utils/i18n/i18n";
 const lang = "de";
 
 /* ------------------------------------------------------------------
-   ✅ Produkte kommen JETZT aus i18n (Login-Teaser)
-   ❌ KEIN Design hier
-   ❌ KEINE Farben hier
+   Produkte aus i18n (Login-Teaser)
 ------------------------------------------------------------------ */
 const products = [
   {
@@ -43,19 +41,11 @@ const products = [
     />
   </head>
 
-  <body
-    class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden"
-  >
-    <!-- 🧭 Header -->
-    <header
-      class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50"
-    >
+  <body class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden">
+    <!-- Header -->
+    <header class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50">
       <div class="flex items-center gap-5">
-        <img
-          src="/SmartPages_icon_transparent.png"
-          alt="SmartPages Logo"
-          class="w-16 h-16"
-        />
+        <img src="/SmartPages_icon_transparent.png" alt="SmartPages Logo" class="w-16 h-16" />
         <div>
           <h1 class="text-3xl font-extrabold">SmartPages</h1>
           <p class="text-sm md:text-base opacity-90">
@@ -65,96 +55,96 @@ const products = [
       </div>
     </header>
 
-    <!-- 💡 Hauptbereich -->
-    <section
-      class="w-full max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-8 lg:px-12 mt-8 items-start"
-    >
-      <!-- Linke Infobox -->
+    <!-- Content -->
+    <section class="w-full max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-8 lg:px-12 mt-8 items-start">
+      <!-- Info -->
       <div class="bg-white shadow-lg p-8 rounded-2xl border border-gray-100">
         <h2 class="text-2xl font-extrabold text-[#F5B400] mb-5">
           Willkommen bei SmartPages
         </h2>
         <p class="mb-3">
           Mit <strong>SmartPages</strong> erstellst du deine professionelle
-          Online-Präsenz in nur <strong>10 Minuten</strong> – ohne technisches
-          Wissen oder komplizierte Einrichtung.
+          Online-Präsenz in nur <strong>10 Minuten</strong>.
         </p>
         <p class="mb-3">
-          Alles wird sicher in <strong>Europa</strong> gehostet und ist vollständig
+          Sicher in <strong>Europa</strong> gehostet und vollständig
           <strong>DSGVO-konform</strong>.
         </p>
         <p>
-          Gib unten einfach deine Kontaktdaten ein, und wir senden dir deinen
-          persönlichen <strong>Magic Link</strong>.
+          Gib deine Kontaktdaten ein – wir senden dir deinen
+          <strong>Magic Link</strong>.
         </p>
       </div>
 
-      <!-- Rechte Loginbox -->
+      <!-- Login -->
       <div class="bg-[#f6f8fb] shadow-lg p-8 rounded-2xl border border-gray-100">
-        <form
-          id="magicForm"
-          class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm"
-        >
-          <label class="block text-sm text-gray-600 mb-1">Vorname *</label>
-          <input
-            type="text"
-            name="first_name"
-            required
-            class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-          />
+        <form id="magicForm" class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm">
+          <label class="text-sm text-gray-600">Vorname *</label>
+          <input name="first_name" required class="border rounded-md p-2" />
 
-          <label class="block text-sm text-gray-600 mb-1">Nachname</label>
-          <input
-            type="text"
-            name="last_name"
-            class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-          />
+          <label class="text-sm text-gray-600">Nachname</label>
+          <input name="last_name" class="border rounded-md p-2" />
 
-          <label class="block text-sm text-gray-600 mb-1">E-Mail *</label>
-          <input
-            type="email"
-            name="email"
-            required
-            class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-          />
+          <label class="text-sm text-gray-600">E-Mail *</label>
+          <input type="email" name="email" required class="border rounded-md p-2" />
 
           <div class="flex items-center gap-2">
             <input type="checkbox" id="is_business" name="is_business" />
-            <label for="is_business" class="text-sm text-gray-600">
-              Geschäftskonto
-            </label>
+            <label for="is_business" class="text-sm text-gray-600">Geschäftskonto</label>
           </div>
 
           <div id="company_field" class="hidden">
-            <label class="block text-sm text-gray-600 mb-1">Unternehmen</label>
-            <input
-              type="text"
-              name="company_name"
-              class="border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-[#F5B400]"
-            />
+            <label class="text-sm text-gray-600">Unternehmen</label>
+            <input name="company_name" class="border rounded-md p-2" />
           </div>
 
-          <button
-            id="submitBtn"
-            type="submit"
-            class="mt-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg shadow hover:shadow-[0_0_12px_2px_rgba(245,180,0,0.5)] hover:scale-[1.03] transition-all duration-300"
-          >
+          <button id="submitBtn" type="submit"
+            class="mt-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 rounded-lg">
             Magic Link senden
           </button>
         </form>
       </div>
     </section>
 
-    <!-- 🧱 ProductGrid -->
+    <!-- ProductGrid -->
     <section class="mt-4 mb-8">
       <div class="w-full max-w-[1400px] mx-auto">
         <ProductGrid products={products} compact />
       </div>
     </section>
 
-    <!-- Footer -->
     <footer class="text-center text-sm text-gray-600 py-3 bg-[#f5f5f5]">
-      © 2026 SmartPages · Profi Marketing LLC · Gehostet in Europa · DSGVO-konform
+      © 2026 SmartPages · Profi Marketing LLC
     </footer>
+
+    <!-- ✅ MAGIC LINK SCRIPT -->
+    <script>
+      const API_URL = "https://api.smartpages.online/api/auth/start";
+      const form = document.getElementById("magicForm");
+      const companyField = document.getElementById("company_field");
+      const isBusiness = document.getElementById("is_business");
+
+      isBusiness?.addEventListener("change", () => {
+        companyField.classList.toggle("hidden", !isBusiness.checked);
+      });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const data = {
+          first_name: form.first_name.value.trim(),
+          last_name: form.last_name.value.trim(),
+          email: form.email.value.trim(),
+          company_name: form.company_name?.value.trim() || "",
+          is_business: isBusiness.checked,
+        };
+
+        await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+      });
+    </script>
   </body>
 </html>
