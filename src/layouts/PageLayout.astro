@@ -61,3 +61,38 @@ const stickyClass = sticky ? "sticky top-0 z-50" : "";
     )
   }
 </div>
+
+<!-- ========================================================= -->
+<!-- 🔐 CLIENT-SIDE AUTH GUARD (STATIC ASTRO)                  -->
+<!-- ========================================================= -->
+<script>
+  (async function () {
+    try {
+      const res = await fetch(
+        "https://api.smartpages.online/api/session/userinfo",
+        {
+          credentials: "include"
+        }
+      );
+
+      if (!res.ok) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const data = await res.json();
+
+      if (!data.ok || !data.user) {
+        window.location.href = "/login";
+        return;
+      }
+
+      // Global verfügbar für Header, Sidebar, Pages
+      window.SMARTPAGES_USER = data.user;
+
+    } catch (err) {
+      console.error("[AuthGuard] failed", err);
+      window.location.href = "/login";
+    }
+  })();
+</script>
