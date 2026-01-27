@@ -4,31 +4,79 @@ import ProductGrid from "~/components/shared/ProductGrid.astro";
 import { t } from "~/utils/i18n/i18n";
 
 const lang = "en";
+
+const products = [
+  {
+    key: "smartprofile",
+    title: t(lang, "login", "products", "smartprofile", "title"),
+    label: t(lang, "login", "products", "smartprofile", "label"),
+    text: t(lang, "login", "products", "smartprofile", "text"),
+  },
+  {
+    key: "smartpage",
+    title: t(lang, "login", "products", "smartpage", "title"),
+    label: t(lang, "login", "products", "smartpage", "label"),
+    text: t(lang, "login", "products", "smartpage", "text"),
+  },
+  {
+    key: "smartdomain",
+    title: t(lang, "login", "products", "smartdomain", "title"),
+    label: t(lang, "login", "products", "smartdomain", "label"),
+    text: t(lang, "login", "products", "smartdomain", "text"),
+  },
+];
 ---
 
+<!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SmartPages Login</title>
+    <meta
+      name="description"
+      content="Login to SmartPages – secure, privacy-first and hosted in Europe."
+    />
+  </head>
+
   <body class="bg-white text-gray-800 font-inter pt-24 overflow-x-hidden">
 
-    <form
-      id="magicForm"
-      class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm max-w-md mx-auto"
-    >
-      <label>First name *</label>
-      <input name="first_name" required />
+    <main class="max-w-3xl mx-auto px-6 space-y-8">
 
-      <label>Last name</label>
-      <input name="last_name" />
+      <!-- LOGIN FORM -->
+      <section>
+        <form
+          id="magicForm"
+          class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm"
+        >
+          <label>First name *</label>
+          <input name="first_name" required />
 
-      <label>Email *</label>
-      <input type="email" name="email" required />
+          <label>Last name</label>
+          <input name="last_name" />
 
-      <button type="submit" class="bg-[#F5B400] text-white py-2 rounded">
-        Send magic link
-      </button>
+          <label>Email *</label>
+          <input type="email" name="email" required />
 
-      <div id="formMessage" class="text-sm mt-2"></div>
-    </form>
+          <button
+            type="submit"
+            class="bg-[#F5B400] text-white py-2 rounded font-semibold"
+          >
+            Send Magic Link
+          </button>
 
+          <div id="formMessage" class="text-sm mt-2"></div>
+        </form>
+      </section>
+
+      <!-- PRODUCT GRID (SAFE WRAPPER) -->
+      <section>
+        <ProductGrid products={products} compact />
+      </section>
+
+    </main>
+
+    <!-- MAGIC LINK HANDLER -->
     <script>
       const form = document.getElementById("magicForm");
       const msg = document.getElementById("formMessage");
@@ -57,8 +105,7 @@ const lang = "en";
             setTimeout(() => {
               window.close();
               setTimeout(() => {
-                msg.innerHTML +=
-                  "<br><span class='text-gray-500'>You may now close this window.</span>";
+                msg.innerHTML += "<br>You can close this window now.";
               }, 300);
             }, 8000);
           } else {
@@ -71,5 +118,6 @@ const lang = "en";
         }
       });
     </script>
+
   </body>
 </html>

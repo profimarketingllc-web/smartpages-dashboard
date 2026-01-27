@@ -27,32 +27,47 @@ const products = [
 ];
 ---
 
+<!DOCTYPE html>
 <html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SmartPages Login</title>
+  </head>
+
   <body class="bg-white text-gray-800 font-inter pt-24 overflow-x-hidden">
 
-    <form
-      id="magicForm"
-      class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm max-w-md mx-auto"
-    >
-      <label>Vorname *</label>
-      <input name="first_name" required />
+    <main class="max-w-3xl mx-auto px-6 space-y-8">
 
-      <label>Nachname</label>
-      <input name="last_name" />
+      <!-- LOGIN FORM -->
+      <section>
+        <form
+          id="magicForm"
+          class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm"
+        >
+          <label>Vorname *</label>
+          <input name="first_name" required />
 
-      <label>E-Mail *</label>
-      <input type="email" name="email" required />
+          <label>Nachname</label>
+          <input name="last_name" />
 
-      <button type="submit" class="bg-[#F5B400] text-white py-2 rounded">
-        Magic Link senden
-      </button>
+          <label>E-Mail *</label>
+          <input type="email" name="email" required />
 
-      <div id="formMessage" class="text-sm mt-2"></div>
-    </form>
+          <button type="submit" class="bg-[#F5B400] text-white py-2 rounded">
+            Magic Link senden
+          </button>
 
-    <section class="mt-6">
-      <ProductGrid products={products} compact />
-    </section>
+          <div id="formMessage" class="text-sm mt-2"></div>
+        </form>
+      </section>
+
+      <!-- PRODUCT GRID (IM WRAPPER!) -->
+      <section>
+        <ProductGrid products={products} compact />
+      </section>
+
+    </main>
 
     <script>
       const form = document.getElementById("magicForm");
@@ -76,27 +91,25 @@ const products = [
 
           if (result.ok) {
             msg.innerHTML =
-              "✅ Magic Link wurde gesendet.<br><small>Dieses Fenster schließt sich gleich automatisch.</small>";
+              "✅ Magic Link wurde gesendet.<br><small>Dieses Fenster schließt sich gleich.</small>";
             msg.className = "text-green-600";
 
             setTimeout(() => {
               window.close();
-
-              // Fallback, falls Browser blockiert
               setTimeout(() => {
-                msg.innerHTML +=
-                  "<br><span class='text-gray-500'>Du kannst dieses Fenster jetzt schließen.</span>";
+                msg.innerHTML += "<br>Du kannst dieses Fenster jetzt schließen.";
               }, 300);
             }, 8000);
           } else {
-            msg.textContent = "❌ Fehler beim Versand des Magic Links.";
+            msg.textContent = "❌ Fehler beim Versand.";
             msg.className = "text-red-600";
           }
-        } catch (err) {
+        } catch {
           msg.textContent = "❌ Netzwerkfehler.";
           msg.className = "text-red-600";
         }
       });
     </script>
+
   </body>
 </html>
