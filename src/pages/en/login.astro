@@ -4,111 +4,72 @@ import ProductGrid from "~/components/shared/ProductGrid.astro";
 import { t } from "~/utils/i18n/i18n";
 
 const lang = "en";
-
-const products = [
-  {
-    key: "smartprofile",
-    title: t(lang, "login", "products", "smartprofile", "title"),
-    label: t(lang, "login", "products", "smartprofile", "label"),
-    text: t(lang, "login", "products", "smartprofile", "text"),
-  },
-  {
-    key: "smartpage",
-    title: t(lang, "login", "products", "smartpage", "title"),
-    label: t(lang, "login", "products", "smartpage", "label"),
-    text: t(lang, "login", "products", "smartpage", "text"),
-  },
-  {
-    key: "smartdomain",
-    title: t(lang, "login", "products", "smartdomain", "title"),
-    label: t(lang, "login", "products", "smartdomain", "label"),
-    text: t(lang, "login", "products", "smartdomain", "text"),
-  },
-];
 ---
+
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{t(lang, "login", "page", "title")}</title>
-    <meta
-      name="description"
-      content={t(lang, "login", "page", "description")}
-    />
-  </head>
+  <body class="bg-white text-gray-800 font-inter pt-24 overflow-x-hidden">
 
-  <body class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden">
-
-    <!-- Header -->
-    <header
-      class="bg-[#1E2A45] text-white py-5 flex justify-center items-center shadow-lg fixed top-0 left-0 right-0 z-50"
+    <form
+      id="magicForm"
+      class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm max-w-md mx-auto"
     >
-      <div class="flex items-center gap-5">
-        <img
-          src="/SmartPages_icon_transparent.png"
-          alt="SmartPages Logo"
-          class="w-16 h-16"
-        />
-        <div>
-          <h1 class="text-3xl font-extrabold">SmartPages</h1>
-          <p class="text-sm md:text-base opacity-90">
-            {t(lang, "login", "header", "subtitle")}
-          </p>
-        </div>
-      </div>
-    </header>
+      <label>First name *</label>
+      <input name="first_name" required />
 
-    <!-- Main -->
-    <section
-      class="w-full max-w-[1500px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 px-8 lg:px-12 mt-8 items-start"
-    >
-      <!-- Info -->
-      <div class="bg-white shadow-lg p-8 rounded-2xl border border-gray-100">
-        <h2 class="text-2xl font-extrabold text-[#F5B400] mb-5">
-          {t(lang, "login", "intro", "headline")}
-        </h2>
-        <p class="mb-3">{t(lang, "login", "intro", "p1")}</p>
-        <p class="mb-3">{t(lang, "login", "intro", "p2")}</p>
-        <p>{t(lang, "login", "intro", "p3")}</p>
-      </div>
+      <label>Last name</label>
+      <input name="last_name" />
 
-      <!-- Login Form -->
-      <div class="bg-[#f6f8fb] shadow-lg p-8 rounded-2xl border border-gray-100">
-        <form
-          method="POST"
-          action="https://api.smartpages.online/api/auth/magic/start"
-          class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm"
-        >
-          <input type="hidden" name="lang" value="en" />
+      <label>Email *</label>
+      <input type="email" name="email" required />
 
-          <label>First name *</label>
-          <input name="first_name" required />
+      <button type="submit" class="bg-[#F5B400] text-white py-2 rounded">
+        Send magic link
+      </button>
 
-          <label>Last name</label>
-          <input name="last_name" />
+      <div id="formMessage" class="text-sm mt-2"></div>
+    </form>
 
-          <label>Email *</label>
-          <input type="email" name="email" required />
+    <script>
+      const form = document.getElementById("magicForm");
+      const msg = document.getElementById("formMessage");
 
-          <button
-            type="submit"
-            class="mt-2 bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white font-bold py-3 px-4 rounded-lg"
-          >
-            Send magic link
-          </button>
-        </form>
-      </div>
-    </section>
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msg.textContent = "";
 
-    <!-- ProductGrid -->
-    <section class="mt-4 mb-8">
-      <div class="w-full max-w-[1400px] mx-auto">
-        <ProductGrid products={products} compact />
-      </div>
-    </section>
+        const data = Object.fromEntries(new FormData(form));
 
-    <footer class="text-center text-sm text-gray-600 py-3 bg-[#f5f5f5]">
-      © 2026 SmartPages · Profi Marketing LLC · Hosted in Europe · GDPR-compliant
-    </footer>
+        try {
+          const res = await fetch("https://api.smartpages.online/api/auth/start", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ ...data, lang: "en" }),
+          });
+
+          const result = await res.json();
+
+          if (result.ok) {
+            msg.innerHTML =
+              "✅ Magic link sent.<br><small>This window will close automatically.</small>";
+            msg.className = "text-green-600";
+
+            setTimeout(() => {
+              window.close();
+              setTimeout(() => {
+                msg.innerHTML +=
+                  "<br><span class='text-gray-500'>You may now close this window.</span>";
+              }, 300);
+            }, 8000);
+          } else {
+            msg.textContent = "❌ Failed to send magic link.";
+            msg.className = "text-red-600";
+          }
+        } catch {
+          msg.textContent = "❌ Network error.";
+          msg.className = "text-red-600";
+        }
+      });
+    </script>
   </body>
 </html>

@@ -26,32 +26,77 @@ const products = [
   },
 ];
 ---
+
 <html lang="de">
-<body class="bg-white text-gray-800 font-inter pt-24 md:pt-28 overflow-x-hidden">
+  <body class="bg-white text-gray-800 font-inter pt-24 overflow-x-hidden">
 
-<form
-  id="magicForm"
-  method="POST"
-  action="https://api.smartpages.online/api/auth/magic/start"
-  class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm"
->
-  <input type="hidden" name="lang" value="de" />
+    <form
+      id="magicForm"
+      class="bg-white p-6 rounded-xl flex flex-col gap-4 shadow-sm max-w-md mx-auto"
+    >
+      <label>Vorname *</label>
+      <input name="first_name" required />
 
-  <label>Vorname *</label>
-  <input name="first_name" required />
+      <label>Nachname</label>
+      <input name="last_name" />
 
-  <label>Nachname</label>
-  <input name="last_name" />
+      <label>E-Mail *</label>
+      <input type="email" name="email" required />
 
-  <label>E-Mail *</label>
-  <input type="email" name="email" required />
+      <button type="submit" class="bg-[#F5B400] text-white py-2 rounded">
+        Magic Link senden
+      </button>
 
-  <button type="submit">
-    Magic Link senden
-  </button>
-</form>
+      <div id="formMessage" class="text-sm mt-2"></div>
+    </form>
 
-<ProductGrid products={products} compact />
+    <section class="mt-6">
+      <ProductGrid products={products} compact />
+    </section>
 
-</body>
+    <script>
+      const form = document.getElementById("magicForm");
+      const msg = document.getElementById("formMessage");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msg.textContent = "";
+
+        const data = Object.fromEntries(new FormData(form));
+
+        try {
+          const res = await fetch("https://api.smartpages.online/api/auth/start", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ ...data, lang: "de" }),
+          });
+
+          const result = await res.json();
+
+          if (result.ok) {
+            msg.innerHTML =
+              "✅ Magic Link wurde gesendet.<br><small>Dieses Fenster schließt sich gleich automatisch.</small>";
+            msg.className = "text-green-600";
+
+            setTimeout(() => {
+              window.close();
+
+              // Fallback, falls Browser blockiert
+              setTimeout(() => {
+                msg.innerHTML +=
+                  "<br><span class='text-gray-500'>Du kannst dieses Fenster jetzt schließen.</span>";
+              }, 300);
+            }, 8000);
+          } else {
+            msg.textContent = "❌ Fehler beim Versand des Magic Links.";
+            msg.className = "text-red-600";
+          }
+        } catch (err) {
+          msg.textContent = "❌ Netzwerkfehler.";
+          msg.className = "text-red-600";
+        }
+      });
+    </script>
+  </body>
 </html>

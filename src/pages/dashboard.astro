@@ -1,13 +1,13 @@
----
 export const prerender = false;
 
 import PageLayout from "~/layouts/PageLayout.astro";
 import DashboardCardWide from "~/components/shared/DashboardCardWide.astro";
+import ProductGrid from "~/components/shared/ProductGrid.astro";
+import SystemMessage from "~/components/pages/dashboard/astro/SystemMessage.astro";
+
 import CustomerCard from "~/components/pages/dashboard/solid/CustomerCard.jsx";
 import ImprintCard from "~/components/pages/dashboard/solid/ImprintCard.jsx";
 import PrivacyCard from "~/components/pages/dashboard/solid/PrivacyCard.jsx";
-import ProductGrid from "~/components/shared/ProductGrid.astro";
-import SystemMessage from "~/components/pages/dashboard/astro/SystemMessage.astro";
 
 import dashboardI18n from "~/utils/i18n/dashboard";
 
@@ -44,7 +44,12 @@ const upsellProducts = Object.values(tDashboard.upsell).map((p) => ({
       </>
     ) : (
       <div class="text-center text-gray-500 py-20">
-        Bitte melde dich an, um dein Dashboard zu sehen.
+        <h2 class="text-xl font-semibold mb-2">
+          Du bist nicht eingeloggt
+        </h2>
+        <p>
+          Bitte melde dich an, um dein Dashboard zu sehen.
+        </p>
       </div>
     )}
 

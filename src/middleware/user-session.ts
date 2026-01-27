@@ -1,14 +1,12 @@
 // src/middleware/user-session.ts
 import type { MiddlewareHandler } from "astro";
 
-export const onRequest: MiddlewareHandler = async (context, next) => {
-  const cookieHeader = context.request.headers.get("cookie");
+export const onRequest: MiddlewareHandler = async ({ request, locals }, next) => {
+  const cookie = request.headers.get("cookie");
 
-  // Standard: nicht eingeloggt
-  context.locals.user = null;
-
-  // Kein Cookie → kein User → einfach weiter
-  if (!cookieHeader) {
+  // ❗ Kein Cookie = kein User, aber OK
+  if (!cookie) {
+    locals.user = null;
     return next();
   }
 
@@ -16,24 +14,20 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     const res = await fetch(
       "https://api.smartpages.online/api/session/userinfo",
       {
-        headers: {
-          cookie: cookieHeader, // 👈 NUR das
-        },
+        headers: { Cookie: cookie },
       }
     );
 
     if (!res.ok) {
+      locals.user = null;
       return next();
     }
 
     const data = await res.json();
-
-    if (data?.ok && data.user) {
-      context.locals.user = data.user;
-    }
+    locals.user = data?.ok ? data.user : null;
   } catch (err) {
-    console.error("[user-session] failed:", err);
-    context.locals.user = null;
+    console.error("[middleware:user-session]", err);
+    locals.user = null;
   }
 
   return next();
