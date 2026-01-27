@@ -1,18 +1,28 @@
 const smartprofile = {
   de: {
+    /* ---------------- HEADER ---------------- */
+    header: {
+      title: "SmartPages",
+      subtitle: "Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen",
+    },
+
+    /* ---------------- PAGE ---------------- */
     page: {
       title: "SmartProfile – SmartPages",
     },
 
+    /* ---------------- PILL ---------------- */
     pill: {
       label: "SmartProfile",
     },
 
+    /* ---------------- CARDS ---------------- */
     card: {
       edit: "Profil bearbeiten",
       preview: "Vorschau",
     },
 
+    /* ---------------- FORM ---------------- */
     form: {
       name: "Name",
       bio: "Kurzbeschreibung",
@@ -23,19 +33,29 @@ const smartprofile = {
   },
 
   en: {
+    /* ---------------- HEADER ---------------- */
+    header: {
+      title: "SmartPages",
+      subtitle: "Go online in just 10 minutes — privacy-first and GDPR compliant.",
+    },
+
+    /* ---------------- PAGE ---------------- */
     page: {
       title: "SmartProfile – SmartPages",
     },
 
+    /* ---------------- PILL ---------------- */
     pill: {
       label: "SmartProfile",
     },
 
+    /* ---------------- CARDS ---------------- */
     card: {
       edit: "Edit Profile",
       preview: "Preview",
     },
 
+    /* ---------------- FORM ---------------- */
     form: {
       name: "Your Name",
       bio: "Bio / About You",

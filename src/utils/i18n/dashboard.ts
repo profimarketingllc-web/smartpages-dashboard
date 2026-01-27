@@ -3,6 +3,13 @@
 const dashboard = {
   /* ===================================================================== */
   de: {
+    /* ---------------- HEADER ---------------- */
+    header: {
+      title: "SmartPages",
+      subtitle: "Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen",
+    },
+
+    /* ---------------- PAGE ---------------- */
     page: {
       title: "SmartPages Dashboard",
     },
@@ -97,7 +104,7 @@ const dashboard = {
       unexpectedError: "Unerwarteter Fehler.",
     },
 
-    /* ---------------- DASHBOARD UPSELL (AUTH USER) ---------------- */
+    /* ---------------- DASHBOARD UPSELL ---------------- */
     upsell: {
       smartprofile: {
         title: "SmartProfile",
@@ -128,6 +135,13 @@ const dashboard = {
 
   /* ===================================================================== */
   en: {
+    /* ---------------- HEADER ---------------- */
+    header: {
+      title: "SmartPages",
+      subtitle: "Go online in just 10 minutes — privacy-first and GDPR compliant.",
+    },
+
+    /* ---------------- PAGE ---------------- */
     page: {
       title: "SmartPages Dashboard",
     },
@@ -222,7 +236,7 @@ const dashboard = {
       unexpectedError: "Unexpected error.",
     },
 
-    /* ---------------- DASHBOARD UPSELL (AUTH USER) ---------------- */
+    /* ---------------- DASHBOARD UPSELL ---------------- */
     upsell: {
       smartprofile: {
         title: "SmartProfile",

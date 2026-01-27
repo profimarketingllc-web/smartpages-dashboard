@@ -1,5 +1,10 @@
 const features = {
   de: {
+    header: {
+      title: "SmartPages",
+      subtitle: "Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen",
+    },
+
     smartprofile: {
       title: "SmartProfile",
       subtitle: "Dein professionelles Online-Profil",
@@ -50,6 +55,11 @@ const features = {
   },
 
   en: {
+    header: {
+      title: "SmartPages",
+      subtitle: "Go online in just 10 minutes — privacy-first and GDPR compliant.",
+    },
+
     smartprofile: {
       title: "SmartProfile",
       subtitle: "Your professional online profile",

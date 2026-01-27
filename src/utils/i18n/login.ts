@@ -1,7 +1,15 @@
 // src/utils/i18n/login.ts
 
 const login = {
+  /* =============================================================== */
   de: {
+    /* ---------------- HEADER ---------------- */
+    header: {
+      title: "SmartPages",
+      subtitle: "Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen",
+    },
+
+    /* ---------------- TEASER ---------------- */
     teaser: {
       smartprofile: {
         title: "SmartProfile",
@@ -30,7 +38,15 @@ const login = {
     },
   },
 
+  /* =============================================================== */
   en: {
+    /* ---------------- HEADER ---------------- */
+    header: {
+      title: "SmartPages",
+      subtitle: "Go online in just 10 minutes — privacy-first and GDPR compliant.",
+    },
+
+    /* ---------------- TEASER ---------------- */
     teaser: {
       smartprofile: {
         title: "SmartProfile",
