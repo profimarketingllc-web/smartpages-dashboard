@@ -1,11 +1,7 @@
 ---
-const pathname = Astro.url.pathname.toLowerCase();
-const isEnglish = pathname.startsWith("/en/");
+import { t } from "~/utils/i18n/i18n";
 
-const title = "SmartPages";
-const subtitle = isEnglish
-  ? "Go online in just 10 minutes — privacy-first and GDPR compliant."
-  : "Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen";
+const lang = Astro.locals?.language || "de";
 ---
 
 <header
@@ -25,16 +21,16 @@ const subtitle = isEnglish
     <!-- Textbereich -->
     <div class="leading-tight md:ml-3">
       <h1
-        class="text-[1.75rem] md:text-[2rem] font-extrabold tracking-tight leading-snug mb-0 text-center md:text-left"
+        class="text-[1.75rem] md:text-[2rem] font-extrabold tracking-tight leading-snug mb-0"
       >
-        {title}
+        {t(lang, "header", "title")}
       </h1>
+
       <p
-        class="text-base md:text-lg text-gray-200 font-medium mt-0 text-center md:text-left"
+        class="text-base md:text-lg text-gray-200 font-medium mt-0"
       >
-        {subtitle}
+        {t(lang, "header", "subtitle")}
       </p>
     </div>
   </div>
 </header>
-
