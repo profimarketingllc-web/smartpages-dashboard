@@ -1,0 +1,45 @@
+---
+import PageLayout from "~/layouts/PageLayout.astro";
+import billingI18n from "~/utils/i18n/billing.data";
+
+// statischer Fallback (Build-sicher)
+const lang = "de";
+const t = billingI18n[lang];
+---
+
+<PageLayout title={t.title} sidebar header>
+  <main class="max-w-5xl mx-auto px-4 mt-8 mb-24">
+
+    <section class="mb-10">
+      <h1 class="text-3xl font-extrabold text-gray-900 mb-2">
+        {t.title}
+      </h1>
+      <p class="text-lg text-gray-600">
+        {t.subtitle}
+      </p>
+    </section>
+
+    <section
+      class="bg-gray-50 border border-dashed border-gray-300 rounded-xl p-10 text-center"
+    >
+      <p class="text-gray-500 text-base">
+        {t.comingSoon}
+      </p>
+    </section>
+
+  </main>
+</PageLayout>
+
+<!-- 🌍 Sprache nach Login aus Session setzen -->
+<script>
+  (function () {
+    const user = window.SMARTPAGES_USER;
+    if (!user || !user.language) return;
+
+    document.documentElement.lang = user.language;
+    document.title =
+      user.language === "en"
+        ? "My Subscription – SmartPages"
+        : "Mein Abo – SmartPages";
+  })();
+</script>
