@@ -1,22 +1,22 @@
 ---
 /**
- * ProductGrid.astro – FINAL STABLE
- * --------------------------------
- * ✔ Fixe Farben / Glow / Gradient
- * ✔ Login: interne Teaser-Texte
- * ✔ Dashboard: Upsell-Texte via Props
- * ✔ Jede Kachel ist komplett klickbar
+ * ProductGrid.astro – FINAL (Static + Auth-aware)
+ * -----------------------------------------------
+ * ✔ Design unverändert
+ * ✔ Funktioniert für Login, Public & Dashboard
+ * ✔ Product-Fencing vorbereitet
+ * ✔ Keine Server-Abhängigkeit
  */
 
 import ProductCard from "./ProductCard.astro";
 
 const {
   lang = "de",
-  upsell = null,
+  upsell = null, // Dashboard-Upsell (optional)
 } = Astro.props;
 
 /* -------------------------------------------------- */
-/* Fallback-Texte (Login / Public)                    */
+/* Fallback-Texte (Public / Login)                    */
 /* -------------------------------------------------- */
 const teaser = {
   de: {
@@ -58,14 +58,17 @@ const content = {
 };
 ---
 
-<section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 px-4 py-6">
-
+<section
+  class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 px-4 py-6"
+  id="product-grid"
+>
   <ProductCard
     title={content.smartprofile.title}
     text={content.smartprofile.text}
     gradient="from-[#4E6BFF] to-[#657AFF]"
     glow="hover:shadow-[0_0_30px_#4E6BFF80]"
     action="/features/smartprofile"
+    data-product="smartprofile"
   />
 
   <ProductCard
@@ -74,6 +77,7 @@ const content = {
     gradient="from-[#F5B400] to-[#E47E00]"
     glow="hover:shadow-[0_0_30px_#F5B40080]"
     action="/features/smartpage"
+    data-product="smartpage"
   />
 
   <ProductCard
@@ -82,6 +86,7 @@ const content = {
     gradient="from-[#8B5CFF] to-[#A076FF]"
     glow="hover:shadow-[0_0_30px_#8B5CFF80]"
     action="/features/smartdomain"
+    data-product="smartdomain"
   />
 
   <ProductCard
@@ -90,6 +95,32 @@ const content = {
     gradient="from-[#A8D5BA] to-[#7FBF9A]"
     glow="hover:shadow-[0_0_30px_#A8D5BA80]"
     action="/features/smartlinks"
+    data-product="smartlinks"
   />
-
 </section>
+
+<!-- 🔐 Product Fencing (Client-only, non-blocking) -->
+<script>
+  (function () {
+    const user = window.SMARTPAGES_USER;
+    if (!user || !Array.isArray(user.active_products)) return;
+
+    const active = user.active_products;
+    const cards = document.querySelectorAll("[data-product]");
+
+    cards.forEach((card) => {
+      const product = card.getAttribute("data-product");
+      if (!product) return;
+
+      if (active.includes(product)) {
+        card.classList.add("opacity-70", "pointer-events-none");
+        const badge = document.createElement("div");
+        badge.textContent = "Aktiv";
+        badge.className =
+          "absolute top-3 right-3 text-xs font-semibold bg-green-600 text-white px-2 py-1 rounded-full";
+        card.style.position = "relative";
+        card.appendChild(badge);
+      }
+    });
+  })();
+</script>
