@@ -1,51 +1,126 @@
 ---
-export const prerender = false;
-
 import PageLayout from "~/layouts/PageLayout.astro";
-import SmartHeader from "~/components/shared/SmartHeader.astro";
 import ProductPill from "~/components/shared/ProductPill.astro";
-import { t } from "~/utils/i18n/i18n";
-import features from "~/utils/i18n/features";
 
-const lang = Astro.locals?.language || "de";
+// ⚠️ KEIN prerender = false
+// ⚠️ KEIN Astro.locals
+// ⚠️ KEIN Astro.redirect
+
 const { product } = Astro.params;
 
-// Whitelist
-const allowed = ["smartprofile", "smartpage", "smartdomain", "smartlinks"];
-if (!allowed.includes(product)) {
-  throw Astro.redirect(`/${lang}/dashboard`);
-}
+// Nur Whitelist – Sicherheit bleibt im Backend
+const allowedProducts = [
+  "smartprofile",
+  "smartpage",
+  "smartlinks",
+  "smartdomain",
+];
 
-const data = features[lang]?.[product];
+// Statischer Fallback (Build-sicher)
+const isAllowed = allowedProducts.includes(product);
 ---
 
-<PageLayout title={data.title} sidebar header lang={lang}>
-  <SmartHeader />
+<PageLayout sidebar header>
+  <main class="max-w-4xl mx-auto px-6 py-10 flex flex-col gap-10">
 
-  <main class="max-w-4xl mx-auto px-6 py-10 flex flex-col gap-8">
+    {isAllowed ? (
+      <>
+        <!-- 🧠 Produktkopf -->
+        <section class="flex flex-col gap-4">
+          <h1 class="text-3xl font-extrabold capitalize">
+            {product}
+          </h1>
+          <p class="text-lg text-gray-600">
+            Entdecke alle Vorteile dieses Produkts und schalte es
+            mit einem Klick frei.
+          </p>
+        </section>
 
-    <header class="flex flex-col gap-3">
-      <h1 class="text-3xl font-extrabold">{data.title}</h1>
-      <p class="text-lg opacity-80">{data.subtitle}</p>
-    </header>
+        <!-- 🧩 Feature-Container (Client) -->
+        <section id="product-features" class="flex flex-col gap-6">
+          <p class="text-gray-400">Lade Produktdetails…</p>
+        </section>
 
-    <section class="bg-white rounded-2xl shadow p-6">
-      <p class="mb-6">{data.description}</p>
-
-      <ul class="list-disc pl-6 space-y-2">
-        {data.bullets.map((b) => <li>{b}</li>)}
-      </ul>
-    </section>
-
-    <!-- PAYWALL DUMMY -->
-    <section class="text-center mt-8">
-      <button
-        disabled
-        class="opacity-50 cursor-not-allowed bg-gray-300 text-gray-600 px-6 py-3 rounded-xl"
-      >
-        Upgrade (coming soon)
-      </button>
-    </section>
-
+        <!-- 💳 CTA -->
+        <section class="text-center mt-10">
+          <button
+            id="upgrade-btn"
+            disabled
+            class="opacity-50 cursor-not-allowed bg-gray-300 text-gray-600 px-8 py-4 rounded-xl text-lg font-semibold"
+          >
+            Upgrade wird geladen…
+          </button>
+        </section>
+      </>
+    ) : (
+      <p class="text-center text-gray-500">
+        Unbekanntes Produkt.
+      </p>
+    )}
   </main>
 </PageLayout>
+
+<!-- ===================================================== -->
+<!-- 🔐 CLIENT LOGIC: Product Fencing + Stripe Redirect   -->
+<!-- ===================================================== -->
+<script>
+  (async function () {
+    if (!window.SMARTPAGES_USER) return;
+
+    const product = "{product}";
+    const container = document.getElementById("product-features");
+    const button = document.getElementById("upgrade-btn");
+
+    try {
+      // 🔎 Produktdetails vom Backend holen
+      const res = await fetch(
+        "https://api.smartpages.online/api/billing/product-info?product=" + product,
+        { credentials: "include" }
+      );
+
+      if (!res.ok) {
+        container.innerHTML =
+          "<p class='text-red-500'>Produktdaten konnten nicht geladen werden.</p>";
+        return;
+      }
+
+      const data = await res.json();
+
+      // 🧩 Features rendern
+      container.innerHTML = "";
+      data.features.forEach((f) => {
+        const el = document.createElement("div");
+        el.className = "bg-white rounded-xl shadow p-4";
+        el.innerHTML = "<strong>" + f.title + "</strong><p>" + f.text + "</p>";
+        container.appendChild(el);
+      });
+
+      // 🔓 Wenn User Produkt schon hat → zurück
+      if (window.SMARTPAGES_USER.active_products?.includes(product)) {
+        button.textContent = "Produkt bereits aktiv";
+        button.disabled = true;
+        return;
+      }
+
+      // 💳 Upgrade aktivieren
+      button.disabled = false;
+      button.textContent = "Jetzt freischalten";
+      button.className =
+        "bg-black text-white px-8 py-4 rounded-xl text-lg font-semibold hover:opacity-90";
+
+      button.onclick = async () => {
+        const checkout = await fetch(
+          "https://api.smartpages.online/api/billing/checkout?product=" + product,
+          { credentials: "include" }
+        );
+
+        const result = await checkout.json();
+        if (result?.url) {
+          window.location.href = result.url;
+        }
+      };
+    } catch (e) {
+      console.error(e);
+    }
+  })();
+</script>

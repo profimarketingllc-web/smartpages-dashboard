@@ -1,5 +1,4 @@
-export const prerender = false;
-
+---
 import PageLayout from "~/layouts/PageLayout.astro";
 import DashboardCardWide from "~/components/shared/DashboardCardWide.astro";
 import ProductGrid from "~/components/shared/ProductGrid.astro";
@@ -11,9 +10,8 @@ import PrivacyCard from "~/components/pages/dashboard/solid/PrivacyCard.jsx";
 
 import dashboardI18n from "~/utils/i18n/dashboard";
 
-const lang = Astro.locals.language || "de";
-const user = Astro.locals.user || null;
-
+// ⚠️ Fallback, wird nach Hydration ersetzt
+const lang = "de";
 const tDashboard = dashboardI18n[lang];
 
 const upsellProducts = Object.values(tDashboard.upsell).map((p) => ({
@@ -23,36 +21,33 @@ const upsellProducts = Object.values(tDashboard.upsell).map((p) => ({
 }));
 ---
 
-<PageLayout title={tDashboard.page.title} sidebar header lang={lang}>
+<PageLayout sidebar header>
   <main class="max-w-6xl mx-auto px-4 mt-6 mb-20">
 
-    {user ? (
-      <>
-        <DashboardCardWide>
-          <CustomerCard client:only="solid-js" lang={lang} />
-        </DashboardCardWide>
+    <DashboardCardWide>
+      <CustomerCard client:only="solid-js" />
+    </DashboardCardWide>
 
-        <SystemMessage lang={lang} user={user} />
+    <SystemMessage />
 
-        <DashboardCardWide>
-          <ImprintCard client:only="solid-js" lang={lang} />
-        </DashboardCardWide>
+    <DashboardCardWide>
+      <ImprintCard client:only="solid-js" />
+    </DashboardCardWide>
 
-        <DashboardCardWide>
-          <PrivacyCard client:only="solid-js" lang={lang} />
-        </DashboardCardWide>
-      </>
-    ) : (
-      <div class="text-center text-gray-500 py-20">
-        <h2 class="text-xl font-semibold mb-2">
-          Du bist nicht eingeloggt
-        </h2>
-        <p>
-          Bitte melde dich an, um dein Dashboard zu sehen.
-        </p>
-      </div>
-    )}
+    <DashboardCardWide>
+      <PrivacyCard client:only="solid-js" />
+    </DashboardCardWide>
 
     <ProductGrid products={upsellProducts} />
   </main>
 </PageLayout>
+
+<!-- 🌍 i18n-Hydration -->
+<script>
+  (function () {
+    const user = window.SMARTPAGES_USER;
+    if (!user || !user.language) return;
+
+    document.documentElement.lang = user.language;
+  })();
+</script>
