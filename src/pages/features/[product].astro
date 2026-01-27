@@ -1,7 +1,11 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 
-// 🔒 Feste Produktliste für Static Build
+/**
+ * 🔒 WICHTIG:
+ * Diese Konstante MUSS oberhalb von getStaticPaths stehen
+ * und im selben Frontmatter-Scope definiert sein.
+ */
 const PRODUCTS = [
   "smartprofile",
   "smartpage",
@@ -9,7 +13,9 @@ const PRODUCTS = [
   "smartdomain",
 ];
 
-// ⭐ PFLICHT für Static + Dynamic Routes
+/**
+ * ⭐ Pflicht für Static Builds mit Dynamic Routes
+ */
 export function getStaticPaths() {
   return PRODUCTS.map((product) => ({
     params: { product },
@@ -86,7 +92,8 @@ const isValid = PRODUCTS.includes(product);
       data.features.forEach((f) => {
         const el = document.createElement("div");
         el.className = "bg-white rounded-xl shadow p-4";
-        el.innerHTML = "<strong>" + f.title + "</strong><p>" + f.text + "</p>";
+        el.innerHTML =
+          "<strong>" + f.title + "</strong><p>" + f.text + "</p>";
         container.appendChild(el);
       });
 
