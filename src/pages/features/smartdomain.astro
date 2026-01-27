@@ -1,0 +1,31 @@
+---
+import PageLayout from "~/layouts/PageLayout.astro";
+import ProductPill from "~/components/shared/ProductPill.astro";
+
+const lang = "de";
+---
+
+<PageLayout title="SmartDomain – Features" sidebar header lang={lang}>
+  <ProductPill label="SmartDomain" color="orange" />
+
+  <main class="max-w-4xl mx-auto px-6 py-10 space-y-6">
+    <h1 class="text-3xl font-extrabold">SmartDomain</h1>
+
+    <p class="text-gray-600">
+      Eigene Domains für Profile & Pages.
+    </p>
+
+    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+      <li>Eigene Domain verbinden</li>
+      <li>SSL automatisch</li>
+      <li>White-Label-fähig</li>
+    </ul>
+
+    <a
+      href="https://api.smartpages.online/api/billing/checkout?product=smartdomain"
+      class="inline-block mt-6 rounded-xl bg-black text-white px-6 py-3"
+    >
+      Domain aktivieren
+    </a>
+  </main>
+</PageLayout>
