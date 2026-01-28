@@ -63,7 +63,7 @@ const login = {
 
   en: {
     page: {
-      title: "Login – SmartPages",
+      title: "Login",
       description:
         "Log in to SmartPages to manage your profiles, domains and subscriptions.",
     },

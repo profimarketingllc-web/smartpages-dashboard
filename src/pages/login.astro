@@ -9,30 +9,35 @@ const products = [
   {
     key: "smartprofile",
     title: t(lang, "login", "products", "smartprofile", "title"),
+    label: t(lang, "login", "products", "smartprofile", "label"),
     text:  t(lang, "login", "products", "smartprofile", "text"),
   },
   {
     key: "smartpage",
     title: t(lang, "login", "products", "smartpage", "title"),
+    label: t(lang, "login", "products", "smartpage", "label"),
     text:  t(lang, "login", "products", "smartpage", "text"),
   },
   {
     key: "smartdomain",
     title: t(lang, "login", "products", "smartdomain", "title"),
+    label: t(lang, "login", "products", "smartdomain", "label"),
     text:  t(lang, "login", "products", "smartdomain", "text"),
   },
   {
     key: "smartlinks",
     title: t(lang, "login", "products", "smartlinks", "title"),
+    label: t(lang, "login", "products", "smartlinks", "label"),
     text:  t(lang, "login", "products", "smartlinks", "text"),
   },
 ];
 ---
+
 <PageLayout
   lang={lang}
   page="login"
   sidebar={false}
-  header={true}
+  header
 >
 
   <!-- HERO + FORM -->
@@ -48,7 +53,7 @@ const products = [
       </p>
     </div>
 
-    <!-- 🔐 FORM -->
+    <!-- 🔐 FORM (JSON only, no UI feedback) -->
     <div class="dashboard-card bg-white rounded-xl shadow p-8">
       <form id="magicForm" class="grid gap-4">
         <label>{t(lang, "login", "form", "firstName")} *</label>
@@ -66,8 +71,6 @@ const products = [
         >
           {t(lang, "login", "form", "button")}
         </button>
-
-        <div id="formMessage" class="text-sm"></div>
       </form>
     </div>
 
@@ -82,34 +85,17 @@ const products = [
 
 <script>
   const form = document.getElementById("magicForm");
-  const msg  = document.getElementById("formMessage");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    msg.textContent = "";
 
     const data = Object.fromEntries(new FormData(form));
 
-    try {
-      const res = await fetch("https://api.smartpages.online/api/auth/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ ...data, lang: "{lang}" }),
-      });
-
-      const result = await res.json();
-
-      if (result.ok) {
-        msg.textContent = "✅ Magic Link gesendet.";
-        msg.className = "text-green-600";
-      } else {
-        msg.textContent = "❌ Fehler beim Senden.";
-        msg.className = "text-red-600";
-      }
-    } catch {
-      msg.textContent = "❌ Netzwerkfehler.";
-      msg.className = "text-red-600";
-    }
+    await fetch("https://api.smartpages.online/api/auth/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ ...data, lang: form.closest("html")?.lang || "en" }),
+    });
   });
 </script>

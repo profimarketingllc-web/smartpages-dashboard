@@ -7,22 +7,29 @@ import { t, useLang } from "~/utils/i18n/i18n";
 const {
   sidebar = true,
   header = true,
-  page,            // z.B. "login", "smartprofile"
+  page,          // z.B. "login", "smartprofile"
+  lang: propLang // optional
 } = Astro.props;
 
-// 🌍 Sprache (default: en)
-const lang = useLang("en");
+// 🌍 Sprache (default = en, wie vereinbart)
+const lang = propLang ?? useLang("en");
 
 // 🧠 Seitentitel aus i18n
 const pageTitle = page
-  ? `SmartPages – ${t(lang, page, "page", "title")}`
+  ? t(lang, page, "page", "title")
+  : null;
+
+// 🧾 FINAL Browser Title
+const fullTitle = pageTitle
+  ? `SmartPages – ${pageTitle}`
   : "SmartPages";
 ---
+
 <html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{pageTitle}</title>
+    <title>{fullTitle}</title>
   </head>
 
   <body class="min-h-screen flex font-sans text-smart-text bg-[#F7F8FA] antialiased">
