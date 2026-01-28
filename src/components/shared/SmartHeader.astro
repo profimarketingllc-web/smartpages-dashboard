@@ -1,46 +1,25 @@
 ---
-import { t } from "~/utils/i18n/i18n";
-
-const {
-  lang = "en",
-  page,
-} = Astro.props;
-
-// Texte IMMER vorab auflösen (Astro-safe)
-const title = page
-  ? t(lang, page, "header", "title")
-  : t(lang, "login", "header", "title");
-
-const subtitle = page
-  ? t(lang, page, "header", "subtitle")
-  : t(lang, "login", "header", "subtitle");
+const { title, subtitle } = Astro.props;
 ---
-
-<header class="w-full bg-[#1E2A45] text-white shadow-md z-40 md:sticky md:top-0">
-  <div class="max-w-6xl mx-auto py-4 px-4">
-
-    <!-- 🔹 ZENTRIERTER BLOCK (Logo + Text) -->
-    <div class="flex items-center justify-center gap-4">
-
-      <!-- Logo (bewusst etwas größer) -->
+<header class="w-full bg-[#1E2A45] text-white shadow-md z-50">
+  <div class="max-w-6xl mx-auto flex justify-center py-5 px-4">
+    <div class="flex items-center gap-4">
       <img
         src="/SmartPages_icon_transparent.png"
         alt="SmartPages Logo"
-        class="h-[70px] w-auto shrink-0"
-        loading="lazy"
+        class="h-[4.25rem] w-auto"
       />
 
-      <!-- Textblock: linksbündig ZUM LOGO -->
       <div class="text-left leading-tight">
-        <h1 class="text-[1.7rem] md:text-[1.95rem] font-extrabold tracking-tight">
+        <h1 class="text-2xl font-extrabold tracking-tight">
           {title}
         </h1>
-
-        <p class="text-sm md:text-base text-gray-200 font-medium">
-          {subtitle}
-        </p>
+        {subtitle && (
+          <p class="text-base text-gray-200">
+            {subtitle}
+          </p>
+        )}
       </div>
-
     </div>
   </div>
 </header>

@@ -1,73 +1,83 @@
 ---
-import { t } from "~/utils/i18n/i18n";
+import { t, resolveLang } from "~/utils/i18n/i18n";
 
-// 🌍 Sprache (Fallback = en)
-const lang = "en";
+const lang = resolveLang();
 
-// 📍 Aktueller Pfad (für Active-State)
-const currentPath = Astro.url.pathname;
-
-// 🧭 Navigation (i18n keys!)
 const navItems = [
-  { key: "Cockpit", icon: "🛫", path: "/dashboard" },
-  { key: "SmartProfile", icon: "👤", path: "/smartprofile" },
-  { key: "SmartPage", icon: "📄", path: "/smartpage" },
-  { key: "SmartDomain", icon: "🌐", path: "/smartdomain" },
-  { key: "SmartLinks", icon: "🔗", path: "/smartlinks" },
+  {
+    key: "dashboard",
+    icon: "🛫",
+    path: "/dashboard",
+    gradient: "hover:from-[#F5B400] hover:to-[#E47E00]",
+  },
+  {
+    key: "smartprofile",
+    icon: "👤",
+    path: "/smartprofile",
+    gradient: "hover:from-[#4E6BFF] hover:to-[#657AFF]",
+  },
+  {
+    key: "smartpage",
+    icon: "📄",
+    path: "/smartpage",
+    gradient: "hover:from-[#F5B400] hover:to-[#E47E00]",
+  },
+  {
+    key: "smartdomain",
+    icon: "🌐",
+    path: "/smartdomain",
+    gradient: "hover:from-[#8B5CFF] hover:to-[#A076FF]",
+  },
+  {
+    key: "smartlinks",
+    icon: "🔗",
+    path: "/smartlinks",
+    gradient: "hover:from-[#A8D5BA] hover:to-[#91C7A0]",
+  },
 ];
 ---
-
 <aside
   id="sidebar"
-  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl
-         flex flex-col justify-between transition-transform duration-300 ease-in-out
-         -translate-x-full md:translate-x-0 z-50"
+  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl flex flex-col justify-between -translate-x-full md:translate-x-0 z-50"
 >
   <!-- 🔸 Header -->
-  <div class="h-20 flex items-center justify-center border-b border-white/10 shrink-0">
+  <div class="h-20 flex items-center justify-center border-b border-white/10">
     <h2 class="text-xl font-extrabold tracking-wide text-[#F5B400]">
       SmartCenter
     </h2>
   </div>
 
   <!-- 🔸 Navigation -->
-  <nav class="flex-1 mt-8 space-y-3 overflow-y-auto scrollbar-hide px-3 pb-4">
-    {navItems.map((item) => {
-      const isActive = currentPath.startsWith(item.path);
-
-      return (
-        <a
-          href={item.path}
-          class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-                  transition-all duration-300 shadow-md
-                  ${
-                    isActive
-                      ? "bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white"
-                      : "bg-[#f6f8fb] text-[#1E2A45] hover:bg-gradient-to-r hover:from-[#4F6EF7] hover:to-[#6A7CFF] hover:text-white"
-                  }`}
-        >
-          <span class="text-lg">{item.icon}</span>
-          <span>{t(lang, "sidebar", "nav", item.key)}</span>
-        </a>
-      );
-    })}
+  <nav class="flex-1 mt-8 space-y-3 px-3 overflow-y-auto scrollbar-hide">
+    {navItems.map((item) => (
+      <a
+        href={item.path}
+        class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
+                bg-[#f6f8fb] text-[#1E2A45]
+                hover:bg-gradient-to-r hover:text-white
+                shadow-md transition-all duration-300
+                ${item.gradient}`}
+      >
+        <span class="text-lg">{item.icon}</span>
+        <span>{t(lang, "sidebar", "nav", item.key)}</span>
+      </a>
+    ))}
   </nav>
 
-  <!-- 🔹 Trennlinie -->
-  <hr class="border-t border-white/20 mx-4 my-3" />
+  <hr class="border-t border-white/20 mx-4 my-4" />
 
   <!-- 🔹 Footer -->
   <div class="p-4 space-y-3">
-    <!-- 💳 Abo -->
+    <!-- 💳 Billing (BLAU, wie vorher) -->
     <a
       href="/billing"
       class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-             bg-[#f6f8fb] text-[#1E2A45]
-             hover:bg-gradient-to-r hover:from-[#C0C0C0] hover:to-[#E0E0E0]
-             transition-all shadow-md"
+             bg-[#4E6BFF] text-white shadow-md
+             hover:from-[#4E6BFF] hover:to-[#657AFF] hover:bg-gradient-to-r
+             transition-all duration-300"
     >
       <span class="text-lg">💳</span>
-      <span>{t(lang, "sidebar", "footer", "billing")}</span>
+      <span>{t(lang, "sidebar", "billing", "label")}</span>
     </a>
 
     <!-- 💬 Support -->
@@ -76,38 +86,9 @@ const navItems = [
       class="block w-full text-center rounded-2xl py-3 font-medium
              bg-white text-[#1E2A45] border border-[#4F6EF7]
              hover:bg-[#4F6EF7] hover:text-white
-             transition-all shadow-md"
+             transition-all duration-300 shadow-md"
     >
-      {t(lang, "sidebar", "footer", "support")}
+      {t(lang, "sidebar", "support", "label")}
     </a>
   </div>
 </aside>
-
-<!-- 🔹 Mobile Overlay -->
-<div
-  id="overlay"
-  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden"
-></div>
-
-<!-- 🔹 Toggle Button -->
-<button
-  id="openSidebar"
-  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white p-2 rounded-xl shadow-lg z-50"
->
-  ☰
-</button>
-
-<script>
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-  const openBtn = document.getElementById("openSidebar");
-
-  const toggleSidebar = () => {
-    const isHidden = sidebar.classList.contains("-translate-x-full");
-    sidebar.classList.toggle("-translate-x-full", !isHidden);
-    overlay.classList.toggle("hidden", !isHidden);
-  };
-
-  openBtn?.addEventListener("click", toggleSidebar);
-  overlay?.addEventListener("click", toggleSidebar);
-</script>
