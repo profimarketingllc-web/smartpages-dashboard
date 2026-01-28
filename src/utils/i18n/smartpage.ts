@@ -1,49 +1,57 @@
-const smartprofile = {
+const smartpage = {
   de: {
+    /* ---------------- PAGE ---------------- */
     page: {
-      title: "SmartProfile – SmartPages",
+      title: "SmartPage – SmartPages",
     },
 
+    /* ---------------- PILL ---------------- */
     pill: {
-      label: "SmartProfile",
+      label: "SmartPage",
     },
 
+    /* ---------------- CARDS ---------------- */
     card: {
-      edit: "Profil bearbeiten",
+      edit: "Seite bearbeiten",
       preview: "Vorschau",
     },
 
+    /* ---------------- FORM ---------------- */
     form: {
-      name: "Name",
-      bio: "Kurzbeschreibung",
-      link_1: "Erster Link",
-      link_2: "Zweiter Link",
-      link_3: "Dritter Link (optional)",
+      title: "Seitentitel",
+      subtitle: "Untertitel",
+      content: "Inhalt",
+      cta_label: "Button-Text",
+      cta_url: "Button-Link",
     },
   },
 
   en: {
+    /* ---------------- PAGE ---------------- */
     page: {
-      title: "SmartProfile – SmartPages",
+      title: "SmartPage – SmartPages",
     },
 
+    /* ---------------- PILL ---------------- */
     pill: {
-      label: "SmartProfile",
+      label: "SmartPage",
     },
 
+    /* ---------------- CARDS ---------------- */
     card: {
-      edit: "Edit Profile",
+      edit: "Edit Page",
       preview: "Preview",
     },
 
+    /* ---------------- FORM ---------------- */
     form: {
-      name: "Your Name",
-      bio: "Bio / About You",
-      link_1: "First Link",
-      link_2: "Second Link",
-      link_3: "Third Link (optional)",
+      title: "Page Title",
+      subtitle: "Subtitle",
+      content: "Content",
+      cta_label: "Button Label",
+      cta_url: "Button URL",
     },
   },
 };
 
-export default smartprofile;
+export default smartpage;
