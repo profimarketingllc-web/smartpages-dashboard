@@ -4,25 +4,21 @@ import SmartHeader from "~/components/shared/SmartHeader.astro";
 import SmartSidebar from "~/components/shared/SmartSidebar.astro";
 import { t, resolveLang } from "~/utils/i18n/i18n";
 
-/* -------------------------------
-   Props mit sauberen Defaults
--------------------------------- */
-const {
-  sidebar = true,
-  header = true,
-  page,
-  lang: langProp,
-} = Astro.props;
+/* ---------------------------------
+   Props robust & build-sicher
+---------------------------------- */
 
-/* -------------------------------
-   Sprache auflösen (Fallback: en)
--------------------------------- */
-const lang = langProp ?? resolveLang("en");
+// ❗ KEIN destructuring für optionale Props
+const props = Astro.props ?? {};
 
-/* -------------------------------
-   Seitentitel (Browser-Tab)
-   Format: SmartPages – Titel
--------------------------------- */
+const sidebar = props.sidebar === false ? false : true;
+const header  = props.header  === false ? false : true;
+const page    = props.page;
+const lang    = props.lang ?? resolveLang("en");
+
+/* ---------------------------------
+   Browser Tab Titel
+---------------------------------- */
 const pageTitle = page
   ? `SmartPages – ${t(lang, page, "page", "title")}`
   : "SmartPages";
@@ -38,11 +34,11 @@ const pageTitle = page
 
   <body class="min-h-screen flex font-sans bg-[#F7F8FA] antialiased">
 
-    {sidebar && <SmartSidebar />}
+    {sidebar ? <SmartSidebar /> : null}
 
     <div class={`flex-1 flex flex-col ${sidebar ? "md:ml-64" : ""}`}>
 
-      {header && <SmartHeader page={page} lang={lang} />}
+      {header ? <SmartHeader page={page} lang={lang} /> : null}
 
       <main class="flex-1 px-4 py-6 max-w-[1500px] w-full mx-auto">
         <slot />
