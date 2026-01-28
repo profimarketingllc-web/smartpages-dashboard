@@ -1,6 +1,6 @@
 import dashboard from "./dashboard";
 import billing from "./billing";
-//import login from "./login";
+import login from "./login";
 // später:
 // import smartpage from "./smartpage";
 // import smartprofile from "./smartprofile";
@@ -10,20 +10,16 @@ import billing from "./billing";
 const dictionaries: Record<string, any> = {
   dashboard,
   billing,
-  // login,
-  // smartpage,
-  // smartprofile,
-  // smartdomain,
-  // smartlinks,
+  login,
 };
 
 /**
  * 🌍 Übersetzungsfunktion (seitenbasiert)
  *
  * @param lang     "de" | "en"
- * @param page     z.B. "dashboard"
- * @param section  z.B. "customer", "system"
- * @param key      z.B. "title", "button"
+ * @param page     z.B. "login", "dashboard"
+ * @param section  z.B. "hero", "form", "header"
+ * @param key      z.B. "title", "text", "button"
  */
 export function t(
   lang: string,
@@ -44,7 +40,6 @@ export function t(
     if (typeof value === "function") value = value(params);
     if (typeof value !== "string") return key;
 
-    // Platzhalter ersetzen
     if (params !== undefined) {
       if (Array.isArray(params)) {
         params.forEach((p, i) => {
@@ -63,11 +58,11 @@ export function t(
 }
 
 /**
- * 🧭 useLang() – erkennt Sprache aus URL oder SSR
+ * 🧭 useLang() – optional, nicht Layout-kritisch
  */
-export function useLang(defaultLang = "de"): string {
+export function useLang(defaultLang = "en"): string {
   if (typeof window !== "undefined") {
-    return window.location.pathname.includes("/en/") ? "en" : "de";
+    return window.location.pathname.includes("/de/") ? "de" : "en";
   }
   return defaultLang;
 }
