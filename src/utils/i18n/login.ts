@@ -4,7 +4,7 @@ const login = {
   de: {
     /* ================= PAGE META ================= */
     page: {
-      title: "Login – SmartPages",
+      title: "Login",
       description:
         "Melde dich bei SmartPages an und verwalte deine Profile, Domains und Abonnements.",
     },
