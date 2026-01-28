@@ -1,16 +1,4 @@
 const sidebar = {
-  en: {
-    nav: {
-      dashboard: "Cockpit",
-      smartprofile: "SmartProfile",
-      smartpage: "SmartPage",
-      smartdomain: "SmartDomain",
-      smartlinks: "SmartLinks",
-    },
-    billing: "My Plan",
-    support: "💬 Message the Team",
-  },
-
   de: {
     nav: {
       dashboard: "Cockpit",
@@ -19,8 +7,23 @@ const sidebar = {
       smartdomain: "SmartDomain",
       smartlinks: "SmartLinks",
     },
-    billing: "Mein Abo",
-    support: "💬 Nachricht an das Team",
+    footer: {
+      billing: "Mein Abo",
+      support: "Nachricht an das Team",
+    },
+  },
+  en: {
+    nav: {
+      dashboard: "Dashboard",
+      smartprofile: "SmartProfile",
+      smartpage: "SmartPage",
+      smartdomain: "SmartDomain",
+      smartlinks: "SmartLinks",
+    },
+    footer: {
+      billing: "My Plan",
+      support: "Message the Team",
+    },
   },
 };
 
