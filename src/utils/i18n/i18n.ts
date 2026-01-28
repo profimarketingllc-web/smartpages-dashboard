@@ -14,7 +14,6 @@ const dictionaries: Record<string, any> = {
   dashboard,
   billing,
   login,
-
   smartpage,
   smartprofile,
   smartdomain,
@@ -25,7 +24,7 @@ const dictionaries: Record<string, any> = {
  * 🌍 Übersetzungsfunktion (seitenbasiert)
  *
  * @param lang     "de" | "en"
- * @param page     z.B. "login", "dashboard", "smartpage"
+ * @param page     z.B. "login", "dashboard", "smartprofile"
  * @param section  z.B. "header", "hero", "form"
  * @param key      z.B. "title", "text", "button"
  */
@@ -37,7 +36,7 @@ export function t(
   params?: any
 ): string {
   try {
-    const safeLang = lang === "en" ? "en" : "de";
+    const safeLang = lang === "de" ? "de" : "en";
     const pageDict = dictionaries[page];
     if (!pageDict) return key;
 
@@ -67,12 +66,28 @@ export function t(
 }
 
 /**
- * 🧭 useLang() – erkennt Sprache aus URL
+ * 🧭 useLang()
+ * - KEIN Slug
+ * - KEINE SSR-Abhängigkeit
+ * - zentrale Quelle für die gesamte App
  */
 export function useLang(defaultLang = "en"): string {
-  if (typeof window !== "undefined") {
-    return window.location.pathname.includes("/de/") ? "de" : "en";
+  if (typeof window === "undefined") return defaultLang;
+
+  // 1️⃣ URL override (?lang=de) – Debug / Preview
+  const urlLang = new URLSearchParams(window.location.search).get("lang");
+  if (urlLang === "de" || urlLang === "en") {
+    localStorage.setItem("lang", urlLang);
+    return urlLang;
   }
+
+  // 2️⃣ Persistente Sprache
+  const stored = localStorage.getItem("lang");
+  if (stored === "de" || stored === "en") return stored;
+
+  // 3️⃣ Browser-Sprache
+  if (navigator.language.startsWith("de")) return "de";
+
   return defaultLang;
 }
 
