@@ -9,193 +9,154 @@ const products = [
   {
     key: "smartprofile",
     title: t(lang, "login", "products", "smartprofile", "title"),
-    label: t(lang, "login", "products", "smartprofile", "label"),
-    text:  t(lang, "login", "products", "smartprofile", "text"),
+    text: t(lang, "login", "products", "smartprofile", "text"),
   },
   {
     key: "smartpage",
     title: t(lang, "login", "products", "smartpage", "title"),
-    label: t(lang, "login", "products", "smartpage", "label"),
-    text:  t(lang, "login", "products", "smartpage", "text"),
+    text: t(lang, "login", "products", "smartpage", "text"),
   },
   {
     key: "smartdomain",
     title: t(lang, "login", "products", "smartdomain", "title"),
-    label: t(lang, "login", "products", "smartdomain", "label"),
-    text:  t(lang, "login", "products", "smartdomain", "text"),
+    text: t(lang, "login", "products", "smartdomain", "text"),
   },
   {
     key: "smartlinks",
     title: t(lang, "login", "products", "smartlinks", "title"),
-    label: t(lang, "login", "products", "smartlinks", "label"),
-    text:  t(lang, "login", "products", "smartlinks", "text"),
+    text: t(lang, "login", "products", "smartlinks", "text"),
   },
 ];
 ---
 
-<PageLayout lang={lang} page="login" sidebar={false} header>
+<PageLayout lang={lang} page="login" sidebar={false} header={true}>
 
-  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 mt-12">
+  <!-- HERO + INPUT -->
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
 
     <!-- HERO -->
-    <div class="dashboard-card bg-white rounded-xl shadow p-8">
-      <h2 class="text-2xl font-bold mb-3">
+    <div class="dashboard-card bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-bold mb-2">
         {t(lang, "login", "hero", "title")}
       </h2>
-      <p class="text-gray-600">
+      <p class="text-sm text-gray-600 leading-snug">
         {t(lang, "login", "hero", "text")}
       </p>
     </div>
 
-    <!-- LOGIN -->
-    <div class="dashboard-card bg-white rounded-xl shadow p-8 space-y-5">
+    <!-- INPUT CARD -->
+    <div class="dashboard-card bg-white rounded-xl shadow p-6">
+      <div class="grid gap-3">
 
-      <!-- FIRST NAME -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <!-- First name -->
+        <label class="text-sm font-medium">
           {t(lang, "login", "form", "firstName")}
+          <span class="text-red-500">*</span>
         </label>
         <input
-          id="first_name"
-          type="text"
-          class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 focus:outline-none"
+          id="firstName"
+          class="h-9 px-3 rounded border bg-gray-100 text-sm"
         />
-      </div>
 
-      <!-- LAST NAME -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <!-- Last name -->
+        <label class="text-sm font-medium">
           {t(lang, "login", "form", "lastName")}
         </label>
         <input
-          id="last_name"
-          type="text"
-          class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 focus:outline-none"
+          id="lastName"
+          class="h-9 px-3 rounded border bg-gray-100 text-sm"
         />
-      </div>
 
-      <!-- EMAIL -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <!-- Email -->
+        <label class="text-sm font-medium">
           {t(lang, "login", "form", "email")}
+          <span class="text-red-500">*</span>
         </label>
         <input
           id="email"
           type="email"
-          required
-          class="w-full rounded-lg border border-gray-400 bg-gray-100 px-3 py-2 focus:outline-none"
+          class="h-9 px-3 rounded border bg-gray-100 text-sm"
         />
-      </div>
 
-      <!-- BUSINESS BOX -->
-      <div
-        id="businessBox"
-        class="
-          cursor-pointer
-          rounded-lg
-          border
-          border-gray-300
-          bg-gray-50
-          px-4
-          py-3
-          text-sm
-          text-gray-700
-          flex
-          items-center
-          gap-2
-        "
-      >
-        <input type="checkbox" id="businessToggle" />
-        <span>{t(lang, "login", "form", "business")}</span>
-      </div>
+        <!-- Business toggle -->
+        <div
+          id="businessBox"
+          class="mt-2 cursor-pointer rounded-lg border border-dashed text-sm text-gray-600 p-3 text-center hover:bg-gray-50"
+        >
+          {t(lang, "login", "form", "businessToggle")}
+        </div>
 
-      <!-- COMPANY FIELD -->
-      <div id="companyRow" class="hidden">
-        <label class="block text-sm font-medium text-gray-700 mb-1">
-          {t(lang, "login", "form", "company")}
-        </label>
-        <input
-          id="company"
-          type="text"
-          class="w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 focus:outline-none"
-        />
-      </div>
+        <!-- Company -->
+        <div id="companyField" class="hidden">
+          <label class="text-sm font-medium mt-2 block">
+            {t(lang, "login", "form", "company")}
+          </label>
+          <input
+            id="company"
+            class="h-9 px-3 rounded border bg-gray-100 text-sm w-full"
+          />
+        </div>
 
-      <!-- BUTTON -->
-      <div class="pt-4 flex justify-center">
+        <!-- Button -->
         <button
-          id="magicButton"
-          type="button"
-          class="
-            w-full
-            max-w-sm
-            bg-[#F5B400]
-            text-white
-            py-3
-            rounded-lg
-            font-semibold
-            shadow-md
-            disabled:opacity-60
-            disabled:cursor-not-allowed
-          "
+          id="sendBtn"
+          disabled
+          class="mt-4 mx-auto w-3/4 h-10 rounded-lg font-semibold text-white bg-[#F5B400] disabled:opacity-50"
         >
           {t(lang, "login", "form", "button")}
         </button>
+
+        <!-- Hint -->
+        <p class="text-xs text-gray-500 text-center mt-2 leading-snug">
+          {t(lang, "login", "form", "hint")}
+        </p>
+
       </div>
-
-      <!-- HINT (DESIGN ONLY, TEXT LATER) -->
-      <p class="text-xs text-gray-400 text-center leading-snug">
-        {t(lang, "login", "form", "hint")}
-      </p>
-
     </div>
   </section>
 
   <!-- PRODUCTS -->
-  <section class="mt-16">
+  <section class="mt-10">
     <ProductGrid products={products} />
   </section>
 
 </PageLayout>
 
 <script>
-  const toggle = document.getElementById("businessToggle");
-  const box = document.getElementById("businessBox");
-  const row = document.getElementById("companyRow");
-  const btn = document.getElementById("magicButton");
+  const firstName = document.getElementById("firstName");
+  const email = document.getElementById("email");
+  const companyBox = document.getElementById("businessBox");
+  const companyField = document.getElementById("companyField");
+  const sendBtn = document.getElementById("sendBtn");
 
-  box?.addEventListener("click", () => {
-    toggle.checked = true;
-    box.classList.add("hidden");
-    row.classList.remove("hidden");
+  function validate() {
+    sendBtn.disabled = !firstName.value || !email.value;
+  }
+
+  firstName.addEventListener("input", validate);
+  email.addEventListener("input", validate);
+
+  companyBox.addEventListener("click", () => {
+    companyBox.classList.add("hidden");
+    companyField.classList.remove("hidden");
   });
 
-  btn?.addEventListener("click", async () => {
-    if (btn.disabled) return;
-
-    btn.disabled = true;
-    btn.textContent = "…";
+  sendBtn.addEventListener("click", async () => {
+    sendBtn.disabled = true;
 
     const payload = {
-      first_name: document.getElementById("first_name")?.value || "",
-      last_name: document.getElementById("last_name")?.value || "",
-      email: document.getElementById("email")?.value || "",
+      first_name: firstName.value,
+      last_name: document.getElementById("lastName").value,
+      email: email.value,
+      company: document.getElementById("company")?.value,
       lang: "{lang}",
     };
 
-    if (!row.classList.contains("hidden")) {
-      payload.company = document.getElementById("company")?.value || "";
-    }
-
-    try {
-      await fetch("https://api.smartpages.online/api/auth/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
-    } catch (err) {
-      console.error(err);
-    }
+    await fetch("https://api.smartpages.online/api/auth/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
   });
 </script>
