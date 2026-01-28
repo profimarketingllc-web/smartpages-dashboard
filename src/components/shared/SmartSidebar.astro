@@ -1,83 +1,98 @@
 ---
-import { t, resolveLang } from "~/utils/i18n/i18n";
+import { t, useLang } from "~/utils/i18n/i18n";
 
-const lang = resolveLang();
+// 🌍 Sprache bewusst setzen (Fallback: en)
+const lang = useLang();
 
+// 🔹 Navigation (sprachneutraler Pfad!)
 const navItems = [
   {
     key: "dashboard",
     icon: "🛫",
     path: "/dashboard",
-    gradient: "hover:from-[#F5B400] hover:to-[#E47E00]",
+    color:
+      "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]",
   },
   {
     key: "smartprofile",
     icon: "👤",
     path: "/smartprofile",
-    gradient: "hover:from-[#4E6BFF] hover:to-[#657AFF]",
+    color:
+      "hover:from-[#4E6BFF] hover:to-[#657AFF] hover:shadow-[0_0_20px_rgba(78,107,255,0.4)]",
   },
   {
     key: "smartpage",
     icon: "📄",
     path: "/smartpage",
-    gradient: "hover:from-[#F5B400] hover:to-[#E47E00]",
+    color:
+      "hover:from-[#F5B400] hover:to-[#E47E00] hover:shadow-[0_0_20px_rgba(245,180,0,0.4)]",
   },
   {
     key: "smartdomain",
     icon: "🌐",
     path: "/smartdomain",
-    gradient: "hover:from-[#8B5CFF] hover:to-[#A076FF]",
+    color:
+      "hover:from-[#8B5CFF] hover:to-[#A076FF] hover:shadow-[0_0_20px_rgba(139,92,255,0.4)]",
   },
   {
     key: "smartlinks",
     icon: "🔗",
     path: "/smartlinks",
-    gradient: "hover:from-[#A8D5BA] hover:to-[#91C7A0]",
+    color:
+      "hover:from-[#A8D5BA] hover:to-[#91C7A0] hover:shadow-[0_0_20px_rgba(168,213,186,0.4)]",
   },
 ];
+
+// 🔹 Footer / Management
+const billingLabel = t(lang, "dashboard", "sidebar", "billing");
+const supportLabel = t(lang, "dashboard", "sidebar", "support");
 ---
+
 <aside
   id="sidebar"
-  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl flex flex-col justify-between -translate-x-full md:translate-x-0 z-50"
+  class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white shadow-xl
+         flex flex-col justify-between transition-transform duration-300
+         ease-in-out -translate-x-full md:translate-x-0 z-50"
 >
   <!-- 🔸 Header -->
-  <div class="h-20 flex items-center justify-center border-b border-white/10">
-    <h2 class="text-xl font-extrabold tracking-wide text-[#F5B400]">
+  <div class="h-20 flex items-center justify-center border-b border-white/10 shrink-0">
+    <h2 class="text-xl font-extrabold tracking-wide text-[#F5B400] drop-shadow">
       SmartCenter
     </h2>
   </div>
 
   <!-- 🔸 Navigation -->
-  <nav class="flex-1 mt-8 space-y-3 px-3 overflow-y-auto scrollbar-hide">
+  <nav class="flex-1 mt-8 space-y-3 overflow-y-auto scrollbar-hide px-3 pb-4">
     {navItems.map((item) => (
       <a
         href={item.path}
         class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
                 bg-[#f6f8fb] text-[#1E2A45]
                 hover:bg-gradient-to-r hover:text-white
-                shadow-md transition-all duration-300
-                ${item.gradient}`}
+                transition-all duration-300 shadow-md
+                ${item.color}`}
       >
         <span class="text-lg">{item.icon}</span>
-        <span>{t(lang, "sidebar", "nav", item.key)}</span>
+        <span>{t(lang, "dashboard", "sidebar", item.key)}</span>
       </a>
     ))}
   </nav>
 
-  <hr class="border-t border-white/20 mx-4 my-4" />
+  <!-- 🔹 Divider -->
+  <hr class="border-t-2 border-white/20 mx-4 my-4" />
 
-  <!-- 🔹 Footer -->
-  <div class="p-4 space-y-3">
-    <!-- 💳 Billing (BLAU, wie vorher) -->
+  <!-- 🔹 Bottom Actions -->
+  <div class="p-4 bg-[#1E2A45]/95 backdrop-blur-sm space-y-3">
+    <!-- 💳 Billing -->
     <a
       href="/billing"
       class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-             bg-[#4E6BFF] text-white shadow-md
-             hover:from-[#4E6BFF] hover:to-[#657AFF] hover:bg-gradient-to-r
-             transition-all duration-300"
+             bg-[#f6f8fb] text-[#1E2A45]
+             hover:bg-gradient-to-r hover:from-[#4E6BFF] hover:to-[#657AFF]
+             hover:text-white transition-all duration-300 shadow-md"
     >
       <span class="text-lg">💳</span>
-      <span>{t(lang, "sidebar", "billing", "label")}</span>
+      <span>{billingLabel}</span>
     </a>
 
     <!-- 💬 Support -->
@@ -88,7 +103,47 @@ const navItems = [
              hover:bg-[#4F6EF7] hover:text-white
              transition-all duration-300 shadow-md"
     >
-      {t(lang, "sidebar", "support", "label")}
+      {supportLabel}
     </a>
   </div>
 </aside>
+
+<!-- 🔹 Overlay (Mobile) -->
+<div
+  id="overlay"
+  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden"
+></div>
+
+<!-- 🔹 Toggle Button -->
+<button
+  id="openSidebar"
+  class="md:hidden fixed top-4 left-4 bg-[#1E2A45] text-white
+         p-2 rounded-xl shadow-lg z-50"
+>
+  ☰
+</button>
+
+<script>
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const openBtn = document.getElementById("openSidebar");
+
+  const toggleSidebar = () => {
+    const hidden = sidebar.classList.contains("-translate-x-full");
+    sidebar.classList.toggle("-translate-x-full", !hidden);
+    overlay.classList.toggle("hidden", !hidden);
+  };
+
+  openBtn?.addEventListener("click", toggleSidebar);
+  overlay?.addEventListener("click", toggleSidebar);
+</script>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

@@ -1,53 +1,17 @@
 ---
+// src/layouts/PageLayout.astro
 import "~/styles/global.css";
-import SmartHeader from "~/components/shared/SmartHeader.astro";
 import SmartSidebar from "~/components/shared/SmartSidebar.astro";
-import { t, resolveLang } from "~/utils/i18n/i18n";
 
-/* ---------------------------------
-   Props robust & build-sicher
----------------------------------- */
-
-// ❗ KEIN destructuring für optionale Props
-const props = Astro.props ?? {};
-
-const sidebar = props.sidebar === false ? false : true;
-const header  = props.header  === false ? false : true;
-const page    = props.page;
-const lang    = props.lang ?? resolveLang("en");
-
-/* ---------------------------------
-   Browser Tab Titel
----------------------------------- */
-const pageTitle = page
-  ? `SmartPages – ${t(lang, page, "page", "title")}`
-  : "SmartPages";
+const { sidebar = false } = Astro.props;
 ---
 
-<!doctype html>
-<html lang={lang}>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{pageTitle}</title>
-  </head>
+<div class="min-h-screen flex bg-[#F7F8FA] font-sans text-smart-text">
 
-  <body class="min-h-screen flex font-sans bg-[#F7F8FA] antialiased">
+  {sidebar && <SmartSidebar />}
 
-    {sidebar ? <SmartSidebar /> : null}
+  <div class={`flex-1 flex flex-col ${sidebar ? "md:ml-64" : ""}`}>
+    <slot />
+  </div>
 
-    <div class={`flex-1 flex flex-col ${sidebar ? "md:ml-64" : ""}`}>
-
-      {header ? <SmartHeader page={page} lang={lang} /> : null}
-
-      <main class="flex-1 px-4 py-6 max-w-[1500px] w-full mx-auto">
-        <slot />
-      </main>
-
-      <footer class="text-center text-sm text-gray-500 py-4 border-t bg-white/80">
-        © SmartPages
-      </footer>
-
-    </div>
-  </body>
-</html>
+</div>

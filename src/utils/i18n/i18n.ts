@@ -9,7 +9,7 @@ import smartprofile from "./smartprofile";
 import smartdomain from "./smartdomain";
 import smartlinks from "./smartlinks";
 
-const dictionaries = {
+const dictionaries: Record<string, any> = {
   dashboard,
   billing,
   login,
@@ -17,12 +17,8 @@ const dictionaries = {
   smartprofile,
   smartdomain,
   smartlinks,
-  sidebar,
 };
 
-/**
- * 🌍 Zentrale Übersetzungsfunktion
- */
 export function t(
   lang: string,
   page: keyof typeof dictionaries,
@@ -31,28 +27,25 @@ export function t(
   params?: any
 ): string {
   const safeLang = lang === "de" ? "de" : "en";
-  const pageDict = dictionaries[page];
 
-  if (!pageDict) return key;
-  const sectionData = pageDict[safeLang]?.[section];
-  if (!sectionData) return key;
+  try {
+    const value = dictionaries?.[page]?.[safeLang]?.[section]?.[key];
 
-  let value = sectionData[key];
-  if (typeof value === "function") value = value(params);
-  if (typeof value !== "string") return key;
+    if (typeof value === "function") return value(params);
+    if (typeof value === "string") return value;
 
-  return value;
+    return key;
+  } catch {
+    return key;
+  }
 }
 
 /**
- * 🧭 EINZIGE Sprachlogik
- * - kein Slug
- * - kein Pfad
- * - optional später Cookie / User-Setting
+ * 👉 Sprache bewusst setzen
+ * - Default: en
+ * - Optional per Prop überschreibbar
  */
-export function resolveLang(): "en" | "de" {
-  if (typeof window !== "undefined") {
-    return navigator.language.startsWith("de") ? "de" : "en";
-  }
+export function useLang(explicitLang?: "en" | "de"): "en" | "de" {
+  if (explicitLang) return explicitLang;
   return "en";
 }
