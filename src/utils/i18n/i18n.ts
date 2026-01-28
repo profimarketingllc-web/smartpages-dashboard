@@ -1,24 +1,32 @@
+// src/utils/i18n/i18n.ts
+
 import dashboard from "./dashboard";
 import billing from "./billing";
 import login from "./login";
-// später:
-// import smartpage from "./smartpage";
-// import smartprofile from "./smartprofile";
-// import smartdomain from "./smartdomain";
-// import smartlinks from "./smartlinks";
+
+// Product Pages
+import smartpage from "./smartpage";
+import smartprofile from "./smartprofile";
+import smartdomain from "./smartdomain";
+import smartlinks from "./smartlinks";
 
 const dictionaries: Record<string, any> = {
   dashboard,
   billing,
   login,
+
+  smartpage,
+  smartprofile,
+  smartdomain,
+  smartlinks,
 };
 
 /**
  * 🌍 Übersetzungsfunktion (seitenbasiert)
  *
  * @param lang     "de" | "en"
- * @param page     z.B. "login", "dashboard"
- * @param section  z.B. "hero", "form", "header"
+ * @param page     z.B. "login", "dashboard", "smartpage"
+ * @param section  z.B. "header", "hero", "form"
  * @param key      z.B. "title", "text", "button"
  */
 export function t(
@@ -40,6 +48,7 @@ export function t(
     if (typeof value === "function") value = value(params);
     if (typeof value !== "string") return key;
 
+    // Platzhalter ersetzen
     if (params !== undefined) {
       if (Array.isArray(params)) {
         params.forEach((p, i) => {
@@ -58,7 +67,7 @@ export function t(
 }
 
 /**
- * 🧭 useLang() – optional, nicht Layout-kritisch
+ * 🧭 useLang() – erkennt Sprache aus URL
  */
 export function useLang(defaultLang = "en"): string {
   if (typeof window !== "undefined") {
