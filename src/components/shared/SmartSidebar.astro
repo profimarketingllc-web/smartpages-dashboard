@@ -1,57 +1,36 @@
 ---
-import { t, useLang } from "~/utils/i18n/i18n";
+import { t, getLang } from "~/utils/i18n/i18n";
 
-const lang = useLang("en");
+const lang = getLang();
 
 const navItems = [
-  {
-    key: "dashboard",
-    icon: "🛫",
-    color: "hover:from-[#4F6EF7] hover:to-[#6C83FF]",
-  },
-  {
-    key: "smartprofile",
-    icon: "👤",
-    color: "hover:from-[#4E6BFF] hover:to-[#657AFF]",
-  },
-  {
-    key: "smartpage",
-    icon: "📄",
-    color: "hover:from-[#F5B400] hover:to-[#E47E00]",
-  },
-  {
-    key: "smartdomain",
-    icon: "🌐",
-    color: "hover:from-[#8B5CFF] hover:to-[#A076FF]",
-  },
-  {
-    key: "smartlinks",
-    icon: "🔗",
-    color: "hover:from-[#A8D5BA] hover:to-[#91C7A0]",
-  },
+  { key: "dashboard", label: "Cockpit", icon: "🛫", path: "/dashboard", hover: "hover:from-[#4F6EF7] hover:to-[#4F6EF7]" },
+  { key: "smartprofile", label: "SmartProfile", icon: "👤", path: "/smartprofile", hover: "hover:from-[#F5B400] hover:to-[#F5B400]" },
+  { key: "smartpage", label: "SmartPage", icon: "📄", path: "/smartpage", hover: "hover:from-[#E47E00] hover:to-[#E47E00]" },
+  { key: "smartdomain", label: "SmartDomain", icon: "🌐", path: "/smartdomain", hover: "hover:from-[#8B5CFF] hover:to-[#8B5CFF]" },
+  { key: "smartlinks", label: "SmartLinks", icon: "🔗", path: "/smartlinks", hover: "hover:from-[#91C7A0] hover:to-[#91C7A0]" },
 ];
 ---
 
-<aside class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white flex flex-col z-40">
+<aside class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white flex flex-col z-50">
+
   <!-- Header -->
   <div class="h-20 flex items-center justify-center border-b border-white/10">
-    <h2 class="text-xl font-extrabold text-[#F5B400]">
-      SmartCenter
-    </h2>
+    <span class="text-xl font-extrabold text-[#F5B400]">SmartCenter</span>
   </div>
 
   <!-- Navigation -->
-  <nav class="flex-1 mt-8 space-y-3 px-3">
-    {navItems.map((item) => (
+  <nav class="flex-1 mt-8 px-3 space-y-3">
+    {navItems.map(item => (
       <a
-        href={`/${item.key}`}
+        href={item.path}
         class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-          bg-[#f6f8fb] text-[#1E2A45]
-          hover:bg-gradient-to-r hover:text-white transition
-          ${item.color}`}
+                bg-white text-[#1E2A45]
+                hover:bg-gradient-to-r hover:text-white transition
+                ${item.hover}`}
       >
         <span class="text-lg">{item.icon}</span>
-        <span>{t(lang, "sidebar", "nav", item.key)}</span>
+        <span>{item.label}</span>
       </a>
     ))}
   </nav>
@@ -60,20 +39,26 @@ const navItems = [
 
   <!-- Footer -->
   <div class="p-4 space-y-3">
+
+    <!-- Plan -->
     <a
       href="/billing"
       class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-             bg-[#4F6EF7] text-white hover:bg-[#3E5BE0]"
+             bg-white text-[#1E2A45]
+             hover:bg-[#4F6EF7] hover:text-white transition"
     >
-      💳 {t(lang, "sidebar", "footer", "billing")}
+      💳 {t(lang, "billing", "sidebar", "plan")}
     </a>
 
+    <!-- Mail -->
     <a
       href="mailto:support@smartpages.online"
-      class="block w-full text-center rounded-2xl py-3 font-medium
-             bg-white text-[#1E2A45]"
+      class="block text-center rounded-2xl py-3 font-medium
+             bg-white text-[#1E2A45]
+             hover:bg-[#4F6EF7] hover:text-white transition"
     >
-      💬 {t(lang, "sidebar", "footer", "support")}
+      💬 {t(lang, "dashboard", "sidebar", "support")}
     </a>
+
   </div>
 </aside>
