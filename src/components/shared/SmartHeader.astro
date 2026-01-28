@@ -1,49 +1,42 @@
 ---
-import "~/styles/global.css";
-import SmartHeader from "~/components/shared/SmartHeader.astro";
-import SmartSidebar from "~/components/shared/SmartSidebar.astro";
-import { t, useLang } from "~/utils/i18n/i18n";
+import { t } from "~/utils/i18n/i18n";
 
 const {
-  sidebar = true,
-  header = true,
-  page,            // 👈 NEU: "login" | "smartprofile" | ...
+  lang = "en",
+  page,
 } = Astro.props;
 
-// 🌍 Sprache (Fallback = en)
-const lang = useLang("en");
+// Texte immer vorab auflösen (KEINE JSX-Logik im Markup!)
+const title = page
+  ? t(lang, page, "header", "title")
+  : t(lang, "login", "header", "title");
 
-// 🧠 Browser-Titel: Brand → Page
-const pageTitle = page
-  ? `SmartPages – ${t(lang, page, "page", "title")}`
-  : "SmartPages";
+const subtitle = page
+  ? t(lang, page, "header", "subtitle")
+  : t(lang, "login", "header", "subtitle");
 ---
-<html lang={lang}>
-  <head>
-    <title>{pageTitle}</title>
-  </head>
 
-  <body class="min-h-screen flex font-sans text-smart-text bg-[#F7F8FA] antialiased">
+<header class="w-full bg-[#1E2A45] text-white shadow-md z-40 md:sticky md:top-0">
+  <div class="max-w-6xl mx-auto flex items-center gap-4 py-4 px-4">
 
-    {sidebar && <SmartSidebar />}
+    <!-- Logo -->
+    <img
+      src="/SmartPages_icon_transparent.png"
+      alt="SmartPages Logo"
+      class="h-14 md:h-16 w-auto shrink-0"
+      loading="lazy"
+    />
 
-    <div class={`flex-1 flex flex-col ${sidebar ? "md:ml-64" : ""}`}>
+    <!-- Text (LINKSBÜNDIG zum Logo) -->
+    <div class="leading-tight">
+      <h1 class="text-[1.6rem] md:text-[1.9rem] font-extrabold tracking-tight">
+        {title}
+      </h1>
 
-      {header && (
-        <SmartHeader
-          lang={lang}
-          page={page}     <!-- 🔑 ENTSCHEIDEND -->
-        />
-      )}
-
-      <main class="flex-1 px-4 py-4 max-w-[1500px] w-full mx-auto">
-        <slot />
-      </main>
-
-      <footer class="text-center text-sm text-gray-500 py-4 border-t bg-white/80">
-        © SmartPages
-      </footer>
-
+      <p class="text-sm md:text-base text-gray-200 font-medium">
+        {subtitle}
+      </p>
     </div>
-  </body>
-</html>
+
+  </div>
+</header>
