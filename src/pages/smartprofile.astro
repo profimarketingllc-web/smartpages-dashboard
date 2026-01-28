@@ -5,73 +5,70 @@ import Card from "@/components/ui/Card.astro";
 import ProductForm from "@/components/editor/ProductForm.astro";
 import ProductPreview from "@/components/editor/ProductPreview.astro";
 
-import { t, useLang } from "~/utils/i18n/i18n";
+import { t } from "~/utils/i18n/i18n";
 
-// 🌍 Sprache zentral ermitteln
-const lang = useLang();
+// 🌍 Sprache (Fallback = en)
+const lang = "en";
 
-// 🧩 Formularschema (voll i18n)
+// 🧩 Formularschema (i18n)
 const schema = [
   {
-    key: "title",
-    label: t(lang, "smartpage", "form", "title"),
+    key: "name",
+    label: t(lang, "smartprofile", "form", "name"),
     type: "text",
   },
   {
-    key: "subtitle",
-    label: t(lang, "smartpage", "form", "subtitle"),
-    type: "text",
-  },
-  {
-    key: "content",
-    label: t(lang, "smartpage", "form", "content"),
+    key: "bio",
+    label: t(lang, "smartprofile", "form", "bio"),
     type: "textarea",
-    rows: 6,
+    rows: 5,
   },
   {
-    key: "cta_label",
-    label: t(lang, "smartpage", "form", "cta_label"),
+    key: "link_1",
+    label: t(lang, "smartprofile", "form", "link_1"),
     type: "text",
   },
   {
-    key: "cta_url",
-    label: t(lang, "smartpage", "form", "cta_url"),
+    key: "link_2",
+    label: t(lang, "smartprofile", "form", "link_2"),
+    type: "text",
+  },
+  {
+    key: "link_3",
+    label: t(lang, "smartprofile", "form", "link_3"),
     type: "text",
   },
 ];
 
-// 🔧 Beispiel-Daten (später API)
-const page = {
-  title: "Meine erste SmartPage",
-  subtitle: "Einfach. Schnell. Online.",
-  content:
-    "Hier entsteht eine moderne Landingpage – ohne Programmierkenntnisse.",
-  cta_label: "Mehr erfahren",
-  cta_url: "#",
-  slug: "start",
+// 🔧 Demo-Daten (später API)
+const profile = {
+  name: "Max Mustermann",
+  bio: "—",
+  link_1: "",
+  link_2: "",
+  link_3: "",
+  slug: "max-mustermann",
 };
 ---
 
 <PageLayout
-  title={t(lang, "smartpage", "page", "title")}
+  lang={lang}
+  page="smartprofile"
   sidebar={true}
   header={true}
 >
-  <!-- 🟡 PRODUCT PILL -->
   <ProductPill
-    label={t(lang, "smartpage", "pill", "label")}
-    color="orange"
+    label={t(lang, "smartprofile", "pill", "label")}
+    color="blue"
   />
 
   <div class="max-w-4xl mx-auto mt-10 space-y-8">
-    <!-- ✏️ EDIT -->
-    <Card title={t(lang, "smartpage", "card", "edit")}>
-      <ProductForm schema={schema} data={page} />
+    <Card title={t(lang, "smartprofile", "card", "edit")}>
+      <ProductForm schema={schema} data={profile} />
     </Card>
 
-    <!-- 👁️ PREVIEW -->
-    <Card title={t(lang, "smartpage", "card", "preview")}>
-      <ProductPreview slug={page.slug} />
+    <Card title={t(lang, "smartprofile", "card", "preview")}>
+      <ProductPreview slug={profile.slug} />
     </Card>
   </div>
 </PageLayout>

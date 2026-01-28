@@ -2,41 +2,48 @@
 import "~/styles/global.css";
 import SmartHeader from "~/components/shared/SmartHeader.astro";
 import SmartSidebar from "~/components/shared/SmartSidebar.astro";
-import { t, useLang } from "~/utils/i18n/i18n";
+import { t } from "~/utils/i18n/i18n";
 
 const {
   sidebar = true,
   header = true,
-  page,          // z.B. "login", "smartprofile"
-  lang: propLang // optional
+  lang = "en",
+  page, // z.B. "login", "smartprofile", "smartpage"
 } = Astro.props;
 
-// 🌍 Sprache (default = en, wie vereinbart)
-const lang = propLang ?? useLang("en");
-
-// 🧠 Seitentitel aus i18n
+// 🧠 Browser-Titel
 const pageTitle = page
-  ? t(lang, page, "page", "title")
-  : null;
-
-// 🧾 FINAL Browser Title
-const fullTitle = pageTitle
-  ? `SmartPages – ${pageTitle}`
+  ? `SmartPages – ${t(lang, page, "page", "title")}`
   : "SmartPages";
----
 
+// 🧠 Header-Texte
+const headerTitle = page
+  ? t(lang, page, "header", "title")
+  : "SmartPages";
+
+const headerSubtitle = page
+  ? t(lang, page, "header", "subtitle")
+  : "";
+---
+<!DOCTYPE html>
 <html lang={lang}>
   <head>
     <meta charset="utf-8" />
+    <title>{pageTitle}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{fullTitle}</title>
   </head>
 
   <body class="min-h-screen flex font-sans text-smart-text bg-[#F7F8FA] antialiased">
-    {sidebar && <SmartSidebar collapsible />}
+
+    {sidebar && <SmartSidebar />}
 
     <div class={`flex-1 flex flex-col ${sidebar ? "md:ml-64" : ""}`}>
-      {header && <SmartHeader lang={lang} page={page} />}
+      {header && (
+        <SmartHeader
+          title={headerTitle}
+          subtitle={headerSubtitle}
+        />
+      )}
 
       <main class="flex-1 px-4 py-4 max-w-[1500px] w-full mx-auto">
         <slot />
@@ -46,5 +53,6 @@ const fullTitle = pageTitle
         © SmartPages
       </footer>
     </div>
+
   </body>
 </html>
