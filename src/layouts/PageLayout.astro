@@ -4,53 +4,54 @@ import SmartHeader from "~/components/shared/SmartHeader.astro";
 import SmartSidebar from "~/components/shared/SmartSidebar.astro";
 import { t, resolveLang } from "~/utils/i18n/i18n";
 
+/* -------------------------------
+   Props mit sauberen Defaults
+-------------------------------- */
 const {
-  page,
   sidebar = true,
   header = true,
+  page,
+  lang: langProp,
 } = Astro.props;
 
-// 🌍 EINMAL Sprache bestimmen
-const lang = resolveLang();
+/* -------------------------------
+   Sprache auflösen (Fallback: en)
+-------------------------------- */
+const lang = langProp ?? resolveLang("en");
 
-// 🧠 Browser-Titel (Brand → Seite)
+/* -------------------------------
+   Seitentitel (Browser-Tab)
+   Format: SmartPages – Titel
+-------------------------------- */
 const pageTitle = page
   ? `SmartPages – ${t(lang, page, "page", "title")}`
   : "SmartPages";
-
-// 🧩 Header-Texte aus SEITEN-i18n
-const headerTitle = page
-  ? t(lang, page, "header", "title")
-  : "SmartPages";
-
-const headerSubtitle = page
-  ? t(lang, page, "header", "subtitle")
-  : "";
 ---
+
+<!doctype html>
 <html lang={lang}>
   <head>
-    <title>{pageTitle}</title>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
   </head>
 
-  <body class="min-h-screen flex font-sans bg-[#F7F8FA]">
+  <body class="min-h-screen flex font-sans bg-[#F7F8FA] antialiased">
+
     {sidebar && <SmartSidebar />}
 
     <div class={`flex-1 flex flex-col ${sidebar ? "md:ml-64" : ""}`}>
-      {header && (
-        <SmartHeader
-          title={headerTitle}
-          subtitle={headerSubtitle}
-        />
-      )}
 
-      <main class="flex-1 px-4 py-4 max-w-[1500px] w-full mx-auto">
+      {header && <SmartHeader page={page} lang={lang} />}
+
+      <main class="flex-1 px-4 py-6 max-w-[1500px] w-full mx-auto">
         <slot />
       </main>
 
       <footer class="text-center text-sm text-gray-500 py-4 border-t bg-white/80">
         © SmartPages
       </footer>
+
     </div>
   </body>
 </html>
