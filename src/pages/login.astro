@@ -3,78 +3,81 @@ import PageLayout from "~/layouts/PageLayout.astro";
 import ProductGrid from "~/components/shared/ProductGrid.astro";
 import { t } from "~/utils/i18n/i18n";
 
-// Sprache kommt vom Wrapper (fallback de)
-const { lang = "en" } = Astro.props;
+const lang = Astro.props.lang ?? "de";
 
 const products = [
   {
     key: "smartprofile",
     title: t(lang, "login", "products", "smartprofile", "title"),
-    label: t(lang, "login", "products", "smartprofile", "label"),
-    text: t(lang, "login", "products", "smartprofile", "text"),
+    text:  t(lang, "login", "products", "smartprofile", "text"),
   },
   {
     key: "smartpage",
     title: t(lang, "login", "products", "smartpage", "title"),
-    label: t(lang, "login", "products", "smartpage", "label"),
-    text: t(lang, "login", "products", "smartpage", "text"),
+    text:  t(lang, "login", "products", "smartpage", "text"),
   },
   {
     key: "smartdomain",
     title: t(lang, "login", "products", "smartdomain", "title"),
-    label: t(lang, "login", "products", "smartdomain", "label"),
-    text: t(lang, "login", "products", "smartdomain", "text"),
+    text:  t(lang, "login", "products", "smartdomain", "text"),
+  },
+  {
+    key: "smartlinks",
+    title: t(lang, "login", "products", "smartlinks", "title"),
+    text:  t(lang, "login", "products", "smartlinks", "text"),
   },
 ];
 ---
+<PageLayout sidebar={false} header>
 
-<PageLayout sidebar={false} header={true}>
-  <section class="w-full max-w-4xl mx-auto grid gap-6 mt-6">
+  <!-- HERO + FORM -->
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
 
-    <!-- Welcome -->
-    <section class="dashboard-card bg-white rounded-xl shadow p-6">
-      <h2 class="text-xl font-bold mb-2">
-        {t(lang, "login", "welcome", "title")}
+    <!-- 👋 HERO -->
+    <div class="dashboard-card bg-white rounded-xl shadow p-8">
+      <h2 class="text-2xl font-bold mb-3">
+        {t(lang, "login", "hero", "title")}
       </h2>
       <p class="text-gray-600">
-        {t(lang, "login", "welcome", "text")}
+        {t(lang, "login", "hero", "text")}
       </p>
-    </section>
+    </div>
 
-    <!-- Login -->
-    <section class="dashboard-card bg-white rounded-xl shadow p-6">
+    <!-- 🔐 FORM -->
+    <div class="dashboard-card bg-white rounded-xl shadow p-8">
       <form id="magicForm" class="grid gap-4">
         <label>{t(lang, "login", "form", "firstName")} *</label>
-        <input name="first_name" required class="border rounded px-3 py-2" />
+        <input name="first_name" required />
 
         <label>{t(lang, "login", "form", "lastName")}</label>
-        <input name="last_name" class="border rounded px-3 py-2" />
+        <input name="last_name" />
 
         <label>{t(lang, "login", "form", "email")} *</label>
-        <input type="email" name="email" required class="border rounded px-3 py-2" />
+        <input type="email" name="email" required />
 
         <button
           type="submit"
-          class="bg-smart-primary text-white rounded py-2 font-semibold"
+          class="bg-[#F5B400] text-white py-2 rounded font-semibold"
         >
-          {t(lang, "login", "form", "submit")}
+          {t(lang, "login", "form", "button")}
         </button>
 
-        <div id="formMessage" class="text-sm mt-2"></div>
+        <div id="formMessage" class="text-sm"></div>
       </form>
-    </section>
-
-    <!-- Products -->
-    <section>
-      <ProductGrid products={products} compact />
-    </section>
+    </div>
 
   </section>
+
+  <!-- 🧩 PRODUCTS -->
+  <section class="mt-12">
+    <ProductGrid products={products} />
+  </section>
+
 </PageLayout>
 
 <script>
   const form = document.getElementById("magicForm");
-  const msg = document.getElementById("formMessage");
+  const msg  = document.getElementById("formMessage");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -87,7 +90,7 @@ const products = [
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ ...data, lang: "{{lang}}" }),
+        body: JSON.stringify({ ...data, lang: "{lang}" }),
       });
 
       const result = await res.json();
@@ -96,7 +99,7 @@ const products = [
         msg.textContent = "✅ Magic Link gesendet.";
         msg.className = "text-green-600";
       } else {
-        msg.textContent = "❌ Fehler beim Versand.";
+        msg.textContent = "❌ Fehler beim Senden.";
         msg.className = "text-red-600";
       }
     } catch {
