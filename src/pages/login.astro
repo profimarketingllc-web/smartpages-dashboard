@@ -1,0 +1,107 @@
+---
+import PageLayout from "~/layouts/PageLayout.astro";
+import ProductGrid from "~/components/shared/ProductGrid.astro";
+import { t } from "~/utils/i18n/i18n";
+
+// Sprache kommt vom Wrapper (fallback de)
+const { lang = "en" } = Astro.props;
+
+const products = [
+  {
+    key: "smartprofile",
+    title: t(lang, "login", "products", "smartprofile", "title"),
+    label: t(lang, "login", "products", "smartprofile", "label"),
+    text: t(lang, "login", "products", "smartprofile", "text"),
+  },
+  {
+    key: "smartpage",
+    title: t(lang, "login", "products", "smartpage", "title"),
+    label: t(lang, "login", "products", "smartpage", "label"),
+    text: t(lang, "login", "products", "smartpage", "text"),
+  },
+  {
+    key: "smartdomain",
+    title: t(lang, "login", "products", "smartdomain", "title"),
+    label: t(lang, "login", "products", "smartdomain", "label"),
+    text: t(lang, "login", "products", "smartdomain", "text"),
+  },
+];
+---
+
+<PageLayout sidebar={false} header={true}>
+  <section class="w-full max-w-4xl mx-auto grid gap-6 mt-6">
+
+    <!-- Welcome -->
+    <section class="dashboard-card bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-bold mb-2">
+        {t(lang, "login", "welcome", "title")}
+      </h2>
+      <p class="text-gray-600">
+        {t(lang, "login", "welcome", "text")}
+      </p>
+    </section>
+
+    <!-- Login -->
+    <section class="dashboard-card bg-white rounded-xl shadow p-6">
+      <form id="magicForm" class="grid gap-4">
+        <label>{t(lang, "login", "form", "firstName")} *</label>
+        <input name="first_name" required class="border rounded px-3 py-2" />
+
+        <label>{t(lang, "login", "form", "lastName")}</label>
+        <input name="last_name" class="border rounded px-3 py-2" />
+
+        <label>{t(lang, "login", "form", "email")} *</label>
+        <input type="email" name="email" required class="border rounded px-3 py-2" />
+
+        <button
+          type="submit"
+          class="bg-smart-primary text-white rounded py-2 font-semibold"
+        >
+          {t(lang, "login", "form", "submit")}
+        </button>
+
+        <div id="formMessage" class="text-sm mt-2"></div>
+      </form>
+    </section>
+
+    <!-- Products -->
+    <section>
+      <ProductGrid products={products} compact />
+    </section>
+
+  </section>
+</PageLayout>
+
+<script>
+  const form = document.getElementById("magicForm");
+  const msg = document.getElementById("formMessage");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msg.textContent = "";
+
+    const data = Object.fromEntries(new FormData(form));
+
+    try {
+      const res = await fetch("https://api.smartpages.online/api/auth/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ ...data, lang: "{{lang}}" }),
+      });
+
+      const result = await res.json();
+
+      if (result.ok) {
+        msg.textContent = "✅ Magic Link gesendet.";
+        msg.className = "text-green-600";
+      } else {
+        msg.textContent = "❌ Fehler beim Versand.";
+        msg.className = "text-red-600";
+      }
+    } catch {
+      msg.textContent = "❌ Netzwerkfehler.";
+      msg.className = "text-red-600";
+    }
+  });
+</script>
