@@ -7,10 +7,10 @@ import ProductPreview from "@/components/editor/ProductPreview.astro";
 
 import { t, useLang } from "~/utils/i18n/i18n";
 
-// 🌍 Sprache automatisch aus URL
+// 🌍 Sprache automatisch
 const lang = useLang();
 
-// 🧩 Formularschema (i18n-angebunden)
+// 🧩 Formularschema (i18n)
 const schema = [
   {
     key: "name",
@@ -52,22 +52,28 @@ const profile = {
 ---
 
 <PageLayout
-  title={t(lang, "smartprofile", "page", "title")}
-  sidebar={true}
-  header={true}
+  lang={lang}
+  page="smartprofile"
+  sidebar
+  header
 >
+  <!-- 🔵 Product Pill -->
   <ProductPill
     label={t(lang, "smartprofile", "pill", "label")}
     color="blue"
   />
 
   <div class="max-w-4xl mx-auto mt-10 space-y-8">
+
+    <!-- ✏️ Editor -->
     <Card title={t(lang, "smartprofile", "card", "edit")}>
       <ProductForm schema={schema} data={profile} />
     </Card>
 
+    <!-- 👁 Preview -->
     <Card title={t(lang, "smartprofile", "card", "preview")}>
       <ProductPreview slug={profile.slug} />
     </Card>
+
   </div>
 </PageLayout>
