@@ -4,25 +4,20 @@ import SmartHeader from "~/components/shared/SmartHeader.astro";
 import SmartSidebar from "~/components/shared/SmartSidebar.astro";
 
 const {
+  lang = "en",
+  page = "login",
   sidebar = true,
   header = true,
-  lang = "en",
-  headerTitle = "",
-  headerSubtitle = "",
 } = Astro.props;
 ---
+
 <div class="min-h-screen flex font-sans text-smart-text bg-[#F7F8FA] antialiased">
 
   {sidebar && <SmartSidebar collapsible />}
 
   <div class={`flex-1 flex flex-col ${sidebar ? "md:ml-64" : ""}`}>
 
-    {header && (
-      <SmartHeader
-        title={headerTitle}
-        subtitle={headerSubtitle}
-      />
-    )}
+    {header && <SmartHeader lang={lang} page={page} />}
 
     <main class="flex-1 px-4 py-4 max-w-[1500px] w-full mx-auto">
       <slot />

@@ -27,9 +27,9 @@ const login = {
       firstName: "Vorname",
       lastName: "Nachname",
       email: "E-Mail-Adresse",
-      submit: "Magic-Link senden",
-      privacy:
-        "Deine Daten werden ausschließlich für den Versand des Magic-Links verwendet und nicht gespeichert.",
+      button: "Magic-Link senden",
+      hint:
+        "Deine Daten werden ausschließlich für den Versand des Magic-Links verwendet und NICHT gespeichert.",
     },
 
     /* ================= PRODUCTS ================= */
@@ -83,9 +83,9 @@ const login = {
       firstName: "First name",
       lastName: "Last name",
       email: "Email address",
-      submit: "Send Magic Link",
-      privacy:
-        "Your data is only used to send the magic link and is not stored.",
+      button: "Send Magic Link",
+      hint:
+        "Your data is only used to send the magic link and is NOT stored.",
     },
 
     products: {

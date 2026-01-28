@@ -1,10 +1,17 @@
 ---
-const { title = "", subtitle = "" } = Astro.props;
+import { t } from "~/utils/i18n/i18n";
+
+const {
+  lang = "en",
+  page = "login", // ← WICHTIG
+} = Astro.props;
+
+const title = t(lang, page, "header", "title");
+const subtitle = t(lang, page, "header", "subtitle");
 ---
 
 <header class="w-full bg-[#1E2A45] text-white shadow-md z-50 md:sticky md:top-0">
-  <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 py-4 md:py-5 px-4 text-center">
-
+  <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 py-4 px-4 text-center">
     <img
       src="/SmartPages_icon_transparent.png"
       alt="SmartPages Logo"
@@ -12,21 +19,13 @@ const { title = "", subtitle = "" } = Astro.props;
       loading="lazy"
     />
 
-    {(title || subtitle) && (
-      <div class="leading-tight md:ml-3">
-        {title && (
-          <h1 class="text-[1.75rem] md:text-[2rem] font-extrabold tracking-tight leading-snug">
-            {title}
-          </h1>
-        )}
-
-        {subtitle && (
-          <p class="text-base md:text-lg text-gray-200 font-medium">
-            {subtitle}
-          </p>
-        )}
-      </div>
-    )}
-
+    <div class="leading-tight md:ml-3">
+      <h1 class="text-[1.75rem] md:text-[2rem] font-extrabold">
+        {title}
+      </h1>
+      <p class="text-base md:text-lg text-gray-200">
+        {subtitle}
+      </p>
+    </div>
   </div>
 </header>
