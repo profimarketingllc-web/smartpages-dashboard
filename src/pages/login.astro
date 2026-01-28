@@ -37,13 +37,13 @@ const products = [
   lang={lang}
   page="login"
   sidebar={false}
-  header
+  header={true}
 >
 
-  <!-- HERO + FORM -->
-  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+  <!-- HERO + LOGIN -->
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
 
-    <!-- 👋 HERO -->
+    <!-- HERO -->
     <div class="dashboard-card bg-white rounded-xl shadow p-8">
       <h2 class="text-2xl font-bold mb-3">
         {t(lang, "login", "hero", "title")}
@@ -53,49 +53,115 @@ const products = [
       </p>
     </div>
 
-    <!-- 🔐 FORM (JSON only, no UI feedback) -->
-    <div class="dashboard-card bg-white rounded-xl shadow p-8">
-      <form id="magicForm" class="grid gap-4">
-        <label>{t(lang, "login", "form", "firstName")} *</label>
-        <input name="first_name" required />
+    <!-- LOGIN (JSON ONLY) -->
+    <div class="dashboard-card bg-white rounded-xl shadow p-8 space-y-4">
 
-        <label>{t(lang, "login", "form", "lastName")}</label>
-        <input name="last_name" />
+      <input
+        id="first_name"
+        type="text"
+        placeholder={t(lang, "login", "form", "firstName")}
+        class="border rounded px-3 py-2 w-full"
+      />
 
-        <label>{t(lang, "login", "form", "email")} *</label>
-        <input type="email" name="email" required />
+      <input
+        id="last_name"
+        type="text"
+        placeholder={t(lang, "login", "form", "lastName")}
+        class="border rounded px-3 py-2 w-full"
+      />
 
-        <button
-          type="submit"
-          class="bg-[#F5B400] text-white py-2 rounded font-semibold"
-        >
-          {t(lang, "login", "form", "button")}
-        </button>
-      </form>
+      <input
+        id="email"
+        type="email"
+        placeholder={t(lang, "login", "form", "email")}
+        class="border rounded px-3 py-2 w-full"
+        required
+      />
+
+      <!-- BUSINESS TOGGLE -->
+      <label class="flex items-center gap-2 text-sm text-gray-700">
+        <input id="businessToggle" type="checkbox" />
+        {t(lang, "login", "form", "business")}
+      </label>
+
+      <div id="companyField" class="hidden">
+        <input
+          id="company"
+          type="text"
+          placeholder={t(lang, "login", "form", "company")}
+          class="border rounded px-3 py-2 w-full"
+        />
+      </div>
+
+      <!-- BUTTON -->
+      <button
+        id="magicButton"
+        type="button"
+        class="
+          mt-2
+          bg-[#F5B400]
+          text-white
+          py-2
+          rounded
+          font-semibold
+          shadow-md
+          disabled:opacity-60
+          disabled:cursor-not-allowed
+        "
+      >
+        {t(lang, "login", "form", "button")}
+      </button>
+
+      <!-- HINT -->
+      <p class="text-xs text-gray-500 leading-snug">
+        {t(lang, "login", "form", "hint")}
+      </p>
+
     </div>
-
   </section>
 
-  <!-- 🧩 PRODUCTS -->
-  <section class="mt-12">
+  <!-- PRODUCTS -->
+  <section class="mt-14">
     <ProductGrid products={products} />
   </section>
 
 </PageLayout>
 
 <script>
-  const form = document.getElementById("magicForm");
+  const btn = document.getElementById("magicButton");
+  const toggle = document.getElementById("businessToggle");
+  const companyField = document.getElementById("companyField");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  toggle?.addEventListener("change", () => {
+    companyField.classList.toggle("hidden", !toggle.checked);
+  });
 
-    const data = Object.fromEntries(new FormData(form));
+  btn?.addEventListener("click", async () => {
+    if (btn.disabled) return;
 
-    await fetch("https://api.smartpages.online/api/auth/start", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ ...data, lang: form.closest("html")?.lang || "en" }),
-    });
+    btn.disabled = true;
+    btn.textContent = "…";
+
+    const payload = {
+      first_name: document.getElementById("first_name")?.value || "",
+      last_name: document.getElementById("last_name")?.value || "",
+      email: document.getElementById("email")?.value || "",
+      lang: "{lang}",
+    };
+
+    if (toggle?.checked) {
+      payload.company = document.getElementById("company")?.value || "";
+    }
+
+    try {
+      await fetch("https://api.smartpages.online/api/auth/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      console.error("Magic link request failed", err);
+    }
   });
 </script>
