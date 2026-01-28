@@ -6,7 +6,7 @@ const {
   page,
 } = Astro.props;
 
-// Texte immer vorab auflösen (KEINE JSX-Logik im Markup!)
+// Texte IMMER vorab auflösen (Astro-safe)
 const title = page
   ? t(lang, page, "header", "title")
   : t(lang, "login", "header", "title");
@@ -17,26 +17,30 @@ const subtitle = page
 ---
 
 <header class="w-full bg-[#1E2A45] text-white shadow-md z-40 md:sticky md:top-0">
-  <div class="max-w-6xl mx-auto flex items-center gap-4 py-4 px-4">
+  <div class="max-w-6xl mx-auto py-4 px-4">
 
-    <!-- Logo -->
-    <img
-      src="/SmartPages_icon_transparent.png"
-      alt="SmartPages Logo"
-      class="h-14 md:h-16 w-auto shrink-0"
-      loading="lazy"
-    />
+    <!-- 🔹 ZENTRIERTER BLOCK (Logo + Text) -->
+    <div class="flex items-center justify-center gap-4">
 
-    <!-- Text (LINKSBÜNDIG zum Logo) -->
-    <div class="leading-tight">
-      <h1 class="text-[1.6rem] md:text-[1.9rem] font-extrabold tracking-tight">
-        {title}
-      </h1>
+      <!-- Logo (bewusst etwas größer) -->
+      <img
+        src="/SmartPages_icon_transparent.png"
+        alt="SmartPages Logo"
+        class="h-[70px] w-auto shrink-0"
+        loading="lazy"
+      />
 
-      <p class="text-sm md:text-base text-gray-200 font-medium">
-        {subtitle}
-      </p>
+      <!-- Textblock: linksbündig ZUM LOGO -->
+      <div class="text-left leading-tight">
+        <h1 class="text-[1.7rem] md:text-[1.95rem] font-extrabold tracking-tight">
+          {title}
+        </h1>
+
+        <p class="text-sm md:text-base text-gray-200 font-medium">
+          {subtitle}
+        </p>
+      </div>
+
     </div>
-
   </div>
 </header>
