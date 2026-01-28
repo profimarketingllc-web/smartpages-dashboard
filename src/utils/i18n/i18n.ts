@@ -3,50 +3,73 @@
 import dashboard from "./dashboard";
 import billing from "./billing";
 import login from "./login";
-import sidebar from "./sidebar";
+
 import smartpage from "./smartpage";
 import smartprofile from "./smartprofile";
 import smartdomain from "./smartdomain";
 import smartlinks from "./smartlinks";
 
+/**
+ * 📚 Zentrale Dictionaries
+ */
 const dictionaries: Record<string, any> = {
   dashboard,
   billing,
   login,
-  sidebar,
   smartpage,
   smartprofile,
   smartdomain,
   smartlinks,
 };
 
+/**
+ * 🌍 Übersetzungsfunktion (BORING & STABIL)
+ *
+ * @param lang    "en" | "de"
+ * @param page    z.B. "login", "dashboard"
+ * @param section z.B. "header", "form"
+ * @param key     z.B. "title", "button"
+ */
 export function t(
   lang: string,
   page: keyof typeof dictionaries,
   section: string,
   key: string,
-  params?: any
+  params?: string | string[]
 ): string {
-  const safeLang = lang === "de" ? "de" : "en";
+  const safeLang = lang === "de" ? "de" : "en"; // ✅ GLOBAL FALLBACK = EN
+  const pageDict = dictionaries[page];
 
-  try {
-    const value = dictionaries?.[page]?.[safeLang]?.[section]?.[key];
+  if (!pageDict) return key;
 
-    if (typeof value === "function") return value(params);
-    if (typeof value === "string") return value;
+  let value = pageDict?.[safeLang]?.[section]?.[key];
 
-    return key;
-  } catch {
+  if (typeof value === "function") {
+    value = value(params);
+  }
+
+  if (typeof value !== "string") {
     return key;
   }
+
+  // 🔁 Platzhalter {0}, {1}, …
+  if (params) {
+    const list = Array.isArray(params) ? params : [params];
+    list.forEach((p, i) => {
+      value = value.replace(new RegExp(`\\{${i}\\}`, "g"), p);
+    });
+  }
+
+  return value;
 }
 
 /**
- * 👉 Sprache bewusst setzen
- * - Default: en
- * - Optional per Prop überschreibbar
+ * 🌐 Client Helper
+ * Einheitliche Quelle für alle Komponenten
  */
-export function useLang(explicitLang?: "en" | "de"): "en" | "de" {
-  if (explicitLang) return explicitLang;
-  return "en";
+export function getLang(): string {
+  if (typeof window !== "undefined" && window.SMARTPAGES_LANG) {
+    return window.SMARTPAGES_LANG;
+  }
+  return "en"; // 🔒 HARTE FALLBACK-SPRACHE
 }

@@ -1,19 +1,51 @@
 ---
+import "~/styles/global.css";
 import SmartHeader from "~/components/shared/SmartHeader.astro";
 import SmartSidebar from "~/components/shared/SmartSidebar.astro";
 
 const {
-  sidebar = false,
-  header = false,
+  sidebar = true,
+  header = true,
 } = Astro.props;
 ---
 
-{header && <SmartHeader />}
-
-<div class="flex">
+<div class="min-h-screen flex font-sans bg-[#F7F8FA] text-smart-text">
   {sidebar && <SmartSidebar />}
 
-  <main class={sidebar ? "ml-64 w-full" : "w-full"}>
-    <slot />
-  </main>
+  <div class={`flex-1 flex flex-col ${sidebar ? "md:ml-64" : ""}`}>
+    {header && <SmartHeader />}
+
+    <main class="flex-1 px-4 py-4 max-w-[1500px] w-full mx-auto">
+      <slot />
+    </main>
+
+    <footer class="text-center text-sm text-gray-500 py-4 border-t bg-white/80">
+      © SmartPages
+    </footer>
+  </div>
 </div>
+
+<!-- 🔐 LANGUAGE BOOTSTRAP (CLIENT ONLY, SESSION BASED) -->
+<script>
+  (async function bootstrapLang() {
+    try {
+      const res = await fetch("/api/session/userinfo", {
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (data?.ok && data.user?.language) {
+        window.SMARTPAGES_LANG = data.user.language;
+      } else {
+        // ✅ HARTE, EINDEUTIGE FALLBACK-SPRACHE
+        window.SMARTPAGES_LANG = "en";
+      }
+    } catch (e) {
+      window.SMARTPAGES_LANG = "en";
+    }
+
+    // 🔔 Optional: Event für Komponenten
+    window.dispatchEvent(new Event("smartpages:lang-ready"));
+  })();
+</script>
