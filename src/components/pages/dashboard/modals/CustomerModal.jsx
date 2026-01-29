@@ -11,7 +11,7 @@ export default function CustomerModal(props) {
 
       <div class="flex justify-end">
         <button
-          class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg hover:bg-[#2C3B5A]"
+          class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg"
           onClick={props.onClose}
         >
           Close
