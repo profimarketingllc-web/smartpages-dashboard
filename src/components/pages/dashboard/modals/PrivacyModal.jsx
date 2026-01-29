@@ -1,6 +1,5 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import ModalWrapper from "./ModalWrapper";
-import { t, useLang } from "~/utils/i18n/i18n";
 
 /**
  * 🔒 EditPrivacyModal (SmartPages v5.9)
