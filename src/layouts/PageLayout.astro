@@ -25,27 +25,45 @@ const {
   </div>
 </div>
 
-<!-- 🔐 LANGUAGE BOOTSTRAP (CLIENT ONLY, SESSION BASED) -->
+<!-- ===================================================== -->
+<!-- 🔐 CLIENT BOOTSTRAP (LANG + USER CONTEXT)             -->
+<!-- ===================================================== -->
 <script>
-  (async function bootstrapLang() {
+  (async function bootstrapSmartPagesContext() {
+    // 🛡 harte, sichere Defaults (build-safe)
+    window.SMARTPAGES_LANG = "en";
+    window.SMARTPAGES_USER = null;
+
     try {
       const res = await fetch("/api/session/userinfo", {
         credentials: "include",
+        headers: { "Accept": "application/json" },
       });
+
+      if (!res.ok) throw new Error("userinfo fetch failed");
 
       const data = await res.json();
 
-      if (data?.ok && data.user?.language) {
-        window.SMARTPAGES_LANG = data.user.language;
-      } else {
-        // ✅ HARTE, EINDEUTIGE FALLBACK-SPRACHE
-        window.SMARTPAGES_LANG = "en";
+      if (data?.ok && data.user) {
+        window.SMARTPAGES_USER = data.user;
+
+        if (data.user.language) {
+          window.SMARTPAGES_LANG = data.user.language;
+        }
       }
-    } catch (e) {
-      window.SMARTPAGES_LANG = "en";
+    } catch (err) {
+      // bewusst leer: Fallbacks bleiben aktiv
+      console.warn("[SmartPages] Using fallback language/user");
     }
 
-    // 🔔 Optional: Event für Komponenten
-    window.dispatchEvent(new Event("smartpages:lang-ready"));
+    // 🔔 ZENTRALES SIGNAL (Ersatz für locals / middleware)
+    window.dispatchEvent(
+      new CustomEvent("smartpages:context-ready", {
+        detail: {
+          lang: window.SMARTPAGES_LANG,
+          user: window.SMARTPAGES_USER,
+        },
+      })
+    );
   })();
 </script>

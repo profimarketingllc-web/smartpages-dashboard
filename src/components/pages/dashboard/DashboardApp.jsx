@@ -1,37 +1,69 @@
-import { createSignal, createMemo } from "solid-js";
+import { createSignal, createMemo, onMount } from "solid-js";
 import dashboardI18n from "~/utils/i18n/dashboard";
 
+/* Cards */
 import CustomerCard from "./CustomerCard.jsx";
-import ImprintCard from "./ImprintCard.jsx";
-import PrivacyCard from "./PrivacyCard.jsx";
+
+/* Modals */
+import CustomerModal from "./modals/CustomerModal.jsx";
 
 export default function DashboardApp() {
-  // 🔒 Sprache: static-safe + client-aware
-  const [lang] = createSignal(
-    typeof window !== "undefined"
-      ? window.SMARTPAGES_LANG || "en"
-      : "en"
-  );
+  /* ----------------------------- */
+  /* 🌍 Sprache (zentral)          */
+  /* ----------------------------- */
+  const [lang, setLang] = createSignal("en");
 
-  // 📚 i18n Bundle
-  const i18n = createMemo(() => dashboardI18n[lang()]);
+  onMount(() => {
+    // Fallback ist bereits "en"
+    if (window.SMARTPAGES_LANG) {
+      setLang(window.SMARTPAGES_LANG);
+    }
+
+    window.addEventListener("smartpages:context-ready", (e) => {
+      if (e.detail?.lang) {
+        setLang(e.detail.lang);
+      }
+    });
+  });
+
+  const t = createMemo(() => dashboardI18n[lang()]);
+
+  /* ----------------------------- */
+  /* 👤 Customer State             */
+  /* ----------------------------- */
+  const [customer, setCustomer] = createSignal({
+    first_name: "",
+    last_name: "",
+    company: "",
+  });
+
+  /* ----------------------------- */
+  /* 🔔 Events                     */
+  /* ----------------------------- */
+  onMount(() => {
+    window.addEventListener("customer-updated", (e) => {
+      if (e.detail) {
+        setCustomer(e.detail);
+      }
+    });
+  });
 
   return (
-    <div class="space-y-6">
-      <CustomerCard
-        t={i18n().customer}
-        system={i18n().system}
-      />
+    <>
+      <div class="space-y-6">
+        <CustomerCard
+          t={t().customer}
+          system={t().system}
+          customer={customer}
+        />
+      </div>
 
-      <ImprintCard
-        t={i18n().imprint}
-        system={i18n().system}
+      {/* 🔲 Modals */}
+      <CustomerModal
+        t={t().customer}
+        system={t().system}
+        customer={customer}
       />
-
-      <PrivacyCard
-        t={i18n().privacy}
-        system={i18n().system}
-      />
-    </div>
+    </>
   );
 }
