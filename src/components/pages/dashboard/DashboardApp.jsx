@@ -1,69 +1,75 @@
-import { createSignal, createMemo, onMount } from "solid-js";
+import { createSignal } from "solid-js";
 import dashboardI18n from "~/utils/i18n/dashboard";
 
 /* Cards */
 import CustomerCard from "./CustomerCard.jsx";
+import ImprintCard from "./ImprintCard.jsx";
+import PrivacyCard from "./PrivacyCard.jsx";
 
 /* Modals */
-import CustomerModal from "./modals/CustomerModal.jsx";
+import EditCustomerModal from "./modals/EditCustomerModal.jsx";
+import EditImprintModal from "./modals/EditImprintModal.jsx";
+import EditPrivacyModal from "./modals/EditPrivacyModal.jsx";
 
 export default function DashboardApp() {
-  /* ----------------------------- */
-  /* 🌍 Sprache (zentral)          */
-  /* ----------------------------- */
-  const [lang, setLang] = createSignal("en");
+  /* 🌍 Sprache – zentral, static-safe */
+  const lang =
+    typeof window !== "undefined"
+      ? window.SMARTPAGES_LANG || "en"
+      : "en";
 
-  onMount(() => {
-    // Fallback ist bereits "en"
-    if (window.SMARTPAGES_LANG) {
-      setLang(window.SMARTPAGES_LANG);
-    }
+  const t = dashboardI18n[lang];
 
-    window.addEventListener("smartpages:context-ready", (e) => {
-      if (e.detail?.lang) {
-        setLang(e.detail.lang);
-      }
-    });
-  });
-
-  const t = createMemo(() => dashboardI18n[lang()]);
-
-  /* ----------------------------- */
-  /* 👤 Customer State             */
-  /* ----------------------------- */
-  const [customer, setCustomer] = createSignal({
-    first_name: "",
-    last_name: "",
-    company: "",
-  });
-
-  /* ----------------------------- */
-  /* 🔔 Events                     */
-  /* ----------------------------- */
-  onMount(() => {
-    window.addEventListener("customer-updated", (e) => {
-      if (e.detail) {
-        setCustomer(e.detail);
-      }
-    });
-  });
+  /* 🧠 Modal State */
+  const [showCustomer, setShowCustomer] = createSignal(false);
+  const [showImprint, setShowImprint] = createSignal(false);
+  const [showPrivacy, setShowPrivacy] = createSignal(false);
 
   return (
-    <>
-      <div class="space-y-6">
-        <CustomerCard
-          t={t().customer}
-          system={t().system}
-          customer={customer}
-        />
-      </div>
+    <div class="space-y-8">
 
-      {/* 🔲 Modals */}
-      <CustomerModal
-        t={t().customer}
-        system={t().system}
-        customer={customer}
+      {/* ================= CARDS ================= */}
+
+      <CustomerCard
+        t={t.customer}
+        system={t.system}
+        onEdit={() => setShowCustomer(true)}
       />
-    </>
+
+      <ImprintCard
+        t={t.imprint}
+        system={t.system}
+        onEdit={() => setShowImprint(true)}
+      />
+
+      <PrivacyCard
+        t={t.privacy}
+        system={t.system}
+        onEdit={() => setShowPrivacy(true)}
+      />
+
+      {/* ================= MODALS ================= */}
+
+      <EditCustomerModal
+        show={showCustomer()}
+        onClose={() => setShowCustomer(false)}
+        t={t.customer}
+        system={t.system}
+      />
+
+      <EditImprintModal
+        show={showImprint()}
+        onClose={() => setShowImprint(false)}
+        t={t.imprint}
+        system={t.system}
+      />
+
+      <EditPrivacyModal
+        show={showPrivacy()}
+        onClose={() => setShowPrivacy(false)}
+        t={t.privacy}
+        system={t.system}
+      />
+    </div>
   );
 }

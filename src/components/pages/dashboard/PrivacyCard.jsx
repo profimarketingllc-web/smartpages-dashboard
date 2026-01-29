@@ -14,7 +14,13 @@ export default function PrivacyCard(props) {
         <button
           class="bg-[#E47E00] text-white px-4 py-2 rounded-xl"
           onClick={() =>
-            window.dispatchEvent(new Event("open-privacy-modal"))
+           <button
+             onClick={props.onEdit}
+             class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg"
+             >
+             {props.t.button}
+           </button>
+
           }
         >
           {t.button}

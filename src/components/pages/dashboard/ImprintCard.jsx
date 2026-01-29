@@ -15,7 +15,13 @@ export default function ImprintCard(props) {
           <button
             class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-4 py-2 rounded-xl"
             onClick={() =>
-              window.dispatchEvent(new Event("open-imprint-modal"))
+             <button
+               onClick={props.onEdit}
+               class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg"
+               >
+               {props.t.button}
+             </button>
+
             }
           >
             {t.button}
