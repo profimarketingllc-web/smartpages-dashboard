@@ -1,29 +1,23 @@
-import { Show, createMemo } from "solid-js";
-
-export default function ModalWrapper(props) {
-  const visible = createMemo(() =>
-    typeof props.show === "function" ? props.show() : !!props.show
-  );
-
+export default function ImprintCard(props) {
   return (
-    <Show when={visible()}>
-      <div class="fixed inset-0 z-50 flex items-center justify-center">
-        <div
-          class="absolute inset-0 bg-black/40"
-          onClick={props.onClose}
-        />
-
-        <div class="relative bg-white rounded-2xl p-6 w-[90%] max-w-md z-50">
-          <button
-            class="absolute top-3 right-3 text-gray-400"
-            onClick={props.onClose}
-          >
-            ✕
-          </button>
-
-          {props.children}
-        </div>
+    <div class="bg-white rounded-xl p-6 shadow">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">Imprint information</h2>
+        <button
+          class="bg-slate-800 text-white px-4 py-2 rounded"
+          onClick={props.onEdit}
+        >
+          Edit imprint
+        </button>
       </div>
-    </Show>
+
+      <div class="text-sm">
+        <div class="font-medium">Company</div>
+        <div>—</div>
+
+        <div class="font-medium mt-2">Address</div>
+        <div>—</div>
+      </div>
+    </div>
   );
 }

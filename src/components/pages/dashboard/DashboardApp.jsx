@@ -1,32 +1,41 @@
-// src/components/pages/dashboard/DashboardApp.jsx
 import { createSignal } from "solid-js";
 
 import CustomerCard from "./CustomerCard.jsx";
 import ImprintCard from "./ImprintCard.jsx";
+import PrivacyCard from "./PrivacyCard.jsx";
 
 import CustomerModal from "./modals/CustomerModal.jsx";
 import ImprintModal from "./modals/ImprintModal.jsx";
+import PrivacyModal from "./modals/PrivacyModal.jsx";
 
 export default function DashboardApp() {
-  const [showCustomerModal, setShowCustomerModal] = createSignal(false);
-  const [showImprintModal, setShowImprintModal] = createSignal(false);
+  const [openModal, setOpenModal] = createSignal(null);
+
+  const close = () => setOpenModal(null);
 
   return (
     <>
+      {/* CARDS */}
       <div class="space-y-6">
-        <CustomerCard onEdit={() => setShowCustomerModal(true)} />
-        <ImprintCard onEdit={() => setShowImprintModal(true)} />
+        <CustomerCard onEdit={() => setOpenModal("customer")} />
+        <ImprintCard onEdit={() => setOpenModal("imprint")} />
+        <PrivacyCard onEdit={() => setOpenModal("privacy")} />
       </div>
 
-      {/* Modals */}
+      {/* MODALS */}
       <CustomerModal
-        show={showCustomerModal}
-        onClose={() => setShowCustomerModal(false)}
+        open={openModal() === "customer"}
+        onClose={close}
       />
 
       <ImprintModal
-        show={showImprintModal}
-        onClose={() => setShowImprintModal(false)}
+        open={openModal() === "imprint"}
+        onClose={close}
+      />
+
+      <PrivacyModal
+        open={openModal() === "privacy"}
+        onClose={close}
       />
     </>
   );
