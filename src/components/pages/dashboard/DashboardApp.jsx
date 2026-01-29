@@ -1,6 +1,7 @@
+import { createSignal } from "solid-js";
+
+/* Card */
 import CustomerCard from "./CustomerCard.jsx";
-import ImprintCard from "./ImprintCard.jsx";
-import PrivacyCard from "./PrivacyCard.jsx";
 
 /* Modal */
 import CustomerModal from "./modals/CustomerModal.jsx";
