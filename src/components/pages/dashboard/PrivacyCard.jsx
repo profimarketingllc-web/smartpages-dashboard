@@ -1,9 +1,9 @@
-import { createSignal, Show } from "solid-js";
+import { createSignal } from "solid-js";
 import PrivacyModal from "./modals/PrivacyModal";
 
 export default function PrivacyCard() {
   const [open, setOpen] = createSignal(false);
-  const [useCustomText, setUseCustomText] = createSignal(false);
+  const [useCustom, setUseCustom] = createSignal(false);
 
   return (
     <div class="bg-white rounded-xl p-6 shadow">
@@ -11,59 +11,47 @@ export default function PrivacyCard() {
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-lg font-semibold">Privacy policy</h2>
 
-        <Show when={!useCustomText()}>
+        {!useCustom() && (
           <button
             class="bg-slate-800 text-white px-4 py-2 rounded"
             onClick={() => setOpen(true)}
           >
             Edit privacy
           </button>
-        </Show>
+        )}
       </div>
 
       {/* Toggle */}
-      <div class="mb-4">
-        <label class="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={useCustomText()}
-            onChange={(e) => setUseCustomText(e.currentTarget.checked)}
-          />
-          I use my own privacy policy text
-        </label>
-      </div>
+      <label class="flex items-center gap-2 mb-4 text-sm">
+        <input
+          type="checkbox"
+          checked={useCustom()}
+          onChange={(e) => setUseCustom(e.currentTarget.checked)}
+        />
+        I use my own privacy policy
+      </label>
 
-      {/* Standard data view */}
-      <Show when={!useCustomText()}>
-        <div class="grid grid-cols-2 gap-4 text-sm">
+      {/* Content */}
+      {!useCustom() ? (
+        <div class="text-sm text-gray-700 space-y-2">
           <div>
-            <div class="font-medium">Privacy contact</div>
-            <div class="text-gray-500">—</div>
+            <span class="font-medium">Privacy contact:</span> —
           </div>
-
           <div>
-            <div class="font-medium">Email</div>
-            <div class="text-gray-500">—</div>
+            <span class="font-medium">Email:</span> —
           </div>
-
           <div>
-            <div class="font-medium">Address</div>
-            <div class="text-gray-500">—</div>
+            <span class="font-medium">Address:</span> —
           </div>
-
           <div>
-            <div class="font-medium">Country</div>
-            <div class="text-gray-500">—</div>
+            <span class="font-medium">Country:</span> —
           </div>
         </div>
-      </Show>
-
-      {/* Custom text info */}
-      <Show when={useCustomText()}>
-        <div class="text-sm text-gray-600 italic">
-          Custom privacy policy is active.
+      ) : (
+        <div class="text-sm text-gray-500 italic">
+          Custom privacy text is active.
         </div>
-      </Show>
+      )}
 
       {/* Modal */}
       <PrivacyModal
