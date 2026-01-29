@@ -1,69 +1,39 @@
-import { createSignal } from "solid-js";
-import ModalWrapper from "./ModalWrapper";
+import { createResource } from "solid-js";
+import { t } from "~/utils/i18n/i18n";
 
-/**
- * ImprintModal
- * -----------------------------------
- * ✅ KEIN useLang
- * ✅ KEIN i18n import
- * ✅ Texte kommen über props.t
- */
+export default function ImprintCard(props) {
+  const lang = props.lang || "en";
 
-export default function ImprintModal(props) {
-  const t = props.t;
-  const [saving, setSaving] = createSignal(false);
-  const [text, setText] = createSignal("");
-
-  const handleSave = async () => {
-    setSaving(true);
-
-    try {
-      await fetch("/api/customer/imprintedit", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          use_custom_imprint: true,
-          custom_html: text(),
-        }),
-      });
-
-      props.onClose();
-    } catch (e) {
-      console.error("Save imprint failed", e);
-    }
-
-    setSaving(false);
+  const fetchImprint = async () => {
+    const res = await fetch("/api/customer/imprint", {
+      credentials: "include",
+    });
+    if (!res.ok) return {};
+    const json = await res.json();
+    return json?.data || {};
   };
 
+  const [imprint] = createResource(fetchImprint);
+  const data = () => imprint() || {};
+
   return (
-    <ModalWrapper show={props.show} onClose={props.onClose}>
-      <h3 class="text-lg font-bold mb-4">{t.editTitle}</h3>
-
-      <textarea
-        class="w-full h-48 border rounded-xl p-3 text-sm"
-        value={text()}
-        onInput={(e) => setText(e.currentTarget.value)}
-      />
-
-      <div class="flex justify-end gap-3 mt-5">
-        <button
-          onClick={props.onClose}
-          class="px-4 py-2 rounded-lg border"
-        >
-          {props.system.cancelButton}
-        </button>
+    <div class="bg-white rounded-xl p-6 shadow">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">
+          🧾 {t(lang, "dashboard", "imprint", "title")}
+        </h2>
 
         <button
-          disabled={saving()}
-          onClick={handleSave}
-          class="px-5 py-2 rounded-lg text-white bg-[#1E2A45]"
+          onClick={props.onEdit}
+          class="bg-[#F5B400] text-white px-4 py-2 rounded-lg"
         >
-          {saving()
-            ? props.system.saving
-            : props.system.saveButton}
+          {t(lang, "dashboard", "imprint", "edit")}
         </button>
       </div>
-    </ModalWrapper>
+
+      <div class="text-sm text-gray-600">
+        {data().company_name || "—"}
+      </div>
+    </div>
   );
 }

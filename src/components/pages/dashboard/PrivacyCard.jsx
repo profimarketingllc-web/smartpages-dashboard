@@ -1,38 +1,39 @@
+import { createResource } from "solid-js";
+import { t } from "~/utils/i18n/i18n";
+
 export default function PrivacyCard(props) {
-  const t = props.t;
+  const lang = props.lang || "en";
+
+  const fetchPrivacy = async () => {
+    const res = await fetch("/api/customer/privacy", {
+      credentials: "include",
+    });
+    if (!res.ok) return {};
+    const json = await res.json();
+    return json?.data || {};
+  };
+
+  const [privacy] = createResource(fetchPrivacy);
+  const data = () => privacy() || {};
 
   return (
-    <section class="bg-white rounded-2xl shadow-sm border px-6 py-5">
-      {/* Header */}
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-extrabold text-[#1E2A45] flex gap-2">
-          🔒 {t.title}
+    <div class="bg-white rounded-xl p-6 shadow">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">
+          🔒 {t(lang, "dashboard", "privacy", "title")}
         </h2>
 
         <button
           onClick={props.onEdit}
-          class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2 rounded-xl hover:scale-105 transition"
+          class="bg-[#E47E00] text-white px-4 py-2 rounded-lg"
         >
-          {t.button}
+          {t(lang, "dashboard", "privacy", "edit")}
         </button>
       </div>
 
-      {/* Platzhalter */}
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        <Field label={t.privacy_contact} value="—" />
-        <Field label={t.email} value="—" />
-        <Field label={t.phone} value="—" />
-        <Field label={t.country} value="—" />
+      <div class="text-sm text-gray-600">
+        {data().email || "—"}
       </div>
-    </section>
-  );
-}
-
-function Field(props) {
-  return (
-    <div>
-      <div class="font-medium text-gray-800">{props.label}</div>
-      <div class="text-gray-500">{props.value}</div>
     </div>
   );
 }
