@@ -1,25 +1,37 @@
-import { Show } from "solid-js";
+export default function CustomerCard(props) {
+  const { t, data } = props;
 
-export default function ModalWrapper(props) {
+  const display = (v) => (v && v !== "" ? v : "—");
+
   return (
-    <Show when={props.show()}>
-      <div class="fixed inset-0 z-50 flex items-center justify-center">
-        <div
-          class="absolute inset-0 bg-black/40"
-          onClick={props.onClose}
-        />
+    <div class="bg-white rounded-2xl shadow p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold flex gap-2">
+          👤 {t.title}
+        </h2>
 
-        <div class="relative bg-white rounded-xl p-6 w-[90%] max-w-lg z-10">
-          <button
-            class="absolute top-3 right-3 text-gray-400"
-            onClick={props.onClose}
-          >
-            ✕
-          </button>
-
-          {props.children}
-        </div>
+        <button
+          class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg"
+          onClick={() => window.dispatchEvent(new Event("open-customer-modal"))}
+        >
+          {t.button}
+        </button>
       </div>
-    </Show>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <Field label={t.firstName} value={data?.firstName} />
+        <Field label={t.lastName} value={data?.lastName} />
+        <Field label={t.company} value={data?.company} />
+      </div>
+    </div>
+  );
+}
+
+function Field(props) {
+  return (
+    <div>
+      <div class="font-medium text-gray-600">{props.label}</div>
+      <div class="text-gray-900">{props.value || "—"}</div>
+    </div>
   );
 }
