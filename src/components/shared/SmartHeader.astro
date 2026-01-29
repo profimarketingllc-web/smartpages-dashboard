@@ -1,64 +1,40 @@
 ---
-import { t, getLang } from "~/utils/i18n/i18n";
-
-const lang = getLang();
-
-const navItems = [
-  { key: "dashboard", label: "Cockpit", icon: "🛫", path: "/dashboard", hover: "hover:from-[#4F6EF7] hover:to-[#4F6EF7]" },
-  { key: "smartprofile", label: "SmartProfile", icon: "👤", path: "/smartprofile", hover: "hover:from-[#F5B400] hover:to-[#F5B400]" },
-  { key: "smartpage", label: "SmartPage", icon: "📄", path: "/smartpage", hover: "hover:from-[#E47E00] hover:to-[#E47E00]" },
-  { key: "smartdomain", label: "SmartDomain", icon: "🌐", path: "/smartdomain", hover: "hover:from-[#8B5CFF] hover:to-[#8B5CFF]" },
-  { key: "smartlinks", label: "SmartLinks", icon: "🔗", path: "/smartlinks", hover: "hover:from-[#91C7A0] hover:to-[#91C7A0]" },
-];
+/*
+  SmartHeader – Minimal Static Version
+  - keine i18n
+  - keine Worker-Abhängigkeit
+  - keine Scripts
+  - build-safe
+*/
 ---
 
-<aside class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] text-white flex flex-col z-50">
+<header class="w-full border-b"
+  style="
+    background-color: var(--header-bg, #1E2A45);
+    color: var(--header-text, #ffffff);
+  "
+>
+  <div class="max-w-7xl mx-auto h-20 flex items-center gap-4 px-6">
+    
+    <!-- Logo -->
+    <img
+      src="/SmartPages_icon_transparent.png"
+      alt="SmartPages"
+      class="h-9 w-auto"
+    />
 
-  <!-- Header -->
-  <div class="h-20 flex items-center justify-center border-b border-white/10">
-    <span class="text-xl font-extrabold text-[#F5B400]">SmartCenter</span>
-  </div>
-
-  <!-- Navigation -->
-  <nav class="flex-1 mt-8 px-3 space-y-3">
-    {navItems.map(item => (
-      <a
-        href={item.path}
-        class={`flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-                bg-white text-[#1E2A45]
-                hover:bg-gradient-to-r hover:text-white transition
-                ${item.hover}`}
+    <!-- Title + Claim -->
+    <div class="leading-tight">
+      <div
+        class="text-lg font-extrabold tracking-tight"
+        style="font-family: 'Montserrat', sans-serif;"
       >
-        <span class="text-lg">{item.icon}</span>
-        <span>{item.label}</span>
-      </a>
-    ))}
-  </nav>
-
-  <hr class="border-white/20 mx-4 my-4" />
-
-  <!-- Footer -->
-  <div class="p-4 space-y-3">
-
-    <!-- Plan -->
-    <a
-      href="/billing"
-      class="flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
-             bg-white text-[#1E2A45]
-             hover:bg-[#4F6EF7] hover:text-white transition"
-    >
-      💳 {t(lang, "billing", "sidebar", "plan")}
-    </a>
-
-    <!-- Mail -->
-    <a
-      href="mailto:support@smartpages.online"
-      class="block text-center rounded-2xl py-3 font-medium
-             bg-white text-[#1E2A45]
-             hover:bg-[#4F6EF7] hover:text-white transition"
-    >
-      💬 {t(lang, "dashboard", "sidebar", "support")}
-    </a>
+        SmartPages
+      </div>
+      <div class="text-sm opacity-80">
+        Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen.
+      </div>
+    </div>
 
   </div>
-</aside>
+</header>
