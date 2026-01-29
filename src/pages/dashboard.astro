@@ -4,7 +4,7 @@ import ProductGrid from "~/components/shared/ProductGrid.astro";
 import dashboardI18n from "~/utils/i18n/dashboard";
 
 // ⚠️ Fallback-Text (wird nach Hydration ersetzt)
-const lang = "de";
+const lang = "en";
 const tDashboard = dashboardI18n[lang];
 
 const upsellProducts = Object.values(tDashboard.upsell).map((p) => ({
