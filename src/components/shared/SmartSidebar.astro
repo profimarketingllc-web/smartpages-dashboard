@@ -1,89 +1,113 @@
 ---
-import sidebar from "~/utils/i18n/sidebar";
-
+import sidebarI18n from "~/utils/i18n/sidebar";
 const { lang = "en" } = Astro.props;
-const t = sidebar[lang];
 
-const systemItems = [
+const t = sidebarI18n[lang];
+
+const items = [
   {
+    key: "dashboard",
     label: t.nav.dashboard,
     icon: "🛫",
     href: "/dashboard",
+    type: "system",
   },
-];
-
-const productItems = [
-  { label: t.nav.smartprofile, icon: "👤", href: "/smartprofile" },
-  { label: t.nav.smartpage, icon: "📄", href: "/smartpage" },
-  { label: t.nav.smartdomain, icon: "🌐", href: "/smartdomain" },
-  { label: t.nav.smartlinks, icon: "🔗", href: "/smartlinks" },
+  {
+    key: "smartprofile",
+    label: "SmartProfile",
+    icon: "👤",
+    href: "/smartprofile",
+    type: "product",
+    gradient: "hover:bg-gradient-to-r from-[#5B6CFF] to-[#6F7DFF]",
+    glow: "hover:smart-glow-blue",
+  },
+  {
+    key: "smartpage",
+    label: "SmartPage",
+    icon: "📄",
+    href: "/smartpage",
+    type: "product",
+    gradient: "hover:bg-gradient-to-r from-[#F5B400] to-[#E47E00]",
+    glow: "hover:smart-glow-orange",
+  },
+  {
+    key: "smartdomain",
+    label: "SmartDomain",
+    icon: "🌐",
+    href: "/smartdomain",
+    type: "product",
+    gradient: "hover:bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]",
+    glow: "hover:smart-glow-purple",
+  },
+  {
+    key: "smartlinks",
+    label: "SmartLinks",
+    icon: "🔗",
+    href: "/smartlinks",
+    type: "product",
+    gradient: "hover:bg-gradient-to-r from-[#A8D5BA] to-[#91C7A0]",
+    glow: "hover:smart-glow-sage",
+  },
 ];
 ---
 
-<aside class="fixed inset-y-0 left-0 w-64 bg-smart-bg-dark text-white flex flex-col z-50">
-
+<aside class="fixed top-0 left-0 h-screen w-64 bg-[#1E2A45] flex flex-col z-50">
   <!-- Header -->
   <div class="h-20 flex items-center px-6 border-b border-white/10">
-    <span class="text-xl font-extrabold text-smart-accent">
-      SmartCenter
+    <span class="text-xl font-extrabold text-[#F5B400]">
+      SmartPages
     </span>
   </div>
 
   <!-- Navigation -->
-  <nav class="flex-1 px-4 py-6 space-y-6">
-
-    <!-- System -->
-    <div class="space-y-2">
-      {systemItems.map(item => (
-        <a
-          href={item.href}
-          class="flex items-center gap-3 px-5 py-3 rounded-xl
-                 bg-white text-smart-text font-medium
-                 hover:system-gradient hover:system-glow transition"
-        >
-          <span>{item.icon}</span>
-          <span>{item.label}</span>
-        </a>
-      ))}
-    </div>
-
-    <!-- Products -->
-    <div class="space-y-2">
-      {productItems.map(item => (
-        <a
-          href={item.href}
-          class="flex items-center gap-3 px-5 py-3 rounded-xl
-                 bg-white text-smart-text font-medium
-                 hover:bg-smart-accent/10 transition"
-        >
-          <span>{item.icon}</span>
-          <span>{item.label}</span>
-        </a>
-      ))}
-    </div>
-
+  <nav class="flex-1 px-4 py-6 space-y-3">
+    {items.map(item => (
+      <a
+        href={item.href}
+        class={`
+          group flex items-center gap-3 px-5 py-3 rounded-2xl
+          text-sm font-medium
+          bg-white text-[#1E2A45]
+          transition-all duration-300
+          ${
+            item.type === "system"
+              ? "hover:system-gradient hover:system-glow"
+              : `${item.gradient} ${item.glow}`
+          }
+        `}
+      >
+        <span class="text-lg">{item.icon}</span>
+        <span>{item.label}</span>
+      </a>
+    ))}
   </nav>
 
   <!-- Footer -->
-  <div class="px-4 py-4 space-y-2 border-t border-white/10">
-
+  <div class="px-4 py-4 space-y-3 border-t border-white/10">
     <a
       href="/billing"
-      class="flex items-center gap-3 px-5 py-3 rounded-xl
-             bg-white text-smart-text font-medium
-             hover:system-gradient hover:system-glow transition"
+      class="
+        flex items-center gap-3 px-5 py-3 rounded-2xl
+        text-sm font-medium
+        bg-white text-[#1E2A45]
+        hover:system-gradient hover:system-glow
+        transition-all duration-300
+      "
     >
       💳 <span>{t.footer.billing}</span>
     </a>
 
     <a
       href="mailto:support@smartpages.online"
-      class="flex items-center gap-3 px-5 py-3 rounded-xl
-             bg-white text-smart-text font-medium
-             hover:system-gradient hover:system-glow transition"
+      class="
+        flex items-center gap-3 px-5 py-3 rounded-2xl
+        text-sm font-medium
+        bg-white text-[#1E2A45]
+        hover:system-gradient hover:system-glow
+        transition-all duration-300
+      "
     >
       💬 <span>{t.footer.support}</span>
     </a>
-
   </div>
 </aside>
