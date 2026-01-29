@@ -1,13 +1,5 @@
 import { createResource, createSignal, Show } from "solid-js";
 
-/**
- * 🧾 ImprintCard (Dashboard)
- * -------------------------------------------------------
- * ✅ i18n via Props
- * ✅ Static-safe
- * ✅ Solid-only
- */
-
 export default function ImprintCard(props) {
   const { t, system } = props;
 
@@ -16,7 +8,9 @@ export default function ImprintCard(props) {
   const [saving, setSaving] = createSignal(false);
   const [message, setMessage] = createSignal("");
 
-  // 📡 Daten laden
+  /* ----------------------------- */
+  /* 📡 Fetch                      */
+  /* ----------------------------- */
   const fetchImprint = async () => {
     try {
       const res = await fetch("/api/customer/imprint", {
@@ -25,10 +19,10 @@ export default function ImprintCard(props) {
       });
 
       if (!res.ok) return {};
-      const result = await res.json();
-      if (!result?.ok || !result.data) return {};
+      const json = await res.json();
+      const i = json?.data;
+      if (!i) return {};
 
-      const i = result.data;
       setUseCustom(i.use_custom_imprint === 1);
       if (i.custom_html) setCustomText(i.custom_html);
 
@@ -46,11 +40,121 @@ export default function ImprintCard(props) {
         registerCourt: i.register_court,
         registerNumber: i.register_number,
       };
-    } catch (err) {
-      console.error("Imprint load error:", err);
+    } catch {
       return {};
     }
   };
 
   const [imprint] = createResource(fetchImprint);
-  const data = (
+  const data = () => imprint() || {};
+  const display = (v) => (v && v !== "" ? v : "—");
+
+  /* ----------------------------- */
+  /* 🔄 Actions                    */
+  /* ----------------------------- */
+  const handleToggle = async (e) => {
+    const active = e.currentTarget.checked;
+    setUseCustom(active);
+    setMessage("");
+
+    try {
+      const res = await fetch("/api/customer/imprintedit", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          use_custom_imprint: active,
+          custom_html: active ? customText() : "",
+        }),
+      });
+
+      const json = await res.json();
+      setMessage(
+        json.ok
+          ? active
+            ? t.customEnabled
+            : t.customDisabled
+          : t.saveError
+      );
+    } catch {
+      setMessage(t.unexpectedError);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!customText().trim()) {
+      setMessage(t.emptyText);
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const res = await fetch("/api/customer/imprintedit", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          use_custom_imprint: true,
+          custom_html: customText(),
+        }),
+      });
+
+      const json = await res.json();
+      setMessage(json.ok ? t.saveSuccess : t.saveError);
+    } catch {
+      setMessage(t.unexpectedError);
+    }
+    setSaving(false);
+  };
+
+  /* ----------------------------- */
+  /* 📋 Render                     */
+  /* ----------------------------- */
+  return (
+    <section class="bg-white rounded-xl p-6 shadow space-y-4">
+      <div class="flex justify-between items-center">
+        <h2 class="text-lg font-semibold">🧾 {t.title}</h2>
+
+        <Show when={!useCustom()}>
+          <button
+            onClick={() =>
+              window.dispatchEvent(new Event("open-imprint-modal"))
+            }
+            class="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition"
+          >
+            {t.button}
+          </button>
+        </Show>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <input
+          type="checkbox"
+          checked={useCustom()}
+          onChange={handleToggle}
+        />
+        <span class="text-sm">{t.useOwnImprint}</span>
+      </div>
+
+      <Show when={useCustom()}>
+        <textarea
+          class="w-full h-40 p-3 border rounded-lg text-sm"
+          value={customText()}
+          onInput={(e) => setCustomText(e.currentTarget.value)}
+        />
+        <div class="flex justify-end">
+          <button
+            disabled={saving()}
+            onClick={handleSave}
+            class="px-4 py-2 rounded-lg bg-slate-800 text-white text-sm"
+          >
+            {saving() ? system.saving : system.saveButton}
+          </button>
+        </div>
+      </Show>
+
+      <Show when={!useCustom()}>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {Object.keys(data()).map((key) => (
+            <div>
+              <div
