@@ -86,3 +86,28 @@ a {
               0 0 45px rgba(215, 194, 155, 0.35);
   transform: translateY(-1px);
 }
+
+/* ======================================================
+   🧭 Sidebar – System Hover (Khaki, ruhig & elegant)
+   ====================================================== */
+
+.sidebar-system-hover:hover {
+  background: linear-gradient(
+    to right,
+    #C8C3A8,
+    #D6D2B8
+  );
+  color: #1E2A45;
+}
+
+/* ======================================================
+   🧩 Sidebar – Product Hover (nur Farbe, kein Glow)
+   ====================================================== */
+
+.sidebar-product-hover {
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.sidebar-product-hover:hover {
+  transform: translateY(-1px);
+}
