@@ -1,39 +1,45 @@
 ---
 /*
-  SmartHeader – Minimal Static Version
-  - keine i18n
-  - keine Worker-Abhängigkeit
-  - keine Scripts
+  SmartHeader – Static Fallback (EN)
+  - zentrierter Block
+  - größere Typo
+  - Logo ≈ Textblock-Höhe
   - build-safe
 */
 ---
 
-<header class="w-full border-b"
+<header
+  class="w-full border-b"
   style="
     background-color: var(--header-bg, #1E2A45);
     color: var(--header-text, #ffffff);
   "
 >
-  <div class="max-w-7xl mx-auto h-20 flex items-center gap-4 px-6">
+  <div class="max-w-7xl mx-auto h-24 flex items-center justify-center px-6">
     
-    <!-- Logo -->
-    <img
-      src="/SmartPages_icon_transparent.png"
-      alt="SmartPages"
-      class="h-9 w-auto"
-    />
+    <!-- Center Block -->
+    <div class="flex items-center gap-5">
 
-    <!-- Title + Claim -->
-    <div class="leading-tight">
-      <div
-        class="text-lg font-extrabold tracking-tight"
-        style="font-family: 'Montserrat', sans-serif;"
-      >
-        SmartPages
+      <!-- Logo -->
+      <img
+        src="/SmartPages_icon_transparent.png"
+        alt="SmartPages"
+        class="h-14 w-auto"
+      />
+
+      <!-- Text -->
+      <div class="leading-tight">
+        <div
+          class="text-2xl font-extrabold tracking-tight"
+          style="font-family: 'Montserrat', sans-serif;"
+        >
+          SmartPages
+        </div>
+        <div class="text-base opacity-85">
+          We bring you online in 10 minutes – no technical skills required.
+        </div>
       </div>
-      <div class="text-sm opacity-80">
-        Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen.
-      </div>
+
     </div>
 
   </div>
