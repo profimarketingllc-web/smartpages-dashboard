@@ -1,7 +1,8 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
+import DashboardApp from "~/components/pages/dashboard/DashboardApp.jsx";
 ---
 
 <PageLayout sidebar header>
-  <!-- absichtlich leer -->
+  <DashboardApp client:only="solid-js" />
 </PageLayout>
