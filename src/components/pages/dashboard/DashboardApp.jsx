@@ -1,13 +1,29 @@
-import CustomerCard from "./CustomerCard.jsx";
-import ImprintCard from "./ImprintCard.jsx";
-import PrivacyCard from "./PrivacyCard.jsx";
+// src/components/pages/dashboard/DashboardApp.jsx
+import { createSignal } from "solid-js";
+import CustomerCard from "./CustomerCard";
+import CustomerModal from "./modals/CustomerModal";
 
 export default function DashboardApp() {
+  const [showCustomer, setShowCustomer] = createSignal(false);
+  const [customerData, setCustomerData] = createSignal(null);
+  let refetchCustomer;
+
   return (
-    <div class="space-y-6">
-      <CustomerCard />
-      <ImprintCard />
-      <PrivacyCard />
-    </div>
+    <>
+      <CustomerCard
+        onEdit={(data, refetch) => {
+          setCustomerData(data);
+          refetchCustomer = refetch;
+          setShowCustomer(true);
+        }}
+      />
+
+      <CustomerModal
+        open={showCustomer()}
+        data={customerData()}
+        onClose={() => setShowCustomer(false)}
+        onSaved={() => refetchCustomer && refetchCustomer()}
+      />
+    </>
   );
 }
