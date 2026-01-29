@@ -1,48 +1,38 @@
-import { createSignal } from "solid-js";
-
 export default function PrivacyCard(props) {
-  const { t, system } = props;
-  const [useCustom, setUseCustom] = createSignal(false);
+  const t = props.t;
 
   return (
-    <div class="bg-white rounded-2xl shadow p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold text-[#1E2A45]">
+    <section class="bg-white rounded-2xl shadow-sm border px-6 py-5">
+      {/* Header */}
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-extrabold text-[#1E2A45] flex gap-2">
           🔒 {t.title}
         </h2>
 
         <button
-          class="bg-[#E47E00] text-white px-4 py-2 rounded-xl"
-          onClick={() =>
-           <button
-             onClick={props.onEdit}
-             class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg"
-             >
-             {props.t.button}
-           </button>
-
-          }
+          onClick={props.onEdit}
+          class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2 rounded-xl hover:scale-105 transition"
         >
           {t.button}
         </button>
       </div>
 
-      <label class="flex items-center gap-3 text-sm mb-4">
-        <input
-          type="checkbox"
-          checked={useCustom()}
-          onChange={(e) => setUseCustom(e.currentTarget.checked)}
-        />
-        {t.useOwnPrivacy}
-      </label>
-
-      <div class="grid grid-cols-2 gap-4 text-sm">
-        <div><strong>{t.privacy_contact}</strong><br />—</div>
-        <div><strong>{t.email}</strong><br />—</div>
-        <div><strong>{t.phone}</strong><br />—</div>
-        <div><strong>{t.address}</strong><br />—</div>
-        <div><strong>{t.country}</strong><br />—</div>
+      {/* Platzhalter */}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <Field label={t.privacy_contact} value="—" />
+        <Field label={t.email} value="—" />
+        <Field label={t.phone} value="—" />
+        <Field label={t.country} value="—" />
       </div>
+    </section>
+  );
+}
+
+function Field(props) {
+  return (
+    <div>
+      <div class="font-medium text-gray-800">{props.label}</div>
+      <div class="text-gray-500">{props.value}</div>
     </div>
   );
 }

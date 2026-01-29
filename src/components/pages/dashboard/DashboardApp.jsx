@@ -7,9 +7,9 @@ import ImprintCard from "./ImprintCard.jsx";
 import PrivacyCard from "./PrivacyCard.jsx";
 
 /* Modals */
-import EditCustomerModal from "./modals/EditCustomerModal.jsx";
-import EditImprintModal from "./modals/EditImprintModal.jsx";
-import EditPrivacyModal from "./modals/EditPrivacyModal.jsx";
+import EditCustomerModal from "./modals/CustomerModal.jsx";
+import EditImprintModal from "./modals/ImprintModal.jsx";
+import EditPrivacyModal from "./modals/PrivacyModal.jsx";
 
 export default function DashboardApp() {
   /* 🌍 Sprache – zentral, static-safe */

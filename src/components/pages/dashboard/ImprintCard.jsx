@@ -1,46 +1,26 @@
-import { createSignal } from "solid-js";
-
 export default function ImprintCard(props) {
-  const { t, system } = props;
-  const [useCustom, setUseCustom] = createSignal(false);
+  const t = props.t;
 
   return (
-    <div class="bg-white rounded-2xl shadow p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold text-[#1E2A45]">
+    <section class="bg-white rounded-2xl shadow-sm border px-6 py-5">
+      {/* Header */}
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-extrabold text-[#1E2A45] flex gap-2">
           🧾 {t.title}
         </h2>
 
-        {!useCustom() && (
-          <button
-            class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-4 py-2 rounded-xl"
-            onClick={() =>
-             <button
-               onClick={props.onEdit}
-               class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg"
-               >
-               {props.t.button}
-             </button>
-
-            }
-          >
-            {t.button}
-          </button>
-        )}
+        <button
+          onClick={props.onEdit}
+          class="bg-gradient-to-r from-[#F5B400] to-[#E47E00] text-white px-5 py-2 rounded-xl hover:scale-105 transition"
+        >
+          {t.button}
+        </button>
       </div>
 
-      <label class="flex items-center gap-3 text-sm">
-        <input
-          type="checkbox"
-          checked={useCustom()}
-          onChange={(e) => setUseCustom(e.currentTarget.checked)}
-        />
-        {t.useOwnImprint}
-      </label>
-
-      <p class="mt-3 text-gray-500 text-sm">
-        Standard imprint loaded.
-      </p>
-    </div>
+      {/* Status / Platzhalter */}
+      <div class="text-sm text-gray-600">
+        Standard-Impressum geladen.
+      </div>
+    </section>
   );
 }
