@@ -1,36 +1,29 @@
-// src/components/pages/dashboard/ImprintCard.jsx
-export default function ImprintCard(props) {
+import { Show, createMemo } from "solid-js";
+
+export default function ModalWrapper(props) {
+  const visible = createMemo(() =>
+    typeof props.show === "function" ? props.show() : !!props.show
+  );
+
   return (
-    <div class="bg-white rounded-2xl shadow p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-semibold flex items-center gap-2">
-          🧾 Imprint information
-        </h2>
+    <Show when={visible()}>
+      <div class="fixed inset-0 z-50 flex items-center justify-center">
+        <div
+          class="absolute inset-0 bg-black/40"
+          onClick={props.onClose}
+        />
 
-        <button
-          onClick={props.onEdit}
-          class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg text-sm"
-        >
-          Edit imprint
-        </button>
-      </div>
+        <div class="relative bg-white rounded-2xl p-6 w-[90%] max-w-md z-50">
+          <button
+            class="absolute top-3 right-3 text-gray-400"
+            onClick={props.onClose}
+          >
+            ✕
+          </button>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        <div>
-          <span class="font-medium">Company</span>
-          <p class="text-gray-500">—</p>
-        </div>
-
-        <div>
-          <span class="font-medium">Email</span>
-          <p class="text-gray-500">—</p>
-        </div>
-
-        <div>
-          <span class="font-medium">Address</span>
-          <p class="text-gray-500">—</p>
+          {props.children}
         </div>
       </div>
-    </div>
+    </Show>
   );
 }

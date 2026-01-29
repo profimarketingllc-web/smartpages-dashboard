@@ -1,33 +1,45 @@
-export default function CustomerCard(props) {
-  return (
-    <div class="bg-white rounded-2xl shadow p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold flex gap-2">
-          👤 Customer Information
-        </h2>
+import { createSignal } from "solid-js";
+import CustomerModal from "./modals/CustomerModal";
 
-        <button
-          class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg"
-          onClick={props.onEdit}
-        >
-          Edit customer
-        </button>
+export default function CustomerCard() {
+  const [showModal, setShowModal] = createSignal(false);
+
+  return (
+    <>
+      <div class="bg-white rounded-2xl p-6 shadow">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Customer Information</h2>
+
+          <button
+            class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg"
+            onClick={() => setShowModal(true)}
+          >
+            Edit customer
+          </button>
+        </div>
+
+        {/* Platzhalter */}
+        <div class="grid grid-cols-2 gap-4 text-sm text-gray-600">
+          <div>
+            <strong>First name</strong>
+            <div>—</div>
+          </div>
+          <div>
+            <strong>Last name</strong>
+            <div>—</div>
+          </div>
+          <div>
+            <strong>Company</strong>
+            <div>—</div>
+          </div>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        <Field label="First name" value="—" />
-        <Field label="Last name" value="—" />
-        <Field label="Company" value="—" />
-      </div>
-    </div>
-  );
-}
-
-function Field(props) {
-  return (
-    <div>
-      <div class="font-medium text-gray-600">{props.label}</div>
-      <div class="text-gray-900">{props.value}</div>
-    </div>
+      {/* ✅ Modal wird NUR angezeigt, wenn showModal true */}
+      <CustomerModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+      />
+    </>
   );
 }

@@ -3,16 +3,13 @@ import ModalWrapper from "./ModalWrapper";
 export default function CustomerModal(props) {
   return (
     <ModalWrapper show={props.show} onClose={props.onClose}>
-      <h3 class="text-lg font-bold mb-4">
-        Edit customer
-      </h3>
+      <h3 class="text-lg font-bold mb-2">Edit customer</h3>
 
-      <p class="text-sm text-gray-600">
-        This is a test modal.  
-        If you see this, everything works 🎉
+      <p class="text-sm text-gray-600 mb-4">
+        This is a test modal. If you see this, everything works 🎉
       </p>
 
-      <div class="mt-6 flex justify-end">
+      <div class="flex justify-end">
         <button
           class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg"
           onClick={props.onClose}
