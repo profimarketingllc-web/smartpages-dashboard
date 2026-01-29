@@ -1,18 +1,13 @@
-import { createSignal } from "solid-js";
 import CustomerCard from "./CustomerCard.jsx";
-import CustomerModal from "./modals/CustomerModal.jsx";
+import ImprintCard from "./ImprintCard.jsx";
+import PrivacyCard from "./PrivacyCard.jsx";
 
 export default function DashboardApp() {
-  const [showCustomer, setShowCustomer] = createSignal(false);
-
   return (
-    <>
-      <CustomerCard onEdit={() => setShowCustomer(true)} />
-
-      <CustomerModal
-        open={showCustomer()}
-        onClose={() => setShowCustomer(false)}
-      />
-    </>
+    <div class="space-y-6">
+      <CustomerCard />
+      <ImprintCard />
+      <PrivacyCard />
+    </div>
   );
 }
