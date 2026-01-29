@@ -1,38 +1,35 @@
-import { createResource } from "solid-js";
-import { t } from "~/utils/i18n/i18n";
-
+// src/components/pages/dashboard/ImprintCard.jsx
 export default function ImprintCard(props) {
-  const lang = props.lang || "en";
-
-  const fetchImprint = async () => {
-    const res = await fetch("/api/customer/imprint", {
-      credentials: "include",
-    });
-    if (!res.ok) return {};
-    const json = await res.json();
-    return json?.data || {};
-  };
-
-  const [imprint] = createResource(fetchImprint);
-  const data = () => imprint() || {};
-
   return (
-    <div class="bg-white rounded-xl p-6 shadow">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">
-          🧾 {t(lang, "dashboard", "imprint", "title")}
+    <div class="bg-white rounded-2xl shadow p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold flex items-center gap-2">
+          🧾 Imprint information
         </h2>
 
         <button
           onClick={props.onEdit}
-          class="bg-[#F5B400] text-white px-4 py-2 rounded-lg"
+          class="bg-[#1E2A45] text-white px-4 py-2 rounded-lg text-sm"
         >
-          {t(lang, "dashboard", "imprint", "edit")}
+          Edit imprint
         </button>
       </div>
 
-      <div class="text-sm text-gray-600">
-        {data().company_name || "—"}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div>
+          <span class="font-medium">Company</span>
+          <p class="text-gray-500">—</p>
+        </div>
+
+        <div>
+          <span class="font-medium">Email</span>
+          <p class="text-gray-500">—</p>
+        </div>
+
+        <div>
+          <span class="font-medium">Address</span>
+          <p class="text-gray-500">—</p>
+        </div>
       </div>
     </div>
   );
