@@ -1,52 +1,50 @@
 ---
 import sidebarI18n from "~/utils/i18n/sidebar";
+
 const { lang = "en" } = Astro.props;
 
-const t = sidebarI18n[lang];
+const t = (section, key) =>
+  sidebarI18n[lang]?.[section]?.[key] ?? key;
 
-const items = [
+const navItems = [
   {
     key: "dashboard",
-    label: t.nav.dashboard,
+    label: t("nav", "dashboard"),
     icon: "🛫",
     href: "/dashboard",
     type: "system",
   },
   {
     key: "smartprofile",
-    label: "SmartProfile",
+    label: t("nav", "smartprofile"),
     icon: "👤",
     href: "/smartprofile",
     type: "product",
-    gradient: "hover:bg-gradient-to-r from-[#5B6CFF] to-[#6F7DFF]",
-    glow: "hover:smart-glow-blue",
+    glow: "smart-glow-blue",
   },
   {
     key: "smartpage",
-    label: "SmartPage",
+    label: t("nav", "smartpage"),
     icon: "📄",
     href: "/smartpage",
     type: "product",
-    gradient: "hover:bg-gradient-to-r from-[#F5B400] to-[#E47E00]",
-    glow: "hover:smart-glow-orange",
+    glow: "smart-glow-orange",
   },
   {
     key: "smartdomain",
-    label: "SmartDomain",
+    label: t("nav", "smartdomain"),
     icon: "🌐",
     href: "/smartdomain",
     type: "product",
-    gradient: "hover:bg-gradient-to-r from-[#8B5CFF] to-[#A076FF]",
-    glow: "hover:smart-glow-purple",
+    glow: "smart-glow-purple",
   },
   {
     key: "smartlinks",
-    label: "SmartLinks",
+    label: t("nav", "smartlinks"),
     icon: "🔗",
     href: "/smartlinks",
     type: "product",
-    gradient: "hover:bg-gradient-to-r from-[#A8D5BA] to-[#91C7A0]",
-    glow: "hover:smart-glow-sage",
+    glow: "smart-glow-sage",
   },
 ];
 ---
@@ -55,24 +53,23 @@ const items = [
   <!-- Header -->
   <div class="h-20 flex items-center px-6 border-b border-white/10">
     <span class="text-xl font-extrabold text-[#F5B400]">
-      SmartPages
+      SmartCenter
     </span>
   </div>
 
   <!-- Navigation -->
   <nav class="flex-1 px-4 py-6 space-y-3">
-    {items.map(item => (
+    {navItems.map((item) => (
       <a
         href={item.href}
         class={`
-          group flex items-center gap-3 px-5 py-3 rounded-2xl
-          text-sm font-medium
+          flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
           bg-white text-[#1E2A45]
           transition-all duration-300
           ${
             item.type === "system"
-              ? "hover:system-gradient hover:system-glow"
-              : `${item.gradient} ${item.glow}`
+              ? "system-hover system-glow"
+              : `hover:bg-white ${item.glow}`
           }
         `}
       >
@@ -87,27 +84,25 @@ const items = [
     <a
       href="/billing"
       class="
-        flex items-center gap-3 px-5 py-3 rounded-2xl
-        text-sm font-medium
+        flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
         bg-white text-[#1E2A45]
-        hover:system-gradient hover:system-glow
-        transition-all duration-300
+        system-hover system-glow
+        transition-all
       "
     >
-      💳 <span>{t.footer.billing}</span>
+      💳 <span>{t("footer", "billing")}</span>
     </a>
 
     <a
       href="mailto:support@smartpages.online"
       class="
-        flex items-center gap-3 px-5 py-3 rounded-2xl
-        text-sm font-medium
+        flex items-center gap-3 px-5 py-3 rounded-2xl text-sm font-medium
         bg-white text-[#1E2A45]
-        hover:system-gradient hover:system-glow
-        transition-all duration-300
+        system-hover system-glow
+        transition-all
       "
     >
-      💬 <span>{t.footer.support}</span>
+      💬 <span>{t("footer", "support")}</span>
     </a>
   </div>
 </aside>
