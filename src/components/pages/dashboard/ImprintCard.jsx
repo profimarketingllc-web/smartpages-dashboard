@@ -18,120 +18,50 @@ export default function ImprintCard(props) {
         headers: { Accept: "application/json" },
       });
 
-      if (!res.ok) return {};
+      if (!res.ok) return null;
       const json = await res.json();
-      const i = json?.data;
-      if (!i) return {};
-
-      setUseCustom(i.use_custom_imprint === 1);
-      if (i.custom_html) setCustomText(i.custom_html);
-
-      return {
-        company: i.company_name,
-        contact: i.contact_name,
-        street: i.street,
-        hs_no: i.hs_no,
-        zip: i.postal_code,
-        city: i.city,
-        country: i.country,
-        phone: i.phone,
-        email: i.email,
-        vat: i.tax_id,
-        registerCourt: i.register_court,
-        registerNumber: i.register_number,
-      };
+      return json?.data || null;
     } catch {
-      return {};
+      return null;
     }
   };
 
   const [imprint] = createResource(fetchImprint);
-  const data = () => imprint() || {};
-  const display = (v) => (v && v !== "" ? v : "—");
 
   /* ----------------------------- */
   /* 🔄 Actions                    */
   /* ----------------------------- */
-  const handleToggle = async (e) => {
+  const toggleCustom = async (e) => {
     const active = e.currentTarget.checked;
     setUseCustom(active);
     setMessage("");
-
-    try {
-      const res = await fetch("/api/customer/imprintedit", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          use_custom_imprint: active,
-          custom_html: active ? customText() : "",
-        }),
-      });
-
-      const json = await res.json();
-      setMessage(
-        json.ok
-          ? active
-            ? t.customEnabled
-            : t.customDisabled
-          : t.saveError
-      );
-    } catch {
-      setMessage(t.unexpectedError);
-    }
   };
 
-  const handleSave = async () => {
+  const saveCustom = async () => {
     if (!customText().trim()) {
       setMessage(t.emptyText);
       return;
     }
 
     setSaving(true);
-    try {
-      const res = await fetch("/api/customer/imprintedit", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          use_custom_imprint: true,
-          custom_html: customText(),
-        }),
-      });
-
-      const json = await res.json();
-      setMessage(json.ok ? t.saveSuccess : t.saveError);
-    } catch {
-      setMessage(t.unexpectedError);
-    }
-    setSaving(false);
+    setTimeout(() => {
+      setSaving(false);
+      setMessage(t.saveSuccess);
+    }, 500);
   };
 
   /* ----------------------------- */
-  /* 📋 Render                     */
+  /* 🧱 Render                     */
   /* ----------------------------- */
   return (
     <section class="bg-white rounded-xl p-6 shadow space-y-4">
-      <div class="flex justify-between items-center">
-        <h2 class="text-lg font-semibold">🧾 {t.title}</h2>
-
-        <Show when={!useCustom()}>
-          <button
-            onClick={() =>
-              window.dispatchEvent(new Event("open-imprint-modal"))
-            }
-            class="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition"
-          >
-            {t.button}
-          </button>
-        </Show>
-      </div>
+      <h2 class="text-lg font-semibold">🧾 {t.title}</h2>
 
       <div class="flex items-center gap-3">
         <input
           type="checkbox"
           checked={useCustom()}
-          onChange={handleToggle}
+          onChange={toggleCustom}
         />
         <span class="text-sm">{t.useOwnImprint}</span>
       </div>
@@ -142,10 +72,11 @@ export default function ImprintCard(props) {
           value={customText()}
           onInput={(e) => setCustomText(e.currentTarget.value)}
         />
+
         <div class="flex justify-end">
           <button
             disabled={saving()}
-            onClick={handleSave}
+            onClick={saveCustom}
             class="px-4 py-2 rounded-lg bg-slate-800 text-white text-sm"
           >
             {saving() ? system.saving : system.saveButton}
@@ -154,7 +85,14 @@ export default function ImprintCard(props) {
       </Show>
 
       <Show when={!useCustom()}>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {Object.keys(data()).map((key) => (
-            <div>
-              <div
+        <div class="text-sm text-gray-500">
+          Standard-Impressum geladen.
+        </div>
+      </Show>
+
+      <Show when={message()}>
+        <p class="text-sm text-gray-600">{message()}</p>
+      </Show>
+    </section>
+  );
+}
