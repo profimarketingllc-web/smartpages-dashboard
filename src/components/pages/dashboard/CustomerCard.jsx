@@ -2,18 +2,23 @@ export default function CustomerCard(props) {
   const { t, system } = props;
 
   return (
-    <section class="bg-white rounded-xl p-6 shadow space-y-4">
-      <h2 class="text-lg font-semibold">
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-xl font-bold text-[#1E2A45] mb-2">
         {t.title}
       </h2>
 
-      <div class="text-sm text-gray-600">
+      <p class="text-sm text-gray-600 mb-4">
         {system.statusActive}
-      </div>
+      </p>
 
-      <button class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition">
+      <button
+        class="bg-[#4F6EF7] text-white px-5 py-2 rounded-xl hover:opacity-90"
+        onClick={() =>
+          window.dispatchEvent(new Event("open-customer-modal"))
+        }
+      >
         {t.button}
       </button>
-    </section>
+    </div>
   );
 }
