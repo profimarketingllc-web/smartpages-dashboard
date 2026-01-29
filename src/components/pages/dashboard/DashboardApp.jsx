@@ -1,9 +1,5 @@
 import { createSignal } from "solid-js";
-
-/* Card */
 import CustomerCard from "./CustomerCard.jsx";
-
-/* Modal */
 import CustomerModal from "./modals/CustomerModal.jsx";
 
 export default function DashboardApp() {
@@ -11,12 +7,8 @@ export default function DashboardApp() {
 
   return (
     <>
-      {/* CARD */}
-      <div class="space-y-6">
-        <CustomerCard onEdit={() => setShowCustomer(true)} />
-      </div>
+      <CustomerCard onEdit={() => setShowCustomer(true)} />
 
-      {/* MODAL */}
       <CustomerModal
         open={showCustomer()}
         onClose={() => setShowCustomer(false)}
