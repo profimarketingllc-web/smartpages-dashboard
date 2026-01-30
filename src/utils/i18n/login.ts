@@ -31,54 +31,31 @@ const login = {
       hint:
         "Deine Daten werden ausschließlich für den Versand des Magic-Links verwendet und NICHT gespeichert.",
     },
-
-    /* ================= PRODUCTS ================= */
-    products: {
-      smartprofile: {
-        title: "SmartProfile",
-        label: "Bald verfügbar",
-        text:
-          "Dein professionelles Online-Profil – sicher, sichtbar und DSGVO-konform.",
-      },
-      smartpage: {
-        title: "SmartPage",
-        label: "Bald verfügbar",
-        text:
-          "Conversion-starke Seiten in Minuten – ganz ohne Programmierung.",
-      },
-      smartdomain: {
-        title: "SmartDomain",
-        label: "Bald verfügbar",
-        text:
-          "Eigene Domain, SSL & Datenschutz – alles aus einer Hand.",
-      },
-      smartlinks: {
-        title: "SmartLinks",
-        label: "In Vorbereitung",
-        text:
-          "Datenschutzfreundliche Kurzlinks mit Analyse-Fokus.",
-      },
-    },
   },
 
   en: {
+    /* ================= PAGE META ================= */
     page: {
       title: "Login",
       description:
         "Log in to SmartPages to manage your profiles, domains and subscriptions.",
     },
 
+    /* ================= HEADER ================= */
     header: {
       title: "SmartPages",
-      subtitle: "Go online in just 10 minutes — privacy-first and GDPR compliant.",
+      subtitle:
+        "Go online in just 10 minutes — privacy-first and GDPR compliant.",
     },
 
+    /* ================= HERO / INTRO ================= */
     hero: {
       title: "Welcome to SmartPages",
       text:
         "Log in to manage your profiles, domains and subscriptions.",
     },
 
+    /* ================= FORM ================= */
     form: {
       firstName: "First name",
       lastName: "Last name",
@@ -86,33 +63,6 @@ const login = {
       button: "Send Magic Link",
       hint:
         "Your data is only used to send the magic link and is NOT stored.",
-    },
-
-    products: {
-      smartprofile: {
-        title: "SmartProfile",
-        label: "Coming soon",
-        text:
-          "Your professional online profile — secure, visible and GDPR compliant.",
-      },
-      smartpage: {
-        title: "SmartPage",
-        label: "Coming soon",
-        text:
-          "Conversion-focused pages in minutes — no coding required.",
-      },
-      smartdomain: {
-        title: "SmartDomain",
-        label: "Coming soon",
-        text:
-          "Your own domain, SSL & privacy — all in one place.",
-      },
-      smartlinks: {
-        title: "SmartLinks",
-        label: "In progress",
-        text:
-          "Privacy-friendly short links with analytics focus.",
-      },
     },
   },
 };
