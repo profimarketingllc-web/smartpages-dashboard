@@ -1,188 +1,158 @@
 # SmartPages – Projektstruktur (Astro Frontend)
 
-> **Scope dieses Dokuments:** Nur das Astro-Frontend (`smartpages-dashboard`).
+> **Stand:** stabiler Zwischenstand nach Dashboard-Refactor (Cards, Modals, Sidebar, i18n)
 >
-> Worker (Core, Billing etc.) werden **bewusst in einem separaten Architektur‑Dokument** gepflegt.
-
-Dieses Dokument ist die **Single Source of Truth** für die Frontend‑Architektur und Routing‑Struktur.
+> Dieses Dokument beschreibt die **aktuelle, produktionsnahe Projektstruktur** des SmartPages Dashboards. Es ersetzt vollständig die frühere `PROJECT_STRUCTURE.md` und dient als **Referenz für Weiterentwicklung, Onboarding und Review**.
 
 ---
 
 ## 1. Projekt Root
 
+Der Root enthält ausschließlich Infrastruktur, Build- und Dokumentationsartefakte. Anwendungslogik befindet sich **ausschließlich im **``**-Verzeichnis**.
+
 ```txt
 smartpages-dashboard/
-├── .astro/                 # Astro Cache (lokal, ignoriert)
-├── .github/                # GitHub Workflows / Meta
-├── .vscode/                # Editor Settings (optional)
-├── .wrangler/              # Cloudflare Wrangler Cache
-├── backups/                # lokale Backups (nicht versionieren)
-├── dist/                   # Build Output (generiert)
-├── node_modules/           # Abhängigkeiten (nicht versioniert)
-├── public/                 # Statische Assets
+├── .astro/                         # Astro Cache / Build Artefakte
+├── .github/                        # GitHub Actions / CI
+├── .vscode/                        # Editor Settings
+├── .wrangler/                      # Cloudflare Wrangler Configs
+├── backups/                        # Manuelle Sicherungen (lokal)
+├── dist/                           # Build Output (static)
+├── documentation/                 # Architektur, Datenflüsse, Specs
+│   ├── PROJECT_STRUCTURE.md
+│   ├── README.md
+│   ├── SmartPages_login_flow_DE.md
+│   ├── SmartPages_login_flow_EN.md
+│   ├── SmartPages_Worker_architektur_DE.md
+│   └── SmartPages_Worker_architektur_EN.md
+├── node_modules/
+├── public/                         # Statische Assets
 │   ├── favicon.ico
 │   └── SmartPages_icon_transparent.png
-├── scripts/                # lokale Hilfs-/Deploy-Skripte
-├── src/                    # Application Code
-├── .gitignore
+├── scripts/                        # Helper / Deploy Scripts
+├── src/                            # Anwendungscode (siehe Abschnitt 2)
 ├── astro.config.mjs
 ├── package.json
 ├── package-lock.json
+├── publish.ps1
 ├── tailwind.config.cjs
 ├── tsconfig.json
-├── publish.ps1             # lokales Publish Script
 └── README.md
 ```
 
-**Hinweise:**
-
-- Nur strukturell relevante Ordner sind hier dokumentiert.
-- Cache-, Build- und lokale Tool-Ordner (`.astro`, `node_modules`, `dist`, `backups`) dienen nur der Entwicklung.
-- `public/` enthält ausschließlich globale statische Assets.
-
 ---
 
+## 2. Source (`/src`)
 
-## 2. Source Code (`/src`)
+Der `/src`-Ordner enthält die vollständige Frontend-Applikation. Die Struktur folgt einem **feature-orientierten Ansatz**, nicht technisch (kein `components/ui/pages` Wildwuchs).
 
 ```txt
 src/
 ├── components/
 │   ├── pages/
+│   │   ├── billing/               # vorbereitet
 │   │   ├── dashboard/
-│   │   │   ├── astro/
-│   │   │   │   └── SystemMessage.astro
-│   │   │   └── solid/
-│   │   │       ├── CustomerCard.jsx
-│   │   │       ├── EditCustomerModal.jsx
-│   │   │       ├── EditImprintModal.jsx
-│   │   │       ├── EditPrivacyModal.jsx
-│   │   │       ├── ImprintCard.jsx
-│   │   │       ├── PrivacyCard.jsx
-│   │   │       └── ModalWrapper.jsx        # zentraler Wrapper für alle Modals
-│   │   │
-│   │   ├── billing/
-│   │   │   ├── astro/
-│   │   │   └── solid/
-│   │   │
-│   │   ├── login/
-│   │   ├── smartpage/
-│   │   ├── smartprofile/
-│   │   ├── smartdomain/
-│   │   └── smartlinks/
+│   │   │   ├── DashboardApp.jsx        # Solid Orchestrator
+│   │   │   ├── CustomerCard.jsx
+│   │   │   ├── ImprintCard.jsx
+│   │   │   ├── PrivacyCard.jsx
+│   │   │   └── modals/
+│   │   │       ├── ModalWrapper.jsx
+│   │   │       ├── CustomerModal.jsx
+│   │   │       ├── ImprintModal.jsx
+│   │   │       └── PrivacyModal.jsx
+│   │   ├── login/                 # vorbereitet
+│   │   ├── smartdomain/            # vorbereitet
+│   │   ├── smartlinks/             # vorbereitet
+│   │   ├── smartpage/              # vorbereitet
+│   │   └── smartprofile/           # vorbereitet
 │   │
-│   ├── editor/
-│   │   ├── ProductForm.astro
-│   │   └── ProductPreview.astro
-│   │
-│   ├── admin/             # reserviert
-│   │
-│   ├── shared/
-│   │   ├── DashboardCardWide.astro
-│   │   ├── ProductCard.astro
+│   ├── shared/                     # Wiederverwendbare Seiten-Bausteine
+│   │   ├── SmartSidebar.astro
 │   │   ├── ProductGrid.astro
-│   │   ├── ProductHeader.astro
-│   │   ├── ProductPill.astro
-│   │   ├── SmartHeader.astro
-│   │   └── SmartSidebar.astro
+│   │   ├── ProductCard.astro
+│   │   └── SystemMessage.astro
 │   │
-│   └── ui/
+│   └── ui/                         # Primitive UI-Elemente (dumb components)
 │       ├── Button.astro
-│       ├── Card.astro
 │       ├── Input.astro
-│       └── Textarea.astro
+│       ├── Textarea.astro
+│       └── Toggle.astro
 │
 ├── layouts/
 │   └── PageLayout.astro
 │
-├── middleware/
-│   ├── access.ts          # Paywall / Feature-Gates
-│   ├── user-session.ts    # Session + Auth
-│   ├── lang.ts            # i18n routing
-│   └── index.ts
-│
-├── pages/
-│   ├── api/
-│   │   ├── auth/
-│   │   │   ├── start.ts
-│   │   │   ├── confirm.ts
-│   │   │   ├── verify.ts
-│   │   │   └── logout.ts
-│   │   │
-│   │   ├── billing/
-│   │   │   └── checkout.ts
-│   │   │
-│   │   └── customer/
-│   │       ├── customer.ts
-│   │       ├── customeredit.ts
-│   │       ├── imprint.ts
-│   │       ├── imprintedit.ts
-│   │       ├── privacy.ts
-│   │       └── privacyedit.ts
-│   │
+├── pages/                          # Astro Routing Layer
 │   ├── checkout/
-│   │   ├── success.astro
-│   │   ├── cancel.astro
-│   │   └── upgrade.astro
-│   │
 │   ├── de/
-│   │   ├── dashboard.astro      # Wrapper → leitet auf /dashboard.astro
-│   │   ├── billing.astro
-│   │   ├── login.astro
-│   │   ├── smartpage.astro
-│   │   ├── smartprofile.astro
-│   │   ├── smartdomain.astro
-│   │   └── smartlinks.astro
-│   │
 │   ├── en/
-│   │   ├── dashboard.astro      # Wrapper → leitet auf /dashboard.astro
-│   │   ├── billing.astro
-│   │   ├── login.astro
-│   │   ├── smartpage.astro
-│   │   ├── smartprofile.astro
-│   │   ├── smartdomain.astro
-│   │   └── smartlinks.astro
-│   │
-│   ├── dashboard.astro          # Zentrale Dashboard-Seite
-│   ├── index.astro
-│   ├── redirect.astro
+│   ├── features/
+│   ├── 404.astro
+│   ├── billing.astro
+│   ├── dashboard.astro
+│   ├── dashboard.astro.DISABLED
+│   ├── debug-locals.astro
 │   ├── error.astro
 │   ├── forbidden.astro
-│   ├── debug-locals.astro
-│   └── 404.astro
+│   ├── index.astro
+│   ├── login.astro
+│   ├── smartpage.astro
+│   └── smartprofile.astro
 │
 ├── styles/
-│   └── global.css
+│   └── global.css                  # Zentrales Design-System
 │
-├── utils/
-│   └── i18n/
-│       ├── billing.ts
-│       ├── dashboard.ts
-│       ├── login.ts
-│       ├── smartdomain.ts
-│       ├── smartlinks.ts
-│       ├── smartpage.ts
-│       ├── smartprofile.ts
-│       ├── de.ts                # Sprach-Mapping DE
-│       ├── en.ts                # Sprach-Mapping EN
-│       └── i18n.ts              # Resolver / Loader
-│
-└── middleware.ts
+└── utils/
+    └── i18n/                       # Feature-spezifische Übersetzungen
+        ├── billing.ts
+        ├── dashboard.ts
+        ├── de.ts
+        ├── en.ts
+        ├── features.ts
+        ├── i18n.ts
+        ├── login.ts
+        ├── sidebar.ts
+        ├── smartdomain.ts
+        ├── smartlinks.ts
+        ├── smartpage.ts
+        └── smartprofile.ts
+```
 
 ---
 
-## 3. Architektur-Prinzipien
+## 3. Bewusste Architektur-Entscheidungen
 
-- Routing nur in `/pages`
-- Sprachpfade (`/de`, `/en`) enthalten **nur Wrapper-Seiten**
-- Zentrale Seiten liegen auf Root-Ebene von `/pages`
-- Business-Logik in Components / API
-- Paywall ausschließlich über Middleware (`access.ts`)
-- Übersetzungen nach **Feature/Page**, nicht nach Sprache strukturiert
-- UI primitives ≠ Feature components
+### Dashboard
+
+- Solid.js wird **ausschließlich im Dashboard** eingesetzt
+- `DashboardApp.jsx` orchestriert Cards & Modals
+- Jede Card kapselt ihren eigenen State
+- Modals sind **lokal angebunden**, kein globaler Modal-Store
+
+### Datenfluss
+
+- Initiale Userdaten kommen vom Worker über `window.SMARTPAGES_USER`
+- Cards sind **rein darstellend (read-only)**
+- Änderungen erfolgen über Modals → API → State-Update
+
+### i18n
+
+- Übersetzungen strikt pro Feature (z. B. `dashboard`, `sidebar`)
+- Keine Logik in i18n-Dateien
+- Components erhalten fertige Strings
+
+### Sidebar
+
+- Reines Astro-Component
+- Farben, Hover & States vollständig über `global.css`
+- Keine Produkt- oder Userlogik im Markup
 
 ---
 
-Status: **Frontend Struktur finalisiert (Astro, Stand 25.01.2026)**
+## 4. Entfernt / bewusst nicht mehr genutzt
 
+- ❌ SSR-Forms im Dashboard
+- ❌ Globale Modal-Steuerung
+- ❌ Verpflichtender `userContext`
+- ❌ Sprach-Routing ausschließlich über `/de` und `/en`
 
