@@ -2,68 +2,92 @@
 import "~/styles/global.css";
 import SmartHeader from "~/components/shared/SmartHeader.astro";
 import SmartSidebar from "~/components/shared/SmartSidebar.astro";
+import { t } from "~/utils/i18n/i18n";
 
 const {
   sidebar = true,
   header = true,
+  lang = "en",
+  page = null,
 } = Astro.props;
+
+// 🧠 Titel & Description aus i18n
+const pageTitle = page
+  ? t(lang, page, "page", "title")
+  : "SmartPages";
+
+const pageDescription = page
+  ? t(lang, page, "page", "description")
+  : null;
 ---
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<div class="min-h-screen flex font-sans bg-[#F7F8FA] text-smart-text">
-  {sidebar && <SmartSidebar />}
+    <title>SmartPages – {pageTitle}</title>
 
-  <div class={`flex-1 flex flex-col ${sidebar ? "md:ml-64" : ""}`}>
-    {header && <SmartHeader />}
+    {pageDescription && (
+      <meta name="description" content={pageDescription} />
+    )}
+  </head>
 
-    <main class="flex-1 px-4 py-4 max-w-[1500px] w-full mx-auto">
-      <slot />
-    </main>
+  <body>
+    <div class="min-h-screen flex font-sans bg-[#F7F8FA] text-smart-text">
+      {sidebar && <SmartSidebar />}
 
-    <footer class="text-center text-sm text-gray-500 py-4 border-t bg-white/80">
-      © SmartPages
-    </footer>
-  </div>
-</div>
+      <div class={`flex-1 flex flex-col ${sidebar ? "md:ml-64" : ""}`}>
+        {header && <SmartHeader />}
 
-<!-- ===================================================== -->
-<!-- 🔐 CLIENT BOOTSTRAP (LANG + USER CONTEXT)             -->
-<!-- ===================================================== -->
-<script>
-  (async function bootstrapSmartPagesContext() {
-    // 🛡 harte, sichere Defaults (build-safe)
-    window.SMARTPAGES_LANG = "en";
-    window.SMARTPAGES_USER = null;
+        <main class="flex-1 px-4 py-4 max-w-[1500px] w-full mx-auto">
+          <slot />
+        </main>
 
-    try {
-      const res = await fetch("/api/session/userinfo", {
-        credentials: "include",
-        headers: { "Accept": "application/json" },
-      });
+        <footer class="text-center text-sm text-gray-500 py-4 border-t bg-white/80">
+          © SmartPages
+        </footer>
+      </div>
+    </div>
 
-      if (!res.ok) throw new Error("userinfo fetch failed");
+    <!-- ===================================================== -->
+    <!-- 🔐 CLIENT BOOTSTRAP (LANG + USER CONTEXT)             -->
+    <!-- ===================================================== -->
+    <script>
+      (async function bootstrapSmartPagesContext() {
+        window.SMARTPAGES_LANG = "en";
+        window.SMARTPAGES_USER = null;
 
-      const data = await res.json();
+        try {
+          const res = await fetch("/api/session/userinfo", {
+            credentials: "include",
+            headers: { "Accept": "application/json" },
+          });
 
-      if (data?.ok && data.user) {
-        window.SMARTPAGES_USER = data.user;
+          if (!res.ok) throw new Error("userinfo fetch failed");
 
-        if (data.user.language) {
-          window.SMARTPAGES_LANG = data.user.language;
+          const data = await res.json();
+
+          if (data?.ok && data.user) {
+            window.SMARTPAGES_USER = data.user;
+
+            if (data.user.language) {
+              window.SMARTPAGES_LANG = data.user.language;
+            }
+          }
+        } catch (err) {
+          console.warn("[SmartPages] Using fallback language/user");
         }
-      }
-    } catch (err) {
-      // bewusst leer: Fallbacks bleiben aktiv
-      console.warn("[SmartPages] Using fallback language/user");
-    }
 
-    // 🔔 ZENTRALES SIGNAL (Ersatz für locals / middleware)
-    window.dispatchEvent(
-      new CustomEvent("smartpages:context-ready", {
-        detail: {
-          lang: window.SMARTPAGES_LANG,
-          user: window.SMARTPAGES_USER,
-        },
-      })
-    );
-  })();
-</script>
+        window.dispatchEvent(
+          new CustomEvent("smartpages:context-ready", {
+            detail: {
+              lang: window.SMARTPAGES_LANG,
+              user: window.SMARTPAGES_USER,
+            },
+          })
+        );
+      })();
+    </script>
+  </body>
+</html>
