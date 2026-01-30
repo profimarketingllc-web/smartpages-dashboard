@@ -30,7 +30,7 @@ export default function PrivacyCard() {
         </button>
       </div>
 
-      {/* Custom privacy policy */}
+      {/* Custom privacy text */}
       {custom() ? (
         <div class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
           <p class="text-sm text-gray-600 mb-2">
@@ -39,29 +39,38 @@ export default function PrivacyCard() {
           </p>
 
           <div class="min-h-[120px] rounded border bg-white p-3 text-sm text-gray-700">
+            {/* später: tatsächlicher Privacy-Text */}
             —
           </div>
         </div>
       ) : (
-        /* Structured fields */
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm text-gray-700 mt-4">
-          {/* Row 1 */}
-          <div>
-            <span class="font-medium">Privacy contact:</span> —
-          </div>
-          <div>
-            <span class="font-medium">Email:</span> —
-          </div>
-
-          {/* Row 2 – Address block */}
-          <div class="space-y-1">
-            <span class="font-medium">Address:</span>
-            <div class="text-gray-600">
-              Street —<br />
-              <span>ZIP</span> <span>City</span>, <span>Country</span>
+        /* Structured privacy fields */
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 text-sm text-gray-700 mt-4">
+          {/* Left column */}
+          <div class="space-y-3">
+            <div>
+              <span class="font-medium">Company:</span> —
+            </div>
+            <div>
+              <span class="font-medium">Address:</span>
+              <div class="mt-1 text-gray-600">
+                —<br />—
+              </div>
+            </div>
+            <div>
+              <span class="font-medium">Country:</span> —
             </div>
           </div>
-          <div></div>
+
+          {/* Right column */}
+          <div class="space-y-3">
+             <div>
+              <span class="font-medium">Contact:</span> —
+            </div>
+            <div>
+              <span class="font-medium">Email:</span> —
+            </div>
+          </div>
         </div>
       )}
 
