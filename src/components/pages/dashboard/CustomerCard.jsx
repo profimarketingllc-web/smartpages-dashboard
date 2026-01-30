@@ -6,7 +6,7 @@ export default function CustomerCard() {
   const authenticated = false; // später aus userinfo
 
   return (
-    <div class="bg-white rounded-xl p-6 shadow">
+    <div class="bg-white rounded-xl p-4 shadow">
       {/* Header */}
       <div class="flex items-start justify-between mb-6">
         <div>
@@ -52,7 +52,7 @@ export default function CustomerCard() {
       </div>
 
       {/* Footer / Action */}
-      <div class="mt-6 flex justify-end">
+      <div class="mt-4 flex justify-end">
         <button
           class="bg-slate-800 text-white px-4 py-2 rounded"
           onClick={() => setOpen(true)}
