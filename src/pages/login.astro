@@ -8,104 +8,91 @@ const lang = Astro.props.lang ?? "de";
 ---
 
 <PageLayout lang={lang} page="login" sidebar={false} header={true}>
-  <div id="login-root" data-lang={lang}>
 
-    <!-- ================= HERO + LOGIN ================= -->
-    <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+  <!-- HERO + FORM -->
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
 
-      <!-- HERO -->
-      <div class="dashboard-card bg-white rounded-xl shadow p-6">
-        <h2 class="text-xl font-bold mb-2">
-          {t(lang, "login", "hero", "title")}
-        </h2>
-        <p class="text-sm text-gray-600 leading-snug">
-          {t(lang, "login", "hero", "text")}
+    <!-- HERO -->
+    <div class="dashboard-card bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-bold mb-2">
+        {t(lang, "login", "hero", "title")}
+      </h2>
+      <p class="text-sm text-gray-600 leading-snug">
+        {t(lang, "login", "hero", "text")}
+      </p>
+    </div>
+
+    <!-- FORM -->
+    <div class="dashboard-card bg-white rounded-xl shadow p-6">
+      <div class="grid gap-3">
+
+        <label class="text-sm font-medium">
+          {t(lang, "login", "form", "firstName")}
+          <span class="text-red-500">*</span>
+        </label>
+        <input id="firstName" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
+
+        <label class="text-sm font-medium">
+          {t(lang, "login", "form", "lastName")}
+        </label>
+        <input id="lastName" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
+
+        <label class="text-sm font-medium">
+          {t(lang, "login", "form", "email")}
+          <span class="text-red-500">*</span>
+        </label>
+        <input id="email" type="email" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
+
+        <div
+          id="businessBox"
+          class="mt-2 cursor-pointer rounded-lg border border-dashed text-sm text-gray-600 p-3 text-center hover:bg-gray-50"
+        >
+          {t(lang, "login", "form", "businessToggle")}
+        </div>
+
+        <div id="companyField" class="hidden">
+          <label class="text-sm font-medium mt-2 block">
+            {t(lang, "login", "form", "company")}
+          </label>
+          <input id="company" class="h-9 px-3 rounded border bg-gray-100 text-sm w-full" />
+        </div>
+
+        <button
+          id="sendBtn"
+          disabled
+          class="mt-4 mx-auto w-3/4 h-10 rounded-lg font-semibold text-white bg-[#F5B400] disabled:opacity-50"
+        >
+          {t(lang, "login", "form", "button")}
+        </button>
+
+        <p class="text-xs text-gray-500 text-center mt-2 leading-snug">
+          {t(lang, "login", "form", "hint")}
         </p>
       </div>
+    </div>
+  </section>
 
-      <!-- LOGIN CARD -->
-      <div class="dashboard-card bg-white rounded-xl shadow p-6">
-        <div class="grid gap-3">
+  <!-- PRODUCTS (TEASER) -->
+  <section class="mt-10">
+    <ProductGrid lang={lang} upsell={productGridI18n[lang].teaser} />
+  </section>
 
-          <label class="text-sm font-medium">
-            {t(lang, "login", "form", "firstName")}
-            <span class="text-red-500">*</span>
-          </label>
-          <input id="firstName" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
-
-          <label class="text-sm font-medium">
-            {t(lang, "login", "form", "lastName")}
-          </label>
-          <input id="lastName" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
-
-          <label class="text-sm font-medium">
-            {t(lang, "login", "form", "email")}
-            <span class="text-red-500">*</span>
-          </label>
-          <input id="email" type="email" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
-
-          <!-- Business toggle -->
-          <div
-            id="businessToggle"
-            class="mt-2 cursor-pointer rounded-lg border border-dashed text-sm text-gray-600 p-3 text-center hover:bg-gray-50"
-          >
-            {t(lang, "login", "form", "businessToggle")}
-          </div>
-
-          <!-- Company -->
-          <div id="companyField" class="hidden">
-            <label class="text-sm font-medium mt-2 block">
-              {t(lang, "login", "form", "company")}
-            </label>
-            <input id="company" class="h-9 px-3 rounded border bg-gray-100 text-sm w-full" />
-          </div>
-
-          <!-- Button -->
-          <button
-            id="sendBtn"
-            disabled
-            class="mt-4 mx-auto w-3/4 h-10 rounded-lg font-semibold text-white bg-[#F5B400] disabled:opacity-50"
-          >
-            {t(lang, "login", "form", "button")}
-          </button>
-
-          <p id="status" class="hidden text-xs text-center text-gray-500 mt-2"></p>
-
-          <p class="text-xs text-gray-500 text-center mt-2 leading-snug">
-            {t(lang, "login", "form", "hint")}
-          </p>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= PRODUCTS ================= -->
-    <section class="mt-10">
-      <ProductGrid
-        lang={lang}
-        upsell={productGridI18n[lang].teaser}
-      />
-    </section>
-
-  </div>
 </PageLayout>
 
-<!-- ================= SUCCESS MODAL ================= -->
+<!-- ================= MODAL ================= -->
 <div
-  id="successModal"
-  style="display:none"
-  class="fixed inset-0 z-50 items-center justify-center bg-black/40"
+  id="loginModal"
+  class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50"
 >
-  <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center">
-    <h3 class="text-lg font-semibold mb-2">
-      Magic-Link gesendet
-    </h3>
-    <p class="text-sm text-gray-600 mb-4">
-      Bitte prüfe dein E-Mail-Postfach.
-    </p>
+  <div
+    id="modalBox"
+    class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center"
+  >
+    <p id="modalText" class="text-sm mb-4"></p>
+
     <button
-      id="closeModal"
-      class="px-4 py-2 rounded-lg bg-[#F5B400] text-white font-semibold"
+      id="modalOk"
+      class="hidden mx-auto px-6 py-2 rounded-lg font-semibold text-white"
     >
       OK
     </button>
@@ -113,87 +100,51 @@ const lang = Astro.props.lang ?? "de";
 </div>
 
 <script>
-  const root = document.getElementById("login-root");
-  const PAGE_LANG = root?.dataset.lang || "de";
-
   const firstName = document.getElementById("firstName");
-  const lastName = document.getElementById("lastName");
   const email = document.getElementById("email");
-  const company = document.getElementById("company");
-
-  const toggle = document.getElementById("businessToggle");
+  const companyBox = document.getElementById("businessBox");
   const companyField = document.getElementById("companyField");
-
   const sendBtn = document.getElementById("sendBtn");
-  const status = document.getElementById("status");
 
-  const modal = document.getElementById("successModal");
-  const closeModal = document.getElementById("closeModal");
+  const modal = document.getElementById("loginModal");
+  const modalText = document.getElementById("modalText");
+  const modalOk = document.getElementById("modalOk");
 
   function validate() {
-    sendBtn.disabled = !firstName.value.trim() || !email.value.trim();
+    sendBtn.disabled = !firstName.value || !email.value;
   }
-
-  // 🔁 immer korrekt initialisieren (Autofill, Mobile, etc.)
-  validate();
 
   firstName.addEventListener("input", validate);
   email.addEventListener("input", validate);
 
-  toggle.addEventListener("click", () => {
-    toggle.classList.add("hidden");
+  companyBox.addEventListener("click", () => {
+    companyBox.classList.add("hidden");
     companyField.classList.remove("hidden");
   });
 
-  sendBtn.addEventListener("click", async () => {
+  function openModal(text, type = "loading") {
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
 
-    // 🛑 Sicherheits-Guard (Pflichtfelder)
-    if (!firstName.value.trim() || !email.value.trim()) {
-      status.classList.remove("hidden");
-      status.textContent = "Bitte Vorname und E-Mail ausfüllen.";
-      sendBtn.disabled = false;
-      return;
-    }
+    modalText.textContent = text;
+    modalText.className =
+      "text-sm mb-4 " +
+      (type === "success"
+        ? "text-green-600"
+        : type === "error"
+        ? "text-red-600"
+        : "text-gray-700");
 
-    sendBtn.disabled = true;
-    status.classList.remove("hidden");
-    status.textContent = "Sende Magic-Link …";
+    modalOk.className =
+      "mx-auto px-6 py-2 rounded-lg font-semibold text-white " +
+      (type === "success"
+        ? "bg-green-600"
+        : "bg-red-600");
 
-    const payload = {
-      first_name: firstName.value.trim(),
-      last_name: lastName.value.trim(),
-      email: email.value.trim(),
-      company: company?.value?.trim() || null,
-      lang: PAGE_LANG,
-    };
+    modalOk.style.display = type === "loading" ? "none" : "inline-block";
+  }
 
-    console.log("[LOGIN] payload", payload);
-
+  modalOk.addEventListener("click", () => {
+    modal.classList.add("hidden");
     try {
-      const res = await fetch("https://api.smartpages.online/api/auth/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        status.textContent = "Fehler beim Login. Bitte erneut versuchen.";
-        sendBtn.disabled = false;
-        return;
-      }
-
-      status.classList.add("hidden");
-      modal.style.display = "flex";
-
-    } catch (err) {
-      console.error("[LOGIN] request failed", err);
-      status.textContent = "Netzwerkfehler. Bitte erneut versuchen.";
-      sendBtn.disabled = false;
-    }
-  });
-
-  closeModal.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
-</script>
+      window.close();
