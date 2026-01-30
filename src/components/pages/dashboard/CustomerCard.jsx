@@ -28,7 +28,7 @@ export default function CustomerCard() {
       {/* Content */}
       <div class="grid grid-cols-1 gap-6 md:grid-cols-2 text-sm text-gray-700">
         {/* Left column */}
-        <div class="space-y-3">
+        <div class="space-y-4">
           <div>
             <span class="font-medium">Name:</span> —
           </div>
@@ -41,7 +41,7 @@ export default function CustomerCard() {
         </div>
 
         {/* Right column */}
-        <div class="space-y-3">
+        <div class="space-y-4">
           <div>
             <span class="font-medium">Plan:</span> —
           </div>
