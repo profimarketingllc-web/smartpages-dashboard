@@ -72,79 +72,16 @@ const lang = Astro.props.lang ?? "de";
     </div>
   </section>
 
-  <!-- PRODUCTS (TEASER) -->
+  <!-- PRODUCTS -->
   <section class="mt-10">
     <ProductGrid lang={lang} upsell={productGridI18n[lang].teaser} />
   </section>
 
 </PageLayout>
 
-<!-- ================= MODAL ================= -->
+<!-- MODAL -->
 <div
   id="loginModal"
   class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50"
 >
-  <div
-    id="modalBox"
-    class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center"
-  >
-    <p id="modalText" class="text-sm mb-4"></p>
-
-    <button
-      id="modalOk"
-      class="hidden mx-auto px-6 py-2 rounded-lg font-semibold text-white"
-    >
-      OK
-    </button>
-  </div>
-</div>
-
-<script>
-  const firstName = document.getElementById("firstName");
-  const email = document.getElementById("email");
-  const companyBox = document.getElementById("businessBox");
-  const companyField = document.getElementById("companyField");
-  const sendBtn = document.getElementById("sendBtn");
-
-  const modal = document.getElementById("loginModal");
-  const modalText = document.getElementById("modalText");
-  const modalOk = document.getElementById("modalOk");
-
-  function validate() {
-    sendBtn.disabled = !firstName.value || !email.value;
-  }
-
-  firstName.addEventListener("input", validate);
-  email.addEventListener("input", validate);
-
-  companyBox.addEventListener("click", () => {
-    companyBox.classList.add("hidden");
-    companyField.classList.remove("hidden");
-  });
-
-  function openModal(text, type = "loading") {
-    modal.classList.remove("hidden");
-    modal.classList.add("flex");
-
-    modalText.textContent = text;
-    modalText.className =
-      "text-sm mb-4 " +
-      (type === "success"
-        ? "text-green-600"
-        : type === "error"
-        ? "text-red-600"
-        : "text-gray-700");
-
-    modalOk.className =
-      "mx-auto px-6 py-2 rounded-lg font-semibold text-white " +
-      (type === "success"
-        ? "bg-green-600"
-        : "bg-red-600");
-
-    modalOk.style.display = type === "loading" ? "none" : "inline-block";
-  }
-
-  modalOk.addEventListener("click", () => {
-    modal.classList.add("hidden");
-    try {
-      window.close();
+  <div class="b
