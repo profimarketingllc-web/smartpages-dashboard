@@ -61,6 +61,24 @@ a {
 }
 
 /* ======================================================
+   🧩 Product Gradients – SmartPages
+   ====================================================== */
+
+:root {
+  --gradient-smartprofile-from: #4e6bff;
+  --gradient-smartprofile-to:   #657aff;
+
+  --gradient-smartpage-from:    #f5b400;
+  --gradient-smartpage-to:      #e47e00;
+
+  --gradient-smartdomain-from:  #8b5cff;
+  --gradient-smartdomain-to:    #a076ff;
+
+  --gradient-smartlinks-from:   #a8d5ba;
+  --gradient-smartlinks-to:     #7fbf9a;
+}
+
+/* ======================================================
    🧭 SYSTEM BUTTONS – Cockpit / Billing / Support
    ====================================================== */
 
