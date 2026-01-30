@@ -3,9 +3,9 @@ import CustomerCard from "./CustomerCard.jsx";
 import ImprintCard from "./ImprintCard.jsx";
 import PrivacyCard from "./PrivacyCard.jsx";
 
-import EditCustomerModal from "./modals/EditCustomerModal.jsx";
-import EditImprintModal from "./modals/EditImprintModal.jsx";
-import EditPrivacyModal from "./modals/EditPrivacyModal.jsx";
+import CustomerModal from "./modals/CustomerModal.jsx";
+import ImprintModal from "./modals/ImprintModal.jsx";
+import PrivacyModal from "./modals/PrivacyModal.jsx";
 
 export default function DashboardRoot() {
   return (
@@ -34,9 +34,9 @@ export default function DashboardRoot() {
       </div>
 
       {/* ---------------- Modals ---------------- */}
-      <EditCustomerModal />
-      <EditImprintModal />
-      <EditPrivacyModal />
+      <CustomerModal />
+      <ImprintModal />
+      <PrivacyModal />
     </>
   );
 }
