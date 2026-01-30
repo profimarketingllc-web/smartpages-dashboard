@@ -1,8 +1,49 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 import DashboardApp from "~/components/pages/dashboard/DashboardApp.jsx";
+import ProductGrid from "~/components/shared/ProductGrid.astro";
+
+// Sprache (später ggf. aus Route / Middleware)
+const lang = Astro.props.lang ?? "de";
+
+/*
+  Upsell-Texte für Dashboard
+  (Login nutzt Teaser, Dashboard nutzt Upsell)
+*/
+const upsell = {
+  smartprofile: {
+    title: "SmartProfile",
+    text: "Aktiviere SmartProfile, um dein Profil professionell zu veröffentlichen.",
+  },
+  smartpage: {
+    title: "SmartPage",
+    text: "Nutze SmartPage, um Inhalte gezielt und conversion-stark darzustellen.",
+  },
+  smartdomain: {
+    title: "SmartDomain",
+    text: "Verbinde deine eigene Domain für mehr Vertrauen und Branding.",
+  },
+  smartlinks: {
+    title: "SmartLinks",
+    text: "Erstelle kurze, datenschutzkonforme Links mit Analyse-Fokus.",
+  },
+};
 ---
 
-<PageLayout sidebar header>
-  <DashboardApp client:only="solid-js" />
+<PageLayout
+  lang={lang}
+  page="dashboard"
+  sidebar
+  header
+>
+  <!-- ================= SYSTEM + DASHBOARD ================= -->
+  <section class="space-y-6">
+    <!-- Solid Dashboard (Cards, Modals, SystemMessage) -->
+    <DashboardApp client:only="solid-js" />
+  </section>
+
+  <!-- ================= PRODUCTS / UPSELL ================= -->
+  <section class="mt-10">
+    <ProductGrid lang={lang} upsell={upsell} />
+  </section>
 </PageLayout>
