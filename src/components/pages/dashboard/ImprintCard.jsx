@@ -1,85 +1,90 @@
-import { createSignal, Show } from "solid-js";
+import { createSignal } from "solid-js";
 import ImprintModal from "./modals/ImprintModal";
 
 export default function ImprintCard() {
   const [open, setOpen] = createSignal(false);
-  const [useCustom, setUseCustom] = createSignal(false);
+  const [custom, setCustom] = createSignal(false);
 
   return (
     <div class="bg-white rounded-xl p-6 shadow">
       {/* Header */}
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold">Imprint information</h2>
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h2 class="text-lg font-semibold">Imprint information</h2>
 
-        {/* Edit Button NUR im Standard-Modus */}
-        <Show when={!useCustom()}>
-          <button
-            class="bg-slate-800 text-white px-4 py-2 rounded"
-            onClick={() => setOpen(true)}
-          >
-            Edit imprint
-          </button>
-        </Show>
+          <label class="mt-2 flex items-center gap-2 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              checked={custom()}
+              onChange={(e) => setCustom(e.currentTarget.checked)}
+            />
+            I use my own imprint text
+          </label>
+        </div>
+
+        <button
+          class="bg-slate-800 text-white px-4 py-2 rounded"
+          onClick={() => setOpen(true)}
+        >
+          Edit imprint
+        </button>
       </div>
 
-      {/* TOGGLE – ZENTRALER SCHALTER */}
-      <label class="flex items-center gap-2 mb-4 text-sm">
-        <input
-          type="checkbox"
-          checked={useCustom()}
-          onChange={(e) => setUseCustom(e.currentTarget.checked)}
-        />
-        I use my own imprint text
-      </label>
+      {/* Custom imprint text */}
+      {custom() ? (
+        <div class="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <p class="text-sm text-gray-600 mb-2">
+            You are using your own imprint text. SmartPages will not generate or
+            modify legal content.
+          </p>
 
-      {/* STANDARD VIEW */}
-      <Show when={!useCustom()}>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <div class="font-medium">Company / Name</div>
-            <div class="text-gray-600">—</div>
+          <div class="min-h-[120px] rounded border bg-white p-3 text-sm text-gray-700">
+            {/* später: tatsächlicher Imprint-Text */}
+            —
           </div>
-
-          <div>
-            <div class="font-medium">Email</div>
-            <div class="text-gray-600">—</div>
-          </div>
-
-          <div class="md:col-span-2">
-            <div class="font-medium">Address</div>
-            <div class="text-gray-600">
-              —<br />
-              — —
+        </div>
+      ) : (
+        /* Structured imprint fields */
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 text-sm text-gray-700 mt-4">
+          {/* Left column */}
+          <div class="space-y-3">
+            <div>
+              <span class="font-medium">Company / Name:</span> —
+            </div>
+            <div>
+              <span class="font-medium">Address:</span>
+              <div class="mt-1 text-gray-600">
+                —<br />—
+              </div>
+            </div>
+            <div>
+              <span class="font-medium">Country:</span> —
             </div>
           </div>
 
-          <div>
-            <div class="font-medium">Country</div>
-            <div class="text-gray-600">—</div>
-          </div>
-
-          <div>
-            <div class="font-medium">Register</div>
-            <div class="text-gray-600">— / —</div>
+          {/* Right column */}
+          <div class="space-y-3">
+            <div>
+              <span class="font-medium">Contact person:</span> —
+            </div>
+            <div>
+              <span class="font-medium">Email:</span> —
+            </div>
+            <div>
+              <span class="font-medium">Register court:</span> —
+            </div>
+            <div>
+              <span class="font-medium">Register number:</span> —
+            </div>
           </div>
         </div>
-      </Show>
+      )}
 
-      {/* CUSTOM MODE INFO */}
-      <Show when={useCustom()}>
-        <div class="text-sm text-gray-600 italic">
-          You are using your own imprint text.  
-          SmartPages will not generate or modify legal content.
-        </div>
-      </Show>
-
-      {/* MODAL NUR IM STANDARD-MODUS */}
-      <Show when={!useCustom()}>
-        <ImprintModal
-          open={open()}
-          onClose={() => setOpen(false)}
-        />
-      </Show>
+      {/* Modal */}
+      <ImprintModal
+        open={open()}
+        onClose={() => setOpen(false)}
+      />
     </div>
   );
 }
