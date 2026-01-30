@@ -8,7 +8,6 @@ const lang = Astro.props.lang ?? "de";
 ---
 
 <PageLayout lang={lang} page="login" sidebar={false} header={true}>
-
   <div id="login-root" data-lang={lang}>
 
     <!-- ================= HERO + LOGIN ================= -->
@@ -101,4 +100,100 @@ const lang = Astro.props.lang ?? "de";
     <h3 class="text-lg font-semibold mb-2">
       Magic-Link gesendet
     </h3>
-    <p class="text-sm text-gray-600 mb-4"
+    <p class="text-sm text-gray-600 mb-4">
+      Bitte prüfe dein E-Mail-Postfach.
+    </p>
+    <button
+      id="closeModal"
+      class="px-4 py-2 rounded-lg bg-[#F5B400] text-white font-semibold"
+    >
+      OK
+    </button>
+  </div>
+</div>
+
+<script>
+  const root = document.getElementById("login-root");
+  const PAGE_LANG = root?.dataset.lang || "de";
+
+  const firstName = document.getElementById("firstName");
+  const lastName = document.getElementById("lastName");
+  const email = document.getElementById("email");
+  const company = document.getElementById("company");
+
+  const toggle = document.getElementById("businessToggle");
+  const companyField = document.getElementById("companyField");
+
+  const sendBtn = document.getElementById("sendBtn");
+  const status = document.getElementById("status");
+
+  const modal = document.getElementById("successModal");
+  const closeModal = document.getElementById("closeModal");
+
+  function validate() {
+    sendBtn.disabled = !firstName.value.trim() || !email.value.trim();
+  }
+
+  // 🔁 immer korrekt initialisieren (Autofill, Mobile, etc.)
+  validate();
+
+  firstName.addEventListener("input", validate);
+  email.addEventListener("input", validate);
+
+  toggle.addEventListener("click", () => {
+    toggle.classList.add("hidden");
+    companyField.classList.remove("hidden");
+  });
+
+  sendBtn.addEventListener("click", async () => {
+
+    // 🛑 Sicherheits-Guard (Pflichtfelder)
+    if (!firstName.value.trim() || !email.value.trim()) {
+      status.classList.remove("hidden");
+      status.textContent = "Bitte Vorname und E-Mail ausfüllen.";
+      sendBtn.disabled = false;
+      return;
+    }
+
+    sendBtn.disabled = true;
+    status.classList.remove("hidden");
+    status.textContent = "Sende Magic-Link …";
+
+    const payload = {
+      first_name: firstName.value.trim(),
+      last_name: lastName.value.trim(),
+      email: email.value.trim(),
+      company: company?.value?.trim() || null,
+      lang: PAGE_LANG,
+    };
+
+    console.log("[LOGIN] payload", payload);
+
+    try {
+      const res = await fetch("https://api.smartpages.online/api/auth/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        status.textContent = "Fehler beim Login. Bitte erneut versuchen.";
+        sendBtn.disabled = false;
+        return;
+      }
+
+      status.classList.add("hidden");
+      modal.style.display = "flex";
+
+    } catch (err) {
+      console.error("[LOGIN] request failed", err);
+      status.textContent = "Netzwerkfehler. Bitte erneut versuchen.";
+      sendBtn.disabled = false;
+    }
+  });
+
+  closeModal.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
+</script>
