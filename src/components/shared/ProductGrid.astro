@@ -1,44 +1,30 @@
 ---
 /**
  * ProductGrid.astro – FINAL (Static + Auth-aware)
- * -----------------------------------------------
- * ✔ Design unverändert
- * ✔ Farben aus global.css
- * ✔ Funktioniert für Login, Public & Dashboard
- * ✔ Product-Fencing vorbereitet
- * ✔ Keine Server-Abhängigkeit
  */
 
 import ProductCard from "./ProductCard.astro";
 
 const {
   lang = "de",
-  upsell = null, // Dashboard-Upsell (optional)
+  upsell = null,
 } = Astro.props;
 
 /* -------------------------------------------------- */
-/* Fallback-Texte (Public / Login)                    */
+/* Fallback-Texte (nur falls upsell fehlt)             */
 /* -------------------------------------------------- */
 const teaser = {
   de: {
-    smartprofile:
-      "Dein professionelles Online-Profil – sicher, sichtbar und DSGVO-konform.",
-    smartpage:
-      "Conversion-starke Seiten in Minuten – ganz ohne Programmierung.",
-    smartdomain:
-      "Eigene Domain, SSL & Datenschutz – alles aus einer Hand.",
-    smartlinks:
-      "Datenschutzfreundliche Kurzlinks mit Analyse-Fokus.",
+    smartprofile: "Dein professionelles Online-Profil – sicher, sichtbar und DSGVO-konform.",
+    smartpage: "Conversion-starke Seiten in Minuten – ganz ohne Programmierung.",
+    smartdomain: "Eigene Domain, SSL & Datenschutz – alles aus einer Hand.",
+    smartlinks: "Datenschutzfreundliche Kurzlinks mit Analyse-Fokus.",
   },
   en: {
-    smartprofile:
-      "Your professional online profile – secure, visible and GDPR-compliant.",
-    smartpage:
-      "High-converting pages in minutes – no coding required.",
-    smartdomain:
-      "Own domain, SSL & privacy – all in one.",
-    smartlinks:
-      "Privacy-friendly short links with analytics focus.",
+    smartprofile: "Your professional online profile – secure, visible and GDPR-compliant.",
+    smartpage: "High-converting pages in minutes – no coding required.",
+    smartdomain: "Own domain, SSL & privacy – all in one.",
+    smartlinks: "Privacy-friendly short links with analytics focus.",
   },
 };
 
@@ -81,4 +67,54 @@ const content = {
   />
 
   <ProductCard
-    title={content.smart
+    title={content.smartpage.title}
+    text={content.smartpage.text}
+    gradient="from-[var(--gradient-smartpage-from)] to-[var(--gradient-smartpage-to)]"
+    glow="smart-glow-orange"
+    action="/features/smartpage"
+    data-product="smartpage"
+  />
+
+  <ProductCard
+    title={content.smartdomain.title}
+    text={content.smartdomain.text}
+    gradient="from-[var(--gradient-smartdomain-from)] to-[var(--gradient-smartdomain-to)]"
+    glow="smart-glow-purple"
+    action="/features/smartdomain"
+    data-product="smartdomain"
+  />
+
+  <ProductCard
+    title={content.smartlinks.title}
+    text={content.smartlinks.text}
+    gradient="from-[var(--gradient-smartlinks-from)] to-[var(--gradient-smartlinks-to)]"
+    glow="smart-glow-sage"
+    action="/features/smartlinks"
+    data-product="smartlinks"
+  />
+</section>
+
+<script>
+  (function () {
+    const user = window.SMARTPAGES_USER;
+    if (!user || !Array.isArray(user.active_products)) return;
+
+    const active = user.active_products;
+    const cards = document.querySelectorAll("[data-product]");
+
+    cards.forEach((card) => {
+      const product = card.getAttribute("data-product");
+      if (!product) return;
+
+      if (active.includes(product)) {
+        card.classList.add("opacity-70", "pointer-events-none");
+        const badge = document.createElement("div");
+        badge.textContent = "Aktiv";
+        badge.className =
+          "absolute top-3 right-3 text-xs font-semibold bg-green-600 text-white px-2 py-1 rounded-full";
+        card.style.position = "relative";
+        card.appendChild(badge);
+      }
+    });
+  })();
+</script>
