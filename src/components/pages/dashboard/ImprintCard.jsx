@@ -56,6 +56,9 @@ export default function ImprintCard() {
               <div class="mt-1 text-gray-600">
                 —<br />—
               </div>
+              <div>
+               <span class="font-medium">Country:</span> —
+              </div>
             </div>
            </div>
 
