@@ -49,7 +49,7 @@ export default function ImprintCard() {
           {/* Left column */}
           <div class="space-y-3">
             <div>
-              <span class="font-medium">Company / Name:</span> —
+              <span class="font-medium">Company:</span> —
             </div>
             <div>
               <span class="font-medium">Address:</span>
