@@ -9,24 +9,23 @@ const lang = Astro.props.lang ?? "de";
 
 <PageLayout lang={lang} page="login" sidebar={false} header={true}>
 
-  <!-- HERO + INPUT -->
+  <!-- ================= HERO + LOGIN ================= -->
   <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
 
     <!-- HERO -->
     <div class="dashboard-card bg-white rounded-xl shadow p-6">
-      <h2 class="text-xl font-bold mb-2">
+      <h1 class="text-xl font-bold mb-2">
         {t(lang, "login", "hero", "title")}
-      </h2>
+      </h1>
       <p class="text-sm text-gray-600 leading-snug">
         {t(lang, "login", "hero", "text")}
       </p>
     </div>
 
-    <!-- INPUT CARD -->
+    <!-- LOGIN CARD -->
     <div class="dashboard-card bg-white rounded-xl shadow p-6">
       <div class="grid gap-3">
 
-        <!-- First name -->
         <label class="text-sm font-medium">
           {t(lang, "login", "form", "firstName")}
           <span class="text-red-500">*</span>
@@ -36,7 +35,6 @@ const lang = Astro.props.lang ?? "de";
           class="h-9 px-3 rounded border bg-gray-100 text-sm"
         />
 
-        <!-- Last name -->
         <label class="text-sm font-medium">
           {t(lang, "login", "form", "lastName")}
         </label>
@@ -45,7 +43,6 @@ const lang = Astro.props.lang ?? "de";
           class="h-9 px-3 rounded border bg-gray-100 text-sm"
         />
 
-        <!-- Email -->
         <label class="text-sm font-medium">
           {t(lang, "login", "form", "email")}
           <span class="text-red-500">*</span>
@@ -58,13 +55,12 @@ const lang = Astro.props.lang ?? "de";
 
         <!-- Business toggle -->
         <div
-          id="businessBox"
+          id="businessToggle"
           class="mt-2 cursor-pointer rounded-lg border border-dashed text-sm text-gray-600 p-3 text-center hover:bg-gray-50"
         >
           {t(lang, "login", "form", "businessToggle")}
         </div>
 
-        <!-- Company -->
         <div id="companyField" class="hidden">
           <label class="text-sm font-medium mt-2 block">
             {t(lang, "login", "form", "company")}
@@ -75,25 +71,29 @@ const lang = Astro.props.lang ?? "de";
           />
         </div>
 
-        <!-- Button -->
         <button
           id="sendBtn"
           disabled
-          class="mt-4 mx-auto w-3/4 h-10 rounded-lg font-semibold text-white bg-[#F5B400] disabled:opacity-50"
+          class="mt-4 mx-auto w-3/4 h-10 rounded-lg font-semibold text-white system-gradient system-hover disabled:opacity-50"
         >
           {t(lang, "login", "form", "button")}
         </button>
 
-        <!-- Hint -->
         <p class="text-xs text-gray-500 text-center mt-2 leading-snug">
           {t(lang, "login", "form", "hint")}
         </p>
+
+        <!-- Status -->
+        <p
+          id="status"
+          class="text-sm text-center mt-2 hidden"
+        ></p>
 
       </div>
     </div>
   </section>
 
-  <!-- PRODUCTS (TEASER) -->
+  <!-- ================= PRODUCTS (TEASER) ================= -->
   <section class="mt-10">
     <ProductGrid
       lang={lang}
@@ -105,39 +105,65 @@ const lang = Astro.props.lang ?? "de";
 
 <script>
   const firstName = document.getElementById("firstName");
+  const lastName = document.getElementById("lastName");
   const email = document.getElementById("email");
-  const companyBox = document.getElementById("businessBox");
+  const company = document.getElementById("company");
+  const toggle = document.getElementById("businessToggle");
   const companyField = document.getElementById("companyField");
   const sendBtn = document.getElementById("sendBtn");
+  const status = document.getElementById("status");
 
   function validate() {
-    sendBtn.disabled = !firstName.value || !email.value;
+    sendBtn.disabled = !firstName.value.trim() || !email.value.trim();
   }
 
   firstName.addEventListener("input", validate);
   email.addEventListener("input", validate);
 
-  companyBox.addEventListener("click", () => {
-    companyBox.classList.add("hidden");
+  toggle.addEventListener("click", () => {
+    toggle.classList.add("hidden");
     companyField.classList.remove("hidden");
   });
 
   sendBtn.addEventListener("click", async () => {
     sendBtn.disabled = true;
+    status.classList.remove("hidden");
+    status.textContent = "Sende Magic-Link …";
 
     const payload = {
-      first_name: firstName.value,
-      last_name: document.getElementById("lastName").value,
-      email: email.value,
-      company: document.getElementById("company")?.value,
-      lang: "{lang}",
+      first_name: firstName.value.trim(),
+      last_name: lastName.value.trim(),
+      email: email.value.trim(),
+      company: company?.value?.trim() || null,
+      lang: window.SMARTPAGES_LANG || "de",
     };
 
-    await fetch("https://api.smartpages.online/api/auth/start", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(payload),
-    });
+    console.log("[LOGIN] payload", payload);
+
+    try {
+      const res = await fetch("https://api.smartpages.online/api/auth/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      console.log("[LOGIN] response", res.status, data);
+
+      if (!res.ok) {
+        status.textContent = "Fehler beim Login. Bitte später erneut versuchen.";
+        sendBtn.disabled = false;
+        return;
+      }
+
+      status.textContent =
+        "Magic-Link wurde versendet. Bitte prüfe dein E-Mail-Postfach.";
+
+    } catch (err) {
+      console.error("[LOGIN] request failed", err);
+      status.textContent = "Netzwerkfehler. Bitte erneut versuchen.";
+      sendBtn.disabled = false;
+    }
   });
 </script>
