@@ -7,64 +7,42 @@ import { t } from "~/utils/i18n/i18n";
 const lang = Astro.props.lang ?? "de";
 ---
 
-<PageLayout
-  lang={lang}
-  page="login"
-  sidebar={false}
-  header={true}
-  auth={false}
->
+<PageLayout lang={lang} page="login" sidebar={false} header={true}>
 
-  <!-- HERO + FORM -->
+  <!-- ================= HERO + FORM ================= -->
   <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
 
     <!-- HERO -->
-    <div class="dashboard-card bg-white rounded-xl shadow p-6">
+    <div class="bg-white rounded-xl shadow p-6">
       <h2 class="text-xl font-bold mb-2">
         {t(lang, "login", "hero", "title")}
       </h2>
-      <p class="text-sm text-gray-600 leading-snug">
+      <p class="text-sm text-gray-600">
         {t(lang, "login", "hero", "text")}
       </p>
     </div>
 
     <!-- FORM -->
-    <div class="dashboard-card bg-white rounded-xl shadow p-6">
+    <div class="bg-white rounded-xl shadow p-6">
       <div class="grid gap-3">
 
-        <!-- First name -->
         <label class="text-sm font-medium">
           {t(lang, "login", "form", "firstName")}
           <span class="text-red-500">*</span>
         </label>
-        <input
-          id="firstName"
-          type="text"
-          class="h-9 px-3 rounded border bg-gray-100 text-sm"
-        />
+        <input id="firstName" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
 
-        <!-- Last name -->
         <label class="text-sm font-medium">
           {t(lang, "login", "form", "lastName")}
         </label>
-        <input
-          id="lastName"
-          type="text"
-          class="h-9 px-3 rounded border bg-gray-100 text-sm"
-        />
+        <input id="lastName" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
 
-        <!-- Email -->
         <label class="text-sm font-medium">
           {t(lang, "login", "form", "email")}
           <span class="text-red-500">*</span>
         </label>
-        <input
-          id="email"
-          type="email"
-          class="h-9 px-3 rounded border bg-gray-100 text-sm"
-        />
+        <input id="email" type="email" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
 
-        <!-- Business toggle -->
         <div
           id="businessBox"
           class="mt-2 cursor-pointer rounded-lg border border-dashed text-sm text-gray-600 p-3 text-center hover:bg-gray-50"
@@ -72,112 +50,19 @@ const lang = Astro.props.lang ?? "de";
           {t(lang, "login", "form", "businessToggle")}
         </div>
 
-        <!-- Company -->
         <div id="companyField" class="hidden">
           <label class="text-sm font-medium mt-2 block">
             {t(lang, "login", "form", "company")}
           </label>
-          <input
-            id="company"
-            type="text"
-            class="h-9 px-3 rounded border bg-gray-100 text-sm w-full"
-          />
+          <input id="company" class="h-9 px-3 rounded border bg-gray-100 text-sm w-full" />
         </div>
 
-        <!-- Button -->
         <button
           id="sendBtn"
-          type="button"
           disabled
           class="mt-4 mx-auto w-3/4 h-10 rounded-lg font-semibold text-white bg-[#F5B400] disabled:opacity-50"
         >
           {t(lang, "login", "form", "button")}
         </button>
 
-        <!-- Hint -->
-        <p class="text-xs text-gray-500 text-center mt-2 leading-snug">
-          {t(lang, "login", "form", "hint")}
-        </p>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- PRODUCTS -->
-  <section class="mt-10">
-    <ProductGrid lang={lang} upsell={productGridI18n[lang].teaser} />
-  </section>
-
-</PageLayout>
-
-<!-- ===================================================== -->
-<!-- LOGIN LOGIC (ROBUST VALIDATION)                       -->
-<!-- ===================================================== -->
-<script>
-  const firstName = document.getElementById("firstName");
-  const email = document.getElementById("email");
-  const lastName = document.getElementById("lastName");
-  const companyBox = document.getElementById("businessBox");
-  const companyField = document.getElementById("companyField");
-  const companyInput = document.getElementById("company");
-  const sendBtn = document.getElementById("sendBtn");
-
-  function validate() {
-    const valid =
-      firstName.value.trim().length > 0 &&
-      email.value.trim().length > 0;
-
-    sendBtn.disabled = !valid;
-  }
-
-  // 🔑 Alle relevanten Events
-  ["input", "change", "blur"].forEach(evt => {
-    firstName.addEventListener(evt, validate);
-    email.addEventListener(evt, validate);
-  });
-
-  // 🔑 Initiale Prüfung (Autofill / Reload!)
-  setTimeout(validate, 0);
-
-  // Business toggle
-  companyBox.addEventListener("click", () => {
-    companyBox.classList.add("hidden");
-    companyField.classList.remove("hidden");
-  });
-
-  // Submit
-  sendBtn.addEventListener("click", async () => {
-    sendBtn.disabled = true;
-
-    const payload = {
-      first_name: firstName.value.trim(),
-      last_name: lastName.value.trim(),
-      email: email.value.trim(),
-      company: companyInput?.value?.trim() || null,
-      lang: document.documentElement.lang || "en",
-    };
-
-    try {
-      const res = await fetch("https://api.smartpages.online/api/auth/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data?.ok) {
-        alert("Es ist ein Fehler aufgetreten. Bitte versuche es erneut.");
-        sendBtn.disabled = false;
-        return;
-      }
-
-      // Erfolg (Modal kommt im nächsten Schritt sauber)
-      alert("Magic-Link wurde gesendet. Bitte prüfe dein E-Mail-Postfach.");
-    } catch (err) {
-      alert("Netzwerkfehler. Bitte versuche es erneut.");
-      sendBtn.disabled = false;
-    }
-  });
-</script>
+        <p class=
