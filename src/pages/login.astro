@@ -9,21 +9,21 @@ const lang = Astro.props.lang ?? "de";
 
 <PageLayout lang={lang} page="login" sidebar={false} header={true}>
 
-  <!-- ================= HERO + FORM ================= -->
+  <!-- HERO + FORM -->
   <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
 
     <!-- HERO -->
-    <div class="bg-white rounded-xl shadow p-6">
+    <div class="dashboard-card bg-white rounded-xl shadow p-6">
       <h2 class="text-xl font-bold mb-2">
         {t(lang, "login", "hero", "title")}
       </h2>
-      <p class="text-sm text-gray-600">
+      <p class="text-sm text-gray-600 leading-snug">
         {t(lang, "login", "hero", "text")}
       </p>
     </div>
 
     <!-- FORM -->
-    <div class="bg-white rounded-xl shadow p-6">
+    <div class="dashboard-card bg-white rounded-xl shadow p-6">
       <div class="grid gap-3">
 
         <label class="text-sm font-medium">
@@ -43,6 +43,7 @@ const lang = Astro.props.lang ?? "de";
         </label>
         <input id="email" type="email" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
 
+        <!-- Business Toggle -->
         <div
           id="businessBox"
           class="mt-2 cursor-pointer rounded-lg border border-dashed text-sm text-gray-600 p-3 text-center hover:bg-gray-50"
@@ -50,6 +51,7 @@ const lang = Astro.props.lang ?? "de";
           {t(lang, "login", "form", "businessToggle")}
         </div>
 
+        <!-- Company -->
         <div id="companyField" class="hidden">
           <label class="text-sm font-medium mt-2 block">
             {t(lang, "login", "form", "company")}
@@ -65,4 +67,120 @@ const lang = Astro.props.lang ?? "de";
           {t(lang, "login", "form", "button")}
         </button>
 
-        <p class=
+        <p class="text-xs text-gray-500 text-center mt-2 leading-snug">
+          {t(lang, "login", "form", "hint")}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS (TEASER – MUSS SICHTBAR BLEIBEN) -->
+  <section class="mt-16 mb-10">
+    <ProductGrid lang={lang} upsell={productGridI18n[lang].teaser} />
+  </section>
+
+</PageLayout>
+
+<!-- ===================== -->
+<!-- PREMIUM MODAL -->
+<!-- ===================== -->
+<div
+  id="loginModal"
+  class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50"
+>
+  <div
+    id="modalBox"
+    class="bg-white rounded-2xl shadow-strong p-6 max-w-sm w-full text-center"
+  >
+    <h3 id="modalTitle" class="text-lg font-bold mb-2"></h3>
+    <p id="modalText" class="text-sm mb-4"></p>
+
+    <button
+      id="modalBtn"
+      class="px-6 py-2 rounded-lg font-semibold text-white"
+    >
+      OK
+    </button>
+  </div>
+</div>
+
+<script>
+  const firstName = document.getElementById("firstName");
+  const email = document.getElementById("email");
+  const sendBtn = document.getElementById("sendBtn");
+  const businessBox = document.getElementById("businessBox");
+  const companyField = document.getElementById("companyField");
+
+  const modal = document.getElementById("loginModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalText = document.getElementById("modalText");
+  const modalBtn = document.getElementById("modalBtn");
+
+  function validate() {
+    sendBtn.disabled = !(firstName.value.trim() && email.value.trim());
+  }
+
+  firstName.addEventListener("input", validate);
+  email.addEventListener("input", validate);
+
+  businessBox.addEventListener("click", () => {
+    businessBox.classList.add("hidden");
+    companyField.classList.remove("hidden");
+  });
+
+  function showModal({ title, text, success }) {
+    modalTitle.textContent = title;
+    modalText.textContent = text;
+
+    modalBtn.className =
+      "px-6 py-2 rounded-lg font-semibold text-white " +
+      (success ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700");
+
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  }
+
+  modalBtn.addEventListener("click", () => {
+    modal.classList.add("hidden");
+
+    // Versuch: Tab schließen (funktioniert nur wenn erlaubt)
+    window.close();
+  });
+
+  sendBtn.addEventListener("click", async () => {
+    sendBtn.disabled = true;
+
+    const payload = {
+      first_name: firstName.value,
+      last_name: document.getElementById("lastName").value,
+      email: email.value,
+      company: document.getElementById("company")?.value || null,
+      lang: "{lang}",
+    };
+
+    try {
+      const res = await fetch("https://api.smartpages.online/api/auth/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data?.ok) throw new Error();
+
+      showModal({
+        title: "Magic-Link gesendet",
+        text: "Bitte prüfe dein E-Mail-Postfach.",
+        success: true,
+      });
+    } catch (err) {
+      showModal({
+        title: "Fehler",
+        text: "Es gab ein Problem. Bitte versuche es erneut.",
+        success: false,
+      });
+      sendBtn.disabled = false;
+    }
+  });
+</script>
