@@ -1,33 +1,156 @@
-<!-- ===================== -->
-<!-- PREMIUM MODAL (MIT SPINNER) -->
-<!-- ===================== -->
+---
+import PageLayout from "~/layouts/PageLayout.astro";
+import ProductGrid from "~/components/shared/ProductGrid.astro";
+import { productGridI18n } from "~/utils/i18n/ProductGrid";
+import { t } from "~/utils/i18n/i18n";
+
+const lang = Astro.props.lang ?? "de";
+---
+
+<PageLayout lang={lang} page="login" sidebar={false} header={true}>
+
+  <!-- HERO + FORM -->
+  <section class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+
+    <!-- HERO -->
+    <div class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-bold mb-2">
+        {t(lang, "login", "hero", "title")}
+      </h2>
+      <p class="text-sm text-gray-600">
+        {t(lang, "login", "hero", "text")}
+      </p>
+    </div>
+
+    <!-- FORM -->
+    <div class="bg-white rounded-xl shadow p-6">
+      <div class="grid gap-3">
+
+        <label class="text-sm font-medium">
+          {t(lang, "login", "form", "firstName")} *
+        </label>
+        <input id="firstName" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
+
+        <label class="text-sm font-medium">
+          {t(lang, "login", "form", "lastName")}
+        </label>
+        <input id="lastName" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
+
+        <label class="text-sm font-medium">
+          {t(lang, "login", "form", "email")} *
+        </label>
+        <input id="email" type="email" class="h-9 px-3 rounded border bg-gray-100 text-sm" />
+
+        <div
+          id="businessBox"
+          class="mt-2 cursor-pointer rounded-lg border border-dashed text-sm text-gray-600 p-3 text-center hover:bg-gray-50"
+        >
+          {t(lang, "login", "form", "businessToggle")}
+        </div>
+
+        <div id="companyField" class="hidden">
+          <label class="text-sm font-medium mt-2 block">
+            {t(lang, "login", "form", "company")}
+          </label>
+          <input id="company" class="h-9 px-3 rounded border bg-gray-100 text-sm w-full" />
+        </div>
+
+        <button
+          id="sendBtn"
+          disabled
+          class="mt-4 mx-auto w-3/4 h-10 rounded-lg font-semibold text-white bg-[#F5B400] flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          <span id="btnText">{t(lang, "login", "form", "button")}</span>
+          <span id="spinner" class="hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+        </button>
+
+        <p class="text-xs text-gray-500 text-center mt-2">
+          {t(lang, "login", "form", "hint")}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS (TEASER) -->
+  <section class="mt-12">
+    <ProductGrid lang={lang} upsell={productGridI18n[lang].teaser} />
+  </section>
+
+</PageLayout>
+
+<!-- MODAL -->
 <div
   id="loginModal"
   class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50"
 >
-  <div
-    class="bg-white rounded-2xl shadow-strong p-6 max-w-sm w-full text-center"
-  >
-    <!-- Spinner -->
-    <div
-      id="modalSpinner"
-      class="mx-auto mb-4 h-10 w-10 rounded-full border-4 border-gray-200 border-t-[#F5B400] animate-spin hidden"
-    ></div>
-
-    <!-- Status Icon -->
-    <div
-      id="modalIcon"
-      class="mx-auto mb-3 text-3xl hidden"
-    ></div>
-
-    <h3 id="modalTitle" class="text-lg font-bold mb-2"></h3>
-    <p id="modalText" class="text-sm mb-5 text-gray-600"></p>
-
+  <div class="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-sm text-center">
+    <h3 id="modalTitle" class="text-lg font-semibold mb-2"></h3>
+    <p id="modalText" class="text-sm text-gray-600 mb-4"></p>
     <button
-      id="modalBtn"
-      class="px-6 py-2 rounded-lg font-semibold text-white hidden"
+      id="modalClose"
+      class="px-6 py-2 rounded-lg font-semibold bg-[#F5B400] text-white"
     >
       OK
     </button>
   </div>
 </div>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const firstName = document.getElementById("firstName");
+    const email = document.getElementById("email");
+    const sendBtn = document.getElementById("sendBtn");
+    const btnText = document.getElementById("btnText");
+    const spinner = document.getElementById("spinner");
+
+    const modal = document.getElementById("loginModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalText = document.getElementById("modalText");
+    const modalClose = document.getElementById("modalClose");
+
+    function validate() {
+      sendBtn.disabled =
+        !firstName.value.trim() || !email.value.trim();
+    }
+
+    firstName.addEventListener("input", validate);
+    email.addEventListener("input", validate);
+
+    sendBtn.addEventListener("click", async () => {
+      sendBtn.disabled = true;
+      spinner.classList.remove("hidden");
+      btnText.textContent = "Sende …";
+
+      try {
+        const res = await fetch("https://api.smartpages.online/api/auth/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            first_name: firstName.value,
+            last_name: document.getElementById("lastName").value,
+            email: email.value,
+            company: document.getElementById("company")?.value || null,
+            lang: document.documentElement.lang || "de",
+          }),
+        });
+
+        if (!res.ok) throw new Error();
+
+        modalTitle.textContent = "Magic-Link gesendet";
+        modalText.textContent = "Bitte prüfe dein E-Mail-Postfach.";
+      } catch {
+        modalTitle.textContent = "Fehler";
+        modalText.textContent = "Bitte versuche es erneut.";
+        sendBtn.disabled = false;
+      } finally {
+        spinner.classList.add("hidden");
+        btnText.textContent = "Magic-Link senden";
+        modal.classList.remove("hidden");
+      }
+    });
+
+    modalClose.addEventListener("click", () => {
+      modal.classList.add("hidden");
+    });
+  });
+</script>
