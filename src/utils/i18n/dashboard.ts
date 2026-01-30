@@ -113,3 +113,5 @@ export const dashboardI18n = {
     },
   },
 };
+
+export default dashboardI18n;
