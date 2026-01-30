@@ -1,32 +1,10 @@
 ---
 import PageLayout from "~/layouts/PageLayout.astro";
 import ProductGrid from "~/components/shared/ProductGrid.astro";
+import { productGridI18n } from "~/utils/i18n/ProductGrid";
 import { t } from "~/utils/i18n/i18n";
 
 const lang = Astro.props.lang ?? "de";
-
-const products = [
-  {
-    key: "smartprofile",
-    title: t(lang, "login", "products", "smartprofile", "title"),
-    text: t(lang, "login", "products", "smartprofile", "text"),
-  },
-  {
-    key: "smartpage",
-    title: t(lang, "login", "products", "smartpage", "title"),
-    text: t(lang, "login", "products", "smartpage", "text"),
-  },
-  {
-    key: "smartdomain",
-    title: t(lang, "login", "products", "smartdomain", "title"),
-    text: t(lang, "login", "products", "smartdomain", "text"),
-  },
-  {
-    key: "smartlinks",
-    title: t(lang, "login", "products", "smartlinks", "title"),
-    text: t(lang, "login", "products", "smartlinks", "text"),
-  },
-];
 ---
 
 <PageLayout lang={lang} page="login" sidebar={false} header={true}>
@@ -115,9 +93,12 @@ const products = [
     </div>
   </section>
 
-  <!-- PRODUCTS -->
+  <!-- PRODUCTS (TEASER) -->
   <section class="mt-10">
-    <ProductGrid products={products} />
+    <ProductGrid
+      lang={lang}
+      upsell={productGridI18n[lang].teaser}
+    />
   </section>
 
 </PageLayout>
