@@ -68,11 +68,14 @@ const lang = Astro.props.lang ?? "de";
           {t(lang, "login", "form", "button")}
         </button>
 
+        <!-- Status -->
         <p id="status" class="hidden text-xs text-center text-gray-500 mt-2"></p>
 
+        <!-- Hint -->
         <p class="text-xs text-gray-500 text-center mt-2 leading-snug">
           {t(lang, "login", "form", "hint")}
         </p>
+
       </div>
     </div>
   </section>
@@ -90,11 +93,12 @@ const lang = Astro.props.lang ?? "de";
 <!-- ================= SUCCESS MODAL ================= -->
 <div
   id="successModal"
-  class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40"
+  style="display:none"
+  class="fixed inset-0 z-50 items-center justify-center bg-black/40"
 >
   <div class="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full text-center">
     <h3 class="text-lg font-semibold mb-2">
-      Magic Link gesendet
+      Magic-Link gesendet
     </h3>
     <p class="text-sm text-gray-600 mb-4">
       Bitte prüfe dein E-Mail-Postfach.
@@ -109,12 +113,18 @@ const lang = Astro.props.lang ?? "de";
 </div>
 
 <script>
+  // 🔑 Sprache korrekt aus Astro übernehmen
+  const PAGE_LANG = "{lang}";
+  console.log("[LOGIN] page lang =", PAGE_LANG);
+
   const firstName = document.getElementById("firstName");
   const lastName = document.getElementById("lastName");
   const email = document.getElementById("email");
   const company = document.getElementById("company");
+
   const toggle = document.getElementById("businessToggle");
   const companyField = document.getElementById("companyField");
+
   const sendBtn = document.getElementById("sendBtn");
   const status = document.getElementById("status");
 
@@ -143,17 +153,10 @@ const lang = Astro.props.lang ?? "de";
       last_name: lastName.value.trim(),
       email: email.value.trim(),
       company: company?.value?.trim() || null,
-      lang: "{{lang}}",
+      lang: PAGE_LANG,
     };
 
     console.log("[LOGIN] payload", payload);
 
     try {
-      const res = await fetch("https://api.smartpages.online/api/auth/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
-
-      const
+      co
