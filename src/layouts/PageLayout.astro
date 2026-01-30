@@ -7,6 +7,7 @@ import { t } from "~/utils/i18n/i18n";
 const {
   sidebar = true,
   header = true,
+  userContext = true, // 👈 NEU: steuert User-Bootstrap
   lang = "en",
   page = null,
 } = Astro.props;
@@ -51,43 +52,46 @@ const pageDescription = page
     </div>
 
     <!-- ===================================================== -->
-    <!-- 🔐 CLIENT BOOTSTRAP (LANG + USER CONTEXT)             -->
+    <!-- 🔐 CLIENT USER CONTEXT (nur wenn erlaubt)             -->
     <!-- ===================================================== -->
-    <script>
-      (async function bootstrapSmartPagesContext() {
-        window.SMARTPAGES_LANG = "en";
-        window.SMARTPAGES_USER = null;
+    {userContext && (
+      <script>
+        (async function bootstrapSmartPagesContext() {
+          // 🛡 sichere Defaults
+          window.SMARTPAGES_LANG = "{lang}";
+          window.SMARTPAGES_USER = null;
 
-        try {
-          const res = await fetch("/api/session/userinfo", {
-            credentials: "include",
-            headers: { "Accept": "application/json" },
-          });
+          try {
+            const res = await fetch("/api/session/userinfo", {
+              credentials: "include",
+              headers: { "Accept": "application/json" },
+            });
 
-          if (!res.ok) throw new Error("userinfo fetch failed");
+            if (!res.ok) return;
 
-          const data = await res.json();
+            const data = await res.json();
 
-          if (data?.ok && data.user) {
-            window.SMARTPAGES_USER = data.user;
+            if (data?.ok && data.user) {
+              window.SMARTPAGES_USER = data.user;
 
-            if (data.user.language) {
-              window.SMARTPAGES_LANG = data.user.language;
+              if (data.user.language) {
+                window.SMARTPAGES_LANG = data.user.language;
+              }
             }
+          } catch {
+            // bewusst still – keine Warnungen auf App-Ebene
           }
-        } catch (err) {
-          console.warn("[SmartPages] Using fallback language/user");
-        }
 
-        window.dispatchEvent(
-          new CustomEvent("smartpages:context-ready", {
-            detail: {
-              lang: window.SMARTPAGES_LANG,
-              user: window.SMARTPAGES_USER,
-            },
-          })
-        );
-      })();
-    </script>
+          window.dispatchEvent(
+            new CustomEvent("smartpages:context-ready", {
+              detail: {
+                lang: window.SMARTPAGES_LANG,
+                user: window.SMARTPAGES_USER,
+              },
+            })
+          );
+        })();
+      </script>
+    )}
   </body>
 </html>
