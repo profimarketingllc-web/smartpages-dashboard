@@ -106,7 +106,10 @@ const lang = Astro.props.lang ?? "de";
   </div>
 </div>
 
-<script>
+<!-- ========================================================= -->
+<!-- SCRIPT (LANG FIX – NO FUNCTION REMOVED) -->
+<!-- ========================================================= -->
+<script define:vars={{ lang }}>
   const firstName = document.getElementById("firstName");
   const email = document.getElementById("email");
   const companyBox = document.getElementById("businessBox");
@@ -156,7 +159,8 @@ const lang = Astro.props.lang ?? "de";
     modalIcon.classList.remove("hidden");
     modalTitle.textContent = "Magic-Link gesendet";
     modalText.textContent = "Bitte prüfe dein E-Mail-Postfach.";
-    modalBtn.className = "px-6 py-2 rounded-lg font-semibold text-white bg-green-600";
+    modalBtn.className =
+      "px-6 py-2 rounded-lg font-semibold text-white bg-green-600";
     modalBtn.classList.remove("hidden");
   }
 
@@ -166,7 +170,8 @@ const lang = Astro.props.lang ?? "de";
     modalIcon.classList.remove("hidden");
     modalTitle.textContent = "Fehler";
     modalText.textContent = "Bitte versuche es erneut.";
-    modalBtn.className = "px-6 py-2 rounded-lg font-semibold text-white bg-red-600";
+    modalBtn.className =
+      "px-6 py-2 rounded-lg font-semibold text-white bg-red-600";
     modalBtn.classList.remove("hidden");
     sendBtn.disabled = false;
   }
@@ -181,17 +186,20 @@ const lang = Astro.props.lang ?? "de";
     sendBtn.disabled = true;
 
     try {
-      const res = await fetch("https://api.smartpages.online/api/auth/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          first_name: firstName.value,
-          last_name: document.getElementById("lastName").value,
-          email: email.value,
-          company: document.getElementById("company")?.value || null,
-          lang: "{lang}",
-        }),
-      });
+      const res = await fetch(
+        "https://api.smartpages.online/api/auth/start",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            first_name: firstName.value,
+            last_name: document.getElementById("lastName").value,
+            email: email.value,
+            company: document.getElementById("company")?.value || null,
+            lang: lang, // ✅ JETZT KORREKT
+          }),
+        }
+      );
 
       const data = await res.json();
       if (!res.ok || !data?.ok) throw new Error();
