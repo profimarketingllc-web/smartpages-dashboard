@@ -9,7 +9,7 @@ const login = {
         "Melde dich bei SmartPages an und verwalte deine Profile, Domains und Abonnements.",
     },
 
-    /* ================= HEADER (oben neben Logo) ================= */
+    /* ================= HEADER ================= */
     header: {
       title: "SmartPages",
       subtitle: "Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen.",
@@ -27,9 +27,22 @@ const login = {
       firstName: "Vorname",
       lastName: "Nachname",
       email: "E-Mail-Adresse",
+      businessToggle: "Wir sind ein Unternehmen",
+      company: "Unternehmen",
       button: "Magic-Link senden",
       hint:
         "Deine Daten werden ausschließlich für den Versand des Magic-Links verwendet und NICHT gespeichert.",
+    },
+
+    /* ================= MODAL ================= */
+    modal: {
+      loadingTitle: "Magic-Link wird gesendet…",
+      loadingText: "Bitte einen Moment warten.",
+      successTitle: "Magic-Link gesendet",
+      successText: "Bitte prüfe dein E-Mail-Postfach.",
+      errorTitle: "Fehler",
+      errorText: "Bitte versuche es erneut.",
+      ok: "OK",
     },
   },
 
@@ -60,9 +73,22 @@ const login = {
       firstName: "First name",
       lastName: "Last name",
       email: "Email address",
+      businessToggle: "We are a company",
+      company: "Company",
       button: "Send Magic Link",
       hint:
         "Your data is only used to send the magic link and is NOT stored.",
+    },
+
+    /* ================= MODAL ================= */
+    modal: {
+      loadingTitle: "Sending magic link…",
+      loadingText: "Please wait a moment.",
+      successTitle: "Magic link sent",
+      successText: "Please check your email inbox.",
+      errorTitle: "Error",
+      errorText: "Please try again.",
+      ok: "OK",
     },
   },
 };

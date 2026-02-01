@@ -1,11 +1,25 @@
 ---
 /*
-  SmartHeader – Static Fallback (EN)
-  - zentrierter Block
-  - größere Typo
-  - Logo ≈ Textblock-Höhe
+  SmartHeader – Static Fallback (DE / EN via Props)
   - build-safe
+  - keine i18n-Abhängigkeit
+  - Sprache kommt über Props
 */
+
+const { lang = "en" } = Astro.props;
+
+const TEXT = {
+  de: {
+    title: "SmartPages",
+    subtitle: "Wir bringen Dich in 10 Minuten online – ohne Technik-Wissen.",
+  },
+  en: {
+    title: "SmartPages",
+    subtitle: "We bring you online in 10 minutes – no technical skills required.",
+  },
+};
+
+const content = TEXT[lang] ?? TEXT.en;
 ---
 
 <header
@@ -33,10 +47,10 @@
           class="text-2xl font-extrabold tracking-tight"
           style="font-family: 'Montserrat', sans-serif;"
         >
-          SmartPages
+          {content.title}
         </div>
         <div class="text-base opacity-85">
-          We bring you online in 10 minutes – no technical skills required.
+          {content.subtitle}
         </div>
       </div>
 
